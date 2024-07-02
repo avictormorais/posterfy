@@ -68,7 +68,7 @@ addEventListener("DOMContentLoaded", (event) => {
 
     //// atualizar poster ao algum input ser alterado
     let timeoutId;
-    document.querySelectorAll('input').forEach(input => {
+    document.querySelectorAll('input:not(#buscaAlbum)').forEach(input => {
       input.addEventListener('input', () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
