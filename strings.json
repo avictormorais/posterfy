@@ -1,5 +1,5 @@
 {
-    "en": {
+  "en": {
       "title": "Create your own",
       "tip": "To begin, enter the name of the album you want to create your poster, then you can edit it as you",
       "input": "Album name",
@@ -32,8 +32,8 @@
       "aboutTitle": "How it works",
       "aboutP1": "To obtain the data and images, Posterfy uses Spotify's free API. After the search result and the user selects the album, Posterfy gathers all the data and organizes it visually using the HTML canvas element in a pre-organized way through JavaScript and generates a rendered image of the canvas.",
       "aboutP2": "This project is open source and does not generate any revenue. All rights to images and information belong to Spotify and the respective artists. Source code available at: "
-    },
-    "pt-BR": {
+  },
+  "pt-BR": {
       "title": "Crie seu próprio",
       "tip": "Para começar, digite o nome do álbum que deseja criar seu pôster e, em seguida, edite-o conforme desejar.",
       "input": "Nome do álbum",
@@ -66,5 +66,39 @@
       "aboutTitle": "Como funciona",
       "aboutP1": "Para obter os dados e imagens, o Posterfy utiliza a API gratuita do Spotify. Após o resultado da pesquisa e o usuário selecionar o álbum, o Posterfy reúne todos os dados e os organiza visualmente utilizando o elemento HTML canvas de forma pré-organizada através de JavaScript e gera uma imagem renderizada do canvas.",
       "aboutP2": "Este projeto é de código aberto e não gera nenhuma receita. Todos os direitos sobre imagens e informações pertencem ao Spotify e aos respectivos artistas. Código fonte disponível em: "
-    }
-}  
+  },
+  "es": {
+      "title": "Crea tu propio",
+      "tip": "Para comenzar, ingresa el nombre del álbum que deseas crear tu póster, luego puedes editarlo como quieras.",
+      "input": "Nombre del álbum",
+      "creating": "Creando tu",
+      "adjust": "Ajusta como quieras:",
+      "titleName": "Nombre del álbum",
+      "titleArtist": "Artista",
+      "titleDate": "Fecha de lanzamiento",
+      "titleTime": "Duración",
+      "titleSizeT": "Tamaño del título",
+      "titleSizeA": "Tamaño del artista",
+      "titleColorBackground": "Color de fondo",
+      "titleColorText": "Color del texto",
+      "titleColor1": "Color 1",
+      "titleColor2": "Color 2",
+      "titleColor3": "Color 3",
+      "btnDelete": "Eliminar",
+      "TitleApply": "Aplicar",
+      "colorSelector": "Código de color",
+      "madeBy": "Hecho con 🎵 en 🇧🇷 por",
+      "nA": "No asociado con Spotify.",
+      "titleFade": "Degradado",
+      "labelFade": "Usar degradado",
+      "titleTacklist": "Lista de canciones",
+      "labelTracklist": "Mostrar canciones",
+      "musicSize": "Tamaño canciones",
+      "welcomeMsg": "Convierte tu pasión por la música en ",
+      "welcomeSpan": "arte",
+      "titleMarginTop": "Margen superior",
+      "aboutTitle": "Cómo funciona",
+      "aboutP1": "Para obtener los datos e imágenes, Posterfy utiliza la API gratuita de Spotify. Después de obtener el resultado de la búsqueda y que el usuario seleccione el álbum, Posterfy reúne todos los datos y los organiza visualmente utilizando el elemento HTML canvas de una manera preorganizada a través de JavaScript y genera una imagen renderizada del canvas.",
+      "aboutP2": "Este proyecto es de código abierto y no genera ningún ingreso. Todos los derechos sobre las imágenes e información pertenecen a Spotify y a los respectivos artistas. Código fuente disponible en: "
+  }
+}

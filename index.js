@@ -83,15 +83,12 @@ addEventListener("DOMContentLoaded", (event) => {
     document.getElementById('inputDegrade').checked = true
     document.getElementById('inputLista').checked = false
 
-    document.getElementById('bandeira').addEventListener('click', (event) => {
-      console.log(document.getElementById('bandeira').src)
-      if (document.getElementById('bandeira').getAttribute('src') == "styles/br.svg") {
-        document.getElementById('bandeira').setAttribute('src', "styles/us.svg");
-        setLanguage('en')
-      } else {
-        document.getElementById('bandeira').setAttribute('src', "styles/br.svg");
-        setLanguage('pt-BR')
-      }      
+    document.getElementById('changeLanguage').addEventListener('click', (event) => {
+      if(document.getElementById('divLinguas').style.display == 'flex'){
+        document.getElementById('divLinguas').style.display = 'none'
+      } else{
+        document.getElementById('divLinguas').style.display = 'flex'
+      }
     })
 
     document.getElementById('atualizar').addEventListener('click', (event) => {
@@ -576,15 +573,21 @@ function setLanguage(lan){
       document.getElementById('sobreTitulo').textContent  = idioma['aboutTitle']
       document.getElementById('sobreP1').textContent  = idioma['aboutP1']
       document.getElementById('sobreP2').firstChild.textContent  = idioma['aboutP2']
+
       if(lan == "pt-BR"){
-        document.getElementById('bandeira').src = "styles/br.svg"
-      } else{
-        document.getElementById('bandeira').src = "styles/us.svg"
+        document.getElementById('bandeira').setAttribute('src', "styles/br.svg");
+        document.getElementById('nameLanguage').innerText = 'PT-BR'
+      } if(lan == 'es'){
+        document.getElementById('bandeira').setAttribute('src', "styles/es.svg");
+        document.getElementById('nameLanguage').innerText = 'ES-ES'
+      } if(lan == 'en'){
+        document.getElementById('bandeira').setAttribute('src', "styles/us.svg");
+        document.getElementById('nameLanguage').innerText = 'EN-US'
       }
+      document.getElementById('divLinguas').style.display = 'none'
     })
   .catch(error => console.error('Erro ao carregar o arquivo JSON:', error));
 }
-
 
   document.querySelectorAll('.Lyrics__Container-sc-1ynbvzw-1.kUgSbL').forEach(e => {
     console.log( e.children[0])

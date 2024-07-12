@@ -14,7 +14,24 @@
 <header>
     <img src="styles/logo.png" id="logoheader" alt="">
     <h1>Posterfy</h1>
-    <img src="styles/br.svg" id="bandeira" alt="">
+    <span id="changeLanguage">
+        <img src="styles/br.svg" id="bandeira" alt="">
+        <p id="nameLanguage">PT-BR</p>
+    </span>
+    <div id="divLinguas">
+        <span class="opcaoLingua" onclick="setLanguage('pt-BR')">
+            <img src="styles/br.svg" alt="">
+            <p>Português</p>
+        </span>
+        <span class="opcaoLingua" onclick="setLanguage('en')">
+            <img src="styles/us.svg" alt="">
+            <p>English</p>
+        </span>
+        <span class="opcaoLingua" onclick="setLanguage('es')">
+            <img src="styles/es.svg" alt="">
+            <p>Español</p>
+        </span>
+    </div>
 </header>
 <body>
     <section id="inicio">

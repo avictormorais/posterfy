@@ -25,6 +25,9 @@ header{
     padding-block: 7px;
     box-shadow: var(--sombra);
     margin-bottom: 0px;
+    position: fixed;
+    top: 0;
+    z-index: 100000;
 }
 
 @keyframes spin {
@@ -42,14 +45,28 @@ header{
     animation: spin 10s linear infinite;
 }
 
+#changeLanguage{
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
 #bandeira{
     height: 25px;
     margin-left: auto;
-    margin-right: 65px;
 }
 
 #bandeira:hover{
     cursor: pointer;
+}
+
+#nameLanguage{
+    color: white;
+    font-size: 13px;
+    margin-right: 65px;
+    margin-left: 10px;
+    font-weight: bold;
 }
 
 header h1{
@@ -65,6 +82,7 @@ body{
     align-items: center;
     flex-direction: column;
     max-width: 1600px;
+    padding-top: 100px;
 }
 
 #inicio{
@@ -657,6 +675,43 @@ input[type="range"]:focus::-webkit-slider-thumb {
     font-size: 25px;
 }
 
+#divLinguas{
+    background-color: var(--corCard);
+    position: fixed;
+    flex-direction: column;
+    right: 2%;
+    top: 8%;
+    padding: 10px;
+    border-radius: 10px;
+    display: none;
+}
+
+.opcaoLingua{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding-block: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.opcaoLingua:hover{
+    background-color: var(--corClaro);
+}
+
+.opcaoLingua img{
+    height: 20px;
+    margin-inline: 5px;
+}
+
+.opcaoLingua p{
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    margin-inline: 5px;
+}
+
 footer{
     background-color: var(--corCard);
     width: 100%;
@@ -740,5 +795,17 @@ a{
         margin-top: 20px;
         margin-bottom: 25px;
         font-size: 15px;
+    }
+    #nameLanguage{
+        display: none;
+    }
+    #bandeira{
+        margin-right: 30px;
+    }
+}
+
+@media screen and (max-width: 380px) {
+    header h1{
+        display: none;
     }
 }
