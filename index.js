@@ -246,7 +246,8 @@ addEventListener("DOMContentLoaded", (event) => {
                 getAlbum(event.currentTarget.dataset.id)
                 .then(album => {
                   albumAtual = album
-                  document.getElementById('inputArtista').value = album.artists[0].name ?? '';
+                  const artistas = album.artists.map(artist => artist.name).join(', ');
+                  document.getElementById('inputArtista').value = artistas ?? '';
                   document.getElementById('inputNome').value = album.name;
                   document.getElementById('inputData').value = album.release_date;
 
