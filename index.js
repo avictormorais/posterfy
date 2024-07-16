@@ -66,17 +66,6 @@ addEventListener("DOMContentLoaded", (event) => {
       path: 'styles/paint.json'
     });
 
-    //// atualizar poster ao algum input ser alterado
-    let timeoutId;
-    document.querySelectorAll('input:not(#buscaAlbum)').forEach(input => {
-      input.addEventListener('input', () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        atualizarCapa(albumAtual.images[0].url, false);
-      }, 500);
-      });
-    });
-
     document.getElementById('inputTamanhoTitulo').value = '200'
     document.getElementById('inputTamanhoArtista').value = '110'
     document.getElementById('inputTamanhoMusica').value = '50'
@@ -106,7 +95,6 @@ addEventListener("DOMContentLoaded", (event) => {
       inputAtual.querySelector('h2').innerHTML = cor
       document.getElementById(inputAtual.dataset.display).style.backgroundColor = cor
       menu.style.display = "none";
-      atualizarCapa(albumAtual.images[0].url, false)
     });
 
     document.getElementById('baixar').addEventListener('click', (event) => {
@@ -185,7 +173,6 @@ addEventListener("DOMContentLoaded", (event) => {
       inputAtual.querySelector('h2').innerHTML = color
       document.getElementById(inputAtual.dataset.display).style.backgroundColor = color
       menu.style.display = "none";
-      atualizarCapa(albumAtual.images[0].url, false)
     });
 
     function rgbToHex(r, g, b) {
