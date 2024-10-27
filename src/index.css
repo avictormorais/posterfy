@@ -18,5 +18,9 @@ body {
   min-height: 100vh;
   background-color: var(--backgroundColor);
   overflow-x: hidden;
-  width: 100vw;
+  width: 100%;
+}
+
+#root{
+  width: 100%;
 }

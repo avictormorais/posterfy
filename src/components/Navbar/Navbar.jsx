@@ -5,7 +5,7 @@ import Languageselector from '../Navbar/Languageselector';
 const Container = styled.div`
     background-color: var(--backgroundColor);
     display: flex;
-    width: 100vw;
+    width: 100%;
     flex-direction: row;
     padding-inline: 180px;
     align-items: center;
@@ -13,6 +13,7 @@ const Container = styled.div`
     position: fixed;
     padding-top: 20px;
     z-index: 10;
+    top: 0;
 
     @media (max-width: 768px) {
         padding-inline: 40px;
