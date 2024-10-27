@@ -6,14 +6,8 @@ import { useTranslation } from 'react-i18next';
 const HeroDiv = styled.div`
     margin-top: 200px;
     width: 100%;
-    max-width: 100%;
     display: flex;
     overflow: hidden;
-    padding-inline: 180px;
-
-    @media (max-width: 768px) {
-        padding-inline: 0px;
-    }
 `;
 
 const Container = styled.div`
@@ -23,10 +17,6 @@ const Container = styled.div`
     justify-content: center;
     flex-direction: column;
     align-items: center;
-
-    @media (max-width: 768px) {
-        padding-inline: 40px;
-    }
 `;
 
 const ContainerIcon = styled.div`
@@ -35,7 +25,8 @@ const ContainerIcon = styled.div`
     display: flex;
     justify-content: center;
     flex-direction: column;
-    align-items: center;
+    align-items: end;
+    padding-left: auto;
 
     @media (max-width: 900px) {
         display: none;
@@ -46,6 +37,12 @@ const Title = styled.h1`
     font-size: 3.5em;
     margin-right: auto;
     margin-bottom: 5px;
+    margin-left: 180px;
+
+
+    @media (max-width: 900px) {
+        margin-left: 40px;;
+    }
 `;
 
 const Paragraph = styled.p`
@@ -55,15 +52,20 @@ const Paragraph = styled.p`
     font-weight: 500;
     margin-right: auto;
     margin-block: 2px;
+    margin-left: 180px;
 
-    @media (max-width: 768px) {
+
+    @media (max-width: 900px) {
+        margin-left: 40px;;
+    }
+    @media (max-width: 900px) {
         width: 90%;
     }
 `;
 
 const DivAlbum = styled.div`
     display: flex;
-    width: 100vw;
+    width: 100%;
     justify-content: center;
     align-items: center;
 `;

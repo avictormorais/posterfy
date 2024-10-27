@@ -18,7 +18,6 @@ body {
   min-height: 100vh;
   background-color: var(--backgroundColor);
   overflow-x: hidden;
-  width: 100%;
 }
 
 #root{

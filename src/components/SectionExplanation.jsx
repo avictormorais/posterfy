@@ -2,7 +2,7 @@
 import styled from 'styled-components';
 
 const Container = styled.div`
-    width: 100vw;
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -13,10 +13,11 @@ const Title = styled.h3`
     font-size: 3em;
     font-weight: bolder;
     white-space: pre-line;
-    padding-left: 180px;
+    margin-left: 180px;
+
 
     @media (max-width: 900px) {
-        padding-left: 40px;
+        margin-left: 40px;;
     }
 `
 
@@ -34,6 +35,7 @@ const Paragraph = styled.p`
     margin-top: auto;
     margin-left: auto;
     margin-bottom: 20px;
+    padding-right: 120px;
 
     @media (max-width: 1000px) {
         display: none;
