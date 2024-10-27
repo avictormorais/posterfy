@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Navbar from './components/navBar';
+import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero';
 
 const Container = styled.div`

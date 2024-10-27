@@ -1,10 +1,11 @@
 import styled from 'styled-components';
-import Icon from './icons/icon';
+import Icon from '../icons/icon';
+import Languageselector from '../Navbar/Languageselector';
 
 const Container = styled.div`
     background-color: var(--backgroundColor);
     display: flex;
-    width: 100%;
+    width: 100vw;
     flex-direction: row;
     padding-inline: 180px;
     align-items: center;
@@ -23,6 +24,7 @@ const Posterfyh1 = styled.h1`
     margin-left: 20px;
     font-size: 1.3em;
     color: var(--PosterfyGreen);
+    margin-right: auto;
 `
 
 function Navbar(){
@@ -31,6 +33,7 @@ function Navbar(){
         <Container>
             <Icon color={'#01b755'} width={'40px'}/>
             <Posterfyh1>Posterfy</Posterfyh1>
+            <Languageselector/>
         </Container>
         </>
     )

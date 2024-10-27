@@ -45,6 +45,7 @@ const ContainerIcon = styled.div`
 const Title = styled.h1`
     font-size: 3.5em;
     margin-right: auto;
+    margin-bottom: 5px;
 `;
 
 const Paragraph = styled.p`
@@ -53,6 +54,7 @@ const Paragraph = styled.p`
     width: 80%;
     font-weight: 500;
     margin-right: auto;
+    margin-block: 2px;
 
     @media (max-width: 768px) {
         width: 90%;
