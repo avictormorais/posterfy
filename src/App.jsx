@@ -17,12 +17,13 @@ function App() {
     <>
       <Navbar />
       <Hero />
-      <Anchor text={t('anchorArt')} />
+      <Anchor text={t('anchorArt')} type={1}/>
       <SectionExplanation 
         title={t('ArtTitle')} 
         paragraph={t('ArtParagraph')} 
       />
       <Searchbar />
+      <Anchor text={t('TryTrend')} type={2}/>
       <Container></Container>
     </>
   );

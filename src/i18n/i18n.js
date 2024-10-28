@@ -12,7 +12,8 @@ i18n
                 anchorArt: "Art.",
                 ArtTitle: "Watch the music\ntake shape",
                 ArtParagraph: "It's simple, search for your favorite album, select it and let the art flow!",
-                SearchPlaceholder: "Album name..."
+                SearchPlaceholder: "Album name...",
+                TryTrend: "Or, try trends"
             },
         },
         pt: {
@@ -22,7 +23,8 @@ i18n
                 anchorArt: "Arte.",
                 ArtTitle: "Veja a música\ntomar forma",
                 ArtParagraph: "É simples, procure seu álbum favorito, selecione-o e deixe a arte fluir!",
-                SearchPlaceholder: "Nome do álbum..."
+                SearchPlaceholder: "Nome do álbum...",
+                TryTrend: "Ou, experimente tendências"
             },
         },
         es: {
@@ -32,7 +34,8 @@ i18n
                 anchorArt: "Arte.",
                 ArtTitle: "Mira la música\ntomar forma",
                 ArtParagraph: "Es simple, busca tu álbum favorito, selecciónalo y deja fluir el arte.",
-                SearchPlaceholder: "Nombre del álbum..."
+                SearchPlaceholder: "Nombre del álbum...",
+                TryTrend: "O, prueba las tendencias"
             },
         },
     },
