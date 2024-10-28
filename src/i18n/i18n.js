@@ -13,7 +13,8 @@ i18n
                 ArtTitle: "Watch the music\ntake shape",
                 ArtParagraph: "It's simple, search for your favorite album, select it and let the art flow!",
                 SearchPlaceholder: "Album name...",
-                TryTrend: "Or, try trends"
+                TryTrend: "Or, try trends",
+                MadeBy: 'Made with 🎵 in 🇧🇷 by'
             },
         },
         pt: {
@@ -24,7 +25,8 @@ i18n
                 ArtTitle: "Veja a música\ntomar forma",
                 ArtParagraph: "É simples, procure seu álbum favorito, selecione-o e deixe a arte fluir!",
                 SearchPlaceholder: "Nome do álbum...",
-                TryTrend: "Ou, experimente tendências"
+                TryTrend: "Ou, experimente tendências",
+                MadeBy: 'Feito com 🎵 em 🇧🇷 por'
             },
         },
         es: {
@@ -35,7 +37,8 @@ i18n
                 ArtTitle: "Mira la música\ntomar forma",
                 ArtParagraph: "Es simple, busca tu álbum favorito, selecciónalo y deja fluir el arte.",
                 SearchPlaceholder: "Nombre del álbum...",
-                TryTrend: "O, prueba las tendencias"
+                TryTrend: "O, prueba las tendencias",
+                MadeBy: 'Hecho con 🎵 en 🇧🇷 por'
             },
         },
     },

@@ -7,6 +7,7 @@ import SectionExplanation from './components/SectionExplanation';
 import Searchbar from './components/Searchbar';
 import { useState, useEffect } from 'react';
 import Loading from './components/Loading';
+import Footer from './components/Footer'
 
 const Container = styled.div`
   height: 150vh;
@@ -40,6 +41,7 @@ function App() {
           <Searchbar />
           <Anchor text={t('TryTrend')} type={2}/>
           <Container></Container>
+          <Footer/>
         </>
       )}
     </>
