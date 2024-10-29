@@ -12,7 +12,7 @@ const Container = styled.div`
 const Bar = styled.div`
     background-color: rgba(255, 255, 255, 0.05);
     width: 80%;
-    margin-inline: 180px;
+    margin-inline: auto;
     height: 50px;
     margin-block: 20px;
     border-radius: 15px;

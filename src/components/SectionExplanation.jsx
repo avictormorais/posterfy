@@ -2,10 +2,11 @@
 import styled from 'styled-components';
 
 const Container = styled.div`
-    width: 100%;
+    width: 80%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    margin-inline: auto;
 `
 
 const Title = styled.h3`
@@ -13,12 +14,6 @@ const Title = styled.h3`
     font-size: 3em;
     font-weight: bolder;
     white-space: pre-line;
-    margin-left: 180px;
-
-
-    @media (max-width: 900px) {
-        margin-left: 40px;;
-    }
 `
 
 const Paragraph = styled.p`

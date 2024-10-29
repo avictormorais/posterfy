@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 
 const HeroDiv = styled.div`
     margin-top: 200px;
-    width: 100%;
+    width: 80%;
     display: flex;
     overflow: hidden;
+    margin-inline: auto;
 `;
 
 const Container = styled.div`
@@ -37,12 +38,6 @@ const Title = styled.h1`
     font-size: 3.5em;
     margin-right: auto;
     margin-bottom: 5px;
-    margin-left: 180px;
-
-
-    @media (max-width: 900px) {
-        margin-left: 40px;;
-    }
 `;
 
 const Paragraph = styled.p`
@@ -52,12 +47,8 @@ const Paragraph = styled.p`
     font-weight: 500;
     margin-right: auto;
     margin-block: 2px;
-    margin-left: 180px;
 
 
-    @media (max-width: 900px) {
-        margin-left: 40px;;
-    }
     @media (max-width: 900px) {
         width: 90%;
     }
@@ -65,16 +56,17 @@ const Paragraph = styled.p`
 
 const DivAlbum = styled.div`
     display: flex;
-    width: 100%;
+    width: 80%;
     justify-content: center;
     align-items: center;
+    margin-inline: auto;
 `;
 
 const AlbumExample = styled.img`
     display: flex;
     margin-inline: auto;
     margin-block: 100px;
-    width: 80%;
+    width: 100%;
 `;
 
 function Hero() {
@@ -91,7 +83,7 @@ function Hero() {
                         {t('paragraphHero2')}
                     </Paragraph>
                 </Container>
-                <ContainerIcon style={{ opacity: 0.1, paddingRight: '180px' }}>
+                <ContainerIcon style={{ opacity: 0.1 }}>
                     <Icon color={'white'} width={'180px'} />
                 </ContainerIcon>
             </HeroDiv>
