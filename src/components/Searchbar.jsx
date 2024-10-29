@@ -1,6 +1,9 @@
+/* eslint-disable react/prop-types */
 import styled from 'styled-components';
 import { FaSearch } from "react-icons/fa";
+import { IoSend } from "react-icons/io5";
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 const Container = styled.div`
     width: 100%;
@@ -28,7 +31,17 @@ const SearchIcon = styled(FaSearch)`
     opacity: .25;
     margin-inline: 15px;
 `
+const SendIcon = styled(IoSend)`
+    font-size: 1.35em;
+    opacity: .25;
+    margin-inline: 15px;
+    cursor: pointer;
+    transition: all 0.5s;
 
+    &:hover, &:focus{
+        opacity: 1 !important;
+    }
+`
 const Spanbar = styled.span`
     width: 1px;
     height: 70%;
@@ -45,20 +58,34 @@ const Input = styled.input`
     font-weight: 600;
     outline: none;
     opacity: 0.77;
+    width: 100%;
 `
 
-function Searchbar(){
+function Searchbar({ onSearch }) {
     const { t } = useTranslation();
+    const [searchValue, setSearchValue] = useState('');
 
-    return(
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            onSearch(searchValue);
+        }
+    };
+
+    return (
         <Container>
             <Bar>
-                <SearchIcon/>
-                <Spanbar/>
-                <Input placeholder={t('SearchPlaceholder')}/>
+                <SearchIcon />
+                <Spanbar />
+                <Input
+                    placeholder={t('SearchPlaceholder')}
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
+                <SendIcon onClick={() => onSearch(searchValue)}/>
             </Bar>
         </Container>
-    )
+    );
 }
 
 export default Searchbar;
