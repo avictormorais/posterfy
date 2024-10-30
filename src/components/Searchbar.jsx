@@ -22,7 +22,6 @@ const Bar = styled.div`
 
     @media (max-width: 900px) {
         width: 90%;
-        margin-inline: 40px;
     }
 `
 

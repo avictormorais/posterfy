@@ -47,7 +47,12 @@ const TagBy = styled.p`
     white-space: pre-line;
     font-weight: bolder;
     margin-left: 50px;
-    font-size: 0.9em;
+    font-size: 1em;
+    opacity: 0.5;
+
+    @media (max-width: 600px) {
+        margin-left: 0px;
+    }
 `
 
 const Iconcontainer = styled.div`

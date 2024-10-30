@@ -7,11 +7,10 @@ const Container = styled.div`
     display: flex;
     width: 100%;
     flex-direction: row;
-    padding-inline: 180px;
+    padding-inline: 10%;
     align-items: center;
-    padding-block: 10px;
+    padding-block: 15px;
     position: fixed;
-    padding-top: 20px;
     z-index: 10;
     top: 0;
 
@@ -28,14 +27,24 @@ const Posterfyh1 = styled.h1`
     margin-right: auto;
 `
 
+const Hr = styled.hr`
+    position: fixed;
+    top: 69px;
+    background-color: white;
+    opacity: 0.1;
+    height: 1px;
+    width: 100%;
+`
+
 function Navbar(){
     return(
         <>
-        <Container>
-            <Icon color={'#01b755'} width={'40px'}/>
-            <Posterfyh1>Posterfy</Posterfyh1>
-            <Languageselector/>
-        </Container>
+            <Container>
+                <Icon color={'#01b755'} width={'40px'}/>
+                <Posterfyh1>Posterfy</Posterfyh1>
+                <Languageselector/>
+            </Container>
+            <Hr/>
         </>
     )
 };

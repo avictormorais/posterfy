@@ -23,14 +23,12 @@ const Paragraph = styled.p`
     opacity: .5;
     white-space: pre-line;
     padding-left: auto;
-    width: 50%;
+    width: 60%;
     height: min-content;
     padding-top: auto;
-    padding-right: 100px;
     margin-top: auto;
     margin-left: auto;
     margin-bottom: 20px;
-    padding-right: 120px;
 
     @media (max-width: 1000px) {
         display: none;
@@ -38,7 +36,7 @@ const Paragraph = styled.p`
 `
 
 const TextBox = styled.div`
-    display: flex;    
+    display: flex;
 `
 
 function SectionExplanation({ title, paragraph}){
