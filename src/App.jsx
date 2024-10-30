@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
 import Grid from './components/Grid';
+import Faq from './components/Faq/Faq';
 
 function onClickAlbum(id){
   console.log(id);
@@ -48,6 +49,7 @@ function App() {
             <Anchor text={t('TryTrend')} type={2}/>
             <Grid onclick={onClickAlbum} />
           </div>
+          <Faq/>
           <Footer />
         </>
       )}

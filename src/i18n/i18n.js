@@ -14,7 +14,22 @@ i18n
                 ArtParagraph: "It's simple, search for your favorite album, select it and let the art flow!",
                 SearchPlaceholder: "Album name...",
                 TryTrend: "Or, try trends",
-                MadeBy: 'Made with 🎵 in 🇧🇷 by'
+                MadeBy: 'Made with 🎵 in 🇧🇷 by',
+                
+                FAQ_HowItWorks_Question: "How does Posterfy work?",
+                FAQ_HowItWorks_Answer: "To obtain data and images, Posterfy uses Spotify's free API. Once the user selects an album, Posterfy gathers all the data, organizes it visually on a canvas element via JavaScript, and generates a rendered image of the canvas.",
+                
+                FAQ_Affiliation_Question: "Is Posterfy affiliated with Spotify?",
+                FAQ_Affiliation_Answer: "No, Posterfy is an independent project and is not affiliated with or endorsed by Spotify.",
+                
+                FAQ_AlbumSearch_Question: "What kind of albums can I search for on Posterfy?",
+                FAQ_AlbumSearch_Answer: "Posterfy allows you to search for any album available on Spotify’s database, as it pulls data directly from Spotify's free API.",
+                
+                FAQ_SaveData_Question: "Does Posterfy save my created posters or search history?",
+                FAQ_SaveData_Answer: "No, Posterfy does not store any user data. Each poster is generated temporarily and is only available for download.",
+                
+                FAQ_ReportIssue_Question: "How can I report an issue or suggest a feature to Posterfy?",
+                FAQ_ReportIssue_Answer: "You can report issues or suggest features by accessing the project's GitHub repository, linked at the bottom of the site."
             },
         },
         pt: {
@@ -26,7 +41,22 @@ i18n
                 ArtParagraph: "É simples, procure seu álbum favorito, selecione-o e deixe a arte fluir!",
                 SearchPlaceholder: "Nome do álbum...",
                 TryTrend: "Ou, experimente tendências",
-                MadeBy: 'Feito com 🎵 em 🇧🇷 por'
+                MadeBy: 'Feito com 🎵 em 🇧🇷 por',
+                
+                FAQ_HowItWorks_Question: "Como o Posterfy funciona?",
+                FAQ_HowItWorks_Answer: "Para obter dados e imagens, o Posterfy usa a API gratuita do Spotify. Assim que o usuário seleciona um álbum, o Posterfy coleta todos os dados, organiza visualmente em um elemento canvas via JavaScript e gera uma imagem renderizada do canvas.",
+                
+                FAQ_Affiliation_Question: "O Posterfy é afiliado ao Spotify?",
+                FAQ_Affiliation_Answer: "Não, o Posterfy é um projeto independente e não é afiliado ou apoiado pelo Spotify.",
+                
+                FAQ_AlbumSearch_Question: "Que tipo de álbuns posso pesquisar no Posterfy?",
+                FAQ_AlbumSearch_Answer: "O Posterfy permite que você pesquise qualquer álbum disponível no banco de dados do Spotify, pois obtém os dados diretamente da API gratuita do Spotify.",
+                
+                FAQ_SaveData_Question: "O Posterfy salva meus pôsteres criados ou histórico de buscas?",
+                FAQ_SaveData_Answer: "Não, o Posterfy não armazena nenhum dado do usuário. Cada pôster é gerado temporariamente e só fica disponível para download.",
+                
+                FAQ_ReportIssue_Question: "Como posso relatar um problema ou sugerir uma funcionalidade?",
+                FAQ_ReportIssue_Answer: "Você pode relatar problemas ou sugerir funcionalidades acessando o repositório do projeto no GitHub, que está vinculado na parte inferior do site."
             },
         },
         es: {
@@ -38,7 +68,22 @@ i18n
                 ArtParagraph: "Es simple, busca tu álbum favorito, selecciónalo y deja fluir el arte.",
                 SearchPlaceholder: "Nombre del álbum...",
                 TryTrend: "O, prueba las tendencias",
-                MadeBy: 'Hecho con 🎵 en 🇧🇷 por'
+                MadeBy: 'Hecho con 🎵 en 🇧🇷 por',
+                
+                FAQ_HowItWorks_Question: "¿Cómo funciona Posterfy?",
+                FAQ_HowItWorks_Answer: "Para obtener datos e imágenes, Posterfy usa la API gratuita de Spotify. Una vez que el usuario selecciona un álbum, Posterfy recopila todos los datos, los organiza visualmente en un elemento canvas mediante JavaScript y genera una imagen renderizada del canvas.",
+                
+                FAQ_Affiliation_Question: "¿Está afiliado Posterfy a Spotify?",
+                FAQ_Affiliation_Answer: "No, Posterfy es un proyecto independiente y no está afiliado ni respaldado por Spotify.",
+                
+                FAQ_AlbumSearch_Question: "¿Qué tipo de álbumes puedo buscar en Posterfy?",
+                FAQ_AlbumSearch_Answer: "Posterfy te permite buscar cualquier álbum disponible en la base de datos de Spotify, ya que obtiene los datos directamente de la API gratuita de Spotify.",
+                
+                FAQ_SaveData_Question: "¿Posterfy guarda mis carteles creados o historial de búsquedas?",
+                FAQ_SaveData_Answer: "No, Posterfy no almacena ningún dato del usuario. Cada cartel se genera temporalmente y solo está disponible para descarga.",
+                
+                FAQ_ReportIssue_Question: "¿Cómo puedo informar un problema o sugerir una función para posterfy?",
+                FAQ_ReportIssue_Answer: "Puedes informar problemas o sugerir funciones accediendo al repositorio de GitHub del proyecto, vinculado en la parte inferior del sitio."
             },
         },
     },
