@@ -22,7 +22,7 @@ const ValueDiv = styled.div`
     padding: 5px;
     border-radius: 7px;
     outline: none;
-    width: 200px;
+    width: 190px;
     display: flex;
     flex-direction: row;
     cursor: pointer;

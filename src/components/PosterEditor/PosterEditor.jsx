@@ -6,6 +6,7 @@ import DoubleInput from "./inputs/DoubleInput";
 import ColorInput from "./inputs/ColorInput";
 import { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
+import ColorSelector from "./ColorSelector";
 
 const Container = styled.div`
     width: 80%;
@@ -69,16 +70,34 @@ function PosterEditor(){
     const [artistsSize, setArtistsSize] = useState('');
     const [tracksSize, setTracksSize] = useState('');
     const [marginTop, setMarginTop] = useState('');
-    const [backgroundColor, setbackgroundColor] = useState('');
-    const [textColor, setTextColor] = useState('');
-    const [color1, setcolor1] = useState('red');
-    const [color2, setcolor2] = useState('blue');
-    const [color3, setcolor3] = useState('green');
+    const [backgroundColor, setbackgroundColor] = useState('#5900ff');
+    const [textColor, setTextColor] = useState('#ff9100');
+    const [color1, setcolor1] = useState('#ff0000');
+    const [color2, setcolor2] = useState('#00ff40');
+    const [color3, setcolor3] = useState('#2600ff');
 
     const [titleRelease, setTitleRelease] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
     const [titleRuntime, setTitleRuntime] = useState('');
     const [runtime, setRuntime] = useState('');
+
+    const [showColorSelector, setShowColorSelector] = useState(false);
+    const [colorInputPosition, setColorInputPosition] = useState(null);
+    const [currentColorInput, setCurrentColorInput] = useState(null);
+
+    function handleColorInputClick(e, colorInputName) {
+        const rect = e.target.getBoundingClientRect();
+        setColorInputPosition({
+            top: rect.top + window.scrollY,
+            left: rect.left + window.scrollX,
+        });
+        setCurrentColorInput(colorInputName);
+        setShowColorSelector(true);
+    }
+
+    function handleColorSelectorClose() {
+        setShowColorSelector(false);
+    };
 
     useEffect(() => {
         setTitleRelease(t('EDITOR_ReleaseTitle'));
@@ -143,27 +162,63 @@ function PosterEditor(){
                     <ColorInput 
                         title={t('EDITOR_BackgroundColor')} 
                         value={backgroundColor} 
+                        onClick={(e) => handleColorInputClick(e, 'backgroundColor')}
                     />
                     <ColorInput 
                         title={t('EDITOR_TextColor')} 
                         value={textColor} 
-                    />
-                    <ColorInput 
-                        title={t('EDITOR_BackgroundColor')} 
-                        value={backgroundColor} 
+                        onClick={(e) => handleColorInputClick(e, 'textColor')}
                     />
                     <ColorInput 
                         title={`${t('EDITOR_Color')} 1`} 
                         value={color1} 
+                        onClick={(e) => handleColorInputClick(e, 'color1')}
                     />
                     <ColorInput 
                         title={`${t('EDITOR_Color')} 2`} 
                         value={color2} 
+                        onClick={(e) => handleColorInputClick(e, 'color2')}
                     />
                     <ColorInput 
                         title={`${t('EDITOR_Color')} 3`} 
                         value={color3} 
+                        onClick={(e) => handleColorInputClick(e, 'color3')}
                     />
+
+                    {showColorSelector && colorInputPosition && currentColorInput && (
+                        <ColorSelector
+                            DefaultColor={currentColorInput === 'backgroundColor' ? backgroundColor : 
+                                        currentColorInput === 'textColor' ? textColor : 
+                                        currentColorInput === 'color1' ? color1 : 
+                                        currentColorInput === 'color2' ? color2 : color3}
+                            image="https://i.scdn.co/image/ab67616d0000b2739efc623f9c64c8efb583b186"
+                            predefinedColors={[color1, color2, color3, backgroundColor, textColor]}
+                            onDone={(selectedColor) => {
+                                switch (currentColorInput) {
+                                    case 'backgroundColor':
+                                        setbackgroundColor(selectedColor);
+                                        break;
+                                    case 'textColor':
+                                        setTextColor(selectedColor);
+                                        break;
+                                    case 'color1':
+                                        setcolor1(selectedColor);
+                                        break;
+                                    case 'color2':
+                                        setcolor2(selectedColor);
+                                        break;
+                                    case 'color3':
+                                        setcolor3(selectedColor);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                setColorInputPosition(null);
+                            }}
+                            position={colorInputPosition}
+                            onClose={handleColorSelectorClose}
+                        />
+                    )}
                 </EditorSettings>
             </ContainerEditor>
         </Container>
