@@ -9,6 +9,7 @@ import Loading from './components/Loading';
 import Footer from './components/Footer';
 import Grid from './components/Grid';
 import Faq from './components/Faq/Faq';
+import PosterEditor from './components/PosterEditor/PosterEditor'
 
 function onClickAlbum(id){
   console.log(id);
@@ -42,7 +43,7 @@ function App() {
           <Anchor text={t('anchorArt')} type={1} />
           <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
           <Searchbar onSearch={onSearch} />
-          
+          <PosterEditor/>
           {query && <Grid query={query} onclick={onClickAlbum} />}
           
           <div style={{ display: query ? 'none' : 'block' }}>
