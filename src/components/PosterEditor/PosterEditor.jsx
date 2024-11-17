@@ -7,6 +7,7 @@ import ColorInput from "./inputs/ColorInput";
 import { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
+import CheckInput from "./inputs/CheckInput";
 
 const Container = styled.div`
     width: 80%;
@@ -75,6 +76,8 @@ function PosterEditor(){
     const [color1, setcolor1] = useState('#ff0000');
     const [color2, setcolor2] = useState('#00ff40');
     const [color3, setcolor3] = useState('#2600ff');
+    const [useFade, setUseFade] = useState(true);
+    const [showTracklist, setShowTracklist] = useState(false);
 
     const [titleRelease, setTitleRelease] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
@@ -183,6 +186,19 @@ function PosterEditor(){
                         title={`${t('EDITOR_Color')} 3`} 
                         value={color3} 
                         onClick={(e) => handleColorInputClick(e, 'color3')}
+                    />
+
+                    <CheckInput
+                        title={t('EDITOR_Fade')}
+                        value={useFade}
+                        onChange={(newValue) => setUseFade(newValue)}
+                        text={t('EDITOR_FadeText')}
+                    />
+                    <CheckInput
+                        title={t('EDITOR_Tracklist')}
+                        value={showTracklist}
+                        onChange={(newValue) => setShowTracklist(newValue)}
+                        text={t('EDITOR_TracklistText')}
                     />
 
                     {showColorSelector && colorInputPosition && currentColorInput && (

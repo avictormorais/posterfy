@@ -38,7 +38,11 @@ i18n
                 EDITOR_MarginTop: "Margin Top",
                 EDITOR_BackgroundColor: "Background color",
                 EDITOR_TextColor: "Text color",
-                EDITOR_Color: "Color"
+                EDITOR_Color: "Color",
+                EDITOR_Fade: "Fade",
+                EDITOR_FadeText: "Use fade",
+                EDITOR_Tracklist: "Tracklist",
+                EDITOR_TracklistText: "Show tracklist"
             },
         },
         pt: {
@@ -74,7 +78,11 @@ i18n
                 EDITOR_MarginTop: "Margem superior",
                 EDITOR_BackgroundColor: "Cor de fundo",
                 EDITOR_TextColor: "Cor do texto",
-                EDITOR_Color: "Cor"
+                EDITOR_Color: "Cor",
+                EDITOR_Fade: "Degradê",
+                EDITOR_FadeText: "Usar degradê",
+                EDITOR_Tracklist: "Músicas",
+                EDITOR_TracklistText: "Mostrar músicas"
             },
         },
         es: {
@@ -110,7 +118,11 @@ i18n
                 EDITOR_MarginTop: "Margen superior",
                 EDITOR_BackgroundColor: "Color de fondo",
                 EDITOR_TextColor: "Color del texto",
-                EDITOR_Color: "Color"
+                EDITOR_Color: "Color",
+                EDITOR_Fade: "Degradado",
+                EDITOR_FadeText: "Usar degradado",
+                EDITOR_Tracklist: "Canciones",
+                EDITOR_TracklistText: "Mostrar canciones"
             },
         },
     },
