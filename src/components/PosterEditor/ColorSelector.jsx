@@ -116,6 +116,7 @@ const Check = styled(FaCheck)`
 `
 
 const Image = styled.img`
+    border-radius: 5px;
     max-width: 200px;
     height: auto;
     user-select: none;

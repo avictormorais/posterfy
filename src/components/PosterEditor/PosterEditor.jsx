@@ -49,6 +49,10 @@ const ContainerEditor = styled.div`
 
 const PosterPreview = styled.img`
     width: 388px;
+
+    @media (max-width: 450px) {
+        width: 95%;
+    }
 `
 
 const EditorColumn = styled.div`
@@ -58,14 +62,18 @@ const EditorColumn = styled.div`
 `
 
 const EditorSettings = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 7px;
     padding-inline: 30px;
     width: 100%;
 
     @media (max-width: 1300px) {
         margin-top: 15px;
+    }
+
+    @media (max-width: 530px) {
+        padding: 0;
     }
 `
 

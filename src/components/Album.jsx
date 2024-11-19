@@ -29,6 +29,8 @@ const Container = styled.div`
 
 const Cover = styled.img`
     width: 150px;
+    min-height: 150px;
+    background-color: rgba(255, 255, 255, 0.05);
     height: auto;
     border-radius: 10px;
 `

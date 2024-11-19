@@ -5,7 +5,6 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
-    max-width: 200px;
 `
 
 const InputTitle = styled.input`
@@ -16,6 +15,7 @@ const InputTitle = styled.input`
     font-weight: 500;
     margin-left: 5px;
     margin-bottom: 5px;
+    opacity: 0.5;
 `
 
 const Input = styled.input`

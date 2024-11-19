@@ -18,6 +18,11 @@ const Container = styled.div`
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    padding-left: 30px;
+
+    @media (max-width: 550px) {
+        padding-left: 0px;
+    }
 `;
 
 const ContainerIcon = styled.div`

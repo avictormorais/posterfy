@@ -5,7 +5,6 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
-    max-width: 200px;
 `;
 
 const Title = styled.p`
@@ -22,7 +21,6 @@ const ValueDiv = styled.div`
     padding: 5px;
     border-radius: 7px;
     outline: none;
-    width: 190px;
     display: flex;
     flex-direction: row;
     cursor: pointer;
