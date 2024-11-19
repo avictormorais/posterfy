@@ -42,7 +42,9 @@ i18n
                 EDITOR_Fade: "Fade",
                 EDITOR_FadeText: "Use fade",
                 EDITOR_Tracklist: "Tracklist",
-                EDITOR_TracklistText: "Show tracklist"
+                EDITOR_TracklistText: "Show tracklist",
+                EDITOR_Apply: "Apply",
+                EDITOR_Download: "Download"
             },
         },
         pt: {
@@ -82,7 +84,9 @@ i18n
                 EDITOR_Fade: "Degradê",
                 EDITOR_FadeText: "Usar degradê",
                 EDITOR_Tracklist: "Músicas",
-                EDITOR_TracklistText: "Mostrar músicas"
+                EDITOR_TracklistText: "Mostrar músicas",
+                EDITOR_Apply: "Aplicar",
+                EDITOR_Download: "Baixar"
             },
         },
         es: {
@@ -122,7 +126,9 @@ i18n
                 EDITOR_Fade: "Degradado",
                 EDITOR_FadeText: "Usar degradado",
                 EDITOR_Tracklist: "Canciones",
-                EDITOR_TracklistText: "Mostrar canciones"
+                EDITOR_TracklistText: "Mostrar canciones",
+                EDITOR_Apply: "Aplicar",
+                EDITOR_Download: "Descargar"
             },
         },
     },
