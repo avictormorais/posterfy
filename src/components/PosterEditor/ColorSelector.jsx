@@ -119,6 +119,8 @@ const Image = styled.img`
     border-radius: 5px;
     max-width: 200px;
     height: auto;
+    height: 200px;
+    background-color: rgba(255, 255, 255, 0.05);
     user-select: none;
     -webkit-user-drag: none;
     -moz-user-drag: none;

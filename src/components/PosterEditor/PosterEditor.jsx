@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
 import { IoArrowBack } from "react-icons/io5";
@@ -12,6 +13,7 @@ import CheckInput from "./inputs/CheckInput";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
 import LoadingDiv from "../LoadingDiv";
+import { Palette } from "color-thief-react";
 
 const Container = styled.div`
     width: 80%;
@@ -23,6 +25,7 @@ const DivBack = styled.div`
     flex-direction: row;
     align-items: center;
     width: min-content;
+    margin-top: 25px;
     cursor: pointer;
 `
 
@@ -259,6 +262,20 @@ function PosterEditor({ albumID, handleClickBack }){
                 <LoadingDiv/>
             ) : (
                 <Container>
+                <Palette src={albumCover} crossOrigin="anonymous" format="hex" colorCount={5}>
+                    {({ data }) => {
+                        useEffect(() => {
+                            if (data && data.length > 0) {
+                                setbackgroundColor(data[0]);
+                                setTextColor(data[1]);
+                                setcolor1(data[2]);
+                                setcolor2(data[3]);
+                                setcolor3(data[4]);
+                            }
+                        }, [data]);
+                        return null;
+                    }}
+                </Palette>
                     <DivBack onClick={handleClickBack}>
                         <ArrowBack/>
                         <TextBack>
@@ -358,7 +375,7 @@ function PosterEditor({ albumID, handleClickBack }){
                                                     currentColorInput === 'textColor' ? textColor : 
                                                     currentColorInput === 'color1' ? color1 : 
                                                     currentColorInput === 'color2' ? color2 : color3}
-                                        image="https://i.scdn.co/image/ab67616d0000b2739efc623f9c64c8efb583b186"
+                                        image={albumCover}
                                         predefinedColors={[color1, color2, color3, backgroundColor, textColor]}
                                         onDone={(selectedColor) => {
                                             switch (currentColorInput) {

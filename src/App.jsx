@@ -48,12 +48,12 @@ function App() {
           <Hero />
           <Anchor text={t('anchorArt')} type={1} />
           <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
-          <Searchbar onSearch={onSearch} />
           
           {albumId ? (
             <PosterEditor albumID={albumId} handleClickBack={handleClickBack}/>
           ) : (
             <>
+              <Searchbar onSearch={onSearch} />
               {query && <Grid query={query} onclick={onClickAlbum} />}
 
               <div style={{ display: query ? 'none' : 'block' }}>
