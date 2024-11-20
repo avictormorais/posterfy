@@ -11,14 +11,20 @@ import Grid from './components/Grid';
 import Faq from './components/Faq/Faq';
 import PosterEditor from './components/PosterEditor/PosterEditor'
 
-function onClickAlbum(id){
-  console.log(id);
-}
 
 function App() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
+  const [albumId, setAlbumId] = useState(null);
+
+  function onClickAlbum(id){
+    setAlbumId(id);
+  }
+
+  function handleClickBack(){
+    setAlbumId(null);
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -43,13 +49,20 @@ function App() {
           <Anchor text={t('anchorArt')} type={1} />
           <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
           <Searchbar onSearch={onSearch} />
-          <PosterEditor/>
-          {query && <Grid query={query} onclick={onClickAlbum} />}
           
-          <div style={{ display: query ? 'none' : 'block' }}>
-            <Anchor text={t('TryTrend')} type={2}/>
-            <Grid onclick={onClickAlbum} />
-          </div>
+          {albumId ? (
+            <PosterEditor albumID={albumId} handleClickBack={handleClickBack}/>
+          ) : (
+            <>
+              {query && <Grid query={query} onclick={onClickAlbum} />}
+
+              <div style={{ display: query ? 'none' : 'block' }}>
+                <Anchor text={t('TryTrend')} type={2}/>
+                <Grid onclick={onClickAlbum} />
+              </div>
+            </>
+          )}
+
           <Faq/>
           <Footer />
         </>

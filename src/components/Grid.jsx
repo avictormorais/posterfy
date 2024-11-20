@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Album from "./Album";
+import LoadingDiv from "./LoadingDiv";
 
 const Container = styled.div`
     width: 78%;
@@ -85,11 +86,17 @@ function Grid({ query, onclick }) {
     }, [query, token]);
 
     return (
-        <Container>
-            {albums.map(album => (
-                <Album key={album.id} onClick={() => onclick(album.id)} cover={album.cover} title={album.title} artist={album.artist} id={album.id}/>
-            ))}
-        </Container>
+        <>
+            {albums.length === 0 ? (
+                <LoadingDiv/>
+            ) : (
+                <Container>
+                {albums.map(album => (
+                    <Album key={album.id} onClick={() => onclick(album.id)} cover={album.cover} title={album.title} artist={album.artist} id={album.id}/>
+                ))}
+            </Container>
+            )}
+        </>
     );
 }
 

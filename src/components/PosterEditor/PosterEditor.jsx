@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import styled from "styled-components";
 import { IoArrowBack } from "react-icons/io5";
 import posterExample from '../../assets/albumExample.png'
@@ -10,6 +11,7 @@ import ColorSelector from "./ColorSelector";
 import CheckInput from "./inputs/CheckInput";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
+import LoadingDiv from "../LoadingDiv";
 
 const Container = styled.div`
     width: 80%;
@@ -20,6 +22,8 @@ const DivBack = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
+    width: min-content;
+    cursor: pointer;
 `
 
 const ArrowBack = styled(IoArrowBack)`
@@ -145,14 +149,14 @@ const IconApply = styled(MdOutlineRefresh)`
     font-size: 1.15em;
 `
 
-function PosterEditor(){
+function PosterEditor({ albumID, handleClickBack }){
     const { t } = useTranslation();
 
     const [albumName, setAlbumName] = useState('');
     const [artistsName, setArtistsName] = useState('');
-    const [titleSize, setTitleSize] = useState('');
-    const [artistsSize, setArtistsSize] = useState('');
-    const [tracksSize, setTracksSize] = useState('');
+    const [titleSize, setTitleSize] = useState('200');
+    const [artistsSize, setArtistsSize] = useState('110');
+    const [tracksSize, setTracksSize] = useState('50');
     const [marginTop, setMarginTop] = useState('');
     const [backgroundColor, setbackgroundColor] = useState('#5900ff');
     const [textColor, setTextColor] = useState('#ff9100');
@@ -161,6 +165,8 @@ function PosterEditor(){
     const [color3, setcolor3] = useState('#2600ff');
     const [useFade, setUseFade] = useState(true);
     const [showTracklist, setShowTracklist] = useState(false);
+    const [albumCover, setAlbumCover] = useState('');
+    const [tracklist, setTracklist] = useState('');
 
     const [titleRelease, setTitleRelease] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
@@ -190,153 +196,216 @@ function PosterEditor(){
         setTitleRuntime(t('EDITOR_RuntimeTitle'));
     }, [t]);
 
+    useEffect(() => {
+        const fetchAlbumData = async () => {
+            try {
+                const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+                const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
+    
+                const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        grant_type: "client_credentials",
+                    }),
+                });
+    
+                const tokenData = await tokenResponse.json();
+                const accessToken = tokenData.access_token;
+    
+                const albumResponse = await fetch(`https://api.spotify.com/v1/albums/${albumID}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+    
+                const albumData = await albumResponse.json();
+    
+                setAlbumName(albumData.name);
+                setArtistsName(albumData.artists.map((artist) => artist.name).join(", "));
+                setAlbumCover(albumData.images[0]?.url || posterExample);
+                setReleaseDate(albumData.release_date);
+
+                const runtime = albumData.tracks.items.reduce((totalDuration, track) => totalDuration + track.duration_ms, 0);
+                const totalSeconds = Math.floor(runtime / 1000);
+                const totalMinutes = Math.floor(totalSeconds / 60);
+                const totalHours = Math.floor(totalMinutes / 60);
+                const remainingSeconds = totalSeconds % 60;
+                const remainingMinutes = totalMinutes % 60;
+
+                const formattedRuntime = totalHours > 0
+                ? `${totalHours}h ${remainingMinutes}min ${remainingSeconds}s`
+                : `${remainingMinutes}min ${remainingSeconds}s`;
+                setRuntime(formattedRuntime);
+
+                const tracklist = albumData.tracks.items.map((track, index) => `${index + 1}. ${track.name}`);
+                setTracklist(tracklist.join("\n"));
+    
+            } catch (error) {
+                console.error("Erro ao buscar os dados do álbum:", error);
+            }
+        };
+    
+        if (albumID) fetchAlbumData();
+    }, [albumID]);
+    
+
     return(
-        <Container>
-            <DivBack>
-                <ArrowBack/>
-                <TextBack>
-                    {t('GoBack')}
-                </TextBack>
-            </DivBack>
-            <ContainerEditor>
-                <PosterPreview src={posterExample}/>
-                <EditorColumn>
-                    <EditorSettings>
-                        <NormalInput 
-                            title={t('EDITOR_AlbumName')} 
-                            value={albumName} 
-                            onChange={(e) => setAlbumName(e.target.value)}
-                        />
-                        <NormalInput 
-                            title={t('EDITOR_ArtistName')} 
-                            value={artistsName} 
-                            onChange={(e) => setArtistsName(e.target.value)}
-                        />
-                        <NormalInput 
-                            title={t('EDITOR_TitleSize')} 
-                            value={titleSize} 
-                            onChange={(e) => setTitleSize(e.target.value)}
-                        />
-                        <NormalInput 
-                            title={t('EDITOR_ArtistSize')} 
-                            value={artistsSize} 
-                            onChange={(e) => setArtistsSize(e.target.value)}
-                        />
-                        <NormalInput 
-                            title={t('EDITOR_TracksSize')} 
-                            value={tracksSize} 
-                            onChange={(e) => setTracksSize(e.target.value)}
-                        />
-                        <NormalInput 
-                            title={t('EDITOR_MarginTop')} 
-                            value={marginTop} 
-                            onChange={(e) => setMarginTop(e.target.value)}
-                        />
-
-                        <DoubleInput 
-                            title={titleRelease} 
-                            value={releaseDate} 
-                            onChangeTitle={(e) => setTitleRelease(e.target.value)} 
-                            onChangeDate={(e) => setReleaseDate(e.target.value)}
-                        />
-                        <DoubleInput 
-                            title={titleRuntime} 
-                            value={runtime} 
-                            onChangeTitle={(e) => setTitleRuntime(e.target.value)} 
-                            onChangeDate={(e) => setRuntime(e.target.value)}
-                        />
-
-                        <ColorInput 
-                            title={t('EDITOR_BackgroundColor')} 
-                            value={backgroundColor} 
-                            onClick={(e) => handleColorInputClick(e, 'backgroundColor')}
-                        />
-                        <ColorInput 
-                            title={t('EDITOR_TextColor')} 
-                            value={textColor} 
-                            onClick={(e) => handleColorInputClick(e, 'textColor')}
-                        />
-                        <ColorInput 
-                            title={`${t('EDITOR_Color')} 1`} 
-                            value={color1} 
-                            onClick={(e) => handleColorInputClick(e, 'color1')}
-                        />
-                        <ColorInput 
-                            title={`${t('EDITOR_Color')} 2`} 
-                            value={color2} 
-                            onClick={(e) => handleColorInputClick(e, 'color2')}
-                        />
-                        <ColorInput 
-                            title={`${t('EDITOR_Color')} 3`} 
-                            value={color3} 
-                            onClick={(e) => handleColorInputClick(e, 'color3')}
-                        />
-
-                        <CheckInput
-                            title={t('EDITOR_Fade')}
-                            value={useFade}
-                            onChange={(newValue) => setUseFade(newValue)}
-                            text={t('EDITOR_FadeText')}
-                        />
-                        <CheckInput
-                            title={t('EDITOR_Tracklist')}
-                            value={showTracklist}
-                            onChange={(newValue) => setShowTracklist(newValue)}
-                            text={t('EDITOR_TracklistText')}
-                        />
-
-                        {showColorSelector && colorInputPosition && currentColorInput && (
-                            <ColorSelector
-                                DefaultColor={currentColorInput === 'backgroundColor' ? backgroundColor : 
-                                            currentColorInput === 'textColor' ? textColor : 
-                                            currentColorInput === 'color1' ? color1 : 
-                                            currentColorInput === 'color2' ? color2 : color3}
-                                image="https://i.scdn.co/image/ab67616d0000b2739efc623f9c64c8efb583b186"
-                                predefinedColors={[color1, color2, color3, backgroundColor, textColor]}
-                                onDone={(selectedColor) => {
-                                    switch (currentColorInput) {
-                                        case 'backgroundColor':
-                                            setbackgroundColor(selectedColor);
-                                            break;
-                                        case 'textColor':
-                                            setTextColor(selectedColor);
-                                            break;
-                                        case 'color1':
-                                            setcolor1(selectedColor);
-                                            break;
-                                        case 'color2':
-                                            setcolor2(selectedColor);
-                                            break;
-                                        case 'color3':
-                                            setcolor3(selectedColor);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    setColorInputPosition(null);
-                                }}
-                                position={colorInputPosition}
-                                onClose={handleColorSelectorClose}
-                            />
-                        )}
-                    </EditorSettings>
-                    <DivButtons>
-                        <ButtonDiv>
-                            <IconDownload/>
-                            <ButtonText>
-                                {t('EDITOR_Download')}
-                            </ButtonText>
-                        </ButtonDiv>
-                        <ButtonDiv>
-                        <IconApply/>
-                            <ButtonText>
-                                {t('EDITOR_Apply')}
-                            </ButtonText>
-                        </ButtonDiv>
-                    </DivButtons>
-                </EditorColumn>
-            </ContainerEditor>
-        </Container>
+        <>
+            {albumName == '' ? (
+                <LoadingDiv/>
+            ) : (
+                <Container>
+                    <DivBack onClick={handleClickBack}>
+                        <ArrowBack/>
+                        <TextBack>
+                            {t('GoBack')}
+                        </TextBack>
+                    </DivBack>
+                    <ContainerEditor>
+                        <PosterPreview src={posterExample}/>
+                        <EditorColumn>
+                            <EditorSettings>
+                                <NormalInput 
+                                    title={t('EDITOR_AlbumName')} 
+                                    value={albumName} 
+                                    onChange={(e) => setAlbumName(e.target.value)}
+                                />
+                                <NormalInput 
+                                    title={t('EDITOR_ArtistName')} 
+                                    value={artistsName} 
+                                    onChange={(e) => setArtistsName(e.target.value)}
+                                />
+                                <NormalInput 
+                                    title={t('EDITOR_TitleSize')} 
+                                    value={titleSize} 
+                                    onChange={(e) => setTitleSize(e.target.value)}
+                                />
+                                <NormalInput 
+                                    title={t('EDITOR_ArtistSize')} 
+                                    value={artistsSize} 
+                                    onChange={(e) => setArtistsSize(e.target.value)}
+                                />
+                                <NormalInput 
+                                    title={t('EDITOR_TracksSize')} 
+                                    value={tracksSize} 
+                                    onChange={(e) => setTracksSize(e.target.value)}
+                                />
+                                <NormalInput 
+                                    title={t('EDITOR_MarginTop')} 
+                                    value={marginTop} 
+                                    onChange={(e) => setMarginTop(e.target.value)}
+                                />
+        
+                                <DoubleInput 
+                                    title={titleRelease} 
+                                    value={releaseDate} 
+                                    onChangeTitle={(e) => setTitleRelease(e.target.value)} 
+                                    onChangeDate={(e) => setReleaseDate(e.target.value)}
+                                />
+                                <DoubleInput 
+                                    title={titleRuntime} 
+                                    value={runtime} 
+                                    onChangeTitle={(e) => setTitleRuntime(e.target.value)} 
+                                    onChangeDate={(e) => setRuntime(e.target.value)}
+                                />
+        
+                                <ColorInput 
+                                    title={t('EDITOR_BackgroundColor')} 
+                                    value={backgroundColor} 
+                                    onClick={(e) => handleColorInputClick(e, 'backgroundColor')}
+                                />
+                                <ColorInput 
+                                    title={t('EDITOR_TextColor')} 
+                                    value={textColor} 
+                                    onClick={(e) => handleColorInputClick(e, 'textColor')}
+                                />
+                                <ColorInput 
+                                    title={`${t('EDITOR_Color')} 1`} 
+                                    value={color1} 
+                                    onClick={(e) => handleColorInputClick(e, 'color1')}
+                                />
+                                <ColorInput 
+                                    title={`${t('EDITOR_Color')} 2`} 
+                                    value={color2} 
+                                    onClick={(e) => handleColorInputClick(e, 'color2')}
+                                />
+                                <ColorInput 
+                                    title={`${t('EDITOR_Color')} 3`} 
+                                    value={color3} 
+                                    onClick={(e) => handleColorInputClick(e, 'color3')}
+                                />
+        
+                                <CheckInput
+                                    title={t('EDITOR_Fade')}
+                                    value={useFade}
+                                    onChange={(newValue) => setUseFade(newValue)}
+                                    text={t('EDITOR_FadeText')}
+                                />
+                                <CheckInput
+                                    title={t('EDITOR_Tracklist')}
+                                    value={showTracklist}
+                                    onChange={(newValue) => setShowTracklist(newValue)}
+                                    text={t('EDITOR_TracklistText')}
+                                />
+        
+                                {showColorSelector && colorInputPosition && currentColorInput && (
+                                    <ColorSelector
+                                        DefaultColor={currentColorInput === 'backgroundColor' ? backgroundColor : 
+                                                    currentColorInput === 'textColor' ? textColor : 
+                                                    currentColorInput === 'color1' ? color1 : 
+                                                    currentColorInput === 'color2' ? color2 : color3}
+                                        image="https://i.scdn.co/image/ab67616d0000b2739efc623f9c64c8efb583b186"
+                                        predefinedColors={[color1, color2, color3, backgroundColor, textColor]}
+                                        onDone={(selectedColor) => {
+                                            switch (currentColorInput) {
+                                                case 'backgroundColor':
+                                                    setbackgroundColor(selectedColor);
+                                                    break;
+                                                case 'textColor':
+                                                    setTextColor(selectedColor);
+                                                    break;
+                                                case 'color1':
+                                                    setcolor1(selectedColor);
+                                                    break;
+                                                case 'color2':
+                                                    setcolor2(selectedColor);
+                                                    break;
+                                                case 'color3':
+                                                    setcolor3(selectedColor);
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                            setColorInputPosition(null);
+                                        }}
+                                        position={colorInputPosition}
+                                        onClose={handleColorSelectorClose}
+                                    />
+                                )}
+                            </EditorSettings>
+                            <DivButtons>
+                                <ButtonDiv>
+                                    <IconDownload/>
+                                    <ButtonText>
+                                        {t('EDITOR_Download')}
+                                    </ButtonText>
+                                </ButtonDiv>
+                                <ButtonDiv>
+                                <IconApply/>
+                                    <ButtonText>
+                                        {t('EDITOR_Apply')}
+                                    </ButtonText>
+                                </ButtonDiv>
+                            </DivButtons>
+                        </EditorColumn>
+                    </ContainerEditor>
+                </Container>
+            )}
+        </>
     )
 }
 

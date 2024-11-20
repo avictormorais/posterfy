@@ -16,6 +16,8 @@ i18n
                 TryTrend: "Or, try trends",
                 MadeBy: 'Made with 🎵 in 🇧🇷 by',
                 GoBack: 'Back',
+                Loading: "Loading",
+                LoadingText: "We are fetching the information.",
                 
                 FAQ_HowItWorks_Question: "How does Posterfy work?",
                 FAQ_HowItWorks_Answer: "To obtain data and images, Posterfy uses Spotify's free API. Once the user selects an album, Posterfy gathers all the data, organizes it visually on a canvas element via JavaScript, and generates a rendered image of the canvas.",
@@ -58,6 +60,8 @@ i18n
                 TryTrend: "Ou, experimente tendências",
                 MadeBy: 'Feito com 🎵 em 🇧🇷 por',
                 GoBack: 'Voltar',
+                Loading: "Carregando",
+                LoadingText: "Estamos buscando as informações.",
                 
                 FAQ_HowItWorks_Question: "Como o Posterfy funciona?",
                 FAQ_HowItWorks_Answer: "Para obter dados e imagens, o Posterfy usa a API gratuita do Spotify. Assim que o usuário seleciona um álbum, o Posterfy coleta todos os dados, organiza visualmente em um elemento canvas via JavaScript e gera uma imagem renderizada do canvas.",
@@ -100,6 +104,8 @@ i18n
                 TryTrend: "O, prueba las tendencias",
                 MadeBy: 'Hecho con 🎵 en 🇧🇷 por',
                 GoBack: 'Volver',
+                Loading: "Cargando",
+                LoadingText: "Estamos buscando la información.",
                 
                 FAQ_HowItWorks_Question: "¿Cómo funciona Posterfy?",
                 FAQ_HowItWorks_Answer: "Para obtener datos e imágenes, Posterfy usa la API gratuita de Spotify. Una vez que el usuario selecciona un álbum, Posterfy recopila todos los datos, los organiza visualmente en un elemento canvas mediante JavaScript y genera una imagen renderizada del canvas.",
