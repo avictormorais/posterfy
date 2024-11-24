@@ -47,7 +47,7 @@ function Grid({ query, onclick }) {
     useEffect(() => {
         const fetchAlbums = async () => {
             if (!token) return;
-
+    
             try {
                 let response;
                 if (query) {
@@ -63,14 +63,13 @@ function Grid({ query, onclick }) {
                         }
                     });
                 }
-
+    
                 if (!response.ok) {
                     const errorMessage = await response.text();
                     throw new Error(`Erro na API: ${errorMessage}`);
                 }
-
                 const data = await response.json();
-                const albumsData = query ? data.albums.items : data.albums.items;
+                const albumsData = (query ? data.albums.items : data.albums.items).filter(album => album !== null && album !== undefined);
                 setAlbums(albumsData.map(album => ({
                     id: album.id,
                     title: album.name,
@@ -81,9 +80,10 @@ function Grid({ query, onclick }) {
                 console.error(err);
             }
         };
-
+    
         fetchAlbums();
     }, [query, token]);
+    
 
     return (
         <>

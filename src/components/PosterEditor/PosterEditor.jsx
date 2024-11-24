@@ -14,6 +14,7 @@ import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
 import LoadingDiv from "../LoadingDiv";
 import { Palette } from "color-thief-react";
+import CanvasPoster from "./CanvasPoster";
 
 const Container = styled.div`
     width: 80%;
@@ -152,6 +153,14 @@ const IconApply = styled(MdOutlineRefresh)`
     font-size: 1.15em;
 `
 
+const FakePoster = styled.div`
+    width: 560px;
+
+    @media (max-width: 450px) {
+        width: 95%;
+    }
+`
+
 function PosterEditor({ albumID, handleClickBack }){
     const { t } = useTranslation();
 
@@ -161,6 +170,7 @@ function PosterEditor({ albumID, handleClickBack }){
     const [artistsSize, setArtistsSize] = useState('110');
     const [tracksSize, setTracksSize] = useState('50');
     const [marginTop, setMarginTop] = useState('');
+    const [marginSide, setmarginSide] = useState(160);
     const [backgroundColor, setbackgroundColor] = useState('#5900ff');
     const [textColor, setTextColor] = useState('#ff9100');
     const [color1, setcolor1] = useState('#ff0000');
@@ -179,6 +189,51 @@ function PosterEditor({ albumID, handleClickBack }){
     const [showColorSelector, setShowColorSelector] = useState(false);
     const [colorInputPosition, setColorInputPosition] = useState(null);
     const [currentColorInput, setCurrentColorInput] = useState(null);
+
+    const posterData = {
+        albumCover,
+        albumName,
+        artistsName,
+        titleSize,
+        artistsSize,
+        tracksSize,
+        marginTop,
+        marginSide,
+        titleRelease,
+        releaseDate,
+        titleRuntime,
+        runtime,
+        backgroundColor,
+        textColor,
+        useFade,
+        showTracklist,
+        tracklist,
+        color1,
+        color2,
+        color3,
+        albumID
+    };
+
+    const [image, setImage] = useState(null);
+    const [generatePoster, setGeneratePoster] = useState(false);
+
+    const handleImageReady = (imageUrl) => {
+        setImage(imageUrl);
+        setGeneratePoster(false);
+    };
+    
+    const handleApplyClick = () => {
+        setGeneratePoster(true);
+    };
+
+    const handleDownloadClick = () => {
+        if (!image) return;
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = `Posterfy - ${albumName}.png`;
+        link.click();
+    };
+    
 
     function handleColorInputClick(e, colorInputName) {
         const rect = e.target.getBoundingClientRect();
@@ -244,11 +299,17 @@ function PosterEditor({ albumID, handleClickBack }){
                 : `${remainingMinutes}min ${remainingSeconds}s`;
                 setRuntime(formattedRuntime);
 
-                const tracklist = albumData.tracks.items.map((track, index) => `${index + 1}. ${track.name}`);
-                setTracklist(tracklist.join("\n"));
+                const tracklist = albumData.tracks.items.map((track, index) => {
+                    const trackNameWithoutParentheses = track.name.replace(/\s?\(.*?\)/g, '');
+                    if(index == 3){
+                        setShowTracklist(true);
+                    }
+                    return `${index + 1}. ${trackNameWithoutParentheses}`;
+                });
+                setTracklist(tracklist.join("\n"));                
     
             } catch (error) {
-                console.error("Erro ao buscar os dados do álbum:", error);
+                console.error("Error trying to fetch album data:", error);
             }
         };
     
@@ -271,6 +332,7 @@ function PosterEditor({ albumID, handleClickBack }){
                                 setcolor1(data[2]);
                                 setcolor2(data[3]);
                                 setcolor3(data[4]);
+                                handleApplyClick();
                             }
                         }, [data]);
                         return null;
@@ -283,7 +345,16 @@ function PosterEditor({ albumID, handleClickBack }){
                         </TextBack>
                     </DivBack>
                     <ContainerEditor>
-                        <PosterPreview src={posterExample}/>
+                        <CanvasPoster
+                            onImageReady={handleImageReady}
+                            posterData={posterData}
+                            generatePoster={generatePoster}
+                        />
+                        {image ? (
+                            <PosterPreview src={image}/>
+                        ) : (
+                            <FakePoster/>
+                        )}
                         <EditorColumn>
                             <EditorSettings>
                                 <NormalInput 
@@ -315,6 +386,11 @@ function PosterEditor({ albumID, handleClickBack }){
                                     title={t('EDITOR_MarginTop')} 
                                     value={marginTop} 
                                     onChange={(e) => setMarginTop(e.target.value)}
+                                />
+                                <NormalInput 
+                                    title={t('EDITOR_MarginSide')} 
+                                    value={marginSide} 
+                                    onChange={(e) => setmarginSide(e.target.value)}
                                 />
         
                                 <DoubleInput 
@@ -405,14 +481,14 @@ function PosterEditor({ albumID, handleClickBack }){
                                 )}
                             </EditorSettings>
                             <DivButtons>
-                                <ButtonDiv>
+                                <ButtonDiv onClick={handleDownloadClick}>
                                     <IconDownload/>
                                     <ButtonText>
                                         {t('EDITOR_Download')}
                                     </ButtonText>
                                 </ButtonDiv>
-                                <ButtonDiv>
-                                <IconApply/>
+                                <ButtonDiv onClick={handleApplyClick}>
+                                    <IconApply/>
                                     <ButtonText>
                                         {t('EDITOR_Apply')}
                                     </ButtonText>
