@@ -2,7 +2,6 @@
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
 import { IoArrowBack } from "react-icons/io5";
-import posterExample from '../../assets/albumExample.png'
 import NormalInput from "./inputs/NormalInput";
 import DoubleInput from "./inputs/DoubleInput";
 import ColorInput from "./inputs/ColorInput";
@@ -284,7 +283,7 @@ function PosterEditor({ albumID, handleClickBack }){
     
                 setAlbumName(albumData.name);
                 setArtistsName(albumData.artists.map((artist) => artist.name).join(", "));
-                setAlbumCover(albumData.images[0]?.url || posterExample);
+                setAlbumCover(albumData.images[0]?.url);
                 setReleaseDate(albumData.release_date);
 
                 const runtime = albumData.tracks.items.reduce((totalDuration, track) => totalDuration + track.duration_ms, 0);
