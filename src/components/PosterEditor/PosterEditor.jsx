@@ -215,6 +215,7 @@ function PosterEditor({ albumID, handleClickBack }){
 
     const [image, setImage] = useState(null);
     const [generatePoster, setGeneratePoster] = useState(false);
+    const [infosLoaded, setInfosLoaded] = useState(false);
 
     const handleImageReady = (imageUrl) => {
         setImage(imageUrl);
@@ -305,7 +306,9 @@ function PosterEditor({ albumID, handleClickBack }){
                     }
                     return `${index + 1}. ${trackNameWithoutParentheses}`;
                 });
-                setTracklist(tracklist.join("\n"));                
+                setTracklist(tracklist.join("\n"));     
+                
+                setInfosLoaded(true);          
     
             } catch (error) {
                 console.error("Error trying to fetch album data:", error);
@@ -318,7 +321,7 @@ function PosterEditor({ albumID, handleClickBack }){
 
     return(
         <>
-            {albumName == '' ? (
+            {!infosLoaded ? (
                 <LoadingDiv/>
             ) : (
                 <Container>
