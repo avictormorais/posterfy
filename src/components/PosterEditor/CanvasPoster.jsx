@@ -151,12 +151,26 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster }) => {
             const scannable = async () => {
                 const rgb = hexToRgb(posterData.backgroundColor);
                 const contrastColor = getContrast(rgb);
-
-                let image = new Image();
-                image.crossOrigin = "anonymous";
-                image.src = `https://scannables.scdn.co/uri/plain/jpeg/${posterData.backgroundColor.replace('#', '')}/${contrastColor}/640/spotify:album:${posterData.albumID}`;
-
+                const targetColor = posterData.textColor;
+            
+                const svgUrl = `https://scannables.scdn.co/uri/plain/svg/${posterData.backgroundColor.replace('#', '')}/${contrastColor}/640/spotify:album:${posterData.albumID}`;
+                
+                const response = await fetch(svgUrl);
+                let svgText = await response.text();
+                
+                if(contrastColor == 'black'){
+                    svgText = svgText.replace(/fill="#000000"/g, `fill="${targetColor}"`);
+                } else{
+                    svgText = svgText.replace(/fill="#ffffff"/g, `fill="${targetColor}"`);
+                }
+                
+                const svgBlob = new Blob([svgText], { type: "image/svg+xml" });
+                const updatedSvgUrl = URL.createObjectURL(svgBlob);
+            
                 return new Promise((resolve) => {
+                    const image = new Image();
+                    image.src = updatedSvgUrl;
+            
                     image.onload = function () {
                         ctx.drawImage(image, 2020 - posterData.marginSide, 3235, 480, 120);
                         const imageUrl = canvas.toDataURL('image/png');
