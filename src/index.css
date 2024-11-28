@@ -1,6 +1,27 @@
 :root {
-  --backgroundColor: #151515;
+  --backgroundColor: #070815;
   --PosterfyGreen: #01b755;
+}
+
+.theme-dark {
+  --backgroundColor: #070815;
+}
+
+
+.theme-rose {
+  --backgroundColor: #232136;
+}
+
+.theme-fy {
+  --backgroundColor: #151515;
+}
+
+.theme-carmesin {
+  --backgroundColor: #1f0c19;
+}
+
+.theme-brown {
+  --backgroundColor: #1e1516;
 }
 
 *{
