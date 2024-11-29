@@ -16,6 +16,7 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster }) => {
             const height = 3508;
             posterData.marginSide = parseInt(posterData.marginSide) || 0;
             posterData.marginTop = parseInt(posterData.marginTop) || 0;
+            posterData.marginCover = parseInt(posterData.marginCover) || 0;
 
             const loadCover = async (url) => {
                 const image = new Image();
@@ -23,7 +24,7 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster }) => {
                 image.src = url;
                 return new Promise((resolve) => {
                     image.onload = () => {
-                        ctx.drawImage(image, 0, 0, width, width);
+                        ctx.drawImage(image, posterData.marginCover, posterData.marginCover, width - posterData.marginCover * 2, width - posterData.marginCover * 2);
                         if (posterData.useFade) {
                             let verticalFade = ctx.createLinearGradient(0, 0, 0, 3000);
                             verticalFade.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
