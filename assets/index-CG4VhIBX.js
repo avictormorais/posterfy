@@ -105,7 +105,7 @@ Error generating stack: `+s.message+`
     opacity: 0.1;
     height: 1px;
     width: 100%;
-`;function _v(){return S.jsxs(S.Fragment,{children:[S.jsxs(Sv,{children:[S.jsx(Ss,{color:"#01b755",width:"40px"}),S.jsx(kv,{children:"Posterfy"}),S.jsx(wv,{})]}),S.jsx(Cv,{})]})}const Ev="/posterfy/assets/albuns-DjaerArZ.png",Pv=O.div`
+`;function _v(){return S.jsxs(S.Fragment,{children:[S.jsxs(Sv,{children:[S.jsx(Ss,{color:"#01b755",width:"40px"}),S.jsx(kv,{children:"Posterfy"}),S.jsx(wv,{})]}),S.jsx(Cv,{})]})}const Ev="/posterfy/assets/albuns-DJje8oYd.png",Pv=O.div`
     margin-top: 200px;
     width: 80%;
     display: flex;
