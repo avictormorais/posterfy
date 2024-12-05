@@ -154,11 +154,11 @@ function Footer() {
             <ContainerTheme>
                 <TitleTheme>{t('Theme')}</TitleTheme>
                 <ThemeSelector>
-                    <ThemeButton color="#070815" active={theme === "theme-dark"} onClick={() => handleThemeChange("theme-dark")} />
-                    <ThemeButton color="#151515" active={theme === "theme-fy"} onClick={() => handleThemeChange("theme-fy")} />
-                    <ThemeButton color="#232136" active={theme === "theme-rose"} onClick={() => handleThemeChange("theme-rose")} />
-                    <ThemeButton color="#1f0c19" active={theme === "theme-carmesin"} onClick={() => handleThemeChange("theme-carmesin")} />
-                    <ThemeButton color="#1e1516" active={theme === "theme-brown"} onClick={() => handleThemeChange("theme-brown")} />
+                    <ThemeButton color="#070815" $active={theme === "theme-dark"} onClick={() => handleThemeChange("theme-dark")} />
+                    <ThemeButton color="#151515" $active={theme === "theme-fy"} onClick={() => handleThemeChange("theme-fy")} />
+                    <ThemeButton color="#232136" $active={theme === "theme-rose"} onClick={() => handleThemeChange("theme-rose")} />
+                    <ThemeButton color="#1f0c19" $active={theme === "theme-carmesin"} onClick={() => handleThemeChange("theme-carmesin")} />
+                    <ThemeButton color="#1e1516" $active={theme === "theme-brown"} onClick={() => handleThemeChange("theme-brown")} />
                 </ThemeSelector>
             </ContainerTheme>
             <Iconcontainer>

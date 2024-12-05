@@ -79,7 +79,7 @@ function LanguageSelector() {
                 svg 
                 onClick={handleClick}
             />
-            <FlagsContainer isVisible={isVisible}>
+            <FlagsContainer $isVisible={isVisible}>
                 <Triangle />
                 <StyledFlag countryCode="BR" style={{ width: '2em', height: '2em' }} onClick={() => changeLanguage('pt')} svg />
                 <StyledFlag countryCode="US" style={{ width: '2em', height: '2em' }} onClick={() => changeLanguage('en')} svg />
