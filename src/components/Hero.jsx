@@ -26,13 +26,21 @@ const Container = styled.div`
 `;
 
 const ContainerIcon = styled.div`
-    width: 100%;
     max-width: 100%;
+    margin-inline: auto;
+    margin-right: 50px;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: end;
     padding-left: auto;
+    animation: heartbeat 1.85s infinite;
+
+    @keyframes heartbeat {
+        0%, 50%, 90%, 100% { opacity: 0.1; transform: scale(1); }
+        30%, 70% { opacity: 0.25; transform: scale(1.05); }
+    }
+
 
     @media (max-width: 900px) {
         display: none;
@@ -88,8 +96,8 @@ function Hero() {
                         {t('paragraphHero2')}
                     </Paragraph>
                 </Container>
-                <ContainerIcon style={{ opacity: 0.1 }}>
-                    <Icon color={'white'} width={'180px'} />
+                <ContainerIcon>
+                    <Icon fill={'white'} width={'180px'} height={'198.23px'} />
                 </ContainerIcon>
             </HeroDiv>
             <DivAlbum>

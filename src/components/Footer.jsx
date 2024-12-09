@@ -21,6 +21,7 @@ const Container = styled.div`
 
 const ContainerIcon = styled.div`
     width: 80px;
+    height: 88.103448276px;
     animation: rotation 5s linear infinite;
     opacity: 0.25;
     margin-left: 180px;
@@ -146,7 +147,7 @@ function Footer() {
     return (
         <Container>
             <ContainerIcon>
-                <Icon color={'white'} width={'80px'} />
+                <Icon fill={'white'} width={'80px'} height={'88.1px'} />
             </ContainerIcon>
             <TagBy>
                 {t('MadeBy')} <Anchor href="https://github.com/avictormorais" target="blank">Victor</Anchor>

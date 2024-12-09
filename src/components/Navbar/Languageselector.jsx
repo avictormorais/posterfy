@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const FlagsContainer = styled.div`
-    display: ${({ isVisible }) => (isVisible ? 'flex' : 'none')};
+    display: ${({ $isVisible }) => ($isVisible ? 'flex' : 'none')};
     flex-direction: column;
     position: fixed;
     right: calc(10% - 10px);

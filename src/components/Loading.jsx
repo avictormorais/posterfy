@@ -24,7 +24,7 @@ function Loading() {
     return (
         <Container>
             <PulsingWrapper>
-                <Icon color="white" width="180px" />
+                <Icon fill="white" width="180px" height={'198.23px'} />
             </PulsingWrapper>
         </Container>
     );

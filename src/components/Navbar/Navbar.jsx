@@ -40,7 +40,7 @@ function Navbar(){
     return(
         <>
             <Container>
-                <Icon color={'#01b755'} width={'40px'}/>
+                <Icon fill={'#01b755'} width={'40px'} height={'44.05px'}/>
                 <Posterfyh1>Posterfy</Posterfyh1>
                 <Languageselector/>
             </Container>
