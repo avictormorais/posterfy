@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
 import CheckInput from "./inputs/CheckInput";
+import FileInput from "./inputs/FileInput";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
 import LoadingDiv from "../LoadingDiv";
@@ -179,6 +180,7 @@ function PosterEditor({ albumID, handleClickBack }){
     const [useFade, setUseFade] = useState(true);
     const [showTracklist, setShowTracklist] = useState(false);
     const [albumCover, setAlbumCover] = useState('');
+    const [fileName, setFileName] = useState("Original");
     const [tracklist, setTracklist] = useState('');
 
     const [titleRelease, setTitleRelease] = useState('');
@@ -225,7 +227,13 @@ function PosterEditor({ albumID, handleClickBack }){
     };
     
     const handleApplyClick = () => {
+        console.log(albumCover)
         setGeneratePoster(true);
+    };
+
+    const handleFileChange = (file) => {
+        setAlbumCover(URL.createObjectURL(file));
+        setFileName(file.name);
     };
 
     const handleDownloadClick = () => {
@@ -452,6 +460,11 @@ function PosterEditor({ albumID, handleClickBack }){
                                     value={showTracklist}
                                     onChange={(newValue) => setShowTracklist(newValue)}
                                     text={t('EDITOR_TracklistText')}
+                                />
+                                <FileInput
+                                    title={t('EDITOR_Cover')}
+                                    onChange={handleFileChange}
+                                    text={fileName}
                                 />
         
                                 {showColorSelector && colorInputPosition && currentColorInput && (

@@ -49,7 +49,8 @@ i18n
                 EDITOR_Tracklist: "Tracklist",
                 EDITOR_TracklistText: "Show tracklist",
                 EDITOR_Apply: "Apply",
-                EDITOR_Download: "Download"
+                EDITOR_Download: "Download",
+                EDITOR_Cover: "Cover"
             },
         },
         pt: {
@@ -96,7 +97,8 @@ i18n
                 EDITOR_Tracklist: "Músicas",
                 EDITOR_TracklistText: "Mostrar músicas",
                 EDITOR_Apply: "Aplicar",
-                EDITOR_Download: "Baixar"
+                EDITOR_Download: "Baixar",
+                EDITOR_Cover: "Capa"
             },
         },
         es: {
@@ -143,7 +145,8 @@ i18n
                 EDITOR_Tracklist: "Canciones",
                 EDITOR_TracklistText: "Mostrar canciones",
                 EDITOR_Apply: "Aplicar",
-                EDITOR_Download: "Descargar"
+                EDITOR_Download: "Descargar",
+                EDITOR_Cover: "Portada"
             },
         },
     },
