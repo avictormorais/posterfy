@@ -310,7 +310,7 @@ function PosterEditor({ albumID, handleClickBack }){
                 setRuntime(formattedRuntime);
 
                 const tracklist = albumData.tracks.items.map((track, index) => {
-                    const trackNameWithoutParentheses = track.name.replace(/\s?\(.*?\)/g, '');
+                    const trackNameWithoutParentheses = track.name.replace(/\s?[\[\(].*?[\]\)]/g, '');
                     if(index == 3){
                         setShowTracklist(true);
                     }
