@@ -14,6 +14,7 @@
 
 Features within this fork include:
 - Option to remove watermark (including translation)
+- Option to download the original cover only
 
 ## 🔭 **Overview**
 
