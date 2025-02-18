@@ -10,6 +10,10 @@
 
 ---
 
+**EDITTED VERSION**
+Features within this fork include:
+- Option to remove watermark (including translation)
+
 ## 🔭 **Overview**
 
 Posterfy is an open-source web application that allows users to create visually appealing posters for their favorite music albums. Powered by Spotify’s free API, Posterfy enables users to search for albums, gather album data, and organize the information into a custom poster using the **HTML Canvas** element.
@@ -78,9 +82,9 @@ To start using the project locally:
    ```bash
    npm install
    ```
-4. Create a .env file in the root directory and add your Spotify API credentials as in .env.exemple:
+4. Create a .env file in the root directory and add your Spotify API credentials as in .env.example:
     ```bash
-    VITE_SPOTIFY_CLIENT_ID==your_spotify_client_id
+    VITE_SPOTIFY_CLIENT_ID=your_spotify_client_id
     VITE_SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
     ```
 5. Run the project locally:

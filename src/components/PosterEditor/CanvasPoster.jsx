@@ -193,7 +193,9 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster }) => {
             if (posterData.showTracklist) {
                 await drawTracklist();
             }
-            await drawWaterMark();
+            if (posterData.useWatermark) { 
+                await drawWaterMark();
+            }
             await scannable();
         };
 

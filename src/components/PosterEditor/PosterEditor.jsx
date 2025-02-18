@@ -177,6 +177,7 @@ function PosterEditor({ albumID, handleClickBack }){
     const [color1, setcolor1] = useState('#ff0000');
     const [color2, setcolor2] = useState('#00ff40');
     const [color3, setcolor3] = useState('#2600ff');
+    const [useWatermark, setUseWatermark] = useState(false);
     const [useFade, setUseFade] = useState(true);
     const [showTracklist, setShowTracklist] = useState(false);
     const [albumCover, setAlbumCover] = useState('');
@@ -208,6 +209,7 @@ function PosterEditor({ albumID, handleClickBack }){
         runtime,
         backgroundColor,
         textColor,
+        useWatermark,
         useFade,
         showTracklist,
         tracklist,
@@ -449,6 +451,12 @@ function PosterEditor({ albumID, handleClickBack }){
                                     onClick={(e) => handleColorInputClick(e, 'color3')}
                                 />
         
+                                <CheckInput
+                                    title={t('EDITOR_Watermark')}
+                                    value={useWatermark}
+                                    onChange={(newValue) => setUseWatermark(newValue)}
+                                    text={t('EDITOR_WatermarkText')}
+                                />
                                 <CheckInput
                                     title={t('EDITOR_Fade')}
                                     value={useFade}
