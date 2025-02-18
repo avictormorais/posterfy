@@ -51,6 +51,7 @@ i18n
                 EDITOR_Tracklist: "Tracklist",
                 EDITOR_TracklistText: "Show tracklist",
                 EDITOR_Apply: "Apply",
+                EDITOR_DownloadCover: "Download Cover",
                 EDITOR_Download: "Download",
                 EDITOR_Cover: "Cover"
             },
@@ -101,6 +102,7 @@ i18n
                 EDITOR_Tracklist: "Músicas",
                 EDITOR_TracklistText: "Mostrar músicas",
                 EDITOR_Apply: "Aplicar",
+                EDITOR_DownloadCover: "Baixar capa",
                 EDITOR_Download: "Baixar",
                 EDITOR_Cover: "Capa"
             },
@@ -151,6 +153,7 @@ i18n
                 EDITOR_Tracklist: "Canciones",
                 EDITOR_TracklistText: "Mostrar canciones",
                 EDITOR_Apply: "Aplicar",
+                EDITOR_DownloadCover: "Descargar portada",
                 EDITOR_Download: "Descargar",
                 EDITOR_Cover: "Portada"
             },

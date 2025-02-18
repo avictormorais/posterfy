@@ -246,6 +246,16 @@ function PosterEditor({ albumID, handleClickBack }){
         link.click();
     };
     
+    const handleCoverDownloadClick = async () => {
+        if (!albumCover) return;
+        const blob = await (await fetch(albumCover)).blob();
+        const link = Object.assign(document.createElement('a'), {
+            href: URL.createObjectURL(blob),
+            download: `Posterfy - ${albumName} Cover.png`
+        });
+        link.click();
+        URL.revokeObjectURL(link.href);
+    };
 
     function handleColorInputClick(e, colorInputName) {
         const rect = e.target.getBoundingClientRect();
@@ -515,6 +525,12 @@ function PosterEditor({ albumID, handleClickBack }){
                                     <IconDownload/>
                                     <ButtonText>
                                         {t('EDITOR_Download')}
+                                    </ButtonText>
+                                </ButtonDiv>
+                                <ButtonDiv onClick={handleCoverDownloadClick}>
+                                    <IconDownload/>
+                                    <ButtonText>
+                                        {t('EDITOR_DownloadCover')}
                                     </ButtonText>
                                 </ButtonDiv>
                                 <ButtonDiv onClick={handleApplyClick}>
