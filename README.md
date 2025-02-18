@@ -11,6 +11,7 @@
 ---
 
 **EDITTED VERSION**
+
 Features within this fork include:
 - Option to remove watermark (including translation)
 
