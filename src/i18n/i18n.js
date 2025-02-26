@@ -53,7 +53,9 @@ i18n
                 EDITOR_Apply: "Apply",
                 EDITOR_DownloadCover: "Cover",
                 EDITOR_Download: "Poster",
-                EDITOR_Cover: "Cover"
+                EDITOR_Cover: "Cover",
+                EDITOR_Uncompressed: "Uncompressed Cover",
+                EDITOR_UncompressedText: "Use Uncompressed Cover"
             },
         },
         pt: {
@@ -104,7 +106,9 @@ i18n
                 EDITOR_Apply: "Aplicar",
                 EDITOR_DownloadCover: "Cobrir",
                 EDITOR_Download: "Poster",
-                EDITOR_Cover: "Capa"
+                EDITOR_Cover: "Capa",
+                EDITOR_Uncompressed: "Capa não compactada",
+                EDITOR_UncompressedText: "Use capa não compactada"
             },
         },
         es: {
@@ -155,7 +159,9 @@ i18n
                 EDITOR_Apply: "Aplicar",
                 EDITOR_DownloadCover: "Cubrir",
                 EDITOR_Download: "Póster",
-                EDITOR_Cover: "Portada"
+                EDITOR_Cover: "Portada",
+                EDITOR_Uncompressed: "Cubierta sin comprimir",
+                EDITOR_UncompressedText: "Usar portada sin comprimir"
             },
         }, 
     },

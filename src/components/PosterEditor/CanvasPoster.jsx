@@ -188,7 +188,12 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster }) => {
             };
 
             await drawBackground();
-            await loadCover(posterData.albumCover);
+            if (posterData.useUncompressed) {
+                await loadCover(await posterData.uncompressedAlbumCover);
+            } else {
+                await loadCover(posterData.albumCover);
+            }
+            
             await drawAlbumInfos();
             if (posterData.showTracklist) {
                 await drawTracklist();

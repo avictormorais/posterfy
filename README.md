@@ -1,3 +1,20 @@
+**IMPROVED VERSION**
+
+THIS VERSION OF POSTERFY HAS BEEN EDITTED TO IMPROVE CERTAIN ASPECTS<br>
+Features within this fork include:
+- Option to remove watermark
+- Option to download the original cover only
+- Option to fetch a higher cover resolution through the iTunes API
+
+<b>Preview of higher resolution (Itunes API):</b><br>
+<i>Left Image - fetched from iTunes API - 3000x3000 (NEW)<br>
+Right Image - fetched from Spotify API - 600x600 (ORIGINAL)<br>
+Note: Resolution varies between all album covers, however in almost all cases, iTunes provides the best resolution</i>
+
+![uncompressed vs original](uncompressedpreview.png)
+
+--------------------------------------------------------------------
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/avictormorais/posterfy/refs/heads/main/public/ico.png" width="150" height="150" alt="Posterfy Logo">
 </p>
@@ -7,14 +24,6 @@
 <p align="center">
   <em>Create stunning posters of your favorite albums powered by Spotify's API.</em>
 </p>
-
----
-
-**EDITTED VERSION**
-
-Features within this fork include:
-- Option to remove watermark (including translation)
-- Option to download the original cover only
 
 ## 🔭 **Overview**
 

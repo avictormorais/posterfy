@@ -181,6 +181,8 @@ function PosterEditor({ albumID, handleClickBack }){
     const [useFade, setUseFade] = useState(true);
     const [showTracklist, setShowTracklist] = useState(false);
     const [albumCover, setAlbumCover] = useState('');
+    const [uncompressedAlbumCover, setUncompressedAlbumCover] = useState('');
+    const [useUncompressed, setUseUncompressed] = useState(false);
     const [fileName, setFileName] = useState("Original");
     const [tracklist, setTracklist] = useState('');
 
@@ -195,6 +197,8 @@ function PosterEditor({ albumID, handleClickBack }){
 
     const posterData = {
         albumCover,
+        uncompressedAlbumCover,
+        useUncompressed,
         albumName,
         artistsName,
         titleSize,
@@ -229,12 +233,13 @@ function PosterEditor({ albumID, handleClickBack }){
     };
     
     const handleApplyClick = () => {
-        console.log(albumCover)
         setGeneratePoster(true);
     };
 
     const handleFileChange = (file) => {
         setAlbumCover(URL.createObjectURL(file));
+        setUseUncompressed(false);
+        setUncompressedAlbumCover('');
         setFileName(file.name);
     };
 
@@ -242,19 +247,30 @@ function PosterEditor({ albumID, handleClickBack }){
         if (!image) return;
         const link = document.createElement('a');
         link.href = image;
-        link.download = `Posterfy - ${albumName}.png`;
+        link.download = useUncompressed ? `Posterfy - ${albumName} Uncompressed.png` : `Posterfy - ${albumName}.png`;
         link.click();
     };
     
     const handleCoverDownloadClick = async () => {
-        if (!albumCover) return;
-        const blob = await (await fetch(albumCover)).blob();
-        const link = Object.assign(document.createElement('a'), {
-            href: URL.createObjectURL(blob),
-            download: `Posterfy - ${albumName} Cover.png`
-        });
-        link.click();
-        URL.revokeObjectURL(link.href);
+        if (useUncompressed) {
+            if (!uncompressedAlbumCover) return;
+            const blob = await (await fetch(await uncompressedAlbumCover)).blob();
+            const link = Object.assign(document.createElement('a'), {
+                href: URL.createObjectURL(blob),
+                download: `Posterfy - ${albumName} Uncompressed Cover.png`
+            });
+            link.click();
+            URL.revokeObjectURL(link.href);
+        } else {
+            if (!albumCover) return;
+            const blob = await (await fetch(albumCover)).blob();
+            const link = Object.assign(document.createElement('a'), {
+                href: URL.createObjectURL(blob),
+                download: `Posterfy - ${albumName} Cover.png`
+            });
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
     };
 
     function handleColorInputClick(e, colorInputName) {
@@ -270,6 +286,43 @@ function PosterEditor({ albumID, handleClickBack }){
     function handleColorSelectorClose() {
         setShowColorSelector(false);
     };
+
+    async function getItunesUncompressedAlbumCover(searchQuery, country = "us") {
+        
+        // Method derived from https://github.com/bendodson/itunes-artwork-finder/blob/master/api.php
+
+        try {
+            let apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&country=${country}&entity=album&limit=1`;
+            let response = await fetch(apiUrl);
+            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+    
+            let data = await response.json();
+            if (!data.results?.length) {
+                console.warn("No album data found.");
+                return '';
+            }
+    
+            let result = data.results[0]; // Take the first result
+            let hires = result.artworkUrl100.replace("100x100bb", "100000x100000-999");
+            let parts = hires.split("/image/thumb/");
+            
+            let uncompressedCover = parts.length === 2 
+                ? `https://a5.mzstatic.com/us/r1000/0/${parts[1].split("/").slice(0, -1).join("/")}`
+                : '';
+            console.log("Uncompressed URL: " + uncompressedCover);
+            return uncompressedCover;
+
+        } catch (error) {
+            console.error("Error fetching album cover:", error.message);
+            return '';
+        }
+    }
+
+    useEffect(() => {
+        if (albumName && artistsName) {
+          setUncompressedAlbumCover(getItunesUncompressedAlbumCover(albumName + " " + artistsName));
+        }
+      }, [albumName, artistsName]);
 
     useEffect(() => {
         setTitleRelease(t('EDITOR_ReleaseTitle'));
@@ -303,12 +356,11 @@ function PosterEditor({ albumID, handleClickBack }){
                 });
     
                 const albumData = await albumResponse.json();
-    
                 setAlbumName(albumData.name);
                 setArtistsName(albumData.artists.map((artist) => artist.name).join(", "));
                 setAlbumCover(albumData.images[0]?.url);
                 setReleaseDate(albumData.release_date);
-
+                
                 const runtime = albumData.tracks.items.reduce((totalDuration, track) => totalDuration + track.duration_ms, 0);
                 const totalSeconds = Math.floor(runtime / 1000);
                 const totalMinutes = Math.floor(totalSeconds / 60);
@@ -472,6 +524,12 @@ function PosterEditor({ albumID, handleClickBack }){
                                     value={useFade}
                                     onChange={(newValue) => setUseFade(newValue)}
                                     text={t('EDITOR_FadeText')}
+                                />
+                                <CheckInput
+                                    title={t('EDITOR_Uncompressed')}
+                                    value={useUncompressed}
+                                    onChange={(newValue) => setUseUncompressed(newValue)}
+                                    text={t('EDITOR_UncompressedText')}
                                 />
                                 <CheckInput
                                     title={t('EDITOR_Tracklist')}
