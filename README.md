@@ -1,3 +1,20 @@
+**IMPROVED VERSION**
+
+THIS VERSION OF POSTERFY HAS BEEN EDITTED TO IMPROVE CERTAIN ASPECTS<br>
+Features within this fork include:
+- Option to remove watermark
+- Option to download the original cover only
+- Option to fetch a higher cover resolution through the iTunes API
+
+<b>Preview of higher resolution (Itunes API):</b><br>
+<i>Left Image - fetched from iTunes API - 3000x3000 (NEW)<br>
+Right Image - fetched from Spotify API - 600x600 (ORIGINAL)<br>
+Note: Resolution varies between all album covers, however in almost all cases, iTunes provides the best resolution</i>
+
+![uncompressed vs original](uncompressedpreview.png)
+
+--------------------------------------------------------------------
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/avictormorais/posterfy/refs/heads/main/public/ico.png" width="150" height="150" alt="Posterfy Logo">
 </p>
@@ -7,8 +24,6 @@
 <p align="center">
   <em>Create stunning posters of your favorite albums powered by Spotify's API.</em>
 </p>
-
----
 
 ## 🔭 **Overview**
 
@@ -78,9 +93,9 @@ To start using the project locally:
    ```bash
    npm install
    ```
-4. Create a .env file in the root directory and add your Spotify API credentials as in .env.exemple:
+4. Create a .env file in the root directory and add your Spotify API credentials as in .env.example:
     ```bash
-    VITE_SPOTIFY_CLIENT_ID==your_spotify_client_id
+    VITE_SPOTIFY_CLIENT_ID=your_spotify_client_id
     VITE_SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
     ```
 5. Run the project locally:
