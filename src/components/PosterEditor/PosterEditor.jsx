@@ -177,7 +177,7 @@ function PosterEditor({ albumID, handleClickBack }){
     const [color1, setcolor1] = useState('#ff0000');
     const [color2, setcolor2] = useState('#00ff40');
     const [color3, setcolor3] = useState('#2600ff');
-    const [useWatermark, setUseWatermark] = useState(false);
+    const [useWatermark, setUseWatermark] = useState(true);
     const [useFade, setUseFade] = useState(true);
     const [showTracklist, setShowTracklist] = useState(false);
     const [albumCover, setAlbumCover] = useState('');
@@ -247,7 +247,7 @@ function PosterEditor({ albumID, handleClickBack }){
         if (!image) return;
         const link = document.createElement('a');
         link.href = image;
-        link.download = useUncompressed ? `Posterfy - ${albumName} Uncompressed.png` : `Posterfy - ${albumName}.png`;
+        link.download = `Posterfy - ${albumName}.png`;
         link.click();
     };
     
@@ -309,7 +309,6 @@ function PosterEditor({ albumID, handleClickBack }){
             let uncompressedCover = parts.length === 2 
                 ? `https://a5.mzstatic.com/us/r1000/0/${parts[1].split("/").slice(0, -1).join("/")}`
                 : '';
-            console.log("Uncompressed URL: " + uncompressedCover);
             return uncompressedCover;
 
         } catch (error) {
@@ -320,9 +319,9 @@ function PosterEditor({ albumID, handleClickBack }){
 
     useEffect(() => {
         if (albumName && artistsName) {
-          setUncompressedAlbumCover(getItunesUncompressedAlbumCover(albumName + " " + artistsName));
+            setUncompressedAlbumCover(getItunesUncompressedAlbumCover(albumName + " " + artistsName));
         }
-      }, [albumName, artistsName]);
+    }, [albumName, artistsName]);
 
     useEffect(() => {
         setTitleRelease(t('EDITOR_ReleaseTitle'));

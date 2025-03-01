@@ -54,8 +54,8 @@ i18n
                 EDITOR_DownloadCover: "Cover",
                 EDITOR_Download: "Poster",
                 EDITOR_Cover: "Cover",
-                EDITOR_Uncompressed: "Uncompressed Cover",
-                EDITOR_UncompressedText: "Use Uncompressed Cover"
+                EDITOR_Uncompressed: "Improved cover",
+                EDITOR_UncompressedText: "Use improved cover"
             },
         },
         pt: {
@@ -104,11 +104,11 @@ i18n
                 EDITOR_Tracklist: "Músicas",
                 EDITOR_TracklistText: "Mostrar músicas",
                 EDITOR_Apply: "Aplicar",
-                EDITOR_DownloadCover: "Cobrir",
+                EDITOR_DownloadCover: "Capa",
                 EDITOR_Download: "Poster",
                 EDITOR_Cover: "Capa",
-                EDITOR_Uncompressed: "Capa não compactada",
-                EDITOR_UncompressedText: "Use capa não compactada"
+                EDITOR_Uncompressed: "Capa melhorada",
+                EDITOR_UncompressedText: "Usar capa melhorada"
             },
         },
         es: {
@@ -160,8 +160,8 @@ i18n
                 EDITOR_DownloadCover: "Cubrir",
                 EDITOR_Download: "Póster",
                 EDITOR_Cover: "Portada",
-                EDITOR_Uncompressed: "Cubierta sin comprimir",
-                EDITOR_UncompressedText: "Usar portada sin comprimir"
+                EDITOR_Uncompressed: "Portada mejorada",
+                EDITOR_UncompressedText: "Usar portada mejorada"
             },
         }, 
     },

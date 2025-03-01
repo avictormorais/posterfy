@@ -76,7 +76,6 @@ function FileInput({ title, text, onChange }) {
 
     const handleChange = (e) => {
         const file = e.target.files[0];
-        console.log(file.name)
         text = file.name
         if (file) onChange(file);
     };
