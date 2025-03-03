@@ -5,7 +5,7 @@ import { IoArrowBack } from "react-icons/io5";
 import NormalInput from "./inputs/NormalInput";
 import DoubleInput from "./inputs/DoubleInput";
 import ColorInput from "./inputs/ColorInput";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
 import CheckInput from "./inputs/CheckInput";
@@ -163,6 +163,7 @@ const FakePoster = styled.div`
 
 function PosterEditor({ albumID, handleClickBack }){
     const { t } = useTranslation();
+    const previewRef = useRef(null);
 
     const [albumName, setAlbumName] = useState('');
     const [artistsName, setArtistsName] = useState('');
@@ -234,6 +235,12 @@ function PosterEditor({ albumID, handleClickBack }){
     
     const handleApplyClick = () => {
         setGeneratePoster(true);
+        if (previewRef.current) {
+            window.scrollTo({
+            top: previewRef.current.offsetTop - 100,
+            behavior: 'smooth'
+            });
+        }
     };
 
     const handleFileChange = (file) => {
@@ -426,9 +433,9 @@ function PosterEditor({ albumID, handleClickBack }){
                             generatePoster={generatePoster}
                         />
                         {image ? (
-                            <PosterPreview src={image}/>
+                            <PosterPreview src={image} ref={previewRef} />
                         ) : (
-                            <FakePoster/>
+                            <FakePoster ref={previewRef} />
                         )}
                         <EditorColumn>
                             <EditorSettings>
