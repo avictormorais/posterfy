@@ -237,7 +237,7 @@ function PosterEditor({ albumID, handleClickBack }){
         setGeneratePoster(true);
         if (previewRef.current) {
             window.scrollTo({
-            top: previewRef.current.offsetTop - 100,
+            top: previewRef.current.offsetTop - 150,
             behavior: 'smooth'
             });
         }
