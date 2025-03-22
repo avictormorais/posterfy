@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/prop-types */
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { IoArrowBack } from "react-icons/io5";
 import NormalInput from "./inputs/NormalInput";
 import DoubleInput from "./inputs/DoubleInput";
@@ -151,7 +151,22 @@ const IconDownload = styled(IoMdDownload)`
 
 const IconApply = styled(MdOutlineRefresh)`
     font-size: 1.15em;
-`
+    will-change: transform;
+    ${({ $spinning }) =>
+            $spinning
+                    ? css`
+                  animation: ${keyframes`
+                      from { transform: rotate(0deg); }
+                      to { transform: rotate(360deg); }
+                  `} 0.8s linear infinite;
+              `
+                    : css`
+                  animation: ${keyframes`
+                      0% { transform: rotate(0deg); }
+                      100% { transform: rotate(360deg); }
+                  `} 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+              `}
+`;
 
 const FakePoster = styled.div`
     width: 560px;
@@ -228,19 +243,26 @@ function PosterEditor({ albumID, handleClickBack }){
     const [generatePoster, setGeneratePoster] = useState(false);
     const [infosLoaded, setInfosLoaded] = useState(false);
 
+    const [spinApplyButton, setSpinApplyButton] = useState(false);
+
     const handleImageReady = (imageUrl) => {
         setImage(imageUrl);
         setGeneratePoster(false);
+        setSpinApplyButton(false);
     };
-    
+
     const handleApplyClick = () => {
-        setGeneratePoster(true);
-        if (previewRef.current) {
-            window.scrollTo({
-            top: previewRef.current.offsetTop - 150,
-            behavior: 'smooth'
-            });
-        }
+        // requestAnimationFrame will prevent the initial stutter in the animation of the apply icon spinning
+        requestAnimationFrame(() => {
+            setSpinApplyButton(true); // Set spinning to true in the next frame
+            setGeneratePoster(true);
+            if (previewRef.current) {
+                window.scrollTo({
+                    top: previewRef.current.offsetTop - 150,
+                    behavior: 'smooth'
+                });
+            }
+        });
     };
 
     const handleFileChange = (file) => {
@@ -598,7 +620,7 @@ function PosterEditor({ albumID, handleClickBack }){
                                     </ButtonText>
                                 </ButtonDiv>
                                 <ButtonDiv onClick={handleApplyClick}>
-                                    <IconApply/>
+                                    <IconApply $spinning={spinApplyButton}/>
                                     <ButtonText>
                                         {t('EDITOR_Apply')}
                                     </ButtonText>
