@@ -328,6 +328,7 @@ function PosterEditor({ albumID, handleClickBack }){
             let data = await response.json();
             if (!data.results?.length) {
                 console.warn("No album data found.");
+                setUseUncompressed(false);  // unable to find uncompressed based on inputted information
                 return '';
             }
     
@@ -345,12 +346,6 @@ function PosterEditor({ albumID, handleClickBack }){
             return '';
         }
     }
-
-    useEffect(() => {
-        if (albumName && artistsName) {
-            setUncompressedAlbumCover(getItunesUncompressedAlbumCover(albumName + " " + artistsName));
-        }
-    }, [albumName, artistsName]);
 
     useEffect(() => {
         setTitleRelease(t('EDITOR_ReleaseTitle'));
@@ -384,10 +379,12 @@ function PosterEditor({ albumID, handleClickBack }){
                 });
     
                 const albumData = await albumResponse.json();
+                const formattedArtistsName = albumData.artists.map((artist) => artist.name).join(", ");
                 setAlbumName(albumData.name);
-                setArtistsName(albumData.artists.map((artist) => artist.name).join(", "));
+                setArtistsName(formattedArtistsName);
                 setAlbumCover(albumData.images[0]?.url);
                 setReleaseDate(albumData.release_date);
+                setUncompressedAlbumCover(await getItunesUncompressedAlbumCover(albumData.name + " " + formattedArtistsName));
                 
                 const runtime = albumData.tracks.items.reduce((totalDuration, track) => totalDuration + track.duration_ms, 0);
                 const totalSeconds = Math.floor(runtime / 1000);
