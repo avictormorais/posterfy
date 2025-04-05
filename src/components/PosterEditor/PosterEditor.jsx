@@ -211,6 +211,23 @@ function PosterEditor({ albumID, handleClickBack }){
     const [colorInputPosition, setColorInputPosition] = useState(null);
     const [currentColorInput, setCurrentColorInput] = useState(null);
 
+    const [userAdjustedTitleSize, setUserAdjustedTitleSize] = useState(false);
+    const [initialTitleSizeSet, setInitialTitleSizeSet] = useState(false);
+
+    const handleTitleSizeChange = (e) => {
+        setTitleSize(e.target.value);
+        setUserAdjustedTitleSize(true);
+    };
+
+    const handleTitleSizeAdjust = (adjustedSize, isInitial) => {
+        if (isInitial && !initialTitleSizeSet) {
+            setTitleSize(adjustedSize);
+            setInitialTitleSizeSet(true);
+        } else if (!userAdjustedTitleSize) {
+            setTitleSize(adjustedSize);
+        }
+    };
+
     const posterData = {
         albumCover,
         uncompressedAlbumCover,
@@ -236,7 +253,9 @@ function PosterEditor({ albumID, handleClickBack }){
         color1,
         color2,
         color3,
-        albumID
+        albumID,
+        userAdjustedTitleSize,
+        initialTitleSizeSet
     };
 
     const [image, setImage] = useState(null);
@@ -252,9 +271,9 @@ function PosterEditor({ albumID, handleClickBack }){
     };
 
     const handleApplyClick = () => {
-        // requestAnimationFrame will prevent the initial stutter in the animation of the apply icon spinning
+        setUserAdjustedTitleSize(false);
         requestAnimationFrame(() => {
-            setSpinApplyButton(true); // Set spinning to true in the next frame
+            setSpinApplyButton(true);
             setGeneratePoster(true);
             if (previewRef.current) {
                 window.scrollTo({
@@ -450,6 +469,7 @@ function PosterEditor({ albumID, handleClickBack }){
                             onImageReady={handleImageReady}
                             posterData={posterData}
                             generatePoster={generatePoster}
+                            onTitleSizeAdjust={handleTitleSizeAdjust}
                         />
                         {image ? (
                             <PosterPreview src={image} ref={previewRef} />
@@ -471,7 +491,7 @@ function PosterEditor({ albumID, handleClickBack }){
                                 <NormalInput 
                                     title={t('EDITOR_TitleSize')} 
                                     value={titleSize} 
-                                    onChange={(e) => setTitleSize(e.target.value)}
+                                    onChange={handleTitleSizeChange}
                                 />
                                 <NormalInput 
                                     title={t('EDITOR_ArtistSize')} 

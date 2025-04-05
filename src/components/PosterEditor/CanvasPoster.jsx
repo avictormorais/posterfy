@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react';
 import waterMarkBlack from '../../assets/waterMarkBlack.png'
 import waterMarkWhite from '../../assets/waterMarkWhite.png'
 
-const CanvasPoster = ({ onImageReady, posterData, generatePoster }) => {
+const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdjust }) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
@@ -54,11 +54,23 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster }) => {
             };
 
             const drawAlbumInfos = async () => {
-                if (posterData.titleSize != '') {
-                    ctx.font = `bold ${posterData.titleSize}px Montserrat`;
+                let titleFontSize = posterData.titleSize ? parseInt(posterData.titleSize) : 230;
+
+                if (!posterData.userAdjustedTitleSize && !posterData.initialTitleSizeSet) {
+                    ctx.font = `bold ${titleFontSize}px Montserrat`;
+                    let titleWidth = ctx.measureText(posterData.albumName).width;
+
+                    while (titleWidth > (2480 - posterData.marginSide * 2)) {
+                        titleFontSize -= 1;
+                        ctx.font = `bold ${titleFontSize}px Montserrat`;
+                        titleWidth = ctx.measureText(posterData.albumName).width;
+                    }
+
+                    onTitleSizeAdjust(titleFontSize, true);
                 } else {
-                    ctx.font = 'bold 230px Montserrat';
+                    ctx.font = `bold ${titleFontSize}px Montserrat`;
                 }
+
                 ctx.fillStyle = posterData.textColor;
 
                 if (posterData.showTracklist) {
@@ -67,28 +79,25 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster }) => {
                     ctx.fillText(posterData.albumName, posterData.marginSide, 2790 + posterData.marginTop);
                 }
 
-                if (posterData.artistsSize != '') {
-                    ctx.font = `bold ${posterData.artistsSize}px Montserrat`;
-                } else {
-                    ctx.font = 'bold 110px Montserrat';
-                }
+                let artistsFontSize = posterData.artistsSize ? parseInt(posterData.artistsSize) : 110;
+                ctx.font = `bold ${artistsFontSize}px Montserrat`;
 
                 if (posterData.showTracklist) {
-                    ctx.fillText(posterData.artistsName, posterData.marginSide, (2500 + posterData.marginTop) + parseInt(posterData.artistsSize) * 1.3);
+                    ctx.fillText(posterData.artistsName, posterData.marginSide, (2500 + posterData.marginTop) + artistsFontSize * 1.3);
                 } else {
-                    ctx.fillText(posterData.artistsName, posterData.marginSide, (2820 + posterData.marginTop) + parseInt(posterData.artistsSize));
+                    ctx.fillText(posterData.artistsName, posterData.marginSide, (2820 + posterData.marginTop) + artistsFontSize);
                 }
 
                 ctx.font = `bold 70px Montserrat`;
                 ctx.fillText(posterData.titleRelease, posterData.marginSide, 3310);
-                let PlaceDataSize = ctx.measureText(posterData.titleRelease).width;
-                ctx.fillText(posterData.titleRuntime, PlaceDataSize + posterData.marginSide + 100, 3310);
+                let releaseWidth = ctx.measureText(posterData.titleRelease).width;
+                ctx.fillText(posterData.titleRuntime, releaseWidth + posterData.marginSide + 100, 3310);
 
-                ctx.globalAlpha = '0.7';
+                ctx.globalAlpha = 0.7;
                 ctx.font = `bold 60px Montserrat`;
-                ctx.fillText(posterData.runtime, PlaceDataSize + posterData.marginSide + 100, 3390);
+                ctx.fillText(posterData.runtime, releaseWidth + posterData.marginSide + 100, 3390);
                 ctx.fillText(posterData.releaseDate, posterData.marginSide, 3390);
-                ctx.globalAlpha = '1';
+                ctx.globalAlpha = 1;
 
                 ctx.fillStyle = posterData.color1;
                 ctx.fillRect(2045 - posterData.marginSide, 3368, 145, 30);
