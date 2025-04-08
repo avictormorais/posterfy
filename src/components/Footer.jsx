@@ -103,8 +103,9 @@ const AnimatedIconWrapper = styled.div`
 const IconMain = styled.div`
   position: absolute;
   top: 0;
-  left: 0;
+  left: 10;
   transition: all 0.3s ease;
+  margin-inline: auto;
 `
 
 const IconShadow = styled.div`
@@ -378,7 +379,7 @@ function Footer() {
           <AnimatedIconWrapper>
             <IconShadow className="icon-shadow" />
             <IconMain className="icon-main">
-              <Icon fill={"white"} width={"80px"} height={"88.1px"} />
+              <Icon fill={"white"} width={"100px"} height={"88.1px"} />
             </IconMain>
           </AnimatedIconWrapper>
 
