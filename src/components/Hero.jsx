@@ -1,8 +1,10 @@
-import styled from 'styled-components';
-import Icon from './icons/icon';
-import Albuns from '../assets/albuns.png';
-import { useTranslation } from 'react-i18next';
-import { MdOutlineKeyboardDoubleArrowDown } from "react-icons/md";
+"use client"
+
+import styled from "styled-components"
+import Icon from "./icons/icon"
+import { useTranslation } from "react-i18next"
+import { MdOutlineKeyboardDoubleArrowDown } from "react-icons/md"
+import DivAlbum from "./DivAlbum"
 
 const HeroDiv = styled.div`
     width: 100%;
@@ -15,7 +17,7 @@ const HeroDiv = styled.div`
     text-align: center;
     height: 100vh;
     align-items: center;
-`;
+`
 
 const Container = styled.div`
     width: 100%;
@@ -29,7 +31,7 @@ const Container = styled.div`
     @media (max-width: 550px) {
         padding: 0;
     }
-`;
+`
 
 const ContainerIcon = styled.div`
     max-width: 100%;
@@ -55,7 +57,7 @@ const ContainerIcon = styled.div`
         0%, 50%, 90%, 100% { opacity: 0.1; transform: scale(1); }
         30%, 70% { opacity: 0.25; transform: scale(1.05); }
     }
-`;
+`
 
 const Title = styled.h1`
     font-size: 5em;
@@ -68,7 +70,7 @@ const Title = styled.h1`
     @media (max-width: 600px) {
         font-size: 4em;
     }
-`;
+`
 
 const Paragraph = styled.p`
     font-size: 1em;
@@ -80,19 +82,7 @@ const Paragraph = styled.p`
     @media (max-width: 900px) {
         width: 90%;
     }
-`;
-
-const DivAlbum = styled.div`
-    display: flex;
-    width: 80%;
-    justify-content: center;
-    align-items: center;
-    margin: 0px auto;
-`;
-
-const AlbumExample = styled.img`
-    width: 100%;
-`;
+`
 
 const HeroIcon = styled(MdOutlineKeyboardDoubleArrowDown)`
     font-size: 2em;
@@ -101,42 +91,36 @@ const HeroIcon = styled(MdOutlineKeyboardDoubleArrowDown)`
     opacity: 0.2;
     position: absolute;
     bottom: 7%;
-`;
+`
 
 function Hero() {
-    const { t } = useTranslation();
+  const { t } = useTranslation()
 
-    const handleScroll = () => {
-        window.scrollTo({
-            top: window.innerHeight - 100,
-            behavior: 'smooth'
-        });
-    }
+  const handleScroll = () => {
+    window.scrollTo({
+      top: window.innerHeight - 100,
+      behavior: "smooth",
+    })
+  }
 
-    return (
-        <>
-            <HeroDiv>
-                <Container>
-                    <Title>Posterfy</Title>
-                    <Paragraph>
-                        {t('paragraphHero1')}
-                    </Paragraph>
-                    <Paragraph>
-                        {t('paragraphHero2')}
-                    </Paragraph>
+  return (
+    <>
+      <HeroDiv>
+        <Container>
+          <Title>Posterfy</Title>
+          <Paragraph>{t("paragraphHero1")}</Paragraph>
+          <Paragraph>{t("paragraphHero2")}</Paragraph>
 
-                    <ContainerIcon>
-                        <Icon fill={'white'} width={'180px'} height={'198.23px'} />
-                    </ContainerIcon>
+          <ContainerIcon>
+            <Icon fill={"white"} width={"180px"} height={"198.23px"} />
+          </ContainerIcon>
 
-                    <HeroIcon onClick={handleScroll}/>
-                </Container>
-            </HeroDiv>
-            <DivAlbum>
-                <AlbumExample src={Albuns} />
-            </DivAlbum>
-        </>
-    );
+          <HeroIcon onClick={handleScroll} />
+        </Container>
+      </HeroDiv>
+      <DivAlbum />
+    </>
+  )
 }
 
-export default Hero;
+export default Hero
