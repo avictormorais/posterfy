@@ -19,16 +19,16 @@ const AlbumPoster = styled.div`
   position: relative;
   width: ${(props) =>
     props.index === 2
-      ? "300px"
+      ? "329px"
       : props.index === 1 || props.index === 3
-      ? "260px"
-      : "220px"};
+      ? "288px"
+      : "249px"};
   height: ${(props) =>
     props.index === 2
-      ? "450px"
+      ? "465px"
       : props.index === 1 || props.index === 3
-      ? "390px"
-      : "330px"};
+      ? "405px"
+      : "345px"};
   margin: 0 -30px;
   transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: ${(props) => {
@@ -40,7 +40,7 @@ const AlbumPoster = styled.div`
   }};
   transform: ${(props) =>
     props.isHovered
-      ? "scale(1.08)"
+      ? "scale(1.1)"
       : props.isMobile
       ? "scale(1)"
       : `scale(0.95)`};

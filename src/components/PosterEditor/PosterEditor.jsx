@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
 import CheckInput from "./inputs/CheckInput";
 import FileInput from "./inputs/FileInput";
+import FontInput from "./inputs/FontInput";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
 import LoadingDiv from "../LoadingDiv";
@@ -198,6 +199,27 @@ function PosterEditor({ albumID, handleClickBack }){
     const [showTracklist, setShowTracklist] = useState(false);
     const [albumCover, setAlbumCover] = useState('');
     const [uncompressedAlbumCover, setUncompressedAlbumCover] = useState('');
+    const [customFont, setCustomFont] = useState('');
+    const [customFontFile, setCustomFontFile] = useState(null);
+
+    useEffect(() => {
+        if (customFontFile) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const fontName = 'CustomFont';
+                const fontFace = new FontFace(fontName, e.target.result);
+                try {
+                    const font = await fontFace.load();
+                    document.fonts.add(font);
+                    setCustomFont(fontName);
+                } catch (error) {
+                    console.error('Erro ao carregar fonte:', error);
+                }
+            };
+            reader.readAsArrayBuffer(customFontFile);
+        }
+    }, [customFontFile]);
+
     const [useUncompressed, setUseUncompressed] = useState(false);
     const [fileName, setFileName] = useState("Original");
     const [tracklist, setTracklist] = useState('');
@@ -470,6 +492,7 @@ function PosterEditor({ albumID, handleClickBack }){
                             posterData={posterData}
                             generatePoster={generatePoster}
                             onTitleSizeAdjust={handleTitleSizeAdjust}
+                            customFont={customFont}
                         />
                         {image ? (
                             <PosterPreview src={image} ref={previewRef} />
@@ -586,6 +609,11 @@ function PosterEditor({ albumID, handleClickBack }){
                                     title={t('EDITOR_Cover')}
                                     onChange={handleFileChange}
                                     text={fileName}
+                                />
+                                <FontInput
+                                    title={t('EDITOR_Font')}
+                                    text={customFontFile?.name || t('EDITOR_DefaultFont')}
+                                    onChange={setCustomFontFile}
                                 />
         
                                 {showColorSelector && colorInputPosition && currentColorInput && (

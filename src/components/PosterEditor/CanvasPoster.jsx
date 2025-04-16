@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react';
 import waterMarkBlack from '../../assets/waterMarkBlack.png'
 import waterMarkWhite from '../../assets/waterMarkWhite.png'
 
-const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdjust }) => {
+const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, customFont }) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
@@ -56,19 +56,20 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
             const drawAlbumInfos = async () => {
                 let titleFontSize = posterData.titleSize ? parseInt(posterData.titleSize) : 230;
 
+                const fontFamily = customFont || 'Montserrat';
                 if (!posterData.userAdjustedTitleSize && !posterData.initialTitleSizeSet) {
-                    ctx.font = `bold ${titleFontSize}px Montserrat`;
+                    ctx.font = `bold ${titleFontSize}px ${fontFamily}`;
                     let titleWidth = ctx.measureText(posterData.albumName).width;
 
                     while (titleWidth > (2480 - posterData.marginSide * 2)) {
                         titleFontSize -= 1;
-                        ctx.font = `bold ${titleFontSize}px Montserrat`;
+                        ctx.font = `bold ${titleFontSize}px ${fontFamily}`;
                         titleWidth = ctx.measureText(posterData.albumName).width;
                     }
 
                     onTitleSizeAdjust(titleFontSize, true);
                 } else {
-                    ctx.font = `bold ${titleFontSize}px Montserrat`;
+                    ctx.font = `bold ${titleFontSize}px ${fontFamily}`;
                 }
 
                 ctx.fillStyle = posterData.textColor;
@@ -80,7 +81,7 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
                 }
 
                 let artistsFontSize = posterData.artistsSize ? parseInt(posterData.artistsSize) : 110;
-                ctx.font = `bold ${artistsFontSize}px Montserrat`;
+                ctx.font = `bold ${artistsFontSize}px ${customFont || 'Montserrat'}`;
 
                 if (posterData.showTracklist) {
                     ctx.fillText(posterData.artistsName, posterData.marginSide, (2500 + posterData.marginTop) + artistsFontSize * 1.3);
@@ -88,13 +89,13 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
                     ctx.fillText(posterData.artistsName, posterData.marginSide, (2820 + posterData.marginTop) + artistsFontSize);
                 }
 
-                ctx.font = `bold 70px Montserrat`;
+                ctx.font = `bold 70px ${customFont || 'Montserrat'}`;
                 ctx.fillText(posterData.titleRelease, posterData.marginSide, 3310);
                 let releaseWidth = ctx.measureText(posterData.titleRelease).width;
                 ctx.fillText(posterData.titleRuntime, releaseWidth + posterData.marginSide + 100, 3310);
 
                 ctx.globalAlpha = 0.7;
-                ctx.font = `bold 60px Montserrat`;
+                ctx.font = `bold 60px ${customFont || 'Montserrat'}`;
                 ctx.fillText(posterData.runtime, releaseWidth + posterData.marginSide + 100, 3390);
                 ctx.fillText(posterData.releaseDate, posterData.marginSide, 3390);
                 ctx.globalAlpha = 1;
@@ -113,7 +114,7 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
                 let maxWidth = 0;
                 let paddingColumn = 0;
                 const fontSize = posterData.tracksSize ? parseInt(posterData.tracksSize) : 50;
-                ctx.font = `bold ${fontSize}px Montserrat`;
+                ctx.font = `bold ${fontSize}px ${customFont || 'Montserrat'}`;
                 const musicSize = fontSize;
 
                 const marginTop = parseInt(posterData.marginTop || 0);

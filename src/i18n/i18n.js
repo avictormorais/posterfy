@@ -55,7 +55,9 @@ i18n
                 EDITOR_Download: "Poster",
                 EDITOR_Cover: "Cover",
                 EDITOR_Uncompressed: "Improved cover",
-                EDITOR_UncompressedText: "Use improved cover"
+                EDITOR_UncompressedText: "Use improved cover",
+                EDITOR_Font: "Custom font",
+                EDITOR_DefaultFont: "Select"
             },
         },
         pt: {
@@ -108,7 +110,9 @@ i18n
                 EDITOR_Download: "Poster",
                 EDITOR_Cover: "Capa",
                 EDITOR_Uncompressed: "Capa melhorada",
-                EDITOR_UncompressedText: "Usar capa melhorada"
+                EDITOR_UncompressedText: "Usar capa melhorada",
+                EDITOR_Font: "Fonte personalizada",
+                EDITOR_DefaultFont: "Selecione"
             },
         },
         es: {
@@ -161,7 +165,9 @@ i18n
                 EDITOR_Download: "Póster",
                 EDITOR_Cover: "Portada",
                 EDITOR_Uncompressed: "Portada mejorada",
-                EDITOR_UncompressedText: "Usar portada mejorada"
+                EDITOR_UncompressedText: "Usar portada mejorada",
+                EDITOR_Font: "Fuente personalizada",
+                EDITOR_DefaultFont: "Seleccionar"
             },
         }, 
     },
