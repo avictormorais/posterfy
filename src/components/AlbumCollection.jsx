@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import styled from "styled-components"
 import { albumData } from "./albumData"
@@ -100,12 +98,57 @@ const AlbumPoster = styled.div`
         : "270px"};
     margin: 0;
   }
-`;
+`
+
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+`
+
+const ModalContent = styled.div`
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    max-width: 70%;
+    max-height: 70%;
+    object-fit: contain;
+  }
+`
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: -10px;
+  right: 50px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2em;
+  cursor: pointer;
+
+  &:hover {
+    color: #ccc;
+  }
+`
 
 const AlbumCollection = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [isMobile, setIsMobile] = useState(false)
   const [isTablet, setIsTablet] = useState(false)
+  const [modalImage, setModalImage] = useState(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -118,23 +161,45 @@ const AlbumCollection = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  const openModal = (image) => {
+    setModalImage(image)
+    document.body.style.overflow = "hidden"
+  }
+
+  const closeModal = () => {
+    setModalImage(null)
+    document.body.style.overflow = "auto"
+  }
+
   return (
-    <AlbumsContainer>
-      {albumData.map((album, index) => (
-        <AlbumPoster
-          key={album.id}
-          index={index}
-          isHovered={hoveredIndex === index}
-          otherIsHovered={hoveredIndex !== null}
-          isMobile={isMobile}
-          isTablet={isTablet}
-          onMouseEnter={() => setHoveredIndex(index)}
-          onMouseLeave={() => setHoveredIndex(null)}
-        >
-          <img src={album.coverImage || "/placeholder.svg"} alt={`${album.artist} - ${album.title}`} />
-        </AlbumPoster>
-      ))}
-    </AlbumsContainer>
+    <>
+      <AlbumsContainer>
+        {albumData.map((album, index) => (
+          <AlbumPoster
+            key={album.id}
+            index={index}
+            isHovered={hoveredIndex === index}
+            otherIsHovered={hoveredIndex !== null}
+            isMobile={isMobile}
+            isTablet={isTablet}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            onClick={() => openModal(album.coverImage || "/placeholder.svg")}
+          >
+            <img src={album.coverImage || "/placeholder.svg"} alt={`${album.artist} - ${album.title}`} />
+          </AlbumPoster>
+        ))}
+      </AlbumsContainer>
+
+      {modalImage && (
+        <Modal onClick={closeModal}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <CloseButton onClick={closeModal}>&times;</CloseButton>
+            <img src={modalImage} alt="Album cover" />
+          </ModalContent>
+        </Modal>
+      )}
+    </>
   )
 }
 
