@@ -177,6 +177,24 @@ const FakePoster = styled.div`
     }
 `
 
+const ShortcutsInfo = styled.p`
+    font-size: 0.75em;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 10px;
+    margin-right: 20px;
+    text-align: right;
+    width: 100%;
+    margin-left: 20px;
+
+    @media (max-width: 450px) {
+        text-align: center;
+    }
+
+    @media (max-width: 350px) {
+        margin-bottom: 10px;
+    }
+`;
+
 function PosterEditor({ albumID, handleClickBack }){
     const { t } = useTranslation();
     const previewRef = useRef(null);
@@ -358,9 +376,6 @@ function PosterEditor({ albumID, handleClickBack }){
     };
 
     async function getItunesUncompressedAlbumCover(searchQuery, country = "us") {
-        
-        // Method derived from https://github.com/bendodson/itunes-artwork-finder/blob/master/api.php
-
         try {
             let apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&country=${country}&entity=album&limit=1`;
             let response = await fetch(apiUrl);
@@ -369,11 +384,11 @@ function PosterEditor({ albumID, handleClickBack }){
             let data = await response.json();
             if (!data.results?.length) {
                 console.warn("No album data found.");
-                setUseUncompressed(false);  // unable to find uncompressed based on inputted information
+                setUseUncompressed(false);
                 return '';
             }
     
-            let result = data.results[0]; // Take the first result
+            let result = data.results[0];
             let hires = result.artworkUrl100.replace("100x100bb", "100000x100000-999");
             let parts = hires.split("/image/thumb/");
             
@@ -457,7 +472,23 @@ function PosterEditor({ albumID, handleClickBack }){
     
         if (albumID) fetchAlbumData();
     }, [albumID]);
-    
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                handleApplyClick();
+            } else if (event.ctrlKey && event.key === 'd') {
+                event.preventDefault();
+                handleDownloadClick();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [image, albumName, handleDownloadClick]);
 
     return(
         <>
@@ -652,16 +683,16 @@ function PosterEditor({ albumID, handleClickBack }){
                                 )}
                             </EditorSettings>
                             <DivButtons>
-                                <ButtonDiv onClick={handleDownloadClick}>
-                                    <IconDownload/>
-                                    <ButtonText>
-                                        {t('EDITOR_Download')}
-                                    </ButtonText>
-                                </ButtonDiv>
                                 <ButtonDiv onClick={handleCoverDownloadClick}>
                                     <IconDownload/>
                                     <ButtonText>
                                         {t('EDITOR_DownloadCover')}
+                                    </ButtonText>
+                                </ButtonDiv>
+                                <ButtonDiv onClick={handleDownloadClick}>
+                                    <IconDownload/>
+                                    <ButtonText>
+                                        {t('EDITOR_Download')}
                                     </ButtonText>
                                 </ButtonDiv>
                                 <ButtonDiv onClick={handleApplyClick}>
@@ -671,6 +702,9 @@ function PosterEditor({ albumID, handleClickBack }){
                                     </ButtonText>
                                 </ButtonDiv>
                             </DivButtons>
+                            <ShortcutsInfo>
+                                {t('EDITOR_Shortcuts')}: Ctrl+S ({t('EDITOR_Apply')}), Ctrl+D ({t('EDITOR_Download')})
+                            </ShortcutsInfo>
                         </EditorColumn>
                     </ContainerEditor>
                 </Container>
