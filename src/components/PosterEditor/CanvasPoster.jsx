@@ -27,7 +27,8 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
                         ctx.drawImage(image, posterData.marginCover, posterData.marginCover, width - posterData.marginCover * 2, width - posterData.marginCover * 2);
                         if (posterData.useFade) {
                             let verticalFade = ctx.createLinearGradient(0, 0, 0, 3000);
-                            verticalFade.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
+                            const rgb = hexToRgb(posterData.backgroundColor);
+                            verticalFade.addColorStop(0.5, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
                             verticalFade.addColorStop(0.8, posterData.backgroundColor);
                             ctx.fillStyle = verticalFade;
                             ctx.fillRect(0, 0, canvas.width, 2500);
