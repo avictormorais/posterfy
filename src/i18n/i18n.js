@@ -59,6 +59,8 @@ i18n
                 EDITOR_Font: "Custom font",
                 EDITOR_DefaultFont: "Select",
                 EDITOR_Shortcuts: "Shortcuts",
+                EDITOR_InformationTab: "Informations",
+                EDITOR_TracklistTab: "Tracklist",
             },
         },
         pt: {
@@ -115,6 +117,8 @@ i18n
                 EDITOR_Font: "Fonte personalizada",
                 EDITOR_DefaultFont: "Selecione",
                 EDITOR_Shortcuts: "Atalhos",
+                EDITOR_InformationTab: "Informações",
+                EDITOR_TracklistTab: "Faixas",
             },
         },
         es: {
@@ -171,6 +175,8 @@ i18n
                 EDITOR_Font: "Fuente personalizada",
                 EDITOR_DefaultFont: "Seleccionar",
                 EDITOR_Shortcuts: "Atajos",
+                EDITOR_InformationTab: "Informaciones",
+                EDITOR_TracklistTab: "Lista de canciones",
             },
         }, 
     },
