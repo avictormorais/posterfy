@@ -101,6 +101,27 @@ Please ensure that your code passes all tests and adheres to the project’s sty
 ## 🎉 Community Contributions
 A huge thank you to [debug420](https://github.com/debug420) for contributing improvements to Posterfy! This fork introduced some great new features, your contributions help make Posterfy even better. 🚀
 
+## 📄 License
+
+This project is licensed under the **Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)** license.
+
+### What this means:
+
+✅ **You can:**
+- Share — copy and redistribute the material in any medium or format
+
+❌ **You cannot:**
+- Use the material for commercial purposes
+- Remix, transform, or build upon the material and distribute it
+
+⚠️ **You must:**
+- Give appropriate credit and provide a link to the license
+- Indicate if changes were made
+
+Please, all improvements, fixes and opinions are welcome, use this repo to share ideas and get in touch.
+
+For the complete license terms, see the [LICENSE](./LICENSE) file or visit: https://creativecommons.org/licenses/by-nc-nd/4.0/
+
 <h3 align="left">📕 - Disclaimer</h3>
 
 - **🛡️ Non-profit** - This project is made for educational and non-commercial purposes. All rights to images and information belong to Spotify and the respective artists.
