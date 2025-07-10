@@ -128,6 +128,8 @@ function LanguageSelector() {
         return "BR"
       case "es":
         return "ES"
+      case "zh":
+        return "CN"
       default:
         return "US"
     }
@@ -156,6 +158,10 @@ function LanguageSelector() {
             <LanguageOption onClick={() => changeLanguage("es")}>
               <FlagIcon countryCode="ES" svg style={{ width: "1.5em", height: "1.5em" }} />
               Español
+            </LanguageOption>
+            <LanguageOption onClick={() => changeLanguage("zh")}>
+              <FlagIcon countryCode="CN" svg style={{ width: "1.5em", height: "1.5em" }} />
+              中文
             </LanguageOption>
           </DropdownContent>
         </DropdownMenu>
