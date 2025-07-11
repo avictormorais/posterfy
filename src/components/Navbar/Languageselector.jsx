@@ -11,12 +11,12 @@ const FlagButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
   border-radius: 50%;
   background: transparent;
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
+  border: 1px solid rgba(255, 255, 255, .8);
   
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
@@ -47,36 +47,37 @@ const DropdownMenu = styled.div`
   position: absolute;
   right: 0;
   margin-top: 8px;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(220, 220, 220, 0.05);
   z-index: 50;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  top: 60px;
 `
 
 const Triangle = styled.div`
   position: absolute;
-  top: 0;
-  right: 20px;
+  top: -15px;
+  right: 10px;
   width: 0;
   height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-bottom: 8px solid rgba(0, 0, 0, 0.9);
-  transform: translateY(-100%);
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid rgba(0, 0, 0, 0.3);
+  z-index: 60;
 `
 
 const DropdownContent = styled.div`
   padding: 8px 4px;
+  padding-inline: 10px;
 `
 
 const LanguageOption = styled.button`
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 8px 16px;
+  padding: 12px 10px;
   background: transparent;
   border: none;
   color: white;
@@ -85,15 +86,24 @@ const LanguageOption = styled.button`
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
-  
+
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.025);
   }
+
+  &:hover svg {
+    transform: scale(1.2);
+  }
+`
+
+const LanguageName = styled.span`
+  margin-left: 8px;
 `
 
 const FlagIcon = styled(ReactCountryFlag)`
   margin-right: 8px;
   transform: scale(1.2);
+  border-radius: 100%;
 `
 
 function LanguageSelector() {
@@ -162,20 +172,45 @@ function LanguageSelector() {
           <Triangle />
           <DropdownContent>
             <LanguageOption onClick={() => changeLanguage("pt")}>
-              <FlagIcon countryCode="BR" svg style={{ width: "1.5em", height: "1.5em" }} />
-              Português
+              <FlagIcon countryCode="BR" svg 
+                style={{
+                  width: '1.5em',
+                  height: '1.5em',
+                  borderRadius: '50%',
+                  objectFit: 'cover'
+                }} />
+                <LanguageName>Português</LanguageName>
             </LanguageOption>
             <LanguageOption onClick={() => changeLanguage("en")}>
-              <FlagIcon countryCode="US" svg style={{ width: "1.5em", height: "1.5em" }} />
-              English
+              <FlagIcon countryCode="US" svg
+                style={{
+                  width: '1.5em',
+                  height: '1.5em',
+                  borderRadius: '50%',
+                  objectFit: 'cover'
+                }} />
+              <LanguageName>English</LanguageName>
             </LanguageOption>
             <LanguageOption onClick={() => changeLanguage("es")}>
-              <FlagIcon countryCode="ES" svg style={{ width: "1.5em", height: "1.5em" }} />
-              Español
+              <FlagIcon countryCode="ES" svg
+                style={{
+                  width: '1.5em',
+                  height: '1.5em',
+                  borderRadius: '50%',
+                  objectFit: 'cover'
+                }} />
+              <LanguageName>Español</LanguageName>
             </LanguageOption>
             <LanguageOption onClick={() => changeLanguage("zh")}>
-              <FlagIcon countryCode="CN" svg style={{ width: "1.5em", height: "1.5em" }} />
-              中文
+              <FlagIcon countryCode="CN" svg
+                style={{
+                  width: '1.5em',
+                  height: '1.5em',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  marginRight: '8px'
+                }} />
+                <LanguageName>中文</LanguageName>
             </LanguageOption>
           </DropdownContent>
         </DropdownMenu>

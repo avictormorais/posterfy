@@ -9,7 +9,7 @@ const AlbumsContainer = styled.div`
   width: 100%;
   position: relative;
   perspective: 1000px;
-  padding: 20px 0;
+  padding: 80px 0;
   overflow: hidden;
 `
 
