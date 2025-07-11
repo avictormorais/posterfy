@@ -32,9 +32,14 @@ const FlagWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #f0f0f0;
   
-  & > span {
-    transform: scale(1.5);
+  & * {
+    border-radius: 50% !important;
+    width: 2.5em !important;
+    height: 2.5em !important;
+    object-fit: cover !important;
+    display: block !important;
   }
 `
 
@@ -139,7 +144,16 @@ function LanguageSelector() {
     <LanguageSelectorContainer className="language-selector">
       <FlagButton onClick={toggleDropdown} aria-label="Select language">
         <FlagWrapper>
-          <ReactCountryFlag countryCode={getCurrentFlag()} svg style={{ width: "150%", height: "150%" }} />
+          <ReactCountryFlag 
+            countryCode={getCurrentFlag()} 
+            svg 
+            style={{
+              width: '2.5em',
+              height: '2.5em',
+              borderRadius: '50%',
+              objectFit: 'cover'
+            }}
+          />
         </FlagWrapper>
       </FlagButton>
 
