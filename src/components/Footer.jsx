@@ -42,8 +42,8 @@ const Container = styled.div`
     top: 0;
     left: 0;
     right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--PosterfyGreen), transparent);
+    height: 0px;
+    background: linear-gradient(190deg, transparent, var(--PosterfyGreen), transparent);
   }
   
   @media (max-width: 768px) {
@@ -110,10 +110,10 @@ const IconMain = styled.div`
 
 const IconShadow = styled.div`
   position: absolute;
-  bottom: 5px;
-  width: 80px;
+  bottom: 0px;
+  width: 105px;
   height: 20px;
-  background: var(--PosterfyGreen);
+  background: #ffffff6f;
   filter: blur(15px);
   opacity: 0.3;
   border-radius: 50%;
@@ -129,7 +129,7 @@ const CreditText = styled.div`
   
   .credit-content {
     display: inline-block;
-    background: linear-gradient(90deg, #ffffff, var(--PosterfyGreen), #ffffff);
+    background: white;
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
@@ -155,11 +155,6 @@ const CreditText = styled.div`
     font-weight: 700;
     position: relative;
     transition: all 0.3s ease;
-    
-    &:hover {
-      color: white;
-      text-shadow: 0 0 8px var(--PosterfyGreen);
-    }
     
     &::after {
       content: '';
@@ -210,6 +205,7 @@ const ThemeSection = styled.div`
   animation-delay: 0.2s;
   opacity: 0;
   animation-fill-mode: forwards;
+  margin-top: auto;
   
   @media (max-width: 768px) {
     align-items: center;
@@ -240,16 +236,16 @@ const ThemeCards = styled.div`
   flex-wrap: wrap;
   gap: 10px;
   width: 100%;
-  max-width: 400px;
-  justify-content: center;
+  justify-content: right;
+  margin-right: auto;
 `
 
 const ThemeCard = styled.button`
   background-color: ${(props) => props.color};
   border: none;
   border-radius: 8px;
-  width: 70px;
-  height: 70px;
+  width: 45px;
+  height: 45px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -259,29 +255,17 @@ const ThemeCard = styled.button`
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 100%;
+  border: ${(props) => (props.active ? "1px solid var(--PosterfyGreen)" : "1px solid rgba(255, 255, 255, 0.25)")};
   
   &:hover {
-    transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  }
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: ${(props) => (props.active ? "2px solid var(--PosterfyGreen)" : "1px solid rgba(255, 255, 255, 0.1)")};
-    border-radius: 8px;
-    box-shadow: ${(props) => (props.active ? "0 0 10px var(--PosterfyGreen)" : "none")};
-    transition: all 0.3s ease;
+    transform: scale(1.02);
   }
   
   svg {
-    font-size: 1.3em;
+    font-size: 1.5em;
     color: white;
-    margin-bottom: 4px;
     opacity: 0.9;
   }
   
@@ -327,6 +311,7 @@ const GithubLink = styled.a`
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
+  margin-top: 25px;
   
   svg {
     font-size: 1.3em;
@@ -335,12 +320,8 @@ const GithubLink = styled.a`
   
   &:hover {
     background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    
-    svg {
-      transform: rotate(360deg);
-    }
+    transform: scale(1.05);
   }
   
   @media (max-width: 480px) {
@@ -398,10 +379,6 @@ function Footer() {
         </CreditsSection>
 
         <ThemeSection>
-          <ThemeTitle>
-            <FaPalette /> {t("Theme")}
-          </ThemeTitle>
-
           <ThemeCards>
             {themes.map((themeOption) => (
               <ThemeCard
@@ -412,7 +389,6 @@ function Footer() {
                 aria-label={`${t("SwitchTo", "Switch to")} ${themeOption.name} ${t("Theme").toLowerCase()}`}
               >
                 {themeOption.icon}
-                <span>{t(`ThemeName_${themeOption.id.replace("theme-", "")}`, themeOption.name)}</span>
               </ThemeCard>
             ))}
           </ThemeCards>
