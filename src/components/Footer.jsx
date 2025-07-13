@@ -238,6 +238,11 @@ const ThemeCards = styled.div`
   width: 100%;
   justify-content: right;
   margin-right: auto;
+
+  @media (max-width: 770px) {
+    justify-content: center;
+    margin-top: 20px;
+  }
 `
 
 const ThemeCard = styled.button`
@@ -277,10 +282,27 @@ const ThemeCard = styled.button`
   }
   
   @media (max-width: 480px) {
-    width: 60px;
-    height: 60px;
+    width: 35px;
+    height: 35px;
   }
 `
+
+const ThemeDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 45px;
+`;
+
+const ThemeName = styled.p`
+  font-size: 0.8em;
+  margin-top: 10px;
+  right: 20px;
+  font-weight: bolder;
+  transition: all 0.3s ease;
+  opacity: ${(props) => (props.active ? "0.5" : "0")};;
+`;
 
 const SocialSection = styled.div`
   grid-column: span 2;
@@ -381,15 +403,18 @@ function Footer() {
         <ThemeSection>
           <ThemeCards>
             {themes.map((themeOption) => (
-              <ThemeCard
-                key={themeOption.id}
-                color={themeOption.color}
-                active={theme === themeOption.id}
-                onClick={() => handleThemeChange(themeOption.id)}
-                aria-label={`${t("SwitchTo", "Switch to")} ${themeOption.name} ${t("Theme").toLowerCase()}`}
-              >
-                {themeOption.icon}
-              </ThemeCard>
+              <ThemeDiv key={themeOption.id}>
+                <ThemeCard
+                  key={themeOption.id}
+                  color={themeOption.color}
+                  active={theme === themeOption.id}
+                  onClick={() => handleThemeChange(themeOption.id)}
+                  aria-label={`${t("SwitchTo", "Switch to")} ${themeOption.name} ${t("Theme").toLowerCase()}`}
+                >
+                  {themeOption.icon}
+                </ThemeCard>
+                <ThemeName active={theme === themeOption.id} >{themeOption.name}</ThemeName>
+              </ThemeDiv>
             ))}
           </ThemeCards>
         </ThemeSection>
