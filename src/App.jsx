@@ -10,7 +10,10 @@ import Footer from './components/Footer';
 import Grid from './components/Grid';
 import Faq from './components/Faq/Faq';
 import PosterEditor from './components/PosterEditor/PosterEditor'
+import SEOComponent from './components/SEOComponent';
+import AnalyticsInitializer from './components/AnalyticsInitializer';
 import { usePageTracking } from './hooks/usePageTracking';
+import { initScrollTracking } from './services/enhancedAnalytics';
 
 
 function App() {
@@ -20,6 +23,11 @@ function App() {
   const [albumId, setAlbumId] = useState(null);
 
   usePageTracking();
+
+  useEffect(() => {
+    const cleanup = initScrollTracking();
+    return cleanup;
+  }, []);
 
   function onClickAlbum(id){
     setAlbumId(id);
@@ -43,6 +51,8 @@ function App() {
 
   return (
     <>
+      <SEOComponent />
+      <AnalyticsInitializer />
       {loading ? (
         <Loading />
       ) : (

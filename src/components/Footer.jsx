@@ -377,6 +377,33 @@ function Footer() {
 
   return (
     <Container>
+      <div style={{ 
+        position: 'absolute', 
+        left: '-10000px', 
+        top: 'auto', 
+        width: '1px', 
+        height: '1px', 
+        overflow: 'hidden' 
+      }}>
+        <footer>
+          <h4>Album Poster Generator Links</h4>
+          <nav>
+            <a href="https://posterfy.space">Free Album Poster Maker</a>
+            <a href="https://posterfy.space#poster-generator">Create Music Posters</a>
+            <a href="https://posterfy.space#faq">Album Poster FAQ</a>
+          </nav>
+          <p>
+            Posterfy is the best free album poster generator online. Create custom music posters 
+            from Spotify albums instantly. No signup required for our album poster maker.
+          </p>
+          <address>
+            Contact: Posterfy Album Poster Generator
+            Website: https://posterfy.space
+            Keywords: album poster generator, music poster maker, spotify poster, free poster creator
+          </address>
+        </footer>
+      </div>
+      
       <FooterContent>
         <CreditsSection>
           <AnimatedIconWrapper>

@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Anchor from "../Anchor";
 import Question from "./Question";
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
 const Container = styled.div`
     width: 100%;
@@ -22,8 +23,8 @@ function Faq() {
     const { t } = useTranslation();
 
     return (
-        <Container>
-            <Anchor text={'Faq'} type={1}/>
+        <Container id="faq">
+            <Anchor text={'FAQ - Album Poster Generator'} type={1}/>
             <Questions>
                 <Question 
                     q={t('FAQ_HowItWorks_Question')} 

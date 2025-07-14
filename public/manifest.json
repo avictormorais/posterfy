@@ -1,0 +1,33 @@
+{
+  "name": "Posterfy - Album Poster Generator",
+  "short_name": "Posterfy",
+  "description": "Create stunning album posters for free with Posterfy. Design custom music posters from Spotify albums with professional templates.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/ico.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/ico.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["design", "music", "entertainment", "utilities"],
+  "screenshots": [
+    {
+      "src": "/assets/albuns.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Posterfy album poster generator interface"
+    }
+  ]
+}

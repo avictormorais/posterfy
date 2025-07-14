@@ -113,6 +113,27 @@ function Hero() {
           <Paragraph>{t("paragraphHero1")}</Paragraph>
           <Paragraph>{t("paragraphHero2")}</Paragraph>
 
+          <div style={{ 
+            position: 'absolute', 
+            left: '-10000px', 
+            top: 'auto', 
+            width: '1px', 
+            height: '1px', 
+            overflow: 'hidden' 
+          }}>
+            <h2>Free Album Poster Generator</h2>
+            <p>Create custom music posters from your favorite Spotify albums. Design professional album artwork posters with our easy-to-use online tool. No signup required - start creating your album poster now!</p>
+            <h3>Features:</h3>
+            <ul>
+              <li>Free album poster maker</li>
+              <li>Spotify integration</li>
+              <li>Custom poster design</li>
+              <li>High-quality downloads</li>
+              <li>Multiple format options</li>
+              <li>Professional templates</li>
+            </ul>
+          </div>
+
           <ContainerIcon>
             <Icon fill={"white"} width={"180px"} height={"198.23px"} />
           </ContainerIcon>

@@ -91,16 +91,26 @@ function Searchbar({ onSearch, value = '' }) {
 
     return (
         <Container>
-            <Bar>
-                <SearchIcon />
+            <Bar role="search" aria-label="Album search for poster creation">
+                <SearchIcon aria-hidden="true" />
                 <Spanbar />
                 <Input
                     placeholder={t('SearchPlaceholder')}
                     value={searchValue}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
+                    aria-label="Search for albums to create posters"
+                    title="Search any album from Spotify to generate a custom poster"
+                    autoComplete="off"
+                    type="search"
                 />
-                <SendIcon onClick={handleSendClick}/>
+                <SendIcon 
+                    onClick={handleSendClick}
+                    aria-label="Search for album"
+                    title="Click to search and create album poster"
+                    role="button"
+                    tabIndex={0}
+                />
             </Bar>
         </Container>
     );
