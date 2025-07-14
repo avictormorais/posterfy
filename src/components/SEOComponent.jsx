@@ -10,7 +10,7 @@ const SEOComponent = ({
     const domain = import.meta.env.VITE_DOMAIN || '.space';
     const baseUrl = `https://posterfy${domain}`;
     const canonical = baseUrl + '/';
-    const ogImage = baseUrl + '/assets/albuns.png';
+    const ogImage = baseUrl + '/albuns.png';
     
     // Update page title
     document.title = title;

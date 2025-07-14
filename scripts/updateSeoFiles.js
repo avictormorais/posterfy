@@ -95,7 +95,12 @@ https://www.posterfy${domain}/* ${baseUrl}/:splat 301!
 # Redirect old URLs to new ones (if any)
 /poster-generator  /  301
 /album-poster  /  301
-/music-poster  /  301`;
+/music-poster  /  301
+
+/sitemap.xml  /sitemap.xml  200
+/robots.txt   /robots.txt   200
+/*            /index.html   200
+`;
 
 const distPath = join(__dirname, '../dist');
 const publicPath = join(__dirname, '../public');
