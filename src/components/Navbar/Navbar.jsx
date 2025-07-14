@@ -39,6 +39,13 @@ const BrandName = styled.h1`
   color: var(--PosterfyGreen);
 `
 
+const DomainText = styled.span`
+  font-weight: normal;
+  font-size: 0.65em;
+  opacity: 0.4;
+  font-weight: 600;
+`
+
 const Divider = styled.div`
   position: absolute;
   bottom: 0;
@@ -67,6 +74,7 @@ const IconContainer = styled.div`
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const domain = import.meta.env.VITE_DOMAIN
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,7 +95,10 @@ function Navbar() {
           <IconContainer>
             <Icon fill={"#01b755"} width={"40px"} height={"44.05px"} />
           </IconContainer>
-          <BrandName>Posterfy</BrandName>
+          <BrandName>
+            Posterfy
+            {domain && <DomainText>{domain}</DomainText>}
+          </BrandName>
         </LogoContainer>
         <LanguageSelector />
       </NavbarContent>
