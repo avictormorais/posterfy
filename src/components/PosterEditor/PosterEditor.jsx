@@ -18,6 +18,7 @@ import LoadingDiv from "../LoadingDiv";
 import { Palette } from "color-thief-react";
 import CanvasPoster from "./CanvasPoster";
 import AnimatedInput from "./inputs/AnimatedInput";
+import { trackPosterDownload } from "../../services/analytics";
 
 const Container = styled.div`
     width: 80%;
@@ -464,6 +465,7 @@ function PosterEditor({ albumID, handleClickBack }) {
         link.href = image;
         link.download = `Posterfy - ${albumName}.png`;
         link.click();
+        trackPosterDownload(albumName, 'poster');
     };
     
     const handleCoverDownloadClick = async () => {
@@ -476,6 +478,7 @@ function PosterEditor({ albumID, handleClickBack }) {
             });
             link.click();
             URL.revokeObjectURL(link.href);
+            trackPosterDownload(albumName, 'uncompressed_cover');
         } else {
             if (!albumCover) return;
             const blob = await (await fetch(albumCover)).blob();
@@ -485,6 +488,7 @@ function PosterEditor({ albumID, handleClickBack }) {
             });
             link.click();
             URL.revokeObjectURL(link.href);
+            trackPosterDownload(albumName, 'cover');
         }
     };
 

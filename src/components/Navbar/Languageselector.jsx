@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import styled from "styled-components"
 import ReactCountryFlag from "react-country-flag"
 import { useTranslation } from "react-i18next"
+import { trackLanguageChange } from "../../services/analytics"
 
 const LanguageSelectorContainer = styled.div`
   position: relative;
@@ -135,6 +136,7 @@ function LanguageSelector() {
     i18n.changeLanguage(lang)
     localStorage.setItem("language", lang)
     setIsOpen(false)
+    trackLanguageChange(lang)
   }
 
   const getCurrentFlag = () => {

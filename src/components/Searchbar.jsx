@@ -4,6 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
+import { trackAlbumSearch } from '../services/analytics';
 
 const Container = styled.div`
     width: 100%;
@@ -71,11 +72,21 @@ function Searchbar({ onSearch, value = '' }) {
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             onSearch(searchValue);
+            if (searchValue.trim()) {
+                trackAlbumSearch(searchValue.trim());
+            }
         }
     };
 
     const handleInputChange = (e) => {
         setSearchValue(e.target.value);
+    };
+
+    const handleSendClick = () => {
+        onSearch(searchValue);
+        if (searchValue.trim()) {
+            trackAlbumSearch(searchValue.trim());
+        }
     };
 
     return (
@@ -89,7 +100,7 @@ function Searchbar({ onSearch, value = '' }) {
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                 />
-                <SendIcon onClick={() => onSearch(searchValue)}/>
+                <SendIcon onClick={handleSendClick}/>
             </Bar>
         </Container>
     );

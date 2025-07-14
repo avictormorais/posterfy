@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import Grid from './components/Grid';
 import Faq from './components/Faq/Faq';
 import PosterEditor from './components/PosterEditor/PosterEditor'
+import { usePageTracking } from './hooks/usePageTracking';
 
 
 function App() {
@@ -17,6 +18,8 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [albumId, setAlbumId] = useState(null);
+
+  usePageTracking();
 
   function onClickAlbum(id){
     setAlbumId(id);

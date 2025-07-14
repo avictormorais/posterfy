@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FaCheck, FaEyeDropper, FaPalette } from "react-icons/fa";
 import { RiCloseLargeLine } from "react-icons/ri";
 import { useRef } from "react";
+import { trackColorSelection } from "../../services/analytics";
 
 const Container = styled.div`
     background-color: var(--backgroundColor);
@@ -193,7 +194,10 @@ function ColorSelector({ DefaultColor, image, predefinedColors, position, onDone
             <HorizontalDiv>
                 {toggleDropper ? <Palette onClick={handleToggleDropper} /> : <Dropper onClick={handleToggleDropper} />}
                 <Cancel onClick={onClose} />
-                <Check onClick={() => onDone(color)} />
+                <Check onClick={() => {
+                    onDone(color);
+                    trackColorSelection(color);
+                }} />
             </HorizontalDiv>
         </Container>
     );
