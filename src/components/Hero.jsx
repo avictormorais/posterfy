@@ -47,10 +47,11 @@ const ContainerIcon = styled.div`
         width: 280px;
         height: 280px;
         border-radius: 50%;
-        background: #01b755;
-        filter: blur(100px);
+        background: white;
+        filter: blur(20px);
         z-index: -10;
         margin-top: -50px;
+        opacity: 0.05;
     }
 
     @keyframes heartbeat {
@@ -60,8 +61,9 @@ const ContainerIcon = styled.div`
 `
 
 const Title = styled.h1`
-    font-size: 5em;
+    font-size: 6.5em;
     margin-bottom: 20px;
+    margin-top: 20px;
 
     @media (max-width: 900px) {
         font-size: 4.5em;

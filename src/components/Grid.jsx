@@ -5,17 +5,22 @@ import Album from "./Album";
 import LoadingDiv from "./LoadingDiv";
 
 const Container = styled.div`
-    width: 78%;
+    width: 81%;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     margin: 0 auto;
     padding: 0;
     box-sizing: border-box;
-    gap: 15px;
+    gap: 20px;
+    justify-content: center;
+    justify-items: center;
 
     @media (max-width: 650px) {
         display: flex;
         overflow-x: scroll;
+        gap: 15px;
+        flex-direction: column;
+        width: 89%;
     }
 `;
 
@@ -91,8 +96,16 @@ function Grid({ query, onclick }) {
                 <LoadingDiv/>
             ) : (
                 <Container>
-                {albums.map(album => (
-                    <Album key={album.id} onClick={() => onclick(album.id)} cover={album.cover} title={album.title} artist={album.artist} id={album.id}/>
+                {albums.map((album, index) => (
+                    <Album 
+                        key={album.id} 
+                        onClick={() => onclick(album.id)} 
+                        cover={album.cover} 
+                        title={album.title} 
+                        artist={album.artist} 
+                        id={album.id}
+                        animationDelay={index * 100}
+                    />
                 ))}
             </Container>
             )}

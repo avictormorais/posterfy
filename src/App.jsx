@@ -53,7 +53,7 @@ function App() {
             <PosterEditor albumID={albumId} handleClickBack={handleClickBack}/>
           ) : (
             <>
-              <Searchbar onSearch={onSearch} />
+              <Searchbar onSearch={onSearch} value={query} />
               {query && <Grid query={query} onclick={onClickAlbum} />}
 
               <div style={{ display: query ? 'none' : 'block' }}>

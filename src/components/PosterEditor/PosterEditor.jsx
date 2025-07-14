@@ -13,9 +13,11 @@ import FileInput from "./inputs/FileInput";
 import FontInput from "./inputs/FontInput";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import LoadingDiv from "../LoadingDiv";
 import { Palette } from "color-thief-react";
 import CanvasPoster from "./CanvasPoster";
+import AnimatedInput from "./inputs/AnimatedInput";
 
 const Container = styled.div`
     width: 80%;
@@ -60,11 +62,45 @@ const PosterPreview = styled.img`
     width: 388px;
     height: 548px;
     margin-right: 20px;
+    opacity: ${props => props.visible ? 1 : 0};
+    transform: scale(${props => props.visible ? 1 : 0.95}) translateY(${props => props.visible ? '0' : '10px'});
+    transition: opacity 0.8s ease, transform 0.8s ease;
 
     @media (max-width: 450px) {
         width: 95%;
         margin-right: 0;
     }
+`
+
+const PreviewContainer = styled.div`
+    width: 388px;
+    height: 548px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    @media (max-width: 450px) {
+        width: 95%;
+        margin-right: 0;
+    }
+`
+
+const LoadingIcon = styled(AiOutlineLoading3Quarters)`
+    font-size: 3em;
+    color: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    opacity: ${props => props.visible ? 0.15 : 0};
+    transition: opacity 0.3s ease;
+    animation: ${props => props.visible ? keyframes`
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+    ` : 'none'} 1s linear infinite;
 `
 
 const EditorColumn = styled.div`
@@ -362,24 +398,53 @@ function PosterEditor({ albumID, handleClickBack }) {
 
     const [image, setImage] = useState(null);
     const [generatePoster, setGeneratePoster] = useState(false);
+    const [previewVisible, setPreviewVisible] = useState(false);
     const [infosLoaded, setInfosLoaded] = useState(false);
-
     const [spinApplyButton, setSpinApplyButton] = useState(false);
+    const [loadingVisible, setLoadingVisible] = useState(false);
+
+    useEffect(() => {
+        if (generatePoster) {
+            setPreviewVisible(false);
+
+            const loadingTimer = setTimeout(() => {
+                setLoadingVisible(true);
+            }, 100);
+            
+            return () => clearTimeout(loadingTimer);
+        } else {
+            setLoadingVisible(false);
+        }
+    }, [generatePoster]);
 
     const handleImageReady = (imageUrl) => {
         setImage(imageUrl);
         setGeneratePoster(false);
         setSpinApplyButton(false);
+        
+        setTimeout(() => {
+            setLoadingVisible(false);
+            setTimeout(() => {
+                setPreviewVisible(true);
+            }, 300);
+        }, 100);
     };
 
     const handleApplyClick = () => {
         setUserAdjustedTitleSize(false);
+        setPreviewVisible(false);
         requestAnimationFrame(() => {
             setSpinApplyButton(true);
             setGeneratePoster(true);
             if (previewRef.current) {
+                const rect = previewRef.current.getBoundingClientRect();
+                const elementTop = rect.top + window.scrollY;
+                const elementHeight = rect.height;
+                const windowHeight = window.innerHeight;
+                const centerOffset = (windowHeight - elementHeight) / 2;
+                
                 window.scrollTo({
-                    top: previewRef.current.offsetTop - 150,
+                    top: elementTop - centerOffset,
                     behavior: 'smooth'
                 });
             }
@@ -586,142 +651,189 @@ function PosterEditor({ albumID, handleClickBack }) {
                             onTitleSizeAdjust={handleTitleSizeAdjust}
                             customFont={customFont}
                         />
-                        {image ? (
-                            <PosterPreview src={image} ref={previewRef} />
-                        ) : (
-                            <FakePoster ref={previewRef} />
-                        )}
+                        <PreviewContainer>
+                            {image ? (
+                                <PosterPreview src={image} ref={previewRef} visible={previewVisible} />
+                            ) : (
+                                <FakePoster ref={previewRef} />
+                            )}
+                            <LoadingIcon visible={loadingVisible} />
+                        </PreviewContainer>
                         <EditorColumn>
-                            <TabsContainer>
-                                <Tab 
-                                    $active={activeTab === 'information'} 
-                                    onClick={() => setActiveTab('information')}
-                                >
-                                    {t('EDITOR_InformationTab')}
-                                </Tab>
-                                <Tab 
-                                    $active={activeTab === 'tracklist'} 
-                                    onClick={() => setActiveTab('tracklist')}
-                                >
-                                    {t('EDITOR_TracklistTab')}
-                                </Tab>
-                            </TabsContainer>
+                            <AnimatedInput animationDelay={50}>
+                                <TabsContainer>
+                                    <Tab 
+                                        $active={activeTab === 'information'} 
+                                        onClick={() => setActiveTab('information')}
+                                    >
+                                        {t('EDITOR_InformationTab')}
+                                    </Tab>
+                                    <Tab 
+                                        $active={activeTab === 'tracklist'} 
+                                        onClick={() => setActiveTab('tracklist')}
+                                    >
+                                        {t('EDITOR_TracklistTab')}
+                                    </Tab>
+                                </TabsContainer>
+                            </AnimatedInput>
                             {activeTab === 'information' ? (
                                 <EditorSettings>
-                                    <NormalInput 
-                                        title={t('EDITOR_AlbumName')} 
-                                        value={albumName} 
-                                        onChange={(e) => setAlbumName(e.target.value)}
-                                    />
-                                    <NormalInput 
-                                        title={t('EDITOR_ArtistName')} 
-                                        value={artistsName} 
-                                        onChange={(e) => setArtistsName(e.target.value)}
-                                    />
-                                    <NormalInput 
-                                        title={t('EDITOR_TitleSize')} 
-                                        value={titleSize} 
-                                        onChange={handleTitleSizeChange}
-                                    />
-                                    <NormalInput 
-                                        title={t('EDITOR_ArtistSize')} 
-                                        value={artistsSize} 
-                                        onChange={(e) => setArtistsSize(e.target.value)}
-                                    />
-                                    <NormalInput 
-                                        title={t('EDITOR_TracksSize')} 
-                                        value={tracksSize} 
-                                        onChange={(e) => setTracksSize(e.target.value)}
-                                    />
-                                    <NormalInput 
-                                        title={t('EDITOR_MarginTop')} 
-                                        value={marginTop} 
-                                        onChange={(e) => setMarginTop(e.target.value)}
-                                    />
-                                    <NormalInput 
-                                        title={t('EDITOR_MarginSide')} 
-                                        value={marginSide} 
-                                        onChange={(e) => setmarginSide(e.target.value)}
-                                    />
-                                    <NormalInput 
-                                        title={t('EDITOR_MarginCover')} 
-                                        value={marginCover} 
-                                        onChange={(e) => setMarginCover(e.target.value)}
-                                    />
+                                    <AnimatedInput animationDelay={0}>
+                                        <NormalInput 
+                                            title={t('EDITOR_AlbumName')} 
+                                            value={albumName} 
+                                            onChange={(e) => setAlbumName(e.target.value)}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={50}>
+                                        <NormalInput 
+                                            title={t('EDITOR_ArtistName')} 
+                                            value={artistsName} 
+                                            onChange={(e) => setArtistsName(e.target.value)}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={100}>
+                                        <NormalInput 
+                                            title={t('EDITOR_TitleSize')} 
+                                            value={titleSize} 
+                                            onChange={handleTitleSizeChange}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={150}>
+                                        <NormalInput 
+                                            title={t('EDITOR_ArtistSize')} 
+                                            value={artistsSize} 
+                                            onChange={(e) => setArtistsSize(e.target.value)}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={200}>
+                                        <NormalInput 
+                                            title={t('EDITOR_TracksSize')} 
+                                            value={tracksSize} 
+                                            onChange={(e) => setTracksSize(e.target.value)}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={250}>
+                                        <NormalInput 
+                                            title={t('EDITOR_MarginTop')} 
+                                            value={marginTop} 
+                                            onChange={(e) => setMarginTop(e.target.value)}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={300}>
+                                        <NormalInput 
+                                            title={t('EDITOR_MarginSide')} 
+                                            value={marginSide} 
+                                            onChange={(e) => setmarginSide(e.target.value)}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={350}>
+                                        <NormalInput 
+                                            title={t('EDITOR_MarginCover')} 
+                                            value={marginCover} 
+                                            onChange={(e) => setMarginCover(e.target.value)}
+                                        />
+                                    </AnimatedInput>
             
-                                    <DoubleInput 
-                                        title={titleRelease} 
-                                        value={releaseDate} 
-                                        onChangeTitle={(e) => setTitleRelease(e.target.value)} 
-                                        onChangeDate={(e) => setReleaseDate(e.target.value)}
-                                    />
-                                    <DoubleInput 
-                                        title={titleRuntime} 
-                                        value={runtime} 
-                                        onChangeTitle={(e) => setTitleRuntime(e.target.value)} 
-                                        onChangeDate={(e) => setRuntime(e.target.value)}
-                                    />
+                                    <AnimatedInput animationDelay={400}>
+                                        <DoubleInput 
+                                            title={titleRelease} 
+                                            value={releaseDate} 
+                                            onChangeTitle={(e) => setTitleRelease(e.target.value)} 
+                                            onChangeDate={(e) => setReleaseDate(e.target.value)}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={450}>
+                                        <DoubleInput 
+                                            title={titleRuntime} 
+                                            value={runtime} 
+                                            onChangeTitle={(e) => setTitleRuntime(e.target.value)} 
+                                            onChangeDate={(e) => setRuntime(e.target.value)}
+                                        />
+                                    </AnimatedInput>
             
-                                    <ColorInput 
-                                        title={t('EDITOR_BackgroundColor')} 
-                                        value={backgroundColor} 
-                                        onClick={(e) => handleColorInputClick(e, 'backgroundColor')}
-                                    />
-                                    <ColorInput 
-                                        title={t('EDITOR_TextColor')} 
-                                        value={textColor} 
-                                        onClick={(e) => handleColorInputClick(e, 'textColor')}
-                                    />
-                                    <ColorInput 
-                                        title={`${t('EDITOR_Color')} 1`} 
-                                        value={color1} 
-                                        onClick={(e) => handleColorInputClick(e, 'color1')}
-                                    />
-                                    <ColorInput 
-                                        title={`${t('EDITOR_Color')} 2`} 
-                                        value={color2} 
-                                        onClick={(e) => handleColorInputClick(e, 'color2')}
-                                    />
-                                    <ColorInput 
-                                        title={`${t('EDITOR_Color')} 3`} 
-                                        value={color3} 
-                                        onClick={(e) => handleColorInputClick(e, 'color3')}
-                                    />
+                                    <AnimatedInput animationDelay={500}>
+                                        <ColorInput 
+                                            title={t('EDITOR_BackgroundColor')} 
+                                            value={backgroundColor} 
+                                            onClick={(e) => handleColorInputClick(e, 'backgroundColor')}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={550}>
+                                        <ColorInput 
+                                            title={t('EDITOR_TextColor')} 
+                                            value={textColor} 
+                                            onClick={(e) => handleColorInputClick(e, 'textColor')}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={600}>
+                                        <ColorInput 
+                                            title={`${t('EDITOR_Color')} 1`} 
+                                            value={color1} 
+                                            onClick={(e) => handleColorInputClick(e, 'color1')}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={650}>
+                                        <ColorInput 
+                                            title={`${t('EDITOR_Color')} 2`} 
+                                            value={color2} 
+                                            onClick={(e) => handleColorInputClick(e, 'color2')}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={700}>
+                                        <ColorInput 
+                                            title={`${t('EDITOR_Color')} 3`} 
+                                            value={color3} 
+                                            onClick={(e) => handleColorInputClick(e, 'color3')}
+                                        />
+                                    </AnimatedInput>
             
-                                    <CheckInput
-                                        title={t('EDITOR_Watermark')}
-                                        value={useWatermark}
-                                        onChange={(newValue) => setUseWatermark(newValue)}
-                                        text={t('EDITOR_WatermarkText')}
-                                    />
-                                    <CheckInput
-                                        title={t('EDITOR_Fade')}
-                                        value={useFade}
-                                        onChange={(newValue) => setUseFade(newValue)}
-                                        text={t('EDITOR_FadeText')}
-                                    />
-                                    <CheckInput
-                                        title={t('EDITOR_Uncompressed')}
-                                        value={useUncompressed}
-                                        onChange={(newValue) => setUseUncompressed(newValue)}
-                                        text={t('EDITOR_UncompressedText')}
-                                    />
-                                    <CheckInput
-                                        title={t('EDITOR_Tracklist')}
-                                        value={showTracklist}
-                                        onChange={(newValue) => setShowTracklist(newValue)}
-                                        text={t('EDITOR_TracklistText')}
-                                    />
-                                    <FileInput
-                                        title={t('EDITOR_Cover')}
-                                        onChange={handleFileChange}
-                                        text={fileName}
-                                    />
-                                    <FontInput
-                                        title={t('EDITOR_Font')}
-                                        text={customFontFile?.name || t('EDITOR_DefaultFont')}
-                                        onChange={setCustomFontFile}
-                                    />
+                                    <AnimatedInput animationDelay={750}>
+                                        <CheckInput
+                                            title={t('EDITOR_Watermark')}
+                                            value={useWatermark}
+                                            onChange={(newValue) => setUseWatermark(newValue)}
+                                            text={t('EDITOR_WatermarkText')}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={800}>
+                                        <CheckInput
+                                            title={t('EDITOR_Fade')}
+                                            value={useFade}
+                                            onChange={(newValue) => setUseFade(newValue)}
+                                            text={t('EDITOR_FadeText')}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={850}>
+                                        <CheckInput
+                                            title={t('EDITOR_Uncompressed')}
+                                            value={useUncompressed}
+                                            onChange={(newValue) => setUseUncompressed(newValue)}
+                                            text={t('EDITOR_UncompressedText')}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={900}>
+                                        <CheckInput
+                                            title={t('EDITOR_Tracklist')}
+                                            value={showTracklist}
+                                            onChange={(newValue) => setShowTracklist(newValue)}
+                                            text={t('EDITOR_TracklistText')}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={950}>
+                                        <FileInput
+                                            title={t('EDITOR_Cover')}
+                                            onChange={handleFileChange}
+                                            text={fileName}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={1000}>
+                                        <FontInput
+                                            title={t('EDITOR_Font')}
+                                            text={customFontFile?.name || t('EDITOR_DefaultFont')}
+                                            onChange={setCustomFontFile}
+                                        />
+                                    </AnimatedInput>
             
                                     {showColorSelector && colorInputPosition && currentColorInput && (
                                         <ColorSelector
@@ -767,29 +879,33 @@ function PosterEditor({ albumID, handleClickBack }) {
                                     />
                                 </TracklistContainer>
                             )}
-                            <DivButtons>
-                                <ButtonDiv onClick={handleCoverDownloadClick}>
-                                    <IconDownload/>
-                                    <ButtonText>
-                                        {t('EDITOR_DownloadCover')}
-                                    </ButtonText>
-                                </ButtonDiv>
-                                <ButtonDiv onClick={handleDownloadClick}>
-                                    <IconDownload/>
-                                    <ButtonText>
-                                        {t('EDITOR_Download')}
-                                    </ButtonText>
-                                </ButtonDiv>
-                                <ButtonDiv onClick={handleApplyClick}>
-                                    <IconApply $spinning={spinApplyButton}/>
-                                    <ButtonText>
-                                        {t('EDITOR_Apply')}
-                                    </ButtonText>
-                                </ButtonDiv>
-                            </DivButtons>
-                            <ShortcutsInfo>
-                                {t('EDITOR_Shortcuts')}: Ctrl+S ({t('EDITOR_Apply')}), Ctrl+D ({t('EDITOR_Download')})
-                            </ShortcutsInfo>
+                            <AnimatedInput animationDelay={1050}>
+                                <DivButtons>
+                                    <ButtonDiv onClick={handleCoverDownloadClick}>
+                                        <IconDownload/>
+                                        <ButtonText>
+                                            {t('EDITOR_DownloadCover')}
+                                        </ButtonText>
+                                    </ButtonDiv>
+                                    <ButtonDiv onClick={handleDownloadClick}>
+                                        <IconDownload/>
+                                        <ButtonText>
+                                            {t('EDITOR_Download')}
+                                        </ButtonText>
+                                    </ButtonDiv>
+                                    <ButtonDiv onClick={handleApplyClick}>
+                                        <IconApply $spinning={spinApplyButton}/>
+                                        <ButtonText>
+                                            {t('EDITOR_Apply')}
+                                        </ButtonText>
+                                    </ButtonDiv>
+                                </DivButtons>
+                            </AnimatedInput>
+                            <AnimatedInput animationDelay={1100}>
+                                <ShortcutsInfo>
+                                    {t('EDITOR_Shortcuts')}: Ctrl+S ({t('EDITOR_Apply')}), Ctrl+D ({t('EDITOR_Download')})
+                                </ShortcutsInfo>
+                            </AnimatedInput>
                         </EditorColumn>
                     </ContainerEditor>
                 </Container>

@@ -10,8 +10,8 @@ const NavbarContainer = styled.header`
   width: 100%;
   z-index: 50;
   transition: all 0.3s ease;
-  background-color: ${({ scrolled }) => (scrolled ? "rgba(0, 0, 0, 0.2)" : "transparent")};
-  backdrop-filter: ${({ scrolled }) => (scrolled ? "blur(10px)" : "none")};
+  background-color: ${({ scrolled }) => (scrolled ? "rgba(0, 0, 0, 0.15)" : "transparent")};
+  backdrop-filter: ${({ scrolled }) => (scrolled ? "blur(5px)" : "none")};
   padding: ${({ scrolled }) => (scrolled ? "10px 0" : "20px 0")};
   box-shadow: ${({ scrolled }) => (scrolled ? "0 4px 30px rgba(0, 0, 0, 0.1)" : "none")};
 `
@@ -50,6 +50,21 @@ const Divider = styled.div`
   transition: opacity 0.3s ease;
 `
 
+const IconContainer = styled.div`
+  animation: spin 10s linear infinite;
+  width: 40px;
+  height: 44.05px;
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
 
@@ -69,7 +84,9 @@ function Navbar() {
     <NavbarContainer scrolled={scrolled}>
       <NavbarContent>
         <LogoContainer>
-          <Icon fill={"#01b755"} width={"40px"} height={"44.05px"} />
+          <IconContainer>
+            <Icon fill={"#01b755"} width={"40px"} height={"44.05px"} />
+          </IconContainer>
           <BrandName>Posterfy</BrandName>
         </LogoContainer>
         <LanguageSelector />

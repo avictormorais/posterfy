@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { FaSearch } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Container = styled.div`
     width: 100%;
@@ -60,14 +60,22 @@ const Input = styled.input`
     width: 100%;
 `
 
-function Searchbar({ onSearch }) {
+function Searchbar({ onSearch, value = '' }) {
     const { t } = useTranslation();
-    const [searchValue, setSearchValue] = useState('');
+    const [searchValue, setSearchValue] = useState(value);
+
+    useEffect(() => {
+        setSearchValue(value);
+    }, [value]);
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             onSearch(searchValue);
         }
+    };
+
+    const handleInputChange = (e) => {
+        setSearchValue(e.target.value);
     };
 
     return (
@@ -78,7 +86,7 @@ function Searchbar({ onSearch }) {
                 <Input
                     placeholder={t('SearchPlaceholder')}
                     value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
+                    onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                 />
                 <SendIcon onClick={() => onSearch(searchValue)}/>

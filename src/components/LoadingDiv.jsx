@@ -10,6 +10,7 @@ const LoadDiv = styled.div`
     padding-block: 25px;
     align-items: center;
     flex-direction: column;
+    opacity: 0.25;
 `
 
 const LoadTitle = styled.p`

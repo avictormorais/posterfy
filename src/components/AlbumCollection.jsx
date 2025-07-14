@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import styled from "styled-components"
-import { albumData } from "./albumData"
+import { albumData } from "./AlbumData"
 
 const AlbumsContainer = styled.div`
   display: flex;
@@ -28,24 +28,71 @@ const AlbumPoster = styled.div`
       ? "405px"
       : "345px"};
   margin: 0 -30px;
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: ${(props) => {
+    if (props.isHovered) {
+      return `transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s, 
+              box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s,
+              z-index 0s 0.3s`;
+    } else {
+      
+      return `transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              z-index 0s`;
+    }
+  }};
   z-index: ${(props) => {
-    if (props.isHovered) return 11;
+    if (props.isHovered) return 15;
     if (props.index === 2) return 10;
     if (props.index === 3) return 9;
-    if (props.index === 4) return 8;
+    if (props.index === 1) return 8;
+    if (props.index === 4) return 7;
+    if (props.index === 0) return 6;
     return 5;
+  }};  transform: ${(props) => {
+    const { isHovered, index, hoveredIndex, isMobile } = props;
+    
+    if (isMobile) return "scale(1)";
+    
+    let baseTransform = "scale(0.95)";
+    
+    if (isHovered) {
+      baseTransform = "scale(1.08) translateY(-8px)";
+    } else if (hoveredIndex !== null) {
+      let translateX = 0;
+      
+      switch (hoveredIndex) {
+        case 0:
+          if (index > 0) translateX = 70;
+          break;
+          
+        case 1:
+          if (index >= 2) translateX = 70;
+          break;
+          
+        case 2:
+          translateX = 0;
+          break;
+          
+        case 3:
+          if (index <= 2) translateX = -70;
+          break;
+          
+        case 4:
+          if (index < 4) translateX = -70;
+          break;
+      }
+      
+      if (translateX !== 0) {
+        baseTransform = `scale(0.95) translateX(${translateX}px)`;
+      }
+    }
+    
+    return baseTransform;
   }};
-  transform: ${(props) =>
-    props.isHovered
-      ? "scale(1.1)"
-      : props.isMobile
-      ? "scale(1)"
-      : `scale(0.95)`};
   box-shadow: ${(props) =>
     props.isHovered
-      ? "0 15px 30px rgba(0,0,0,0.4)"
-      : "0 5px 10px rgba(0,0,0,0.2)"};
+      ? "0 25px 50px rgba(0,0,0,0.5), 0 8px 16px rgba(0,0,0,0.3)"
+      : "0 8px 16px rgba(0,0,0,0.15)"};
   display: ${(props) => {
     if (props.isMobile && props.index !== 2) return "none";
     if (props.isTablet && (props.index < 1 || props.index > 3)) return "none";
@@ -60,10 +107,19 @@ const AlbumPoster = styled.div`
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: ${(props) => {
+      if (props.isHovered) {
+        return "filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s";
+      } else {
+        return "filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      }
+    }};
     filter: ${(props) =>
       props.isHovered
-        ? "brightness(1.1) contrast(1.05)"
-        : "brightness(1) contrast(1)"};
+        ? "brightness(1.15) contrast(1.1) saturate(1.1)"
+        : props.otherIsHovered && !props.isHovered
+        ? "brightness(0.7) contrast(0.9) saturate(0.8)"
+        : "brightness(1) contrast(1) saturate(1)"};
   }
 
   &::after {
@@ -73,10 +129,32 @@ const AlbumPoster = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4));
     opacity: ${(props) => (props.otherIsHovered && !props.isHovered ? 1 : 0)};
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), backdrop-filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     pointer-events: none;
+    backdrop-filter: ${(props) =>
+      props.otherIsHovered && !props.isHovered ? "blur(1px)" : "blur(0px)"};
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      rgba(255,255,255,0.1) 0%,
+      rgba(255,255,255,0.05) 50%,
+      rgba(0,0,0,0.05) 100%
+    );
+    opacity: ${(props) => (props.isHovered ? 1 : 0)};
+    transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${(props) => 
+      props.isHovered ? "0.3s" : "0s"};
+    pointer-events: none;
+    z-index: 1;
   }
 
   @media (max-width: 768px) {
@@ -106,12 +184,24 @@ const Modal = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      backdrop-filter: blur(0px);
+    }
+    to {
+      opacity: 1;
+      backdrop-filter: blur(12px);
+    }
+  }
 `
 
 const ModalContent = styled.div`
@@ -121,11 +211,25 @@ const ModalContent = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: scaleIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
 
   img {
     max-width: 70%;
     max-height: 70%;
     object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
   }
 `
 
@@ -133,14 +237,29 @@ const CloseButton = styled.button`
   position: absolute;
   top: -10px;
   right: 50px;
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   color: white;
-  font-size: 2em;
+  font-size: 1.5em;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(8px);
 
   &:hover {
-    color: #ccc;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 `
 
@@ -179,6 +298,7 @@ const AlbumCollection = () => {
             key={album.id}
             index={index}
             isHovered={hoveredIndex === index}
+            hoveredIndex={hoveredIndex}
             otherIsHovered={hoveredIndex !== null}
             isMobile={isMobile}
             isTablet={isTablet}
