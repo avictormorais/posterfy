@@ -13,3 +13,7 @@ https://www.posterfy.space/* https://posterfy.space/:splat 301!
 /poster-generator  /  301
 /album-poster  /  301
 /music-poster  /  301
+
+/sitemap.xml  /sitemap.xml  200
+/robots.txt   /robots.txt   200
+/*            /index.html   200
