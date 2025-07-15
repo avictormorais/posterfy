@@ -67,9 +67,14 @@ const PosterPreview = styled.img`
     transform: scale(${props => props.visible ? 1 : 0.95}) translateY(${props => props.visible ? '0' : '10px'});
     transition: opacity 0.8s ease, transform 0.8s ease;
 
+    @media (max-width: 1292px) {
+        margin: 0;
+    }
+
     @media (max-width: 450px) {
-        width: 95%;
-        margin-right: 0;
+        width: 288px;
+        height: 448px;
+        margin: 0;
     }
 `
 
@@ -82,9 +87,16 @@ const PreviewContainer = styled.div`
     justify-content: center;
     position: relative;
 
+    @media (max-width: 1292px) {
+        margin: 0;
+    }
+
     @media (max-width: 450px) {
-        width: 95%;
-        margin-right: 0;
+        width: 288px;
+        height: 448px;
+        margin: 0;
+        margin-bottom: 30px;
+        margin-top: 20px;
     }
 `
 
