@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import Icon from './icons/icon';
+import { useState, useEffect } from 'react';
 
 const pulse = keyframes`
     0% { transform: scale(1); }
@@ -7,25 +8,62 @@ const pulse = keyframes`
     100% { transform: scale(1); }
 `;
 
+const expandAndFade = keyframes`
+    0% { 
+        transform: scale(1); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: scale(2); 
+        opacity: 0; 
+    }
+`;
+
+
 const Container = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
     background-color: var(--backgroundColor);
     width: 100vw;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 9999;
+    opacity: ${props => props.fadeOutContainer ? 0 : 1};
+    pointer-events: ${props => props.isVisible ? 'auto' : 'none'};
+    transition: opacity 0.5s ease-out;
 `;
 
-const PulsingWrapper = styled.div`
-    animation: ${pulse} 1.2s infinite;
+const IconContainer = styled.div`
+    animation: ${props => {
+        if (props.isExiting) {
+            return expandAndFade;
+        }
+        return pulse;
+    }} ${props => props.isExiting ? '0.8s' : '0s'} ${props => props.isExiting ? 'ease-out forwards' : 'infinite'};
 `;
 
-function Loading() {
+function Loading({ isVisible }) {
+    const [isExiting, setIsExiting] = useState(false);
+    const [fadeOutContainer, setFadeOutContainer] = useState(false);
+
+    useEffect(() => {
+        if (!isVisible && !isExiting) {
+            setIsExiting(true);
+        
+            setTimeout(() => {
+                setFadeOutContainer(true);
+            }, 800);
+        }
+    }, [isVisible, isExiting]);
+
     return (
-        <Container>
-            <PulsingWrapper>
-                <Icon fill="white" width="180px" height={'198.23px'} />
-            </PulsingWrapper>
+        <Container isVisible={isVisible} fadeOutContainer={fadeOutContainer}>
+            <IconContainer isExiting={isExiting}>
+                <Icon fill="white" width="100px" height={'118.23px'} />
+            </IconContainer>
         </Container>
     );
 }

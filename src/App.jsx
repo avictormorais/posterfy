@@ -19,6 +19,7 @@ import { initScrollTracking } from './services/enhancedAnalytics';
 function App() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
+  const [loadingComplete, setLoadingComplete] = useState(false);
   const [query, setQuery] = useState('');
   const [albumId, setAlbumId] = useState(null);
 
@@ -40,10 +41,26 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1500);
+      
+      setTimeout(() => {
+        setLoadingComplete(true);
+      }, 1000);
+    }, 1100);
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (loading) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [loading]);
 
   const onSearch = (newQuery) => {
     setQuery(newQuery);
@@ -53,33 +70,30 @@ function App() {
     <>
       <SEOComponent />
       <AnalyticsInitializer />
-      {loading ? (
-        <Loading />
+      
+      <Navbar />
+      <Hero showAnimation={loadingComplete} />
+      <Anchor text={t('anchorArt')} type={1} />
+      <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
+      
+      {albumId ? (
+        <PosterEditor albumID={albumId} handleClickBack={handleClickBack}/>
       ) : (
         <>
-          <Navbar />
-          <Hero />
-          <Anchor text={t('anchorArt')} type={1} />
-          <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
-          
-          {albumId ? (
-            <PosterEditor albumID={albumId} handleClickBack={handleClickBack}/>
-          ) : (
-            <>
-              <Searchbar onSearch={onSearch} value={query} />
-              {query && <Grid query={query} onclick={onClickAlbum} />}
+          <Searchbar onSearch={onSearch} value={query} />
+          {query && <Grid query={query} onclick={onClickAlbum} />}
 
-              <div style={{ display: query ? 'none' : 'block' }}>
-                <Anchor text={t('TryTrend')} type={2}/>
-                <Grid onclick={onClickAlbum} />
-              </div>
-            </>
-          )}
-
-          <Faq/>
-          <Footer />
+          <div style={{ display: query ? 'none' : 'block' }}>
+            <Anchor text={t('TryTrend')} type={2}/>
+            <Grid onclick={onClickAlbum} />
+          </div>
         </>
       )}
+
+      <Faq/>
+      <Footer />
+    
+      <Loading isVisible={loading} />
     </>
   );
 }

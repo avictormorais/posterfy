@@ -5,6 +5,7 @@ import Icon from "./icons/icon"
 import { useTranslation } from "react-i18next"
 import { MdOutlineKeyboardDoubleArrowDown } from "react-icons/md"
 import DivAlbum from "./DivAlbum"
+import { useState, useEffect } from "react"
 
 const HeroDiv = styled.div`
     width: 100%;
@@ -33,13 +34,50 @@ const Container = styled.div`
     }
 `
 
+const Title = styled.h1`
+    font-size: 6.5em;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    opacity: ${props => props.visible ? 1 : 0};
+    transform: translateY(${props => props.visible ? '0' : '20px'});
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition-delay: ${props => props.animationDelay || 0}ms;
+
+    @media (max-width: 900px) {
+        font-size: 4.5em;
+    }
+
+    @media (max-width: 600px) {
+        font-size: 4em;
+    }
+`
+
+const Paragraph = styled.p`
+    font-size: 1em;
+    opacity: ${props => props.visible ? 0.5 : 0};
+    width: 80%;
+    font-weight: 500;
+    margin: 2px 0;
+    transform: translateY(${props => props.visible ? '0' : '20px'});
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition-delay: ${props => props.animationDelay || 0}ms;
+
+    @media (max-width: 900px) {
+        width: 90%;
+    }
+`
+
 const ContainerIcon = styled.div`
     max-width: 100%;
     margin: 50px 0;
     display: flex;
     justify-content: center;
-    animation: heartbeat 1.85s infinite;
+    animation: ${props => props.visible ? 'heartbeat 2s infinite' : 'none'};
     margin-top: 100px;
+    opacity: ${props => props.visible ? 1 : 0};
+    transform: translateY(${props => props.visible ? '0' : '50px'});
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition-delay: ${props => props.animationDelay || 0}ms;
 
     &:before {
         content: '';
@@ -60,43 +98,31 @@ const ContainerIcon = styled.div`
     }
 `
 
-const Title = styled.h1`
-    font-size: 6.5em;
-    margin-bottom: 20px;
-    margin-top: 20px;
-
-    @media (max-width: 900px) {
-        font-size: 4.5em;
-    }
-
-    @media (max-width: 600px) {
-        font-size: 4em;
-    }
-`
-
-const Paragraph = styled.p`
-    font-size: 1em;
-    opacity: 0.5;
-    width: 80%;
-    font-weight: 500;
-    margin: 2px 0;
-
-    @media (max-width: 900px) {
-        width: 90%;
-    }
-`
-
 const HeroIcon = styled(MdOutlineKeyboardDoubleArrowDown)`
     font-size: 2em;
     color: white;
     margin: 10px;
-    opacity: 0.2;
+    opacity: ${props => props.visible ? 0.2 : 0};
     position: absolute;
     bottom: 7%;
+    transform: translateY(${props => props.visible ? '0' : '20px'});
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition-delay: ${props => props.animationDelay || 0}ms;
 `
 
-function Hero() {
+function Hero({ showAnimation = false }) {
   const { t } = useTranslation()
+  const [elementsVisible, setElementsVisible] = useState(false)
+
+  useEffect(() => {
+    if (showAnimation) {
+      const timer = setTimeout(() => {
+        setElementsVisible(true)
+      }, 50)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAnimation])
 
   const handleScroll = () => {
     window.scrollTo({
@@ -109,9 +135,15 @@ function Hero() {
     <>
       <HeroDiv>
         <Container>
-          <Title>Posterfy</Title>
-          <Paragraph>{t("paragraphHero1")}</Paragraph>
-          <Paragraph>{t("paragraphHero2")}</Paragraph>
+          <Title visible={elementsVisible} animationDelay={200}>
+            Posterfy
+          </Title>
+          <Paragraph visible={elementsVisible} animationDelay={400}>
+            {t("paragraphHero1")}
+          </Paragraph>
+          <Paragraph visible={elementsVisible} animationDelay={600}>
+            {t("paragraphHero2")}
+          </Paragraph>
 
           <div style={{ 
             position: 'absolute', 
@@ -134,11 +166,11 @@ function Hero() {
             </ul>
           </div>
 
-          <ContainerIcon>
+          <ContainerIcon visible={elementsVisible} animationDelay={800}>
             <Icon fill={"white"} width={"180px"} height={"198.23px"} />
           </ContainerIcon>
 
-          <HeroIcon onClick={handleScroll} />
+          <HeroIcon visible={elementsVisible} animationDelay={1000} onClick={handleScroll} />
         </Container>
       </HeroDiv>
       <DivAlbum />
