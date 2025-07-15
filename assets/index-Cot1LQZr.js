@@ -1384,9 +1384,14 @@ PERFORMANCE OF THIS SOFTWARE.
     transform: scale(${e=>e.visible?1:.95}) translateY(${e=>e.visible?"0":"10px"});
     transition: opacity 0.8s ease, transform 0.8s ease;
 
+    @media (max-width: 1292px) {
+        margin: 0;
+    }
+
     @media (max-width: 450px) {
-        width: 95%;
-        margin-right: 0;
+        width: 288px;
+        height: 448px;
+        margin: 0;
     }
 `,Bs=p.div`
     width: 388px;
@@ -1397,9 +1402,16 @@ PERFORMANCE OF THIS SOFTWARE.
     justify-content: center;
     position: relative;
 
+    @media (max-width: 1292px) {
+        margin: 0;
+    }
+
     @media (max-width: 450px) {
-        width: 95%;
-        margin-right: 0;
+        width: 288px;
+        height: 448px;
+        margin: 0;
+        margin-bottom: 30px;
+        margin-top: 20px;
     }
 `,Qs=p(Dn)`
     font-size: 3em;
