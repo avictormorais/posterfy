@@ -24,7 +24,7 @@
   "categories": ["design", "music", "entertainment", "utilities"],
   "screenshots": [
     {
-      "src": "/assets/albuns.png",
+      "src": "/albuns.png",
       "sizes": "1280x720",
       "type": "image/png",
       "label": "Posterfy album poster generator interface"
