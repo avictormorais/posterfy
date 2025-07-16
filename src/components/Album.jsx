@@ -10,6 +10,7 @@ const Container = styled.div`
     overflow: hidden;
     cursor: pointer;
     min-width: 200px;
+    max-width: 220px;
     opacity: ${props => props.visible ? 1 : 0};
     transform: translateY(${props => props.visible ? '0' : '20px'});
     transition: opacity 0.6s ease, transform 0.6s ease;
@@ -57,7 +58,7 @@ const Container = styled.div`
 `
 
 const Cover = styled.img`
-    width: 200px;
+    width: 100%;
     min-height: 200px;
     background-color: rgba(255, 255, 255, 0.05);
     height: auto;
