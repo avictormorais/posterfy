@@ -847,6 +847,7 @@ import{r as g,a as Cr,e as q,g as jr,c as st}from"./vendor-DZStNbcm.js";import{d
     overflow: hidden;
     cursor: pointer;
     min-width: 200px;
+    max-width: 220px;
     opacity: ${e=>e.visible?1:0};
     transform: translateY(${e=>e.visible?"0":"20px"});
     transition: opacity 0.6s ease, transform 0.6s ease;
@@ -892,7 +893,7 @@ import{r as g,a as Cr,e as q,g as jr,c as st}from"./vendor-DZStNbcm.js";import{d
     }
 
 `,_i=m.img`
-    width: 200px;
+    width: 100%;
     min-height: 200px;
     background-color: rgba(255, 255, 255, 0.05);
     height: auto;
