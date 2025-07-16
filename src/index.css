@@ -4,24 +4,24 @@
 }
 
 .theme-dark {
-  --backgroundColor: #070815;
+  --backgroundColor: #04030b;
 }
 
 
 .theme-rose {
-  --backgroundColor: #232136;
+  --backgroundColor: #171525;
 }
 
 .theme-fy {
-  --backgroundColor: #151515;
+  --backgroundColor: #0d0c0f;
 }
 
 .theme-carmesin {
-  --backgroundColor: #1f0c19;
+  --backgroundColor: #2a1825;
 }
 
 .theme-brown {
-  --backgroundColor: #1e1516;
+  --backgroundColor: #18110b;
 }
 
 *{

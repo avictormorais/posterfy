@@ -39,6 +39,21 @@ const Container = styled.div`
         display: flex;
         flex-direction: row;
     }
+
+    @media (max-width: 600px) {
+        width: 96%;
+        min-width: unset;
+    }
+
+    @media (max-width: 480px) {
+        width: 94%;
+    }
+
+    @media (max-width: 6374px) {
+        width: 92%;
+        min-width: unset;
+    }
+
 `
 
 const Cover = styled.img`

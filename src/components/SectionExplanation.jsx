@@ -7,6 +7,10 @@ const Container = styled.div`
     flex-direction: row;
     justify-content: space-between;
     margin-inline: auto;
+
+    @media (max-width: 365px) {
+        display: none;
+    }
 `
 
 const Title = styled.h3`

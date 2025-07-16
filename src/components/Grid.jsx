@@ -78,7 +78,7 @@ function Grid({ query, onclick }) {
                 setAlbums(albumsData.map(album => ({
                     id: album.id,
                     title: album.name,
-                    artist: album.artists[0]?.name,
+                    artist: album.artists?.map(artist => artist.name).join(', '),
                     cover: album.images[0]?.url
                 })));
             } catch (err) {

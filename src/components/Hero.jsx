@@ -50,6 +50,10 @@ const Title = styled.h1`
     @media (max-width: 600px) {
         font-size: 4em;
     }
+
+    @media (max-width: 340px) {
+      font-size: 3.5em;
+    }
 `
 
 const Paragraph = styled.p`
