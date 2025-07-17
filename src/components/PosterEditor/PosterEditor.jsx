@@ -169,6 +169,32 @@ const TracklistContainer = styled.div`
     flex-direction: column;
 `
 
+const TracklistButtonsContainer = styled.div`
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+`
+
+const TracklistButton = styled.button`
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    
+    &:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    &:active {
+        transform: scale(0.95);
+    }
+`
+
 const TracklistTextarea = styled.textarea`
     width: 100%;
     flex: 1;
@@ -182,6 +208,12 @@ const TracklistTextarea = styled.textarea`
     overflow-y: auto;
     max-height: 300px;
     line-height: 1.5em;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 
     &:focus {
         outline: none;
@@ -516,6 +548,22 @@ function PosterEditor({ albumID, handleClickBack }) {
 
     function handleColorSelectorClose() {
         setShowColorSelector(false);
+    };
+
+    const handleRemoveParentheses = () => {
+        const lines = tracklist.split('\n');
+        const cleanedLines = lines.map(line => 
+            line.replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ').trim()
+        );
+        setTracklist(cleanedLines.join('\n'));
+    };
+
+    const handleRemoveBrackets = () => {
+        const lines = tracklist.split('\n');
+        const cleanedLines = lines.map(line => 
+            line.replace(/\[[^\]]*\]/g, '').replace(/\s+/g, ' ').trim()
+        );
+        setTracklist(cleanedLines.join('\n'));
     };
 
     async function getItunesUncompressedAlbumCover(searchQuery, country = "us") {
@@ -893,6 +941,14 @@ function PosterEditor({ albumID, handleClickBack }) {
                                         onChange={(e) => setTracklist(e.target.value)}
                                         placeholder={t('EDITOR_TracklistPlaceholder')}
                                     />
+                                    <TracklistButtonsContainer>
+                                        <TracklistButton onClick={handleRemoveParentheses}>
+                                            {t('EDITOR_RemoveParentheses')}
+                                        </TracklistButton>
+                                        <TracklistButton onClick={handleRemoveBrackets}>
+                                            {t('EDITOR_RemoveBrackets')}
+                                        </TracklistButton>
+                                    </TracklistButtonsContainer>
                                 </TracklistContainer>
                             )}
                             <AnimatedInput animationDelay={1050}>
