@@ -11,6 +11,7 @@ import Grid from './components/Grid';
 import Faq from './components/Faq/Faq';
 import PosterEditor from './components/PosterEditor/PosterEditor'
 import SEOComponent from './components/SEOComponent';
+import IndexingMonitor from './components/IndexingMonitor';
 import AnalyticsInitializer from './components/AnalyticsInitializer';
 import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
@@ -69,6 +70,7 @@ function App() {
   return (
     <>
       <SEOComponent />
+      <IndexingMonitor />
       <AnalyticsInitializer />
       
       <Navbar />

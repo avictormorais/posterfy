@@ -12,6 +12,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/updateSeoFiles.js",
     "build:seo": "node scripts/updateSeoFiles.js",
+    "test:redirects": "node scripts/testRedirects.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",

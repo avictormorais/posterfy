@@ -1,0 +1,39 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Redirect HTTP to HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirect www to non-www
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# Handle client-side routing
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ /index.html [L]
+
+# Set cache headers for static assets
+<filesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</filesMatch>
+
+# Set cache headers for HTML files
+<filesMatch "\.html$">
+  Header set Cache-Control "public, max-age=0, must-revalidate"
+</filesMatch>
+
+# Set cache headers for manifest and other files
+<filesMatch "\.(json|xml|txt)$">
+  Header set Cache-Control "public, max-age=86400"
+</filesMatch>
+
+# Security headers
+Header always set X-Frame-Options "DENY"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# MIME types
+AddType application/json .json
+AddType application/manifest+json .webmanifest

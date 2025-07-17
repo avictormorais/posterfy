@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { getCanonicalUrl } from '../utils/urlNormalization';
 
 const SEOComponent = ({ 
   title = "Posterfy - Free Album Poster Generator | Create Custom Music Posters Online",
@@ -9,7 +10,9 @@ const SEOComponent = ({
   useEffect(() => {
     const domain = import.meta.env.VITE_DOMAIN || '.space';
     const baseUrl = `https://posterfy${domain}`;
-    const canonical = baseUrl + '/';
+    
+    // Use the utility function for consistent canonical URLs
+    const canonical = getCanonicalUrl();
     const ogImage = baseUrl + '/albuns.png';
     
     // Update page title

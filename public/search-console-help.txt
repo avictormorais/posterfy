@@ -1,0 +1,21 @@
+# Google Search Console Verification Helper
+# This file helps with Google Search Console verification and indexing
+
+# Meta robots directives for the main page
+User-agent: *
+Allow: /
+
+# Canonical URL structure
+Canonical: https://posterfy.space/
+
+# Hreflang (if you have multiple languages)
+# hreflang: en-US https://posterfy.space/
+
+# Structured data validation
+# JSON-LD structured data is included in the HTML head
+
+# Common crawling issues to avoid:
+# 1. Avoid redirect chains
+# 2. Ensure canonical URLs are consistent
+# 3. Use proper HTTP status codes
+# 4. Avoid blocking resources with robots.txt
