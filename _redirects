@@ -1,19 +1,26 @@
-# Redirect all traffic to HTTPS
+# Redirect all traffic to HTTPS and canonical domain
 http://posterfy.space/* https://posterfy.space/:splat 301!
 http://www.posterfy.space/* https://posterfy.space/:splat 301!
 https://www.posterfy.space/* https://posterfy.space/:splat 301!
 
-# Handle client-side routing
-/*    /index.html   200
+# Static files - serve directly without redirects
+/sitemap.xml  /sitemap.xml  200
+/robots.txt   /robots.txt   200
+/manifest.json /manifest.json 200
+/ico.png      /ico.png      200
+/albuns.png   /albuns.png   200
+/vite.svg     /vite.svg     200
+
+# Assets folder - serve directly
+/assets/*     /assets/:splat 200
 
 # API redirects (if needed)
 /api/*  /.netlify/functions/:splat  200
 
 # Redirect old URLs to new ones (if any)
 /poster-generator  /  301
-/album-poster  /  301
-/music-poster  /  301
+/album-poster      /  301
+/music-poster      /  301
 
-/sitemap.xml  /sitemap.xml  200
-/robots.txt   /robots.txt   200
-/*            /index.html   200
+# Handle client-side routing - This should be LAST
+/*    /index.html   200
