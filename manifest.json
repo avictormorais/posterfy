@@ -4,8 +4,8 @@
   "description": "Create stunning album posters for free with Posterfy. Design custom music posters from Spotify albums with professional templates.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#070815",
+  "theme_color": "#01b755",
   "orientation": "portrait-primary",
   "icons": [
     {
