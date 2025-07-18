@@ -16,7 +16,7 @@ const Title = styled.p`
 
 const Input = styled.input`
     font-size: .85em;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
     border: none;
     padding: 5px;
     border-radius: 7px;

@@ -184,7 +184,7 @@ const Modal = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -237,12 +237,12 @@ const CloseButton = styled.button`
   position: absolute;
   top: -10px;
   right: 50px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: var(--glassBackground);
+  border: 2px solid var(--borderColor);
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  color: white;
+  color: var(--textColor);
   font-size: 1.5em;
   cursor: pointer;
   display: flex;
@@ -252,8 +252,8 @@ const CloseButton = styled.button`
   backdrop-filter: blur(8px);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: var(--borderColor);
+    border-color: var(--textSecondary);
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   }

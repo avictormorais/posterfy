@@ -17,10 +17,10 @@ const FlagButton = styled.button`
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
-  border: 1px solid rgba(255, 255, 255, .8);
+  border: 1px solid var(--borderColor);
   
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--glassBackground);
   }
 `
 
@@ -53,7 +53,7 @@ const DropdownMenu = styled.div`
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(220, 220, 220, 0.05);
   z-index: 50;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--borderColor);
   top: 60px;
 `
 
@@ -81,7 +81,7 @@ const LanguageOption = styled.button`
   padding: 12px 10px;
   background: transparent;
   border: none;
-  color: white;
+  color: var(--textColor);
   font-size: 14px;
   text-align: left;
   border-radius: 8px;
@@ -89,7 +89,7 @@ const LanguageOption = styled.button`
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.025);
+    background-color: var(--glassBackground);
   }
 
   &:hover svg {

@@ -11,7 +11,7 @@ const Container = styled.div`
 `
 
 const Bar = styled.div`
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
     width: 80%;
     margin-inline: auto;
     height: 50px;
@@ -46,7 +46,7 @@ const Spanbar = styled.span`
     width: 1px;
     height: 70%;
     opacity: 0.1;
-    background-color: white;
+    background-color: var(--textColor);
 `
 
 const Input = styled.input`

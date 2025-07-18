@@ -12,12 +12,12 @@ const Title = styled.p`
     font-weight: 500;
     margin-left: 5px;
     margin-bottom: 5px;
+    color: var(--textColor);
 `;
 
 const InputBox = styled.div`
     font-size: 0.85em;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: none;
+    background-color: var(--glassBackground);
     padding: 5px;
     border-radius: 7px;
     outline: none;
@@ -32,13 +32,31 @@ const Input = styled.input`
     height: 16px;
     margin-left: 10px;
     border-radius: 4px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--glassBackground);
+    border: 2px solid var(--borderColor);
     outline: none;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
+    position: relative;
 
     &:checked {
         background-color: var(--PosterfyGreen);
+        border-color: var(--PosterfyGreen);
+    }
+
+    &:checked::after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    &:hover {
+        border-color: var(--PosterfyGreen);
+        opacity: 0.8;
     }
 `;
 
@@ -48,7 +66,8 @@ const Text = styled.p`
     margin-left: 10px;
     margin-block: auto;
     cursor: pointer;
-    opacity: ${({ active }) => (active ? 1 : 0.5)};
+    color: var(--textColor);
+    opacity: ${({ active }) => (active ? 1 : 0.7)};
     transition: opacity 0.3s;
 `;
 

@@ -23,15 +23,15 @@ const Container = styled.div`
         right: 0;
         bottom: 0;
         border-radius: 10px;
-        background-color: rgba(255, 255, 255, 0);
+        background-color: transparent;
         transition: background-color 0.3s;
-        background-color: rgba(255, 255, 255, 0.01);
+        background-color: var(--glassBackground);
         z-index: 1;
     }
 
     :hover::before {
-        background-color: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        background-color: var(--borderColor);
+        border: 1px solid var(--textSecondary);
     }
 
     @media (max-width: 650px) {
@@ -60,7 +60,7 @@ const Container = styled.div`
 const Cover = styled.img`
     width: 100%;
     min-height: 200px;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
     height: auto;
     border-radius: 10px;
     z-index: 10;
@@ -74,7 +74,7 @@ const Cover = styled.img`
 
 const Title = styled.h3`
     font-weight: 600;
-    color: white;
+    color: var(--textColor);
     font-size: 0.8em;
     margin-top: 10px;
     padding-right: 20px;
@@ -94,7 +94,7 @@ const Title = styled.h3`
 
 const Artist = styled.p`
     font-weight: 500;
-    color: white;
+    color: var(--textColor);
     font-size: 0.8em;
     margin-top: 5px;
     opacity: 0.5;

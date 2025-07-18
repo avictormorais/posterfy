@@ -13,7 +13,7 @@ const NavbarContainer = styled.header`
   background-color: ${({ scrolled }) => (scrolled ? "rgba(0, 0, 0, 0.15)" : "transparent")};
   backdrop-filter: ${({ scrolled }) => (scrolled ? "blur(5px)" : "none")};
   padding: ${({ scrolled }) => (scrolled ? "10px 0" : "20px 0")};
-  box-shadow: ${({ scrolled }) => (scrolled ? "0 4px 30px rgba(0, 0, 0, 0.1)" : "none")};
+  box-shadow: ${({ scrolled }) => (scrolled ? "0 4px 30px var(--shadowColor)" : "none")};
 `
 
 const NavbarContent = styled.div`
@@ -52,7 +52,7 @@ const Divider = styled.div`
   left: 0;
   width: 100%;
   height: 1px;
-  background-color: rgba(0, 255, 0, 0.05);
+  background-color: rgba(1, 183, 85, 0.05);
   opacity: ${({ scrolled }) => (scrolled ? "1" : "0")};
   transition: opacity 0.3s ease;
 `

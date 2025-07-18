@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import { MdOutlineKeyboardDoubleArrowDown } from "react-icons/md"
 import DivAlbum from "./DivAlbum"
 import { useState, useEffect } from "react"
+import { useTheme } from "../contexts/ThemeContext"
 
 const HeroDiv = styled.div`
     width: 100%;
@@ -89,7 +90,7 @@ const ContainerIcon = styled.div`
         width: 280px;
         height: 280px;
         border-radius: 50%;
-        background: white;
+        background: var(--textColor);
         filter: blur(20px);
         z-index: -10;
         margin-top: -50px;
@@ -104,7 +105,7 @@ const ContainerIcon = styled.div`
 
 const HeroIcon = styled(MdOutlineKeyboardDoubleArrowDown)`
     font-size: 2em;
-    color: white;
+    color: var(--textColor);
     margin: 10px;
     opacity: ${props => props.visible ? 0.2 : 0};
     position: absolute;
@@ -116,6 +117,7 @@ const HeroIcon = styled(MdOutlineKeyboardDoubleArrowDown)`
 
 function Hero({ showAnimation = false }) {
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const [elementsVisible, setElementsVisible] = useState(false)
 
   useEffect(() => {
@@ -171,7 +173,7 @@ function Hero({ showAnimation = false }) {
           </div>
 
           <ContainerIcon visible={elementsVisible} animationDelay={800}>
-            <Icon fill={"white"} width={"180px"} height={"198.23px"} />
+            <Icon fill={theme === 'light' ? "#2c2929" : "white"} width={"180px"} height={"198.23px"} />
           </ContainerIcon>
 
           <HeroIcon visible={elementsVisible} animationDelay={1000} onClick={handleScroll} />

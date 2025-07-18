@@ -102,7 +102,7 @@ const PreviewContainer = styled.div`
 
 const LoadingIcon = styled(AiOutlineLoading3Quarters)`
     font-size: 3em;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--textSecondary);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -126,7 +126,7 @@ const TabsContainer = styled.div`
     display: flex;
     flex-direction: row;
     margin-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--borderColor);
     width: 90%;
     margin-inline: auto;
 `
@@ -135,13 +135,13 @@ const Tab = styled.div`
     padding: 10px 20px;
     font-size: 1em;
     font-weight: 500;
-    color: ${({ $active }) => ($active ? '#fff' : 'rgba(255, 255, 255, 0.5)')};
+    color: ${({ $active }) => ($active ? 'var(--textColor)' : 'var(--textSecondary)')};
     cursor: pointer;
     border-bottom: ${({ $active }) => ($active ? '2px solid var(--PosterfyGreen)' : 'none')};
     transition: color 0.3s, border-bottom 0.3s;
 
     &:hover {
-        color: #fff;
+        color: var(--textColor);
     }
 `
 
@@ -177,8 +177,8 @@ const TracklistButtonsContainer = styled.div`
 `
 
 const TracklistButton = styled.button`
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: var(--glassBackground);
+    color: var(--textColor);
     border: none;
     padding: 8px 16px;
     border-radius: 6px;
@@ -187,7 +187,7 @@ const TracklistButton = styled.button`
     transition: background 0.3s ease;
     
     &:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: var(--borderColor);
     }
     
     &:active {
@@ -198,8 +198,8 @@ const TracklistButton = styled.button`
 const TracklistTextarea = styled.textarea`
     width: 100%;
     flex: 1;
-    background: rgba(255, 255, 255, 0.07);
-    color: #fff;
+    background: var(--glassBackground);
+    color: var(--textColor);
     border: none;
     padding: 15px;
     font-size: 14px;
@@ -217,7 +217,7 @@ const TracklistTextarea = styled.textarea`
 
     &:focus {
         outline: none;
-        background: rgba(255, 255, 255, 0.07);
+        background: var(--glassBackground);
     }
 
     @media (max-width: 530px) {
@@ -246,7 +246,7 @@ const ButtonDiv = styled.div`
     display: flex;
     flex-direction: row;
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
     padding: 7px 15px;
     width: min-content;
     margin-left: 15px;
@@ -263,13 +263,13 @@ const ButtonDiv = styled.div`
         right: 0;
         bottom: 0;
         border-radius: 10px;
-        background-color: rgba(255, 255, 255, 0);
+        background-color: transparent;
         transition: background-color 0.5s;
         z-index: -1;
     }
 
     :hover::before {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: var(--glassBackground);
     }
 
     @media (max-width: 350px) {
@@ -320,7 +320,7 @@ const FakePoster = styled.div`
 
 const ShortcutsInfo = styled.p`
     font-size: 0.75em;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--textSecondary);
     margin-top: 10px;
     margin-right: 20px;
     text-align: right;

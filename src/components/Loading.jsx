@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 import Icon from './icons/icon';
 import { useState, useEffect } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
 const pulse = keyframes`
     0% { transform: scale(1); }
@@ -46,6 +47,7 @@ const IconContainer = styled.div`
 `;
 
 function Loading({ isVisible }) {
+    const { theme } = useTheme();
     const [isExiting, setIsExiting] = useState(false);
     const [fadeOutContainer, setFadeOutContainer] = useState(false);
 
@@ -62,7 +64,7 @@ function Loading({ isVisible }) {
     return (
         <Container isVisible={isVisible} fadeOutContainer={fadeOutContainer}>
             <IconContainer isExiting={isExiting}>
-                <Icon fill="white" width="100px" height={'118.23px'} />
+                <Icon fill={theme === 'light' ? "#2c2929" : "white"} width="100px" height={'118.23px'} />
             </IconContainer>
         </Container>
     );

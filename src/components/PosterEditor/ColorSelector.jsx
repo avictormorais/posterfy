@@ -14,8 +14,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border: white;
-    border: 3px solid rgba(255, 255, 255, 0.05);
+    border: 3px solid var(--borderColor);
 `
 
 const ColorPicker = styled(HexColorPicker)`
@@ -64,14 +63,16 @@ const HexText = styled.p`
     font-weight: bold;
     opacity: 0.8;
     margin-block: auto;
+    color: var(--textColor);
 `
 
 const Input = styled.input`
-    background-color: rgba(255, 255, 255, 0.1);
-    border: none;
+    background-color: var(--glassBackground);
+    border: 1px solid var(--borderColor);
     outline: none;
     font-weight: bold;
-    opacity: 0.5;
+    color: var(--textColor);
+    opacity: 0.8;
     width: 100%;
     max-width: 150px;
     margin-right: auto;
@@ -79,41 +80,75 @@ const Input = styled.input`
     font-size: 1em;
     padding: 3px;
     border-radius: 5px;
+    
+    &::placeholder {
+        color: var(--textSecondary);
+    }
 `
 
 const Dropper = styled(FaEyeDropper)`
     font-size: 1em;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
+    color: var(--textColor);
     padding: 5px;
     border-radius: 5px;
     margin-left: auto;
     cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
 `
 
 const Palette = styled(FaPalette)`
     font-size: 1em;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
+    color: var(--textColor);
     padding: 5px;
     border-radius: 5px;
     margin-left: auto;
     cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
 `
 
 const Cancel = styled(RiCloseLargeLine)`
     font-size: 1em;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
+    color: var(--textColor);
     padding: 5px;
     border-radius: 5px;
     margin-inline: 10px;
     cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+        color: #ff4444;
+    }
 `
 
 const Check = styled(FaCheck)`
     font-size: 1em;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
+    color: var(--textColor);
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+        color: var(--PosterfyGreen);
+    }
 `
 
 const Image = styled.img`
@@ -121,7 +156,8 @@ const Image = styled.img`
     max-width: 200px;
     height: auto;
     height: 200px;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
+    border: 1px solid var(--borderColor);
     user-select: none;
     -webkit-user-drag: none;
     -moz-user-drag: none;

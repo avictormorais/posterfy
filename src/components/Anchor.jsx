@@ -1,4 +1,12 @@
-/* eslint-disable react/prop-types */
+/* eslint-dconst Anch2 = styled.h3`
+    font-size: 1.35em;
+    opacity: .5;
+    font-weight: bolder;
+    color: var(--textColor);
+    width: 80%;
+    margin-inline: auto;
+    margin-block: 10px;
+`;`act/prop-types */
 import styled from 'styled-components';
 
 const Anch1 = styled.h2`
@@ -13,7 +21,7 @@ const Anch2 = styled.h3`
     font-size: 1.35em;
     opacity: .5;
     font-weight: bolder;
-    color: white;
+    color: var(--textColor);
     width: 80%;
     margin-inline: auto;
     margin-block: 10px;

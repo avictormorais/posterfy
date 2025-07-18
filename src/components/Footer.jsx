@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import Icon from "./icons/icon"
 import { FaGithub, FaHeart, FaPalette, FaMoon, FaSun, FaLeaf, FaFire, FaWater } from "react-icons/fa"
 import { useEffect, useState } from "react"
+import { useTheme } from "../contexts/ThemeContext"
 
 const float = keyframes`
   0% { transform: translateY(0px) rotate(0deg); }
@@ -28,9 +29,9 @@ const shimmer = keyframes`
 
 const Container = styled.div`
   width: 100%;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%);
+  background: linear-gradient(180deg, transparent 0%, var(--shadowColor) 100%);
   backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--borderColor);
   padding: 40px 0;
   margin-top: 100px;
   position: relative;
@@ -113,9 +114,9 @@ const IconShadow = styled.div`
   bottom: 0px;
   width: 105px;
   height: 20px;
-  background: #ffffff6f;
+  background: var(--textColor);
+  opacity: 0.4;
   filter: blur(15px);
-  opacity: 0.3;
   border-radius: 50%;
   transition: all 0.3s ease;
 `
@@ -123,13 +124,13 @@ const IconShadow = styled.div`
 const CreditText = styled.div`
   font-size: 1.1em;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--textSecondary);
   max-width: 400px;
   position: relative;
   
   .credit-content {
     display: inline-block;
-    background: white;
+    background: var(--textColor);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
@@ -186,10 +187,10 @@ const CopyrightText = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 0.85em;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--textSecondary);
   
   svg {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--textSecondary);
   }
   
   @media (max-width: 768px) {
@@ -215,7 +216,7 @@ const ThemeSection = styled.div`
 const ThemeTitle = styled.h3`
   font-size: 1.1em;
   font-weight: 600;
-  color: white;
+  color: var(--textColor);
   margin-bottom: 5px;
   margin-left: 5px;
   display: flex;
@@ -259,24 +260,24 @@ const ThemeCard = styled.button`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px var(--shadowColor);
   border-radius: 100%;
-  border: ${(props) => (props.active ? "1px solid var(--PosterfyGreen)" : "1px solid rgba(255, 255, 255, 0.25)")};
+  border: ${(props) => (props.active ? "1px solid var(--PosterfyGreen)" : "1px solid var(--borderColor)")};
   
   &:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 12px var(--shadowColor);
     transform: scale(1.02);
   }
   
   svg {
     font-size: 1.5em;
-    color: white;
+    fill: ${(props) => props.themeId === 'light' ? '#000000' : '#ffffff'} !important;
     opacity: 0.9;
   }
   
   span {
     font-size: 0.7em;
-    color: white;
+    fill: ${(props) => props.themeId === 'light' ? '#000000' : '#ffffff'} !important;
     opacity: 0.9;
     font-weight: 500;
   }
@@ -311,7 +312,7 @@ const SocialSection = styled.div`
   align-items: center;
   margin-top: 10px;
   padding-top: 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--borderColor);
   animation: ${slideIn} 0.5s ease-out;
   animation-delay: 0.4s;
   opacity: 0;
@@ -327,11 +328,11 @@ const GithubLink = styled.a`
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--textSecondary);
   font-weight: 500;
   padding: 8px 16px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glassBackground);
   transition: all 0.3s ease;
   margin-top: 25px;
   
@@ -341,8 +342,9 @@ const GithubLink = styled.a`
   }
   
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    background: var(--glassBackground);
+    opacity: 0.8;
+    box-shadow: 0 6px 12px var(--shadowColor);
     transform: scale(1.05);
   }
   
@@ -354,23 +356,19 @@ const GithubLink = styled.a`
 
 function Footer() {
   const { t } = useTranslation()
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "theme-dark")
-
-  useEffect(() => {
-    document.body.className = theme
-    localStorage.setItem("theme", theme)
-  }, [theme])
+  const { theme, setSpecificTheme } = useTheme()
 
   const handleThemeChange = (newTheme) => {
-    setTheme(newTheme)
+    setSpecificTheme(newTheme)
   }
 
   const themes = [
-    { id: "theme-dark", name: "Dark", color: "#070815", icon: <FaMoon /> },
-    { id: "theme-fy", name: "Midnight", color: "#151515", icon: <FaSun /> },
-    { id: "theme-rose", name: "Rose", color: "#232136", icon: <FaLeaf /> },
-    { id: "theme-carmesin", name: "Crimson", color: "#1f0c19", icon: <FaFire /> },
-    { id: "theme-brown", name: "Earth", color: "#1e1516", icon: <FaWater /> },
+    { id: "light", name: "Light", color: "#f0efeb", icon: <FaSun />, isLight: true },
+    { id: "dark", name: "Dark", color: "#070815", icon: <FaMoon />, isLight: false },
+    { id: "fy", name: "Midnight", color: "#151515", icon: <FaLeaf />, isLight: false },
+    { id: "rose", name: "Rose", color: "#232136", icon: <FaFire />, isLight: false },
+    { id: "carmesin", name: "Crimson", color: "#1f0c19", icon: <FaWater />, isLight: false },
+    { id: "brown", name: "Earth", color: "#1e1516", icon: <FaWater />, isLight: false },
   ]
 
   const currentYear = new Date().getFullYear()
@@ -409,7 +407,7 @@ function Footer() {
           <AnimatedIconWrapper>
             <IconShadow className="icon-shadow" />
             <IconMain className="icon-main">
-              <Icon fill={"white"} width={"100px"} height={"88.1px"} />
+              <Icon fill={theme === 'light' ? "#2c2929" : "white"} width={"100px"} height={"88.1px"} />
             </IconMain>
           </AnimatedIconWrapper>
 
@@ -435,6 +433,7 @@ function Footer() {
                   key={themeOption.id}
                   color={themeOption.color}
                   active={theme === themeOption.id}
+                  themeId={themeOption.id}
                   onClick={() => handleThemeChange(themeOption.id)}
                   aria-label={`${t("SwitchTo", "Switch to")} ${themeOption.name} ${t("Theme").toLowerCase()}`}
                 >

@@ -1,34 +1,78 @@
 :root {
   --backgroundColor: #070815;
+  --textColor: #ffffff;
+  --textSecondary: rgba(255, 255, 255, 0.7);
   --PosterfyGreen: #01b755;
+  --borderColor: rgba(255, 255, 255, 0.1);
+  --glassBackground: rgba(255, 255, 255, 0.05);
+  --shadowColor: rgba(0, 0, 0, 0.3);
+}
+
+.theme-light {
+  --backgroundColor: #f0efeb;
+  --textColor: #2c2929;
+  --textSecondary: rgba(44, 41, 41, 0.7);
+  --PosterfyGreen: #01b755;
+  --borderColor: rgba(44, 41, 41, 0.1);
+  --glassBackground: rgba(44, 41, 41, 0.03);
+  --shadowColor: rgba(44, 41, 41, 0.1);
 }
 
 .theme-dark {
   --backgroundColor: #04030b;
+  --textColor: #ffffff;
+  --textSecondary: rgba(255, 255, 255, 0.7);
+  --PosterfyGreen: #01b755;
+  --borderColor: rgba(255, 255, 255, 0.1);
+  --glassBackground: rgba(255, 255, 255, 0.01);
+  --shadowColor: rgba(0, 0, 0, 0.3);
 }
-
 
 .theme-rose {
   --backgroundColor: #171525;
+  --textColor: #ffffff;
+  --textSecondary: rgba(255, 255, 255, 0.7);
+  --PosterfyGreen: #01b755;
+  --borderColor: rgba(255, 255, 255, 0.1);
+  --glassBackground: rgba(255, 255, 255, 0.01);
+  --shadowColor: rgba(0, 0, 0, 0.3);
 }
 
 .theme-fy {
   --backgroundColor: #0d0c0f;
+  --textColor: #ffffff;
+  --textSecondary: rgba(255, 255, 255, 0.7);
+  --PosterfyGreen: #01b755;
+  --borderColor: rgba(255, 255, 255, 0.1);
+  --glassBackground: rgba(255, 255, 255, 0.01);
+  --shadowColor: rgba(0, 0, 0, 0.3);
 }
 
 .theme-carmesin {
   --backgroundColor: #2a1825;
+  --textColor: #ffffff;
+  --textSecondary: rgba(255, 255, 255, 0.7);
+  --PosterfyGreen: #01b755;
+  --borderColor: rgba(255, 255, 255, 0.1);
+  --glassBackground: rgba(255, 255, 255, 0.01);
+  --shadowColor: rgba(0, 0, 0, 0.3);
 }
 
 .theme-brown {
   --backgroundColor: #18110b;
+  --textColor: #ffffff;
+  --textSecondary: rgba(255, 255, 255, 0.7);
+  --PosterfyGreen: #01b755;
+  --borderColor: rgba(255, 255, 255, 0.1);
+  --glassBackground: rgba(255, 255, 255, 0.01);
+  --shadowColor: rgba(0, 0, 0, 0.3);
 }
 
 *{
   font-family: montserrat, sans-serif;
   margin: 0;
   padding: 0;
-  color: white;
+  color: var(--textColor);
   transition: color 0.5s, background-color 0.5s;
 }
 

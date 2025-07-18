@@ -14,14 +14,14 @@ const Container = styled.div`
 `
 
 const Title = styled.h3`
-    color: white;
+    color: var(--textColor);
     font-size: 3em;
     font-weight: bolder;
     white-space: pre-line;
 `
 
 const Paragraph = styled.p`
-    color: white;
+    color: var(--textColor);
     font-size: 1.2em;
     font-weight: 600;
     opacity: .5;

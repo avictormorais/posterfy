@@ -15,6 +15,7 @@ import IndexingMonitor from './components/IndexingMonitor';
 import AnalyticsInitializer from './components/AnalyticsInitializer';
 import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 
 function App() {
@@ -68,7 +69,7 @@ function App() {
   };
 
   return (
-    <>
+    <ThemeProvider>
       <SEOComponent />
       <IndexingMonitor />
       <AnalyticsInitializer />
@@ -96,7 +97,7 @@ function App() {
       <Footer />
     
       <Loading isVisible={loading} />
-    </>
+    </ThemeProvider>
   );
 }
 
