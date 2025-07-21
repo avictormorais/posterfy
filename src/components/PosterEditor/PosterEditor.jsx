@@ -467,7 +467,7 @@ function PosterEditor({ albumID, handleClickBack }) {
         setGeneratePoster(false);
         setSpinApplyButton(false);
         
-        trackPosterPreview(albumName, artistName);
+        trackPosterPreview(albumName, artistsName);
         
         setTimeout(() => {
             setLoadingVisible(false);
@@ -511,7 +511,7 @@ function PosterEditor({ albumID, handleClickBack }) {
         link.href = image;
         link.download = `Posterfy - ${albumName}.png`;
         link.click();
-        trackPosterDownload(albumName, 'poster', artistName);
+        trackPosterDownload(albumName, 'poster', artistsName);
     };
     
     const handleCoverDownloadClick = async () => {
@@ -524,7 +524,7 @@ function PosterEditor({ albumID, handleClickBack }) {
             });
             link.click();
             URL.revokeObjectURL(link.href);
-            trackPosterDownload(albumName, 'uncompressed_cover', artistName);
+            trackPosterDownload(albumName, 'uncompressed_cover', artistsName);
         } else {
             if (!albumCover) return;
             const blob = await (await fetch(albumCover)).blob();
@@ -534,7 +534,7 @@ function PosterEditor({ albumID, handleClickBack }) {
             });
             link.click();
             URL.revokeObjectURL(link.href);
-            trackPosterDownload(albumName, 'cover', artistName);
+            trackPosterDownload(albumName, 'cover', artistsName);
         }
     };
 
