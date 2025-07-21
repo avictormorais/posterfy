@@ -42,18 +42,57 @@ export const trackPageView = (page_title, page_location) => {
   }
 };
 
-export const trackPosterDownload = (albumName, format = 'image') => {
-  trackEvent('download_poster', 'Engagement', `${albumName} - ${format}`, 1);
+export const trackPosterDownload = (albumName, format = 'image', artistName = '') => {
+  const albumInfo = artistName ? `${artistName} - ${albumName}` : albumName;
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'download_poster', {
+      event_category: 'Engagement',
+      event_label: albumInfo,
+      file_type: format,
+      album_name: albumName,
+      artist_name: artistName
+    });
+  }
+};
+
+export const trackPosterPreview = (albumName, artistName = '') => {
+  const albumInfo = artistName ? `${artistName} - ${albumName}` : albumName;
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'generate_preview', {
+      event_category: 'Engagement',
+      event_label: albumInfo,
+      album_name: albumName,
+      artist_name: artistName
+    });
+  }
 };
 
 export const trackAlbumSearch = (searchTerm) => {
-  trackEvent('search_album', 'User Interaction', searchTerm, 1);
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'search_album', {
+      event_category: 'User Interaction',
+      event_label: searchTerm,
+      search_term: searchTerm
+    });
+  }
 };
 
 export const trackColorSelection = (colorHex) => {
-  trackEvent('color_selection', 'Poster Editor', colorHex, 1);
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'color_selection', {
+      event_category: 'Poster Editor',
+      event_label: colorHex,
+      color_value: colorHex
+    });
+  }
 };
 
 export const trackLanguageChange = (language) => {
-  trackEvent('language_change', 'User Preference', language, 1);
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'language_change', {
+      event_category: 'User Preference',
+      event_label: language,
+      language_value: language
+    });
+  }
 };
