@@ -1,7 +1,7 @@
 import styled, { keyframes } from "styled-components"
 import { useTranslation } from "react-i18next"
 import Icon from "./icons/icon"
-import { FaGithub, FaHeart, FaPalette, FaMoon, FaSun, FaLeaf, FaFire, FaWater } from "react-icons/fa"
+import { FaGithub, FaHeart, FaPalette, FaMoon, FaSun, FaLeaf, FaFire, FaWater, FaGem, FaMountain } from "react-icons/fa"
 import { useEffect, useState } from "react"
 import { useTheme } from "../contexts/ThemeContext"
 
@@ -250,8 +250,8 @@ const ThemeCard = styled.button`
   background-color: ${(props) => props.color};
   border: none;
   border-radius: 8px;
-  width: 45px;
-  height: 45px;
+  width: 35px;
+  height: 35px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -367,8 +367,8 @@ function Footer() {
     { id: "dark", name: "Dark", color: "#070815", icon: <FaMoon />, isLight: false },
     { id: "fy", name: "Midnight", color: "#151515", icon: <FaLeaf />, isLight: false },
     { id: "rose", name: "Rose", color: "#232136", icon: <FaFire />, isLight: false },
-    { id: "carmesin", name: "Crimson", color: "#1f0c19", icon: <FaWater />, isLight: false },
-    { id: "brown", name: "Earth", color: "#1e1516", icon: <FaWater />, isLight: false },
+    { id: "carmesin", name: "Crimson", color: "#1f0c19", icon: <FaGem />, isLight: false },
+    { id: "brown", name: "Earth", color: "#1e1516", icon: <FaMountain />, isLight: false },
   ]
 
   const currentYear = new Date().getFullYear()

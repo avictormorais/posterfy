@@ -15,6 +15,37 @@ const Container = styled.div`
     flex-direction: column;
     overflow: hidden;
     border: 3px solid var(--borderColor);
+    
+    /* Animação de entrada suave */
+    animation: slideInScale 0.3s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+    
+    @keyframes slideInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.9) translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    
+    &.closing {
+        animation: slideOutScale 0.2s ease-in forwards;
+    }
+    
+    @keyframes slideOutScale {
+        from {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: scale(0.9) translateY(-10px);
+        }
+    }
 `
 
 const ColorPicker = styled(HexColorPicker)`
@@ -33,6 +64,7 @@ const ColorPicker = styled(HexColorPicker)`
         height: 15px;
         border-radius: 100%;
         border-width: 1px;
+        transition: all 0.2s ease;
     }
 
     .react-colorful__pointer{
@@ -40,6 +72,18 @@ const ColorPicker = styled(HexColorPicker)`
         height: 15px;
         border-radius: 100%;
         border-width: 1px;
+        transition: all 0.2s ease;
+    }
+    
+    animation: pickerFadeIn 0.3s ease-out forwards;
+    opacity: 0;
+    transform: translateY(-10px);
+    
+    @keyframes pickerFadeIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 `
 
@@ -48,6 +92,21 @@ const HorizontalDiv = styled.div`
     display: flex;
     flex-direction: row;
     margin-top: 15px;
+    
+    animation: divSlideUp 0.4s ease-out forwards;
+    opacity: 0;
+    transform: translateY(10px);
+    
+    @keyframes divSlideUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    &:nth-of-type(2) { animation-delay: 0.1s; }
+    &:nth-of-type(3) { animation-delay: 0.2s; }
+    &:nth-of-type(4) { animation-delay: 0.3s; }
 `
 
 const PredefinedColor = styled.div`
@@ -56,6 +115,37 @@ const PredefinedColor = styled.div`
     border-radius: 100%;
     margin-inline: auto;
     cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    
+    &:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 2px var(--textColor);
+    }
+    
+    &:active {
+        transform: scale(1.1);
+    }
+    
+    animation: colorSlideIn 0.4s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.5);
+    
+    @keyframes colorSlideIn {
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.15s; }
+    &:nth-child(3) { animation-delay: 0.2s; }
+    &:nth-child(4) { animation-delay: 0.25s; }
+    &:nth-child(5) { animation-delay: 0.3s; }
+    &:nth-child(6) { animation-delay: 0.35s; }
+    &:nth-child(7) { animation-delay: 0.4s; }
+    &:nth-child(8) { animation-delay: 0.45s; }
 `
 
 const HexText = styled.p`
@@ -94,11 +184,16 @@ const Dropper = styled(FaEyeDropper)`
     border-radius: 5px;
     margin-left: auto;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     
     &:hover {
         opacity: 0.8;
-        transform: scale(1.05);
+        transform: scale(1.1) rotate(5deg);
+        color: var(--backgroundColor);
+    }
+    
+    &:active {
+        transform: scale(0.95) rotate(5deg);
     }
 `
 
@@ -110,11 +205,16 @@ const Palette = styled(FaPalette)`
     border-radius: 5px;
     margin-left: auto;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     
     &:hover {
         opacity: 0.8;
-        transform: scale(1.05);
+        transform: scale(1.1) rotate(-5deg);
+        color: var(--backgroundColor);
+    }
+    
+    &:active {
+        transform: scale(0.95) rotate(-5deg);
     }
 `
 
@@ -126,12 +226,17 @@ const Cancel = styled(RiCloseLargeLine)`
     border-radius: 5px;
     margin-inline: 10px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     
     &:hover {
         opacity: 0.8;
-        transform: scale(1.05);
+        transform: scale(1.1) rotate(90deg);
         color: #ff4444;
+        background-color: rgba(255, 68, 68, 0.1);
+    }
+    
+    &:active {
+        transform: scale(0.95) rotate(90deg);
     }
 `
 
@@ -142,12 +247,17 @@ const Check = styled(FaCheck)`
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     
     &:hover {
         opacity: 0.8;
-        transform: scale(1.05);
+        transform: scale(1.1);
         color: var(--PosterfyGreen);
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+    
+    &:active {
+        transform: scale(0.95);
     }
 `
 
@@ -163,6 +273,23 @@ const Image = styled.img`
     -moz-user-drag: none;
     -o-user-drag: none;
     cursor: crosshair;
+    transition: all 0.3s ease;
+    
+    animation: imageZoomIn 0.3s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.8);
+    
+    @keyframes imageZoomIn {
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    &:hover {
+        transform: scale(1.02);
+        border-color: var(--textColor);
+    }
 `
 
 function ColorSelector({ DefaultColor, image, predefinedColors, position, onDone, onClose }) {

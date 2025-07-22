@@ -16,11 +16,17 @@ const FlagButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
   border: 1px solid var(--borderColor);
   
   &:hover {
     background-color: var(--glassBackground);
+    transform: scale(1.05);
+    border-color: var(--textColor);
+  }
+  
+  &:active {
+    transform: scale(0.95);
   }
 `
 
@@ -37,8 +43,8 @@ const FlagWrapper = styled.div`
   
   & * {
     border-radius: 50% !important;
-    width: 2.5em !important;
-    height: 2.5em !important;
+    width: 2.6em !important;
+    height: 2.6em !important;
     object-fit: cover !important;
     display: block !important;
   }
@@ -55,11 +61,41 @@ const DropdownMenu = styled.div`
   z-index: 50;
   border: 1px solid var(--borderColor);
   top: 60px;
+  
+  animation: dropdownSlideIn 0.2s ease-out forwards;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  
+  @keyframes dropdownSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  &.closing {
+    animation: dropdownSlideOut 0.15s ease-in forwards;
+  }
+  
+  @keyframes dropdownSlideOut {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.95);
+    }
+  }
 `
 
 const Triangle = styled.div`
   position: absolute;
-  top: -15px;
+  top: -16px;
   right: 10px;
   width: 0;
   height: 0;
@@ -86,15 +122,33 @@ const LanguageOption = styled.button`
   text-align: left;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  transform: translateX(0);
 
   &:hover {
     background-color: var(--glassBackground);
+    transform: translateX(4px);
   }
 
   &:hover svg {
     transform: scale(1.2);
   }
+  
+  animation: slideInFromLeft 0.3s ease-out forwards;
+  opacity: 0;
+  transform: translateX(-20px);
+  
+  @keyframes slideInFromLeft {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  &:nth-child(1) { animation-delay: 0.05s; }
+  &:nth-child(2) { animation-delay: 0.1s; }
+  &:nth-child(3) { animation-delay: 0.15s; }
+  &:nth-child(4) { animation-delay: 0.2s; }
 `
 
 const LanguageName = styled.span`
@@ -109,6 +163,7 @@ const FlagIcon = styled(ReactCountryFlag)`
 
 function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
   const { i18n } = useTranslation()
 
   useEffect(() => {
@@ -119,7 +174,7 @@ function LanguageSelector() {
 
     const handleClickOutside = (e) => {
       if (!e.target.closest(".language-selector")) {
-        setIsOpen(false)
+        closeDropdown()
       }
     }
 
@@ -127,15 +182,27 @@ function LanguageSelector() {
     return () => document.removeEventListener("click", handleClickOutside)
   }, [i18n])
 
+  const closeDropdown = () => {
+    setIsClosing(true)
+    setTimeout(() => {
+      setIsOpen(false)
+      setIsClosing(false)
+    }, 150) 
+  }
+
   const toggleDropdown = (e) => {
     e.stopPropagation()
-    setIsOpen(!isOpen)
+    if (isOpen) {
+      closeDropdown()
+    } else {
+      setIsOpen(true)
+    }
   }
 
   const changeLanguage = (lang) => {
     i18n.changeLanguage(lang)
     localStorage.setItem("language", lang)
-    setIsOpen(false)
+    closeDropdown()
     trackLanguageChange(lang)
   }
 
@@ -160,8 +227,8 @@ function LanguageSelector() {
             countryCode={getCurrentFlag()} 
             svg 
             style={{
-              width: '2.5em',
-              height: '2.5em',
+              width: '2.8em',
+              height: '2.8em',
               borderRadius: '50%',
               objectFit: 'cover'
             }}
@@ -170,7 +237,7 @@ function LanguageSelector() {
       </FlagButton>
 
       {isOpen && (
-        <DropdownMenu>
+        <DropdownMenu className={isClosing ? 'closing' : ''}>
           <Triangle />
           <DropdownContent>
             <LanguageOption onClick={() => changeLanguage("pt")}>
