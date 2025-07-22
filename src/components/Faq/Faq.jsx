@@ -24,7 +24,7 @@ function Faq() {
 
     return (
         <Container id="faq">
-            <Anchor text={'FAQ - Album Poster Generator'} type={1}/>
+            <Anchor text={'FAQ'} type={1}/>
             <Questions>
                 <Question 
                     q={t('FAQ_HowItWorks_Question')} 

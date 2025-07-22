@@ -35,8 +35,9 @@ const Container = styled.div`
     }
 
     @media (max-width: 650px) {
-        width: 96%;
+        width: 93%;
         min-width: unset;
+        max-width: unset;
         display: flex;
         flex-direction: row;
     }
@@ -48,11 +49,6 @@ const Container = styled.div`
 
     @media (max-width: 480px) {
         width: 94%;
-    }
-
-    @media (max-width: 6374px) {
-        width: 92%;
-        min-width: unset;
     }
 
 `
@@ -85,6 +81,9 @@ const Title = styled.h3`
     white-space: nowrap;
     margin-left: 5px;
     z-index: 10;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 
     @media (max-width: 650px) {
         max-width: unset;

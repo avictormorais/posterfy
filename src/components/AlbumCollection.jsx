@@ -11,6 +11,10 @@ const AlbumsContainer = styled.div`
   perspective: 1000px;
   padding: 80px 0;
   overflow: hidden;
+
+  @media (max-width: 800px) {
+    display: none;
+  }
 `
 
 const AlbumPoster = styled.div`
