@@ -155,6 +155,10 @@ import{r as g,a as En,e as q,g as On,c as lt}from"./vendor-DZStNbcm.js";import{d
   perspective: 1000px;
   padding: 80px 0;
   overflow: hidden;
+
+  @media (max-width: 800px) {
+    display: none;
+  }
 `,yo=h.div`
   position: relative;
   width: ${e=>e.index===2?"329px":e.index===1||e.index===3?"288px":"249px"};
@@ -873,8 +877,9 @@ import{r as g,a as En,e as q,g as On,c as lt}from"./vendor-DZStNbcm.js";import{d
     }
 
     @media (max-width: 650px) {
-        width: 96%;
+        width: 93%;
         min-width: unset;
+        max-width: unset;
         display: flex;
         flex-direction: row;
     }
@@ -886,11 +891,6 @@ import{r as g,a as En,e as q,g as On,c as lt}from"./vendor-DZStNbcm.js";import{d
 
     @media (max-width: 480px) {
         width: 94%;
-    }
-
-    @media (max-width: 6374px) {
-        width: 92%;
-        min-width: unset;
     }
 
 `,Di=h.img`
@@ -919,6 +919,9 @@ import{r as g,a as En,e as q,g as On,c as lt}from"./vendor-DZStNbcm.js";import{d
     white-space: nowrap;
     margin-left: 5px;
     z-index: 10;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 
     @media (max-width: 650px) {
         max-width: unset;
@@ -1043,7 +1046,7 @@ import{r as g,a as En,e as q,g as On,c as lt}from"./vendor-DZStNbcm.js";import{d
     margin-inline: auto;
     display: flex;
     flex-direction: column;
-`;function Zi(){const{t:e}=J();return c.jsxs(Ji,{id:"faq",children:[c.jsx(ct,{text:"FAQ - Album Poster Generator",type:1}),c.jsxs(Xi,{children:[c.jsx(se,{q:e("FAQ_HowItWorks_Question"),a:e("FAQ_HowItWorks_Answer")}),c.jsx(se,{q:e("FAQ_Affiliation_Question"),a:e("FAQ_Affiliation_Answer")}),c.jsx(se,{q:e("FAQ_AlbumSearch_Question"),a:e("FAQ_AlbumSearch_Answer")}),c.jsx(se,{q:e("FAQ_SaveData_Question"),a:e("FAQ_SaveData_Answer")}),c.jsx(se,{q:e("FAQ_ReportIssue_Question"),a:e("FAQ_ReportIssue_Answer")})]})]})}const ea=h.div`
+`;function Zi(){const{t:e}=J();return c.jsxs(Ji,{id:"faq",children:[c.jsx(ct,{text:"FAQ",type:1}),c.jsxs(Xi,{children:[c.jsx(se,{q:e("FAQ_HowItWorks_Question"),a:e("FAQ_HowItWorks_Answer")}),c.jsx(se,{q:e("FAQ_Affiliation_Question"),a:e("FAQ_Affiliation_Answer")}),c.jsx(se,{q:e("FAQ_AlbumSearch_Question"),a:e("FAQ_AlbumSearch_Answer")}),c.jsx(se,{q:e("FAQ_SaveData_Question"),a:e("FAQ_SaveData_Answer")}),c.jsx(se,{q:e("FAQ_ReportIssue_Question"),a:e("FAQ_ReportIssue_Answer")})]})]})}const ea=h.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
