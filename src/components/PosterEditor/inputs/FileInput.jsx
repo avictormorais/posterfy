@@ -19,7 +19,7 @@ const Title = styled.p`
 
 const InputBox = styled.div`
     font-size: 0.85em;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--glassBackground);
     border: none;
     padding: 5px;
     border-radius: 7px;
@@ -35,7 +35,7 @@ const Input = styled.input`
     height: 16px;
     margin-left: 10px;
     border-radius: 4px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--glassBackground);
     outline: none;
     cursor: pointer;
     transition: background-color 0.3s;

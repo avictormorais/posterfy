@@ -82,6 +82,8 @@ const PreviewContainer = styled.div`
     width: 388px;
     height: 548px;
     margin-right: 20px;
+    margin-left: 15px;
+    margin-top: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -167,6 +169,19 @@ const TracklistContainer = styled.div`
     height: 100%;
     display: flex;
     flex-direction: column;
+
+    @media (max-width: 1300px) {
+        width: 90%;
+        min-height: 250px;
+    }
+
+    @media (max-width: 850px) {
+        width: 85%;
+    }
+
+    @media (max-width: 600px) {
+        padding: 0px;
+    }
 `
 
 const TracklistButtonsContainer = styled.div`
@@ -174,6 +189,13 @@ const TracklistButtonsContainer = styled.div`
     gap: 10px;
     margin-top: 10px;
     flex-wrap: wrap;
+    width: 100%;
+
+    @media (max-width: 700px) {
+        justify-content: space-between;
+        gap: 0;
+        width: 106%;
+    }
 `
 
 const TracklistButton = styled.button`

@@ -12,7 +12,7 @@ const NavbarContainer = styled.header`
   z-index: 50;
   transition: all 0.3s ease;
   background-color: ${({ scrolled }) => (scrolled ? "rgba(0, 0, 0, 0.15)" : "transparent")};
-  backdrop-filter: ${({ scrolled }) => (scrolled ? "blur(2px)" : "none")};
+  backdrop-filter: ${({ scrolled }) => (scrolled ? "blur(20px)" : "none")};
   padding: ${({ scrolled }) => (scrolled ? "10px 0" : "20px 0")};
   box-shadow: ${({ scrolled }) => (scrolled ? "0 4px 30px var(--shadowColor)" : "none")};
   transform: ${({ visible }) => (visible ? "translateY(0)" : "translateY(-100%)")};

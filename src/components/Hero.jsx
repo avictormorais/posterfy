@@ -103,6 +103,20 @@ const ContainerIcon = styled.div`
     }
 `
 
+const bounceAnimation = `
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-4px);
+    }
+    50% {
+      transform: translateY(4px);
+    }
+  }
+`
+
 const HeroIcon = styled(MdOutlineKeyboardDoubleArrowDown)`
     font-size: 2em;
     color: var(--textColor);
@@ -113,6 +127,9 @@ const HeroIcon = styled(MdOutlineKeyboardDoubleArrowDown)`
     transform: translateY(${props => props.visible ? '0' : '20px'});
     transition: opacity 0.5s ease, transform 0.5s ease;
     transition-delay: ${props => props.animationDelay || 0}ms;
+    animation: bounce 2s infinite ease-in-out;
+    cursor: pointer;
+    ${bounceAnimation}
 `
 
 function Hero({ showAnimation = false }) {

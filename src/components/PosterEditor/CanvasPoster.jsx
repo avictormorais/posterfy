@@ -193,18 +193,18 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
             };
 
             const drawBackground = async () => {
-                ctx.clearRect(0, 0, width, height);
                 ctx.fillStyle = posterData.backgroundColor;
-                ctx.fillRect(0, 0, width, height);
+                ctx.fillRect(0, 2500, width, height - 2500);
             };
 
-            await drawBackground();
+            ctx.clearRect(0, 0, width, height);
             if (posterData.useUncompressed) {
                 await loadCover(await posterData.uncompressedAlbumCover);
             } else {
                 await loadCover(posterData.albumCover);
             }
             
+            await drawBackground();
             await drawAlbumInfos();
             if (posterData.showTracklist) {
                 await drawTracklist();
