@@ -267,7 +267,7 @@ const Image = styled.img`
     height: auto;
     height: 200px;
     background-color: var(--glassBackground);
-    border: 1px solid var(--borderColor);
+    border: 5px solid var(--borderColor);
     user-select: none;
     -webkit-user-drag: none;
     -moz-user-drag: none;
@@ -295,6 +295,7 @@ const Image = styled.img`
 function ColorSelector({ DefaultColor, image, predefinedColors, position, onDone, onClose }) {
     const [color, setColor] = useState(DefaultColor);
     const [toggleDropper, setToggleDropper] = useState(false);
+    const [hoverColor, setHoverColor] = useState(null);
     const canvasRef = useRef(null);
     const imageRef = useRef(null);
 
@@ -311,12 +312,34 @@ function ColorSelector({ DefaultColor, image, predefinedColors, position, onDone
         const image = imageRef.current;
         const rect = image.getBoundingClientRect();
         const ctx = canvas.getContext("2d");
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const x = Math.floor(e.clientX - rect.left);
+        const y = Math.floor(e.clientY - rect.top);
         const pixel = ctx.getImageData(x, y, 1, 1).data;
         const hex = `#${[...pixel].slice(0, 3).map(c => c.toString(16).padStart(2, '0')).join('')}`;
         setColor(hex);
         handleToggleDropper();
+    }
+
+    function handleImageMouseMove(e) {
+        const canvas = canvasRef.current;
+        const image = imageRef.current;
+        const rect = image.getBoundingClientRect();
+        const x = Math.floor(e.clientX - rect.left);
+        const y = Math.floor(e.clientY - rect.top);
+        if (canvas) {
+            const ctx = canvas.getContext("2d");
+            try {
+                const pixel = ctx.getImageData(x, y, 1, 1).data;
+                const hex = `#${[...pixel].slice(0, 3).map(c => c.toString(16).padStart(2, '0')).join('')}`;
+                setHoverColor(hex);
+            } catch {
+                setHoverColor(null);
+            }
+        }
+    }
+
+    function handleImageMouseLeave() {
+        setHoverColor(null);
     }
 
     return (
@@ -329,6 +352,8 @@ function ColorSelector({ DefaultColor, image, predefinedColors, position, onDone
                     draggable="false"
                     src={image}
                     onClick={handleImageClick}
+                    onMouseMove={handleImageMouseMove}
+                    onMouseLeave={handleImageMouseLeave}
                     onLoad={() => {
                         const canvas = canvasRef.current;
                         const ctx = canvas.getContext("2d");
@@ -337,7 +362,8 @@ function ColorSelector({ DefaultColor, image, predefinedColors, position, onDone
                         canvas.height = img.height;
                         ctx.drawImage(img, 0, 0, img.width, img.height);
                     }}
-                />            
+                    style={hoverColor ? { borderColor: hoverColor } : {}}
+                />
             ) : (
                 <ColorPicker color={color} onChange={setColor} />
             )}

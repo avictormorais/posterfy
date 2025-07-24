@@ -194,7 +194,7 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
 
             const drawBackground = async () => {
                 ctx.fillStyle = posterData.backgroundColor;
-                ctx.fillRect(0, 2500, width, height - 2500);
+                ctx.fillRect(0, 2480, width, height - 2480);
             };
 
             ctx.clearRect(0, 0, width, height);
