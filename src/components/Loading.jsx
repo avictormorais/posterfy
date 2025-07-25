@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components';
-import Icon from './icons/icon';
+import Icon from './svgs/icon';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 

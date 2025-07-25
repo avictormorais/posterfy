@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
 import Grid from './components/Grid';
-import Faq from './components/Faq/Faq';
+import Faq from './components/sections/Faq/Faq';
 import PosterEditor from './components/PosterEditor/PosterEditor'
 import SEOComponent from './components/SEOComponent';
 import IndexingMonitor from './components/IndexingMonitor';
@@ -16,6 +16,8 @@ import AnalyticsInitializer from './components/AnalyticsInitializer';
 import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
 import { ThemeProvider } from './contexts/ThemeContext';
+import Share from './components/sections/SharePosters/Share';
+import Publish from './components/sections/SharePosters/Community';
 
 
 function App() {
@@ -93,6 +95,8 @@ function App() {
         </>
       )}
 
+      <Publish />
+      <Share />
       <Faq/>
       <Footer />
     

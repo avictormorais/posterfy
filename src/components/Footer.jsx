@@ -1,6 +1,6 @@
 import styled, { keyframes } from "styled-components"
 import { useTranslation } from "react-i18next"
-import Icon from "./icons/icon"
+import Icon from "./svgs/icon"
 import { FaGithub, FaHeart, FaPalette, FaMoon, FaSun, FaLeaf, FaFire, FaWater, FaGem, FaMountain } from "react-icons/fa"
 import { useEffect, useState } from "react"
 import { useTheme } from "../contexts/ThemeContext"

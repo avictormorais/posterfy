@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import Share from '../components/sections/SharePosters/Share';
 
 i18n
 .use(initReactI18next)
@@ -64,6 +65,14 @@ i18n
                 EDITOR_TracklistPlaceholder: "Enter track titles, one per line...",
                 EDITOR_RemoveParentheses: "Remove ( )",
                 EDITOR_RemoveBrackets: "Remove [ ]",
+
+                Share: "Share.",
+                ShareTitle: "Share your poster\nto us",
+                ShareDescription: "Created a poster, printed it, and using it as art? Share it and see it here!",
+                ComingSoon: "Coming soon!",
+                Community: "Community.",
+                CommunityTitle: "Publish your poster\nto the community",
+                CommunityDescription: "Share and search posters on the community!",
             },
         },
         pt: {
@@ -125,6 +134,14 @@ i18n
                 EDITOR_TracklistPlaceholder: "Digite os títulos das faixas, uma por linha...",
                 EDITOR_RemoveParentheses: "Remover ( )",
                 EDITOR_RemoveBrackets: "Remover [ ]",
+
+                Share: "Compartilhe.",
+                ShareTitle: "Compartilhe seu pôster\n conosco",
+                ShareDescription: "Criou um poster, imprimiu e o usa como arte? Compartilhe-o e veja ele aqui!",
+                ComingSoon: "Em breve!",
+                Community: "Comunidade.",
+                CommunityTitle: "Publique seu pôster\n na comunidade",
+                CommunityDescription: "Compartilhe e busque pôsteres na comunidade!",
             },
         },
         es: {
@@ -186,6 +203,14 @@ i18n
                 EDITOR_TracklistPlaceholder: "Escriba los títulos de las canciones, uno por línea...",
                 EDITOR_RemoveParentheses: "Quitar ( )",
                 EDITOR_RemoveBrackets: "Quitar [ ]",
+
+                Share: "Compartir.",
+                ShareTitle: "Compartir su póster\n con nosotros",
+                ShareDescription: "¿Creaste un póster, lo imprimiste y lo usas como arte? ¡Compártelo y míralo aquí!",
+                ComingSoon: "¡Próximamente!",
+                Community: "Comunidad.",
+                CommunityTitle: "Publica tu póster\nen la comunidad",
+                CommunityDescription: "¡Comparte y busca pósters en la comunidad!",
             },
         },
         zh: {
@@ -247,6 +272,14 @@ i18n
                 EDITOR_TracklistPlaceholder: "请输入曲目标题，每行一个...",
                 EDITOR_RemoveParentheses: "移除 ( )",
                 EDITOR_RemoveBrackets: "移除 [ ]",
+
+                Share: "分享。",
+                ShareTitle: "将您的海报\n分享给我们",
+                ShareDescription: "创建了一个海报，打印出来并用作艺术？分享它并在这里查看！",
+                ComingSoon: "即将推出！",
+                Community: "社区。",
+                CommunityTitle: "将你的海报\n发布到社区",
+                CommunityDescription: "修改了一个海报并想让它对社区可用？发布它并在这里查看！",
             },
         },
     },

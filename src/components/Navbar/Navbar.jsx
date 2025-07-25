@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import styled from "styled-components"
-import Icon from "../icons/icon"
+import Icon from "../svgs/icon"
 import LanguageSelector from "./Languageselector"
 import ThemeSelector from "./ThemeSelector"
 

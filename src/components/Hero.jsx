@@ -1,7 +1,7 @@
 "use client"
 
 import styled from "styled-components"
-import Icon from "./icons/icon"
+import Icon from "./svgs/icon"
 import { useTranslation } from "react-i18next"
 import { MdOutlineKeyboardDoubleArrowDown } from "react-icons/md"
 import DivAlbum from "./DivAlbum"

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Anchor from "../Anchor";
+import Anchor from "../../Anchor";
 import Question from "./Question";
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
@@ -9,7 +9,7 @@ const Container = styled.div`
     margin-inline: auto;
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
+    margin-top: 80px;
 `;
 
 const Questions = styled.div`
