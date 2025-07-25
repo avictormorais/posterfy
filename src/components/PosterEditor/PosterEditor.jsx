@@ -876,14 +876,14 @@ function PosterEditor({ albumID, handleClickBack }) {
                                         />
                                     </AnimatedInput>
             
-                                    <AnimatedInput animationDelay={750}>
+                                    {/* <AnimatedInput animationDelay={750}>
                                         <CheckInput
                                             title={t('EDITOR_Watermark')}
                                             value={useWatermark}
                                             onChange={(newValue) => setUseWatermark(newValue)}
                                             text={t('EDITOR_WatermarkText')}
                                         />
-                                    </AnimatedInput>
+                                    </AnimatedInput> */}
                                     <AnimatedInput animationDelay={800}>
                                         <CheckInput
                                             title={t('EDITOR_Fade')}
@@ -977,12 +977,12 @@ function PosterEditor({ albumID, handleClickBack }) {
                             )}
                             <AnimatedInput animationDelay={1050}>
                                 <DivButtons>
-                                    <ButtonDiv onClick={handleCoverDownloadClick}>
+                                    {/* <ButtonDiv onClick={handleCoverDownloadClick}>
                                         <IconDownload/>
                                         <ButtonText>
                                             {t('EDITOR_DownloadCover')}
                                         </ButtonText>
-                                    </ButtonDiv>
+                                    </ButtonDiv> */}
                                     <ButtonDiv onClick={handleDownloadClick}>
                                         <IconDownload/>
                                         <ButtonText>
