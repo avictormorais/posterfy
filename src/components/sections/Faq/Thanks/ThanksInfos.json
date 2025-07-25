@@ -1,0 +1,73 @@
+
+[
+  {
+    "key": "storyset",
+    "title": {
+      "en": "Storyset",
+      "pt": "Storyset",
+      "es": "Storyset",
+      "zh": "Storyset"
+    },
+    "text": {
+      "en": "Illustrations on share and community sections.",
+      "pt": "Ilustrações nas seções de compartilhamento e comunidade.",
+      "es": "Ilustraciones en las secciones de compartir y comunidad.",
+      "zh": "分享和社区部分的插图。"
+    },
+    "url": "https://storyset.com/"
+  },
+  {
+    "key": "debug420",
+    "title": {
+      "en": "debug420",
+      "pt": "debug420",
+      "es": "debug420",
+      "zh": "debug420"
+    },
+    "text": {
+      "en": "Enhanced quality cover feature.",
+      "pt": "Recurso de melhoria de qualidade das capas.",
+      "es": "Funcionalidad de mejora de calidad de portadas.",
+      "zh": "增强封面质量功能。"
+    },
+    "url": "https://github.com/debug420"
+  },
+  {
+    "key": "github_issues",
+    "title": {
+      "en": "Github issues",
+      "pt": "Github issues",
+      "es": "Github issues",
+      "zh": "Github issues"
+    },
+    "text": {
+      "en": "Ideas and bug fixes recommendations.",
+      "pt": "Ideias e recomendações de correções de bugs.",
+      "es": "Ideas y recomendaciones de corrección de errores.",
+      "zh": "建议和修复 bug 的想法。"
+    },
+    "url": "https://github.com/avictormorais/posterfy/issues"
+  },
+  {
+    "key": "contribute_area",
+    "title": {
+      "en": "Want to appear in the project?",
+      "pt": "Quer aparecer no projeto?",
+      "es": "¿Quieres aparecer en el proyecto?",
+      "zh": "想出现在项目中吗？"
+    },
+    "text": {
+      "en": "The project is open source! Feel free to suggest improvements, report bugs, or submit a pull request.",
+      "pt": "O projeto é open source! Sinta-se à vontade para sugerir melhorias, reportar bugs ou enviar um pull request.",
+      "es": "¡El proyecto es open source! Siéntete libre de sugerir mejoras, reportar errores o enviar un pull request.",
+      "zh": "该项目是开源的！欢迎提出改进建议、报告错误或提交 pull request。"
+    },
+    "url": "https://github.com/avictormorais/posterfy",
+    "button": {
+      "en": "Github Repository",
+      "pt": "Repositório no Github",
+      "es": "Repositorio en Github",
+      "zh": "Github 仓库"
+    }
+  }
+]

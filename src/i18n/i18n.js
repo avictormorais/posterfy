@@ -73,6 +73,7 @@ i18n
                 Community: "Community.",
                 CommunityTitle: "Publish your poster\nto the community",
                 CommunityDescription: "Share and search posters on the community!",
+                Thanks: "Thanks!"
             },
         },
         pt: {
@@ -142,6 +143,7 @@ i18n
                 Community: "Comunidade.",
                 CommunityTitle: "Publique seu pôster\n na comunidade",
                 CommunityDescription: "Compartilhe e busque pôsteres na comunidade!",
+                Thanks: "Obrigado!"
             },
         },
         es: {
@@ -211,6 +213,7 @@ i18n
                 Community: "Comunidad.",
                 CommunityTitle: "Publica tu póster\nen la comunidad",
                 CommunityDescription: "¡Comparte y busca pósters en la comunidad!",
+                Thanks: "¡Gracias!"
             },
         },
         zh: {
@@ -280,6 +283,7 @@ i18n
                 Community: "社区。",
                 CommunityTitle: "将你的海报\n发布到社区",
                 CommunityDescription: "修改了一个海报并想让它对社区可用？发布它并在这里查看！",
+                Thanks: "谢谢！"
             },
         },
     },

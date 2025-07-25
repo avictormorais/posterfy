@@ -18,7 +18,7 @@ import { initScrollTracking } from './services/enhancedAnalytics';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Share from './components/sections/SharePosters/Share';
 import Publish from './components/sections/SharePosters/Community';
-
+import Thanks from './components/sections/Faq/Thanks/Thanks';
 
 function App() {
   const { t } = useTranslation();
@@ -98,6 +98,7 @@ function App() {
       <Publish />
       <Share />
       <Faq/>
+      <Thanks />
       <Footer />
     
       <Loading isVisible={loading} />
