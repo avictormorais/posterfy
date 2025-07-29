@@ -65,6 +65,7 @@ i18n
                 EDITOR_TracklistPlaceholder: "Enter track titles, one per line...",
                 EDITOR_RemoveParentheses: "Remove ( )",
                 EDITOR_RemoveBrackets: "Remove [ ]",
+                EDITOR_MarginBackground: "Background size",
 
                 Share: "Share.",
                 ShareTitle: "Share your poster\nto us",
@@ -135,6 +136,7 @@ i18n
                 EDITOR_TracklistPlaceholder: "Digite os títulos das faixas, uma por linha...",
                 EDITOR_RemoveParentheses: "Remover ( )",
                 EDITOR_RemoveBrackets: "Remover [ ]",
+                EDITOR_MarginBackground: "Tamanho fundo",
 
                 Share: "Compartilhe.",
                 ShareTitle: "Compartilhe seu pôster\n conosco",
@@ -205,6 +207,7 @@ i18n
                 EDITOR_TracklistPlaceholder: "Escriba los títulos de las canciones, uno por línea...",
                 EDITOR_RemoveParentheses: "Quitar ( )",
                 EDITOR_RemoveBrackets: "Quitar [ ]",
+                EDITOR_MarginBackground: "Tamaño de fondo",
 
                 Share: "Compartir.",
                 ShareTitle: "Compartir su póster\n con nosotros",
@@ -275,6 +278,7 @@ i18n
                 EDITOR_TracklistPlaceholder: "请输入曲目标题，每行一个...",
                 EDITOR_RemoveParentheses: "移除 ( )",
                 EDITOR_RemoveBrackets: "移除 [ ]",
+                EDITOR_MarginBackground: "背景大小",
 
                 Share: "分享。",
                 ShareTitle: "将您的海报\n分享给我们",

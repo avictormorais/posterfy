@@ -17,6 +17,7 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
             posterData.marginSide = parseInt(posterData.marginSide) || 0;
             posterData.marginTop = parseInt(posterData.marginTop) || 0;
             posterData.marginCover = parseInt(posterData.marginCover) || 0;
+            posterData.marginBackground = parseInt(posterData.marginBackground) || 0;
 
             const loadCover = async (url) => {
                 const image = new Image();
@@ -26,12 +27,12 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
                     image.onload = () => {
                         ctx.drawImage(image, posterData.marginCover, posterData.marginCover, width - posterData.marginCover * 2, width - posterData.marginCover * 2);
                         if (posterData.useFade) {
-                            let verticalFade = ctx.createLinearGradient(0, 0, 0, 3000);
+                            let verticalFade = ctx.createLinearGradient(0, 0, 0, 3000 - posterData.marginBackground);
                             const rgb = hexToRgb(posterData.backgroundColor);
                             verticalFade.addColorStop(0.5, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
                             verticalFade.addColorStop(0.8, posterData.backgroundColor);
                             ctx.fillStyle = verticalFade;
-                            ctx.fillRect(0, 0, canvas.width, 2500);
+                            ctx.fillRect(0, 0, canvas.width, 2500 - posterData.marginBackground);
                         }
                         resolve();
                     };
@@ -194,7 +195,7 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
 
             const drawBackground = async () => {
                 ctx.fillStyle = posterData.backgroundColor;
-                ctx.fillRect(0, 2480, width, height - 2480);
+                ctx.fillRect(0, 2480 - posterData.marginBackground, width, height - 2480 + posterData.marginBackground);
             };
 
             ctx.clearRect(0, 0, width, height);

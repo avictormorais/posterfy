@@ -370,6 +370,7 @@ function PosterEditor({ albumID, handleClickBack }) {
     const [marginTop, setMarginTop] = useState('');
     const [marginSide, setmarginSide] = useState(160);
     const [marginCover, setMarginCover] = useState(0);
+    const [marginBackground, setMarginBackground] = useState(0);
     const [backgroundColor, setbackgroundColor] = useState('#5900ff');
     const [textColor, setTextColor] = useState('#ff9100');
     const [color1, setcolor1] = useState('#ff0000');
@@ -445,6 +446,7 @@ function PosterEditor({ albumID, handleClickBack }) {
         marginTop,
         marginSide,
         marginCover,
+        marginBackground,
         titleRelease,
         releaseDate,
         titleRuntime,
@@ -820,6 +822,13 @@ function PosterEditor({ albumID, handleClickBack }) {
                                             title={t('EDITOR_MarginCover')} 
                                             value={marginCover} 
                                             onChange={(e) => setMarginCover(e.target.value)}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={375}>
+                                        <NormalInput 
+                                            title={t('EDITOR_MarginBackground')}
+                                            value={marginBackground}
+                                            onChange={(e) => setMarginBackground(e.target.value)}
                                         />
                                     </AnimatedInput>
             
