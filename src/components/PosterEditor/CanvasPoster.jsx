@@ -199,6 +199,10 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
             };
 
             ctx.clearRect(0, 0, width, height);
+            
+            ctx.fillStyle = posterData.backgroundColor;
+            ctx.fillRect(0, 0, width, height);
+
             if (posterData.useUncompressed) {
                 await loadCover(await posterData.uncompressedAlbumCover);
             } else {
