@@ -119,7 +119,7 @@ function Navbar() {
       <NavbarContent>
         <LogoContainer>
           <IconContainer>
-            <Icon fill={"#01b755"} width={"40px"} height={"44.05px"} />
+            <Icon fill={"var(--PosterfyGreen)"} width={"40px"} height={"44.05px"} />
           </IconContainer>
           <BrandName>
             Posterfy

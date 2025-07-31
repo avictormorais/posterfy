@@ -176,6 +176,8 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
                 } else{
                     svgText = svgText.replace(/fill="#ffffff"/g, `fill="${targetColor}"`);
                 }
+
+                svgText = svgText.replace(posterData.backgroundColor, 'transparent');
                 
                 const svgBlob = new Blob([svgText], { type: "image/svg+xml" });
                 const updatedSvgUrl = URL.createObjectURL(svgBlob);
