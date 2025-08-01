@@ -252,7 +252,7 @@ const Check = styled(FaCheck)`
     &:hover {
         opacity: 0.8;
         transform: scale(1.1);
-        color: var(--PosterfyGreen);
+        color: var(--AccentColor);
         background-color: rgba(76, 175, 80, 0.1);
     }
     

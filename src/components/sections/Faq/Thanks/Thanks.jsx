@@ -39,7 +39,7 @@ const Circle = styled.div`
 `;
 
 const HeartIcon = styled(FaHeart)`
-    fill: var(--PosterfyGreen);
+    fill: var(--AccentColor);
     width: 17px;
     height: 17px;
     margin-left: -1px;
@@ -83,7 +83,7 @@ const ContributeTitle = styled.h2`
     font-size: 1.1rem;
     font-weight: bold;
     margin-bottom: 8px;
-    color: var(--PosterfyGreen);
+    color: var(--AccentColor);
 `;
 
 const ContributeText = styled.p`
@@ -94,7 +94,7 @@ const ContributeText = styled.p`
 
 const GithubLink = styled.a`
     color: var(--textColor);
-    background: var(--PosterfyGreen);
+    background: var(--AccentColor);
     padding: 7px 18px;
     border-radius: 6px;
     font-weight: bold;

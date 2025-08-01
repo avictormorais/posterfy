@@ -42,7 +42,7 @@ const Input = styled.input`
     display: none;
 
     &:checked {
-        background-color: var(--PosterfyGreen);
+        background-color: var(--AccentColor);
     }
 `;
 

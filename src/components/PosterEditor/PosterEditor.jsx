@@ -139,7 +139,7 @@ const Tab = styled.div`
     font-weight: 500;
     color: ${({ $active }) => ($active ? 'var(--textColor)' : 'var(--textSecondary)')};
     cursor: pointer;
-    border-bottom: ${({ $active }) => ($active ? '2px solid var(--PosterfyGreen)' : 'none')};
+    border-bottom: ${({ $active }) => ($active ? '2px solid var(--AccentColor)' : 'none')};
     transition: color 0.3s, border-bottom 0.3s;
 
     &:hover {

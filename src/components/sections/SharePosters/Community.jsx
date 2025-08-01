@@ -50,7 +50,7 @@ const PosterText = styled.p`
 `;
 
 const Button = styled.button`
-    background-color: var(--PosterfyGreen);
+    background-color: var(--AccentColor);
     color: var(--PosterfyWhite);
     border: none;
     border-radius: 25px;

@@ -13,7 +13,7 @@ const Anch1 = styled.h2`
     font-size: 2em;
     width: 80%;
     font-weight: bolder;
-    color: var(--PosterfyGreen);
+    color: var(--AccentColor);
     margin-inline: auto;
 `;
 

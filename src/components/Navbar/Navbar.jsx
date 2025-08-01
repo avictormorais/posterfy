@@ -38,7 +38,7 @@ const BrandName = styled.h1`
   font-weight: bolder;
   margin-left: 20px;
   font-size: 1.3em;
-  color: var(--PosterfyGreen);
+  color: var(--AccentColor);
 
   @media (max-width: 400px) {
     display: none;
@@ -119,7 +119,7 @@ function Navbar() {
       <NavbarContent>
         <LogoContainer>
           <IconContainer>
-            <Icon fill={"var(--PosterfyGreen)"} width={"40px"} height={"44.05px"} />
+            <Icon fill={"var(--AccentColor)"} width={"40px"} height={"44.05px"} />
           </IconContainer>
           <BrandName>
             Posterfy

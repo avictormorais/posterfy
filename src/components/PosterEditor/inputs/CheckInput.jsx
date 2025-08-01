@@ -40,8 +40,8 @@ const Input = styled.input`
     position: relative;
 
     &:checked {
-        background-color: var(--PosterfyGreen);
-        border-color: var(--PosterfyGreen);
+        background-color: var(--AccentColor);
+        border-color: var(--AccentColor);
     }
 
     &:checked::after {
@@ -55,7 +55,7 @@ const Input = styled.input`
     }
 
     &:hover {
-        border-color: var(--PosterfyGreen);
+        border-color: var(--AccentColor);
         opacity: 0.8;
     }
 `;

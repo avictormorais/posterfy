@@ -44,7 +44,7 @@ const Container = styled.div`
     left: 0;
     right: 0;
     height: 0px;
-    background: linear-gradient(190deg, transparent, var(--PosterfyGreen), transparent);
+    background: linear-gradient(190deg, transparent, var(--AccentColor), transparent);
   }
   
   @media (max-width: 768px) {
@@ -151,7 +151,7 @@ const CreditText = styled.div`
   }
   
   a {
-    color: var(--PosterfyGreen);
+    color: var(--AccentColor);
     text-decoration: none;
     font-weight: 700;
     position: relative;
@@ -164,7 +164,7 @@ const CreditText = styled.div`
       left: 0;
       width: 100%;
       height: 2px;
-      background: var(--PosterfyGreen);
+      background: var(--AccentColor);
       transform: scaleX(0);
       transform-origin: right;
       transition: transform 0.3s ease;
@@ -224,7 +224,7 @@ const ThemeTitle = styled.h3`
   gap: 8px;
   
   svg {
-    color: var(--PosterfyGreen);
+    color: var(--AccentColor);
   }
   
   @media (max-width: 480px) {
@@ -262,7 +262,7 @@ const ThemeCard = styled.button`
   justify-content: center;
   box-shadow: 0 4px 8px var(--shadowColor);
   border-radius: 100%;
-  border: ${(props) => (props.active ? "1px solid var(--PosterfyGreen)" : "1px solid var(--borderColor)")};
+  border: ${(props) => (props.active ? "1px solid var(--AccentColor)" : "1px solid var(--borderColor)")};
   
   &:hover {
     box-shadow: 0 6px 12px var(--shadowColor);
