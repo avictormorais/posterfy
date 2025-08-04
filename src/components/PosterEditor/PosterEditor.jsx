@@ -358,7 +358,7 @@ const ShortcutsInfo = styled.p`
     }
 `
 
-function PosterEditor({ albumID, handleClickBack }) {
+function PosterEditor({ albumID, handleClickBack, model, modelParams }) {
     const { t } = useTranslation();
     const previewRef = useRef(null);
 
@@ -367,18 +367,18 @@ function PosterEditor({ albumID, handleClickBack }) {
     const [titleSize, setTitleSize] = useState('200');
     const [artistsSize, setArtistsSize] = useState('110');
     const [tracksSize, setTracksSize] = useState('50');
-    const [marginTop, setMarginTop] = useState('');
+    const [marginTop, setMarginTop] = useState(modelParams?.marginTop ?? '');
     const [marginSide, setmarginSide] = useState(160);
-    const [marginCover, setMarginCover] = useState(0);
-    const [marginBackground, setMarginBackground] = useState(0);
+    const [marginCover, setMarginCover] = useState(modelParams?.marginCover ?? 0);
+    const [marginBackground, setMarginBackground] = useState(modelParams?.marginBackground ?? 0);
     const [backgroundColor, setbackgroundColor] = useState('#5900ff');
     const [textColor, setTextColor] = useState('#ff9100');
     const [color1, setcolor1] = useState('#ff0000');
     const [color2, setcolor2] = useState('#00ff40');
     const [color3, setcolor3] = useState('#2600ff');
     const [useWatermark, setUseWatermark] = useState(true);
-    const [useFade, setUseFade] = useState(true);
-    const [showTracklist, setShowTracklist] = useState(false);
+    const [useFade, setUseFade] = useState(modelParams?.useFade ?? true);
+    const [showTracklist, setShowTracklist] = useState(modelParams?.showTracklist ?? false);
     const [albumCover, setAlbumCover] = useState('');
     const [uncompressedAlbumCover, setUncompressedAlbumCover] = useState('');
     const [customFont, setCustomFont] = useState('');
@@ -671,13 +671,14 @@ function PosterEditor({ albumID, handleClickBack }) {
                 : `${remainingMinutes}min ${remainingSeconds}s`;
                 setRuntime(formattedRuntime);
 
+
                 const tracklist = albumData.tracks.items.map((track, index) => {
-                    if(index == 3){
+                    if (index === 3 && (typeof modelParams?.showTracklist === 'undefined')) {
                         setShowTracklist(true);
                     }
                     return `${index + 1}. ${track.name}`;
                 });
-                setTracklist(tracklist.join("\n"));     
+                setTracklist(tracklist.join("\n"));
                 
                 setInfosLoaded(true);          
     

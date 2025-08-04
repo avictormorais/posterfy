@@ -66,6 +66,8 @@ i18n
                 EDITOR_RemoveParentheses: "Remove ( )",
                 EDITOR_RemoveBrackets: "Remove [ ]",
                 EDITOR_MarginBackground: "Background size",
+                ModelTitle: "Poster Models",
+                ModelText: "Click on a pre-defined model to select it",
 
                 Share: "Share.",
                 ShareTitle: "Share your poster\nto us",
@@ -137,6 +139,8 @@ i18n
                 EDITOR_RemoveParentheses: "Remover ( )",
                 EDITOR_RemoveBrackets: "Remover [ ]",
                 EDITOR_MarginBackground: "Tamanho fundo",
+                ModelTitle: "Modelos de Pôster",
+                ModelText: "Clique em um modelo pré-definido para selecioná-lo",
 
                 Share: "Compartilhe.",
                 ShareTitle: "Compartilhe seu pôster\n conosco",
@@ -208,6 +212,8 @@ i18n
                 EDITOR_RemoveParentheses: "Quitar ( )",
                 EDITOR_RemoveBrackets: "Quitar [ ]",
                 EDITOR_MarginBackground: "Tamaño de fondo",
+                ModelTitle: "Modelos de Póster",
+                ModelText: "Haz clic en un modelo predefinido para seleccionarlo",
 
                 Share: "Compartir.",
                 ShareTitle: "Compartir su póster\n con nosotros",
@@ -279,6 +285,8 @@ i18n
                 EDITOR_RemoveParentheses: "移除 ( )",
                 EDITOR_RemoveBrackets: "移除 [ ]",
                 EDITOR_MarginBackground: "背景大小",
+                ModelTitle: "海报模型",
+                ModelText: "点击预定义模型进行选择",
 
                 Share: "分享。",
                 ShareTitle: "将您的海报\n分享给我们",
