@@ -19,6 +19,7 @@ import { Palette } from "color-thief-react";
 import CanvasPoster from "./CanvasPoster";
 import AnimatedInput from "./inputs/AnimatedInput";
 import { trackPosterDownload, trackPosterPreview } from "../../services/analytics";
+import { exportPosterJson, importPosterJson } from "./PosterJsonIO";
 
 const Container = styled.div`
     width: 80%;
@@ -370,7 +371,7 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams }) {
     const [marginTop, setMarginTop] = useState(modelParams?.marginTop ?? '');
     const [marginSide, setmarginSide] = useState(160);
     const [marginCover, setMarginCover] = useState(modelParams?.marginCover ?? 0);
-    const [marginBackground, setMarginBackground] = useState(modelParams?.marginBackground ?? 0);
+    const [marginBackground, setmarginBackground] = useState(modelParams?.marginBackground ?? 0);
     const [backgroundColor, setbackgroundColor] = useState('#5900ff');
     const [textColor, setTextColor] = useState('#ff9100');
     const [color1, setcolor1] = useState('#ff0000');
@@ -383,8 +384,36 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams }) {
     const [uncompressedAlbumCover, setUncompressedAlbumCover] = useState('');
     const [customFont, setCustomFont] = useState('');
     const [customFontFile, setCustomFontFile] = useState(null);
-
     const [activeTab, setActiveTab] = useState('information');
+
+    function applyPosterJson(json) {
+        setAlbumName(json.albumName || '');
+        setArtistsName(json.artistsName || '');
+        setTitleSize(json.titleSize || '200');
+        setArtistsSize(json.artistsSize || '110');
+        setTracksSize(json.tracksSize || '50');
+        setMarginTop(json.marginTop || '');
+        setmarginSide(json.marginSide || 160);
+        setMarginCover(json.marginCover || 0);
+        setmarginBackground(json.marginBackground || 0);
+        setbackgroundColor(json.backgroundColor || '#5900ff');
+        setTextColor(json.textColor || '#ff9100');
+        setcolor1(json.color1 || '#ff0000');
+        setcolor2(json.color2 || '#00ff40');
+        setcolor3(json.color3 || '#2600ff');
+        setUseWatermark(json.useWatermark !== undefined ? json.useWatermark : true);
+        setUseFade(json.useFade !== undefined ? json.useFade : true);
+        setShowTracklist(json.showTracklist !== undefined ? json.showTracklist : false);
+        setAlbumCover(json.albumCover || '');
+        setUncompressedAlbumCover(json.uncompressedAlbumCover || '');
+        setCustomFont(json.customFont || '');
+        setTracklist(json.tracklist || '');
+        setTitleRelease(json.titleRelease || '');
+        setReleaseDate(json.releaseDate || '');
+        setTitleRuntime(json.titleRuntime || '');
+        setRuntime(json.runtime || '');
+        handleApplyClick();
+    }
 
     useEffect(() => {
         if (customFontFile) {
@@ -987,12 +1016,6 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams }) {
                             )}
                             <AnimatedInput animationDelay={1050}>
                                 <DivButtons>
-                                    {/* <ButtonDiv onClick={handleCoverDownloadClick}>
-                                        <IconDownload/>
-                                        <ButtonText>
-                                            {t('EDITOR_DownloadCover')}
-                                        </ButtonText>
-                                    </ButtonDiv> */}
                                     <ButtonDiv onClick={handleDownloadClick}>
                                         <IconDownload/>
                                         <ButtonText>
@@ -1005,6 +1028,14 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams }) {
                                             {t('EDITOR_Apply')}
                                         </ButtonText>
                                     </ButtonDiv>
+                                    {/* <ButtonDiv onClick={() => exportPosterJson(posterData)}>
+                                        <IconDownload/>
+                                        <ButtonText>Exportar JSON</ButtonText>
+                                    </ButtonDiv>
+                                    <ButtonDiv onClick={() => importPosterJson(applyPosterJson)}>
+                                        <IconDownload/>
+                                        <ButtonText>Importar JSON</ButtonText>
+                                    </ButtonDiv> */}
                                 </DivButtons>
                             </AnimatedInput>
                             <AnimatedInput animationDelay={1100}>
