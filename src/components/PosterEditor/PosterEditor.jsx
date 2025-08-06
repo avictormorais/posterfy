@@ -359,7 +359,7 @@ const ShortcutsInfo = styled.p`
     }
 `
 
-function PosterEditor({ albumID, handleClickBack, model, modelParams }) {
+function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPosterJson }) {
     const { t } = useTranslation();
     const previewRef = useRef(null);
 
@@ -432,6 +432,12 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams }) {
             reader.readAsArrayBuffer(customFontFile);
         }
     }, [customFontFile]);
+
+    useEffect(() => {
+        if (initialPosterJson) {
+            applyPosterJson(initialPosterJson);
+        }
+    }, [initialPosterJson]);
 
     const [useUncompressed, setUseUncompressed] = useState(false);
     const [fileName, setFileName] = useState("Original");
@@ -858,7 +864,7 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams }) {
                                         <NormalInput 
                                             title={t('EDITOR_MarginBackground')}
                                             value={marginBackground}
-                                            onChange={(e) => setMarginBackground(e.target.value)}
+                                            onChange={(e) => setmarginBackground(e.target.value)}
                                         />
                                     </AnimatedInput>
             
@@ -1028,14 +1034,14 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams }) {
                                             {t('EDITOR_Apply')}
                                         </ButtonText>
                                     </ButtonDiv>
-                                    {/* <ButtonDiv onClick={() => exportPosterJson(posterData)}>
+                                    <ButtonDiv onClick={() => exportPosterJson(posterData)}>
                                         <IconDownload/>
                                         <ButtonText>Exportar JSON</ButtonText>
                                     </ButtonDiv>
                                     <ButtonDiv onClick={() => importPosterJson(applyPosterJson)}>
                                         <IconDownload/>
                                         <ButtonText>Importar JSON</ButtonText>
-                                    </ButtonDiv> */}
+                                    </ButtonDiv>
                                 </DivButtons>
                             </AnimatedInput>
                             <AnimatedInput animationDelay={1100}>

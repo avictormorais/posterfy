@@ -232,14 +232,20 @@ const ModalContent = styled.div`
     max-width: 70%;
     max-height: 70%;
     object-fit: contain;
-    border-radius: 8px;
+    border-radius: 0px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  }
+
+  @media (max-width: 950px) {
+    img {
+      max-width: 60%;
+    }
   }
 `
 
 const CloseButton = styled.button`
   position: absolute;
-  top: -10px;
+  top: 0px;
   right: 50px;
   background: var(--glassBackground);
   border: 2px solid var(--borderColor);
@@ -254,6 +260,7 @@ const CloseButton = styled.button`
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   backdrop-filter: blur(8px);
+  color: white;
 
   &:hover {
     background: var(--borderColor);
@@ -264,6 +271,43 @@ const CloseButton = styled.button`
 
   &:active {
     transform: scale(0.95);
+  }
+`
+
+const RecreateButton = styled.button`
+   position: absolute;
+  top: 50px;
+  right: -80px;
+  background: var(--glassBackground);
+  border: 2px solid var(--borderColor);
+  border-radius: 20px;
+  padding: 10px 20px;
+  height: 40px;
+  color: var(--textColor);
+  font-size: 1em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(8px);
+  color: white;
+  font-weight: bolder;
+
+  &:hover {
+    background: var(--borderColor);
+    border-color: var(--textSecondary);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 950px) {
+    right: 40%;
+    top: 105%;
   }
 `
 
@@ -319,6 +363,9 @@ const AlbumCollection = () => {
         <Modal onClick={closeModal}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
             <CloseButton onClick={closeModal}>&times;</CloseButton>
+            {/* <RecreateButton onClick={closeModal}>
+              Recreate Poster
+            </RecreateButton> */}
             <img src={modalImage} alt="Album cover" />
           </ModalContent>
         </Modal>
