@@ -3,13 +3,9 @@ import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero';
 import Anchor from './components/Anchor';
 import SectionExplanation from './components/SectionExplanation';
-import Searchbar from './components/Searchbar';
-import { useState, useEffect } from 'react';
 import Loading from './components/Loading';
 import Footer from './components/Footer';
-import Grid from './components/Grid';
 import Faq from './components/sections/Faq/Faq';
-import PosterEditor from './components/PosterEditor/PosterEditor'
 import SEOComponent from './components/SEOComponent';
 import IndexingMonitor from './components/IndexingMonitor';
 import AnalyticsInitializer from './components/AnalyticsInitializer';
@@ -19,17 +15,13 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import Share from './components/sections/SharePosters/Share';
 import Publish from './components/sections/SharePosters/Community';
 import Thanks from './components/sections/Faq/Thanks/Thanks';
-import ModelSelector from './components/PosterEditor/ModelSelector';
+import PosterBySearch from './components/PosterEditor/Models/PosterBySearch';
+import { useEffect, useState } from 'react';
 
 function App() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [loadingComplete, setLoadingComplete] = useState(false);
-  const [query, setQuery] = useState('');
-  const [albumId, setAlbumId] = useState(null);
-  const [showModelSelector, setShowModelSelector] = useState(false);
-  const [selectedModel, setSelectedModel] = useState(null);
-  const [modelParams, setModelParams] = useState(null);
 
   usePageTracking();
 
@@ -38,30 +30,13 @@ function App() {
     return cleanup;
   }, []);
 
-
-  function onClickAlbum(id) {
-    setAlbumId(id);
-    setShowModelSelector(true);
-    setSelectedModel(null);
-    setModelParams(null);
-  }
-
-  function handleClickBack() {
-    setAlbumId(null);
-    setShowModelSelector(false);
-    setSelectedModel(null);
-    setModelParams(null);
-  }
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-      
       setTimeout(() => {
         setLoadingComplete(true);
       }, 1000);
     }, 1100);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -71,15 +46,10 @@ function App() {
     } else {
       document.body.style.overflow = 'unset';
     }
-
     return () => {
       document.body.style.overflow = 'unset';
     };
   }, [loading]);
-
-  const onSearch = (newQuery) => {
-    setQuery(newQuery);
-  };
 
   return (
     <ThemeProvider>
@@ -90,30 +60,7 @@ function App() {
       <Hero showAnimation={loadingComplete} />
       <Anchor text={t('anchorArt')} type={1} />
       <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
-
-      {albumId && selectedModel && modelParams ? (
-        <PosterEditor albumID={albumId} handleClickBack={handleClickBack} model={selectedModel} modelParams={modelParams} />
-      ) : albumId && showModelSelector ? (
-        <ModelSelector
-          onSelectModel={(model, params) => {
-            setSelectedModel(model);
-            setModelParams(params);
-            setShowModelSelector(false);
-          }}
-          onBack={handleClickBack}
-        />
-      ) : (
-        <>
-          <Searchbar onSearch={onSearch} value={query} />
-          {query && <Grid query={query} onclick={onClickAlbum} />}
-
-          <div style={{ display: query ? 'none' : 'block' }}>
-            <Anchor text={t('TryTrend')} type={2}/>
-            <Grid onclick={onClickAlbum} />
-          </div>
-        </>
-      )}
-
+      <PosterBySearch />
       <Publish />
       <Share />
       <Faq/>
