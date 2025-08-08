@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useRef, useEffect } from 'react';
-import waterMarkBlack from '../../assets/waterMarkBlack.png'
-import waterMarkWhite from '../../assets/waterMarkWhite.png'
+import { generateLogoWatermark } from '../svgs/logoName.jsx';
 
 const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, customFont }) => {
     const canvasRef = useRef(null);
@@ -40,16 +39,20 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
             };
 
             const drawWaterMark = async () => {
+                const svgString = generateLogoWatermark(posterData.textColor, 500, 134);
+
+                const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(svgBlob);
+                
                 const image = new Image();
-                image.crossOrigin = "anonymous";
-                const rgb = hexToRgb(posterData.backgroundColor);
-                const contrastColor = getContrast(rgb);
-                image.src = contrastColor === 'black' ? waterMarkBlack : waterMarkWhite;
+                image.src = url;
+                
                 return new Promise((resolve) => {
                     image.onload = () => {
-                        ctx.globalAlpha = '0.15';
+                        ctx.globalAlpha = '0.5';
                         ctx.drawImage(image, width - 70 - 500, 50, 500, 134);
                         ctx.globalAlpha = '1';
+                        URL.revokeObjectURL(url);
                         resolve();
                     };
                 });
