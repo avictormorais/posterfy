@@ -96,3 +96,17 @@ export const trackLanguageChange = (language) => {
     });
   }
 };
+
+export const trackPosterRecreation = (albumName, artistName = '', albumId = '', source = 'album_collection') => {
+  const albumInfo = artistName ? `${artistName} - ${albumName}` : albumName;
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'recreate_poster', {
+      event_category: 'Engagement',
+      event_label: albumInfo,
+      album_name: albumName,
+      artist_name: artistName,
+      album_id: albumId,
+      source: source
+    });
+  }
+};

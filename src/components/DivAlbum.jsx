@@ -15,10 +15,10 @@ const AlbumContainer = styled.div`
   }
 `
 
-const DivAlbum = () => {
+const DivAlbum = ({ onRecreate }) => {
   return (
     <AlbumContainer>
-      <AlbumCollection />
+      <AlbumCollection onRecreate={onRecreate} />
     </AlbumContainer>
   )
 }

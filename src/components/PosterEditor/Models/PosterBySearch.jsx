@@ -27,14 +27,19 @@ const PosterBySearch = ({ onBack }) => {
     }
 
 
-    // Garante que o Searchbar seja controlado pelo estado query
     const onSearch = (newQuery) => {
         setQuery(newQuery);
     };
 
     if (albumId && selectedModel && modelParams) {
         return (
-            <PosterEditor albumID={albumId} handleClickBack={handleClickBack} model={selectedModel} modelParams={modelParams} />
+            <PosterEditor 
+                albumID={albumId} 
+                handleClickBack={handleClickBack} 
+                model={selectedModel} 
+                modelParams={modelParams}
+                source="search_creation"
+            />
         );
     }
     if (albumId && showModelSelector) {

@@ -5,7 +5,7 @@ import { IoArrowBack } from "react-icons/io5";
 import NormalInput from "./inputs/NormalInput";
 import DoubleInput from "./inputs/DoubleInput";
 import ColorInput from "./inputs/ColorInput";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
 import CheckInput from "./inputs/CheckInput";
@@ -359,7 +359,7 @@ const ShortcutsInfo = styled.p`
     }
 `
 
-function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPosterJson }) {
+const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson }, ref) => {
     const { t } = useTranslation();
     const previewRef = useRef(null);
 
@@ -387,6 +387,7 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPos
     const [activeTab, setActiveTab] = useState('information');
 
     function applyPosterJson(json) {
+        setIsLoadedFromJson(true);
         setAlbumName(json.albumName || '');
         setArtistsName(json.artistsName || '');
         setTitleSize(json.titleSize || '200');
@@ -404,6 +405,7 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPos
         setUseWatermark(json.useWatermark !== undefined ? json.useWatermark : true);
         setUseFade(json.useFade !== undefined ? json.useFade : true);
         setShowTracklist(json.showTracklist !== undefined ? json.showTracklist : false);
+        setUseUncompressed(json.useUncompressed !== undefined ? json.useUncompressed : false);
         setAlbumCover(json.albumCover || '');
         setUncompressedAlbumCover(json.uncompressedAlbumCover || '');
         setCustomFont(json.customFont || '');
@@ -454,6 +456,7 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPos
 
     const [userAdjustedTitleSize, setUserAdjustedTitleSize] = useState(false);
     const [initialTitleSizeSet, setInitialTitleSizeSet] = useState(false);
+    const [isLoadedFromJson, setIsLoadedFromJson] = useState(false);
 
     const handleTitleSizeChange = (e) => {
         setTitleSize(e.target.value);
@@ -562,6 +565,7 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPos
         setUseUncompressed(false);
         setUncompressedAlbumCover('');
         setFileName(file.name);
+        setIsLoadedFromJson(false); 
     };
 
     const handleDownloadClick = () => {
@@ -636,7 +640,9 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPos
             let data = await response.json();
             if (!data.results?.length) {
                 console.warn("No album data found.");
-                setUseUncompressed(false);
+                if (!isLoadedFromJson) {
+                    setUseUncompressed(false);
+                }
                 return '';
             }
     
@@ -722,7 +728,13 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPos
             }
         };
     
-        if (albumID) fetchAlbumData();
+        if(initialPosterJson){
+            applyPosterJson(initialPosterJson);
+            setInfosLoaded(true);
+        } else{
+            setIsLoadedFromJson(false);
+            fetchAlbumData();
+        }
     }, [albumID]);
 
     useEffect(() => {
@@ -747,11 +759,11 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPos
             {!infosLoaded ? (
                 <LoadingDiv/>
             ) : (
-                <Container>
+                <Container ref={ref}>
                 <Palette src={albumCover} crossOrigin="anonymous" format="hex" colorCount={5}>
                     {({ data }) => {
                         useEffect(() => {
-                            if (data && data.length > 0) {
+                            if (data && data.length > 0 && !isLoadedFromJson) {
                                 setbackgroundColor(data[0]);
                                 setTextColor(data[1]);
                                 setcolor1(data[2]);
@@ -1055,6 +1067,8 @@ function PosterEditor({ albumID, handleClickBack, model, modelParams, initialPos
             )}
         </>
     )
-}
+});
+
+PosterEditor.displayName = 'PosterEditor';
 
 export default PosterEditor;

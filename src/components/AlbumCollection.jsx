@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import styled from "styled-components"
 import { albumData } from "./AlbumData"
+import { useTranslation } from "react-i18next"
 
 const AlbumsContainer = styled.div`
   display: flex;
@@ -243,79 +244,119 @@ const ModalContent = styled.div`
   }
 `
 
-const CloseButton = styled.button`
+const ModalControls = styled.div`
   position: absolute;
   top: 0px;
-  right: 50px;
-  background: var(--glassBackground);
-  border: 2px solid var(--borderColor);
+  right: -80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+
+  @media (max-width: 768px) {
+    top: 15px;
+    right: 15px;
+    gap: 10px;
+  }
+`
+
+const CloseButton = styled.button`
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  color: var(--textColor);
-  font-size: 1.5em;
+  width: 44px;
+  height: 44px;
+  color: white;
+  font-size: 1.4em;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(8px);
-  color: white;
+  backdrop-filter: blur(12px);
+  font-weight: 300;
 
   &:hover {
-    background: var(--borderColor);
-    border-color: var(--textSecondary);
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   }
 
   &:active {
     transform: scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2em;
   }
 `
 
 const RecreateButton = styled.button`
-   position: absolute;
-  top: 50px;
-  right: -80px;
-  background: var(--glassBackground);
-  border: 2px solid var(--borderColor);
-  border-radius: 20px;
-  padding: 10px 20px;
-  height: 40px;
-  color: var(--textColor);
-  font-size: 1em;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 22px;
+  padding: 0 16px;
+  height: 44px;
+  color: white;
+  font-size: 0.9em;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(8px);
-  color: white;
-  font-weight: bolder;
+  backdrop-filter: blur(12px);
+  white-space: nowrap;
+  min-width: 120px;
 
   &:hover {
-    background: var(--borderColor);
-    border-color: var(--textSecondary);
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    background: var(--AccentColor);
+    border-color: var(--AccentColor);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(223, 109, 64, 0.3);
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: translateY(0);
   }
 
-  @media (max-width: 950px) {
-    right: 40%;
-    top: 105%;
+  &::before {
+    content: "↻";
+    font-size: 1.1em;
+    margin-right: 4px;
+  }
+
+  @media (max-width: 768px) {
+    height: 40px;
+    font-size: 0.85em;
+    padding: 0 14px;
+    min-width: 110px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8em;
+    padding: 0 12px;
+    min-width: 100px;
+    height: 36px;
+    
+    &::before {
+      font-size: 1em;
+    }
   }
 `
 
-const AlbumCollection = () => {
+const AlbumCollection = ({ onRecreate }) => {
+  const { t } = useTranslation()
+
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [isMobile, setIsMobile] = useState(false)
   const [isTablet, setIsTablet] = useState(false)
   const [modalImage, setModalImage] = useState(null)
+  const [imageJSON, setImageJSON] = useState(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -328,13 +369,20 @@ const AlbumCollection = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  const openModal = (image) => {
+  const openModal = (image, jsonData) => {
     setModalImage(image)
+    setImageJSON(jsonData)
     document.body.style.overflow = "hidden"
   }
 
   const closeModal = () => {
     setModalImage(null)
+    document.body.style.overflow = "auto"
+  }
+
+  const recreatePoster = () => {
+    setModalImage(null)
+    onRecreate(imageJSON)
     document.body.style.overflow = "auto"
   }
 
@@ -352,7 +400,7 @@ const AlbumCollection = () => {
             isTablet={isTablet}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
-            onClick={() => openModal(album.coverImage || "/placeholder.svg")}
+            onClick={() => openModal(album.coverImage || "/placeholder.svg", album.JSONConfig)}
           >
             <img src={album.coverImage || "/placeholder.svg"} alt={`${album.artist} - ${album.title}`} />
           </AlbumPoster>
@@ -362,10 +410,10 @@ const AlbumCollection = () => {
       {modalImage && (
         <Modal onClick={closeModal}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
-            <CloseButton onClick={closeModal}>&times;</CloseButton>
-            {/* <RecreateButton onClick={closeModal}>
-              Recreate Poster
-            </RecreateButton> */}
+            <ModalControls>
+              <CloseButton onClick={closeModal}>&times;</CloseButton>
+              <RecreateButton onClick={recreatePoster}>{t('RecreatePoster')}</RecreateButton>
+            </ModalControls>
             <img src={modalImage} alt="Album cover" />
           </ModalContent>
         </Modal>

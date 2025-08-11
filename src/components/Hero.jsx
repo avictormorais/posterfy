@@ -132,7 +132,7 @@ const HeroIcon = styled(MdOutlineKeyboardDoubleArrowDown)`
     ${bounceAnimation}
 `
 
-function Hero({ showAnimation = false }) {
+function Hero({ showAnimation = false, onRecreate }) {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const [elementsVisible, setElementsVisible] = useState(false)
@@ -196,7 +196,7 @@ function Hero({ showAnimation = false }) {
           <HeroIcon visible={elementsVisible} animationDelay={1000} onClick={handleScroll} />
         </Container>
       </HeroDiv>
-      <DivAlbum />
+      <DivAlbum onRecreate={onRecreate} />
     </>
   )
 }

@@ -11,17 +11,21 @@ import IndexingMonitor from './components/IndexingMonitor';
 import AnalyticsInitializer from './components/AnalyticsInitializer';
 import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
+import { trackPosterRecreation } from './services/analytics';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Share from './components/sections/SharePosters/Share';
 import Publish from './components/sections/SharePosters/Community';
 import Thanks from './components/sections/Faq/Thanks/Thanks';
 import PosterBySearch from './components/PosterEditor/Models/PosterBySearch';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import PosterEditor from './components/PosterEditor/PosterEditor';
 
 function App() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [loadingComplete, setLoadingComplete] = useState(false);
+  const [recreatingPosterJSON, setRecreatingPosterJSON] = useState(null);
+  const posterEditorRef = useRef(null);
 
   usePageTracking();
 
@@ -51,19 +55,51 @@ function App() {
     };
   }, [loading]);
 
+  const recreatePoster = (imageJSON) => {
+    trackPosterRecreation(
+      imageJSON.albumName || 'Unknown Album',
+      imageJSON.artistsName || 'Unknown Artist', 
+      imageJSON.albumID || '',
+      'album_collection'
+    );
+    
+    setRecreatingPosterJSON(imageJSON);
+    setTimeout(() => {
+      if (posterEditorRef.current) {
+        const y = posterEditorRef.current.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }, 100);
+  }
+
+  const handleClickBack = () => {
+    setRecreatingPosterJSON(null);
+  }
+
   return (
     <ThemeProvider>
       <SEOComponent />
       <IndexingMonitor />
       <AnalyticsInitializer />
       <Navbar />
-      <Hero showAnimation={loadingComplete} />
+      <Hero showAnimation={loadingComplete} onRecreate={recreatePoster} />
       <Anchor text={t('anchorArt')} type={1} />
       <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
-      <PosterBySearch />
+
+      {recreatingPosterJSON ? (
+        <PosterEditor 
+          ref={posterEditorRef}
+          albumID={recreatingPosterJSON.albumID} 
+          initialPosterJson={recreatingPosterJSON} 
+          handleClickBack={handleClickBack}
+        />
+      ) : (
+        <PosterBySearch />
+      )}
+
       <Publish />
       <Share />
-      <Faq/>
+      <Faq />
       <Thanks />
       <Footer />
       <Loading isVisible={loading} />
