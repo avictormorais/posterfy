@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Share from '../components/sections/SharePosters/Share';
+import Loading from '../components/Loading';
 
 i18n
 .use(initReactI18next)
@@ -77,7 +78,9 @@ i18n
                 CommunityTitle: "Publish your poster\nto the community",
                 CommunityDescription: "Share and search posters on the community!",
                 Thanks: "Thanks!",
-                RecreatePoster: "Recreate poster"
+                RecreatePoster: "Recreate poster",
+                LoadMore: "Load more",
+                LoadingMore: "Loading more...",
             },
         },
         pt: {
@@ -151,7 +154,9 @@ i18n
                 CommunityTitle: "Publique seu pôster\n na comunidade",
                 CommunityDescription: "Compartilhe e busque pôsteres na comunidade!",
                 Thanks: "Obrigado!",
-                RecreatePoster: "Recriar pôster"
+                RecreatePoster: "Recriar pôster",
+                LoadMore: "Carregar mais...",
+                LoadingMore: "Carregando mais...",
             },
         },
         es: {
@@ -225,7 +230,9 @@ i18n
                 CommunityTitle: "Publica tu póster\nen la comunidad",
                 CommunityDescription: "¡Comparte y busca pósters en la comunidad!",
                 Thanks: "¡Gracias!",
-                RecreatePoster: "Recrear póster"
+                RecreatePoster: "Recrear póster",
+                LoadMore: "Cargar más...",
+                LoadingMore: "Cargando más..."
             },
         },
         zh: {
@@ -299,7 +306,9 @@ i18n
                 CommunityTitle: "将你的海报\n发布到社区",
                 CommunityDescription: "修改了一个海报并想让它对社区可用？发布它并在这里查看！",
                 Thanks: "谢谢！",
-                RecreatePoster: "重新创建海报"
+                RecreatePoster: "重新创建海报",
+                LoadMore: "加载更多...",
+                LoadingMore: "加载更多..."
             },
         },
     },
