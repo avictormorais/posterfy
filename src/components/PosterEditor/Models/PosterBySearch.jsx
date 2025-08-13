@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PosterEditor from "../PosterEditor";
 import ModelSelector from "../ModelSelector";
 import Searchbar from "../../Searchbar";
@@ -10,6 +10,18 @@ const PosterBySearch = ({ onBack }) => {
     const [showModelSelector, setShowModelSelector] = useState(false);
     const [selectedModel, setSelectedModel] = useState(null);
     const [modelParams, setModelParams] = useState(null);
+    const modelSelectorRef = useRef(null);
+
+    useEffect(() => {
+        if (showModelSelector && albumId && modelSelectorRef.current) {
+            setTimeout(() => {
+                modelSelectorRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+        }
+    }, [showModelSelector, albumId]);
 
     function onClickAlbum(id) {
         setAlbumId(id);
@@ -44,14 +56,16 @@ const PosterBySearch = ({ onBack }) => {
     }
     if (albumId && showModelSelector) {
         return (
-            <ModelSelector
-                onSelectModel={(model, params) => {
-                    setSelectedModel(model);
-                    setModelParams(params);
-                    setShowModelSelector(false);
-                }}
-                onBack={handleClickBack}
-            />
+            <div ref={modelSelectorRef}>
+                <ModelSelector
+                    onSelectModel={(model, params) => {
+                        setSelectedModel(model);
+                        setModelParams(params);
+                        setShowModelSelector(false);
+                    }}
+                    onBack={handleClickBack}
+                />
+            </div>
         );
     }
 

@@ -13,7 +13,11 @@ const Container = styled.div`
     max-width: 220px;
     opacity: ${props => props.visible ? 1 : 0};
     transform: translateY(${props => props.visible ? '0' : '20px'});
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transition: all 0.6s ease, transform 0.6s ease;
+
+    &:hover{
+        transform: scale(1.02);
+    }
 
     ::before {
         content: "";
@@ -27,11 +31,11 @@ const Container = styled.div`
         transition: background-color 0.3s;
         background-color: var(--glassBackground);
         z-index: 1;
+        border: 1px solid transparent;
     }
 
     :hover::before {
-        background-color: var(--borderColor);
-        border: 1px solid var(--textSecondary);
+        border: 3px solid var(--PosterShare-light);
     }
 
     @media (max-width: 650px) {
