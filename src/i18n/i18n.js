@@ -310,7 +310,20 @@ i18n
             },
         },
     },
-    lng: "en",
+    lng: (() => {
+        const savedLanguage = localStorage.getItem('language');
+        if (savedLanguage) {
+            return savedLanguage;
+        }
+        
+        const browserLanguage = navigator.language || navigator.languages[0];
+        const languageCode = browserLanguage.split('-')[0].toLowerCase();
+        
+        const supportedLanguages = ['en', 'pt', 'es', 'zh'];
+        const detectedLanguage = supportedLanguages.includes(languageCode) ? languageCode : 'en';
+        
+        return detectedLanguage;
+    })(),
     fallbackLng: "en",
     interpolation: {
         escapeValue: false,
