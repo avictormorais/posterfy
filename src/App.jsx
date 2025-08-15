@@ -13,6 +13,7 @@ import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
 import { trackPosterRecreation } from './services/analytics';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ModalProvider } from './contexts/AlertsContext';
 import Share from './components/sections/SharePosters/Share';
 import Publish from './components/sections/SharePosters/Community';
 import Thanks from './components/sections/Thanks/Thanks';
@@ -78,31 +79,35 @@ function App() {
 
   return (
     <ThemeProvider>
-      <SEOComponent />
-      <IndexingMonitor />
-      <AnalyticsInitializer />
-      <Navbar />
-      <Hero showAnimation={loadingComplete} onRecreate={recreatePoster} />
-      <Anchor text={t('anchorArt')} type={1} />
-      <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
+      <ModalProvider>
+        <SEOComponent />
+        <IndexingMonitor />
+        <AnalyticsInitializer />
+        
+        <Navbar />
+        <Hero showAnimation={loadingComplete} onRecreate={recreatePoster} />
+        <Anchor text={t('anchorArt')} type={1} />
+        <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
 
-      {recreatingPosterJSON ? (
-        <PosterEditor 
-          ref={posterEditorRef}
-          albumID={recreatingPosterJSON.albumID} 
-          initialPosterJson={recreatingPosterJSON} 
-          handleClickBack={handleClickBack}
-        />
-      ) : (
-        <PosterBySearch />
-      )}
+        {recreatingPosterJSON ? (
+          <PosterEditor 
+            ref={posterEditorRef}
+            albumID={recreatingPosterJSON.albumID} 
+            initialPosterJson={recreatingPosterJSON} 
+            handleClickBack={handleClickBack}
+          />
+        ) : (
+          <PosterBySearch />
+        )}
 
-      <Publish />
-      <Share />
-      <Faq />
-      <Thanks />
-      <Footer />
-      <Loading isVisible={loading} />
+        <Publish />
+        <Share />
+        <Faq />
+        <Thanks />
+        <Footer />
+        
+        <Loading isVisible={loading} />
+      </ModalProvider>
     </ThemeProvider>
   );
 }
