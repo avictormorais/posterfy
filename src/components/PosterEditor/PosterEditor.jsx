@@ -14,7 +14,7 @@ import FontInput from "./inputs/FontInput";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import LoadingDiv from "../LoadingDiv";
+import LoadingDiv from "../Commom/LoadingDiv";
 import { Palette } from "color-thief-react";
 import CanvasPoster from "./CanvasPoster";
 import AnimatedInput from "./inputs/AnimatedInput";

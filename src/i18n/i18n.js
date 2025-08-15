@@ -1,7 +1,5 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import Share from '../components/sections/SharePosters/Share';
-import Loading from '../components/Loading';
 
 i18n
 .use(initReactI18next)

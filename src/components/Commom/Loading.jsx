@@ -1,7 +1,7 @@
 import styled, { keyframes } from 'styled-components';
-import Icon from './svgs/icon';
+import Icon from '../svgs/icon';
 import { useState, useEffect } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const pulse = keyframes`
     0% { transform: scale(1); }
@@ -20,6 +20,14 @@ const expandAndFade = keyframes`
     }
 `;
 
+const fadeIn = keyframes`
+    0% { 
+        opacity: 0; 
+    }
+    100% { 
+        opacity: 1; 
+    }
+`;
 
 const Container = styled.div`
     position: fixed;
@@ -35,6 +43,7 @@ const Container = styled.div`
     opacity: ${props => props.fadeOutContainer ? 0 : 1};
     pointer-events: ${props => props.isVisible ? 'auto' : 'none'};
     transition: opacity 0.5s ease-out;
+    animation: ${props => props.initialFade ? fadeIn : 'none'} 0.5s ease-in;
 `;
 
 const IconContainer = styled.div`
@@ -46,7 +55,7 @@ const IconContainer = styled.div`
     }} ${props => props.isExiting ? '0.8s' : '0s'} ${props => props.isExiting ? 'ease-out forwards' : 'infinite'};
 `;
 
-function Loading({ isVisible }) {
+function Loading({ isVisible, initialFade = false }) {
     const { theme } = useTheme();
     const [isExiting, setIsExiting] = useState(false);
     const [fadeOutContainer, setFadeOutContainer] = useState(false);
@@ -62,7 +71,7 @@ function Loading({ isVisible }) {
     }, [isVisible, isExiting]);
 
     return (
-        <Container isVisible={isVisible} fadeOutContainer={fadeOutContainer}>
+        <Container isVisible={isVisible} fadeOutContainer={fadeOutContainer} initialFade={initialFade}>
             <IconContainer isExiting={isExiting}>
                 <Icon fill={'var(--AccentColor)'} width="100px" height={'118.23px'} />
             </IconContainer>

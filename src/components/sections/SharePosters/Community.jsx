@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Anchor from "../../Anchor.jsx";
+import Anchor from "../../Commom/Anchor.jsx";
 import { useTranslation } from 'react-i18next';
 import SectionExplanation from "../../SectionExplanation.jsx";
 import PosterShare from "../../svgs/PosterShare.jsx";

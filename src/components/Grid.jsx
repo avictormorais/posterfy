@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import Album from "./Album";
-import LoadingDiv from "./LoadingDiv";
+import Album from "./Commom/Album";
+import LoadingDiv from "./Commom/LoadingDiv";
 import { useTranslation } from "react-i18next";
 
 const Container = styled.div`

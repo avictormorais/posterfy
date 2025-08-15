@@ -1,9 +1,9 @@
 import styled, { keyframes } from "styled-components"
 import { useTranslation } from "react-i18next"
-import Icon from "./svgs/icon"
+import Icon from "../svgs/icon"
 import { FaGithub, FaHeart, FaPalette, FaMoon, FaSun, FaLeaf, FaFire, FaWater, FaGem, FaMountain } from "react-icons/fa"
 import { useEffect, useState } from "react"
-import { useTheme } from "../contexts/ThemeContext"
+import { useTheme } from "../../contexts/ThemeContext"
 
 const float = keyframes`
   0% { transform: translateY(0px) rotate(0deg); }
