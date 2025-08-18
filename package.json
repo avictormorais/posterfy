@@ -2,7 +2,15 @@
   "homepage": "https://posterfy.space/",
   "name": "posterfy",
   "description": "Free album poster generator - Create custom music posters from Spotify albums instantly. Professional poster maker with templates and design tools.",
-  "keywords": ["album poster generator", "music poster maker", "spotify poster", "free poster creator", "album art poster", "music poster design", "posterfy"],
+  "keywords": [
+    "album poster generator",
+    "music poster maker",
+    "spotify poster",
+    "free poster creator",
+    "album art poster",
+    "music poster design",
+    "posterfy"
+  ],
   "author": "Victor Morais",
   "license": "MIT",
   "private": true,
@@ -19,7 +27,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "color-thief-react": "^2.1.0",
+    "color-thief-react": "^1.0.2",
     "i18next": "^23.16.4",
     "react": "^18.3.1",
     "react-colorful": "^5.6.1",

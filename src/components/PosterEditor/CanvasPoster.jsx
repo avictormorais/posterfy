@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useRef, useEffect } from 'react';
-import { generateLogoWatermark } from '../svgs/logoName.jsx';
+import { generateLogoWatermark } from '../svgs/LogoName.jsx';
 
 const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, customFont }) => {
     const canvasRef = useRef(null);
