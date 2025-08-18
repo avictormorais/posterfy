@@ -19,7 +19,7 @@ export const ModalProvider = ({ children }) => {
     const [isClosing, setIsClosing] = useState(false);
     const [shownAlerts, setShownAlerts] = useState(() => {
         const stored = localStorage.getItem('shownAlerts');
-        return stored ? JSON.parse(stored) : [];
+        return stored ? JSON.parse(stored) : {};
     });
 
     const getLocalizedDefaultAlert = () => {
@@ -55,6 +55,7 @@ export const ModalProvider = ({ children }) => {
 
         return {
             id: 'default-premade-models',
+            persistentId: 'premade-models-intro',
             title: langData.title,
             paragraph: langData.paragraph,
             imageURL: Models,
@@ -65,13 +66,25 @@ export const ModalProvider = ({ children }) => {
         };
     };
 
+    const hasAlertBeenShown = (persistentId) => {
+        return shownAlerts[persistentId] === true;
+    };
+
+    const markSpecificAlertAsShown = (persistentId) => {
+        if (!hasAlertBeenShown(persistentId)) {
+            const updatedShownAlerts = { ...shownAlerts, [persistentId]: true };
+            setShownAlerts(updatedShownAlerts);
+            localStorage.setItem('shownAlerts', JSON.stringify(updatedShownAlerts));
+        }
+    };
+
     useEffect(() => {
         const defaultAlert = getLocalizedDefaultAlert();
-        const hasShownDefault = shownAlerts.includes(defaultAlert.id);
-        if (!hasShownDefault) {
+        
+        if (!hasAlertBeenShown(defaultAlert.persistentId) && !modal) {
             setModal(defaultAlert);
         }
-    }, [i18n.language]);
+    }, [i18n.language, shownAlerts, modal]);
 
     const showModal = (modalData) => {
         setModal(modalData);
@@ -86,7 +99,22 @@ export const ModalProvider = ({ children }) => {
         showModal({ ...confirmationData, type: 'confirmation' });
     };
 
+    const showConditionalAlert = (alertData) => {
+        if (!alertData.persistentId) {
+            showAlert(alertData);
+            return;
+        }
+
+        if (!hasAlertBeenShown(alertData.persistentId)) {
+            showModal({ ...alertData, type: 'alert' });
+        }
+    };
+
     const closeModal = () => {
+        if (modal?.type === 'alert') {
+            markAlertAsShown();
+        }
+
         if (!modal || isClosing) return;
         setIsClosing(true);
         
@@ -118,10 +146,8 @@ export const ModalProvider = ({ children }) => {
     };
 
     const markAlertAsShown = () => {
-        if (modal?.id && !shownAlerts.includes(modal.id)) {
-            const updatedShownAlerts = [...shownAlerts, modal.id];
-            setShownAlerts(updatedShownAlerts);
-            localStorage.setItem('shownAlerts', JSON.stringify(updatedShownAlerts));
+        if (modal?.persistentId) {
+            markSpecificAlertAsShown(modal.persistentId);
         }
     };
 
@@ -130,8 +156,11 @@ export const ModalProvider = ({ children }) => {
         showModal,
         showAlert,
         showConfirmation,
+        showConditionalAlert,
         closeModal,
-        isModalVisible: !!modal
+        isModalVisible: !!modal,
+        hasAlertBeenShown,
+        markSpecificAlertAsShown
     };
 
     return (
