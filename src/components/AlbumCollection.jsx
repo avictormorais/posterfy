@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import styled from "styled-components"
-import { albumData } from "./AlbumData"
+import { albumData } from "./albumData"
 import { useTranslation } from "react-i18next"
 
 const AlbumsContainer = styled.div`
