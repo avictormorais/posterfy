@@ -3,7 +3,7 @@
 </p>
 
 <div align="center">
-    # Posterfy
+    <h1>Posterfy</h1>
   
   **Create stunning posters of your favorite albums powered by Spotify's API**
   
