@@ -12,6 +12,7 @@
   --PosterShare-darkFrames: #FFFFFF;
   --PosterShare-posterColor: #263238;
   --PosterShare-logoColor: #070815;
+  --LoginSVG-fill: var(--backgroundColor);
 }
 
 .theme-light {
@@ -27,6 +28,7 @@
   --PosterShare-darkFrames: #2c2929;
   --PosterShare-posterColor: #2c2929;
   --PosterShare-logoColor: #f0efeb;
+  --LoginSVG-fill: var(--textColor);
 }
 
 .theme-dark {
@@ -43,6 +45,7 @@
   --PosterShare-darkFrames: #1b1818;
   --PosterShare-posterColor: #292626;
   --PosterShare-logoColor: #f0efeb;
+  --LoginSVG-fill: #0f0f0f;
 }
 
 .theme-rose {
@@ -59,6 +62,7 @@
   --PosterShare-darkFrames: #181527;
   --PosterShare-posterColor: #1e193d;
   --PosterShare-logoColor: #f0efeb;
+  --LoginSVG-fill: #171525;
 }
 
 .theme-fy {
@@ -86,6 +90,7 @@
   --PosterShare-darkFrames: #412d3c;
   --PosterShare-posterColor: #20101c;
   --PosterShare-logoColor: #f0efeb;
+  --LoginSVG-fill: #2a1825;
 }
 
 .theme-brown {
@@ -102,6 +107,7 @@
   --PosterShare-darkFrames: #2c2015;
   --PosterShare-posterColor: #312418;
   --PosterShare-logoColor: #f0efeb;
+  --LoginSVG-fill: #18110b;
 }
 
 *{
