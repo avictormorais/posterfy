@@ -1,32 +1,21 @@
-import { useTranslation } from 'react-i18next';
-import Navbar from './components/Navbar/Navbar';
-import Hero from './components/Hero';
-import Anchor from './components/Commom/Anchor';
-import SectionExplanation from './components/SectionExplanation';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Loading from './components/Commom/Loading';
-import Footer from './components/Commom/Footer';
-import Faq from './components/sections/Faq/Faq';
 import SEOComponent from './components/SEOComponent';
 import IndexingMonitor from './components/IndexingMonitor';
 import AnalyticsInitializer from './components/AnalyticsInitializer';
 import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
-import { trackPosterRecreation } from './services/analytics';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ModalProvider } from './contexts/AlertsContext';
-import Share from './components/sections/SharePosters/Share';
-import Publish from './components/sections/SharePosters/Community';
-import Thanks from './components/sections/Thanks/Thanks';
-import PosterBySearch from './components/PosterEditor/Models/PosterBySearch';
-import { useEffect, useState, useRef } from 'react';
-import PosterEditor from './components/PosterEditor/PosterEditor';
+import Layout from './components/Layout/Layout';
+import Home from './pages/Home/Home';
+import Login from './pages/login/Login';
+import PasswordRecovery from './pages/login/PasswordRecovery';
+import { useEffect, useState } from 'react';
 
 function App() {
-  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [loadingComplete, setLoadingComplete] = useState(false);
-  const [recreatingPosterJSON, setRecreatingPosterJSON] = useState(null);
-  const posterEditorRef = useRef(null);
 
   usePageTracking();
 
@@ -56,27 +45,6 @@ function App() {
     };
   }, [loading]);
 
-  const recreatePoster = (imageJSON) => {
-    trackPosterRecreation(
-      imageJSON.albumName || 'Unknown Album',
-      imageJSON.artistsName || 'Unknown Artist', 
-      imageJSON.albumID || '',
-      'album_collection'
-    );
-    
-    setRecreatingPosterJSON(imageJSON);
-    setTimeout(() => {
-      if (posterEditorRef.current) {
-        const y = posterEditorRef.current.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-    }, 100);
-  }
-
-  const handleClickBack = () => {
-    setRecreatingPosterJSON(null);
-  }
-
   return (
     <ThemeProvider>
       <ModalProvider>
@@ -84,27 +52,23 @@ function App() {
         <IndexingMonitor />
         <AnalyticsInitializer />
         
-        <Navbar />
-        <Hero showAnimation={loadingComplete} onRecreate={recreatePoster} />
-        <Anchor text={t('anchorArt')} type={1} />
-        <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
+        <Router>
+          <Routes>
 
-        {recreatingPosterJSON ? (
-          <PosterEditor 
-            ref={posterEditorRef}
-            albumID={recreatingPosterJSON.albumID} 
-            initialPosterJson={recreatingPosterJSON} 
-            handleClickBack={handleClickBack}
-          />
-        ) : (
-          <PosterBySearch />
-        )}
+            <Route path="/" element={<Layout showNavbar={true} showFooter={true} />}>
+              <Route index element={<Home loadingComplete={loadingComplete} />} />
+            </Route>
+            
+            <Route path="/login" element={<Layout showNavbar={false} showFooter={false} />}>
+              <Route index element={<Login />} />
+            </Route>
+            
+            <Route path="/recovery" element={<Layout showNavbar={false} showFooter={false} />}>
+              <Route index element={<PasswordRecovery />} />
+            </Route>
 
-        <Publish />
-        <Share />
-        <Faq />
-        <Thanks />
-        <Footer />
+          </Routes>
+        </Router>
         
         <Loading isVisible={loading} />
       </ModalProvider>

@@ -4,6 +4,8 @@ import Icon from "../../components/svgs/icon"
 import { FcGoogle } from "react-icons/fc";
 import MinimalistNavbar from "./MinimalistNavbar";
 import Loading from "../../components/Commom/Loading";
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
     display: flex;
@@ -242,10 +244,12 @@ const AnimatedContent = styled.div`
     width: 100%;
 `;
 
-export default function Login({ onClickRecovery }){
+export default function Login({ }){
+    const { t } = useTranslation();
     const [isSignUp, setIsSignUp] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
+    const navigate = useNavigate();
 
     const toggleMode = () => {
         setIsSignUp(!isSignUp);
@@ -284,35 +288,35 @@ export default function Login({ onClickRecovery }){
                 }}
             >
                 <AnimatedContent style={{ alignItems: 'center' }} show={!isSignUp} direction="left">
-                    <InputLabel htmlFor="email">Email</InputLabel>
+                    <InputLabel htmlFor="email">{t('LOGIN_Email')}</InputLabel>
                     <InputContainer>
                         <InputField type="email" id="email" />
                     </InputContainer>
-                    <InputLabel htmlFor="password">Senha</InputLabel>
+                    <InputLabel htmlFor="password">{t('LOGIN_Password')}</InputLabel>
                     <InputContainer>
                         <InputField type="password" id="password" />
                     </InputContainer>
-                    <ForgotPassword onClick={onClickRecovery ? onClickRecovery : undefined}>Esqueceu a senha?</ForgotPassword>
-                    <LoginButton onClick={handleLogin}>Entrar</LoginButton>
-                    <SignUp onClick={toggleMode}>Novo usuário? Cadastre-se</SignUp>
+                    <ForgotPassword onClick={() => navigate('/recovery')}>{t('LOGIN_ForgotPassword')}</ForgotPassword>
+                    <LoginButton onClick={handleLogin}>{t('LOGIN_Enter')}</LoginButton>
+                    <SignUp onClick={toggleMode}>{t('LOGIN_SignUp')}</SignUp>
                     <OrContainer>
                         <OrLine />
-                        <OrText>Ou</OrText>
+                        <OrText>{t('LOGIN_Or')}</OrText>
                         <OrLine />
                     </OrContainer>
                     <GoogleDiv onClick={handleLogin}>
                         <GoogleIcon />
-                        Entrar com Google
+                        {t('LOGIN_GoogleSignIn')}
                         <GoogleIcon style={{ opacity: '0' }} />
                     </GoogleDiv>
                 </AnimatedContent>
 
                 <AnimatedContent style={{ alignItems: 'center'}} show={isSignUp} direction="left">
                     <Icon fill={'var(--backgroundColor)'} width={"100px"} />
-                    <TextWelcome style={{ textAlign: 'center' }}>Bem-vindo ao Posterfy!</TextWelcome>
-                    <Paragraph style={{ width: '70%', textAlign: 'center' }}>Junte-se à nossa comunidade e comece a criar pôsteres incríveis.</Paragraph>
-                    <Paragraph style={{ width: '70%', textAlign: 'center' }}>Já tem uma conta? Entre agora.</Paragraph>
-                    <Button onClick={toggleMode}>Entrar</Button>
+                    <TextWelcome style={{ textAlign: 'center' }}>{t('LOGIN_Welcome')}</TextWelcome>
+                    <Paragraph style={{ width: '70%', textAlign: 'center' }}>{t('LOGIN_JoinCommunity')}</Paragraph>
+                    <Paragraph style={{ width: '70%', textAlign: 'center' }}>{t('LOGIN_AlreadyHaveAccount')}</Paragraph>
+                    <Button onClick={toggleMode}>{t('LOGIN_Enter')}</Button>
                 </AnimatedContent>
             </LeftHalfScreen>
             <RightHalfScreen 
@@ -322,42 +326,42 @@ export default function Login({ onClickRecovery }){
                 }}
             >
                 <AnimatedContent style={{ alignItems: 'center' }} show={isSignUp} direction="right">
-                    <InputLabel htmlFor="signupName">Nome de usuário</InputLabel>
+                    <InputLabel htmlFor="signupName">{t('LOGIN_Email')}</InputLabel>
                     <InputContainer>
-                        <InputField type="text" id="signupName" placeholder="Seu nome de usuário" />
+                        <InputField type="text" id="signupName" placeholder={t('LOGIN_Email')} />
                     </InputContainer>
-                    <InputLabel htmlFor="signupEmail">Email</InputLabel>
+                    <InputLabel htmlFor="signupEmail">{t('LOGIN_Email')}</InputLabel>
                     <InputContainer>
-                        <InputField type="email" id="signupEmail" placeholder="Seu endereço de email" />
+                        <InputField type="email" id="signupEmail" placeholder={t('LOGIN_Email')} />
                     </InputContainer>
-                    <InputLabel htmlFor="signupPassword">Senha</InputLabel>
+                    <InputLabel htmlFor="signupPassword">{t('LOGIN_Password')}</InputLabel>
                     <InputContainer>
-                        <InputField type="password" id="signupPassword" placeholder="Crie uma senha" />
+                        <InputField type="password" id="signupPassword" placeholder={t('LOGIN_Password')} />
                     </InputContainer>
-                    <InputLabel htmlFor="confirmPassword">Confirmar senha</InputLabel>
+                    <InputLabel htmlFor="confirmPassword">{t('LOGIN_Password')}</InputLabel>
                     <InputContainer>
-                        <InputField type="password" id="confirmPassword" placeholder="Confirme sua senha" />
+                        <InputField type="password" id="confirmPassword" placeholder={t('LOGIN_Password')} />
                     </InputContainer>
-                    <LoginButton onClick={handleSignUp}>Cadastrar</LoginButton>
-                    <SignUp onClick={toggleMode}>Já tem uma conta? Entre</SignUp>
+                    <LoginButton onClick={handleSignUp}>{t('LOGIN_CreateAccount')}</LoginButton>
+                    <SignUp onClick={toggleMode}>{t('LOGIN_AlreadyHaveAccount')}</SignUp>
                     <OrContainer>
                         <OrLine />
-                        <OrText>Ou</OrText>
+                        <OrText>{t('LOGIN_Or')}</OrText>
                         <OrLine />
                     </OrContainer>
                     <GoogleDiv onClick={handleSignUp}>
                         <GoogleIcon />
-                        Cadastrar com Google
+                        {t('LOGIN_GoogleSignIn')}
                         <GoogleIcon style={{ opacity: '0' }} />
                     </GoogleDiv>
                 </AnimatedContent>
                 
                 <AnimatedContent style={{ alignItems: 'flex-start' }} show={!isSignUp} direction="right">
                     <Icon fill={'var(--backgroundColor)'} width={"100px"} />
-                    <TextWelcome>Bem-vindo ao Posterfy!</TextWelcome>
-                    <Paragraph>Digite suas credenciais para continuar.</Paragraph>
-                    <Paragraph>Novo por aqui? Cadastre-se agora para criar uma conta.</Paragraph>
-                    <Button style={{ marginRight: 'auto' }} onClick={toggleMode}>Cadastrar</Button>
+                    <TextWelcome>{t('LOGIN_Welcome')}</TextWelcome>
+                    <Paragraph>{t('LOGIN_EnterCredentials')}</Paragraph>
+                    <Paragraph>{t('LOGIN_NewHere')}</Paragraph>
+                    <Button style={{ marginRight: 'auto' }} onClick={toggleMode}>{t('LOGIN_CreateAccount')}</Button>
                 </AnimatedContent>
             </RightHalfScreen>
         </Container>

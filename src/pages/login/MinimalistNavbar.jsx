@@ -3,6 +3,7 @@ import styled from "styled-components"
 import Icon from "../../components/svgs/icon"
 import LanguageSelector from "../../components/Navbar/Languageselector"
 import ThemeSelector from "../../components/Navbar/ThemeSelector"
+import { useNavigate } from "react-router-dom"
 
 const NavbarContainer = styled.header`
   position: fixed;
@@ -89,6 +90,7 @@ function MinimalistNavbar({ iconColor }) {
   const [visible, setVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const domain = import.meta.env.VITE_DOMAIN
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -117,7 +119,7 @@ function MinimalistNavbar({ iconColor }) {
   return (
     <NavbarContainer scrolled={scrolled} visible={visible}>
       <NavbarContent>
-        <LogoContainer>
+        <LogoContainer onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           <Icon fill={iconColor ? iconColor : "var(--AccentColor)"} width={"40px"} height={"44.05px"} />
         </LogoContainer>
         <SelectorContainer>
