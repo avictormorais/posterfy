@@ -79,6 +79,9 @@ i18n
                 RecreatePoster: "Recreate poster",
                 LoadMore: "Load more",
                 LoadingMore: "Loading more...",
+                errorTitle: "Oops! Something went wrong.",
+                errorMessage: "Let's get back to the melody.",
+                errorBackToHome: "Back to Home",
 
                 LOGIN_Email: "Email",
                 LOGIN_Password: "Password",
@@ -203,6 +206,9 @@ i18n
                 RecreatePoster: "Recriar pôster",
                 LoadMore: "Carregar mais...",
                 LoadingMore: "Carregando mais...",
+                errorTitle: "Oops! Algo deu errado.",
+                errorMessage: "Vamos recomeçar a melodia.",
+                errorBackToHome: "Voltar para Home",
 
                 LOGIN_Email: "Email",
                 LOGIN_Password: "Senha",
@@ -327,6 +333,9 @@ i18n
                 RecreatePoster: "Recrear póster",
                 LoadMore: "Cargar más...",
                 LoadingMore: "Cargando más...",
+                errorTitle: "¡Vaya! Algo salió mal.",
+                errorMessage: "Vamos a volver a la melodía.",
+                errorBackToHome: "Volver a la página de inicio",
 
                 LOGIN_Email: "Correo electrónico",
                 LOGIN_Password: "Contraseña",
@@ -451,8 +460,11 @@ i18n
                 RecreatePoster: "重新创建海报",
                 LoadMore: "加载更多...",
                 LoadingMore: "加载更多...",
+                errorTitle: "哎呀！出错了。",
+                errorMessage: "让我们重新开始旋律。",
+                errorBackToHome: "返回首页",
 
-                                LOGIN_Email: "电子邮件",
+                LOGIN_Email: "电子邮件",
                 LOGIN_Password: "密码",
                 LOGIN_ForgotPassword: "忘记密码？",
                 LOGIN_SignUp: "新用户？注册",
