@@ -3,6 +3,7 @@ import styled from "styled-components"
 import Icon from "../svgs/icon"
 import LanguageSelector from "./Languageselector"
 import ThemeSelector from "./ThemeSelector"
+import { RiUser3Fill } from "react-icons/ri";
 
 const NavbarContainer = styled.header`
   position: fixed;
@@ -83,10 +84,56 @@ const SelectorContainer = styled.div`
   gap: 15px;
 `;
 
+const ProfileButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid var(--borderColor);
+  overflow: hidden;
+  
+  &:hover {
+    background-color: var(--glassBackground);
+    transform: scale(1.05);
+    border-color: var(--textColor);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+`
+
+const ProfileWrapper = styled.div`
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${props => props.themeColor};
+`
+
+const UserIcon = styled(RiUser3Fill)`
+  font-size: 1.5em;
+  color: var(--textColor);
+`;
+
+const SoonIndicator = styled.p`
+  font-size: 0.7em;
+  font-weight: bolder;
+`;
+
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [visible, setVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
+  const [soon, setSoon] = useState(false)
   const domain = import.meta.env.VITE_DOMAIN
 
   useEffect(() => {
@@ -113,6 +160,13 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [lastScrollY])
 
+  const handleSoon = () => {
+    setSoon(true)
+    setTimeout(() => {
+      setSoon(false)
+    }, 3000)
+  }
+
   return (
     <NavbarContainer scrolled={scrolled} visible={visible}>
       <NavbarContent>
@@ -126,8 +180,13 @@ function Navbar() {
           </BrandName>
         </LogoContainer>
         <SelectorContainer>
-          <ThemeSelector />
           <LanguageSelector />
+          <ThemeSelector />
+          <ProfileButton onClick={handleSoon}>
+            <ProfileWrapper>
+              {soon ? <SoonIndicator>Soon!</SoonIndicator> : <UserIcon />}
+            </ProfileWrapper>
+          </ProfileButton>
         </SelectorContainer>
       </NavbarContent>
       <Divider scrolled={scrolled} />
