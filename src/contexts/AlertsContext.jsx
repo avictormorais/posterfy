@@ -62,7 +62,8 @@ export const ModalProvider = ({ children }) => {
             postImageText: langData.postImageText,
             confirmText: langData.confirmText,
             canClose: true,
-            type: 'alert'
+            type: 'alert',
+            limitDate: '2025-11-11T23:59:59.999Z'
         };
     };
 
@@ -81,31 +82,45 @@ export const ModalProvider = ({ children }) => {
     useEffect(() => {
         const defaultAlert = getLocalizedDefaultAlert();
         
-        if (!hasAlertBeenShown(defaultAlert.persistentId) && !modal) {
+        if (!hasAlertBeenShown(defaultAlert.persistentId) && !modal && isAlertValid(defaultAlert)) {
             setModal(defaultAlert);
         }
     }, [i18n.language, shownAlerts, modal]);
 
     const showModal = (modalData) => {
-        setModal(modalData);
-        setIsClosing(false);
+        if (isAlertValid(modalData)) {
+            setModal(modalData);
+            setIsClosing(false);
+        }
     };
 
     const showAlert = (alertData) => {
-        showModal({ ...alertData, type: 'alert' });
+        if (isAlertValid(alertData)) {
+            showModal({ ...alertData, type: 'alert' });
+        }
     };
 
     const showConfirmation = (confirmationData) => {
         showModal({ ...confirmationData, type: 'confirmation' });
     };
 
+    const isAlertValid = (alertData) => {
+        if (!alertData.limitDate) return true;
+        
+        const limitDate = new Date(alertData.limitDate);
+        const currentDate = new Date();
+        return currentDate <= limitDate;
+    };
+
     const showConditionalAlert = (alertData) => {
         if (!alertData.persistentId) {
-            showAlert(alertData);
+            if (isAlertValid(alertData)) {
+                showAlert(alertData);
+            }
             return;
         }
 
-        if (!hasAlertBeenShown(alertData.persistentId)) {
+        if (!hasAlertBeenShown(alertData.persistentId) && isAlertValid(alertData)) {
             showModal({ ...alertData, type: 'alert' });
         }
     };
