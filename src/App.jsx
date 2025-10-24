@@ -10,7 +10,6 @@ import { ModalProvider } from './contexts/AlertsContext';
 import Layout from './components/Layout/Layout';
 import Home from './pages/Home/Home';
 import Login from './pages/login/Login';
-import PasswordRecovery from './pages/login/PasswordRecovery';
 import Error from './pages/Error/Error';
 import { useEffect, useState } from 'react';
 
@@ -62,10 +61,6 @@ function App() {
             
             <Route path="/login" element={<Layout showNavbar={false} showFooter={false} />}>
               <Route index element={<Login />} />
-            </Route>
-            
-            <Route path="/recovery" element={<Layout showNavbar={false} showFooter={false} />}>
-              <Route index element={<PasswordRecovery />} />
             </Route>
 
             <Route path="*" element={<Error />} />
