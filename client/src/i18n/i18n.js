@@ -88,6 +88,12 @@ i18n
                 LOGIN_SpotifySignIn: "Sign in with Spotify",
                 LOGIN_Welcome: "Welcome to Posterfy!",
                 LOGIN_JoinCommunity: "Join our community and start creating amazing posters.",
+                
+                Logout: "Logout",
+                EditProfile: "Edit profile",
+                ConnectedToGoogle: "Connected to Google",
+                ConnectedToSpotify: "Connected to Spotify",
+                NoActivityYet: "No activity yet",
             },
         },
         pt: {
@@ -173,6 +179,12 @@ i18n
                 LOGIN_SpotifySignIn: "Entrar com Spotify",
                 LOGIN_Welcome: "Bem-vindo ao Posterfy!",
                 LOGIN_JoinCommunity: "Junte-se à nossa comunidade e comece a criar pôsteres incríveis.",
+
+                Logout: "Sair",
+                EditProfile: "Editar Perfil",
+                ConnectedToGoogle: "Conectado ao Google",
+                ConnectedToSpotify: "Conectado ao Spotify",
+                NoActivityYet: "Nenhuma atividade ainda",
             },
         },
         es: {
@@ -258,6 +270,12 @@ i18n
                 LOGIN_SpotifySignIn: "Iniciar sesión con Spotify",
                 LOGIN_Welcome: "¡Bienvenido a Posterfy!",
                 LOGIN_JoinCommunity: "Únete a nuestra comunidad y comienza a crear carteles increíbles.",
+
+                Logout: "Cerrar sesión",
+                EditProfile: "Editar perfil",
+                ConnectedToGoogle: "Conectado a Google",
+                ConnectedToSpotify: "Conectado a Spotify",
+                NoActivityYet: "Aún no hay actividad",
             },
         },
         zh: {
@@ -343,6 +361,12 @@ i18n
                 LOGIN_SpotifySignIn: "用Spotify登录",
                 LOGIN_Welcome: "欢迎来到 Posterfy！",
                 LOGIN_JoinCommunity: "加入我们的社区，开始创建惊人的海报。",
+
+                Logout: "退出登录",
+                EditProfile: "编辑个人资料",
+                ConnectedToGoogle: "已连接到 Google",
+                ConnectedToSpotify: "已连接到 Spotify",
+                NoActivityYet: "还没有活动",
             },
         },
     },

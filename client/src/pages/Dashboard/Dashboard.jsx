@@ -6,67 +6,87 @@ import { useAuth } from "../../contexts/AuthContext";
 import apiService from "../../services/apiService";
 import { FaGoogle } from "react-icons/fa";
 import { SiSpotify } from "react-icons/si";
+import { useTranslation } from 'react-i18next';
+import { BiSolidHourglass } from "react-icons/bi";
 
 const Container = styled.div`
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 100dvh;
+    min-height: 85dvh;
     flex-direction: column;
 `;
 
-const Content = styled.div`
+const ProfileContainer = styled.div`
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-    padding: 20px;
+    flex-direction: row;
+    width: 80%;
+    margin-top: 120px;
 `;
 
 const UserInfo = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: var(--backgroundColor);
+    justify-content: center;
+    margin-left: 20px;
+    width: 100%;
 `;
 
 const Avatar = styled.img`
-    width: 80px;
-    height: 80px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     object-fit: cover;
 `;
 
-const UserDetail = styled.p`
+const UserName = styled.h2`
     color: var(--textColor);
-    font-size: 1em;
-    margin: 0;
+    font-size: 1.5em;
+    font-weight: bolder;
     align-items: center;
     justify-content: center;
-    display: flex;
+`;
 
-    strong{
-        margin-right: 5px;
-    }
+const Username = styled.p`
+    color: var(--textColor);
+    font-size: 1em;
+    font-weight: bolder;
+    opacity: 0.75;
+    margin-top: 3px;
 `;
 
 const LogoutButton = styled.button`
     background-color: var(--AccentColor);
-    color: white;
+    color: var(--backgroundColor);
     border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
+    border-radius: 25px;
     cursor: pointer;
     font-weight: bolder;
-    font-size: 1em;
+    font-size: 0.85em;
     transition: all 0.3s ease;
+    width: 120px;
+    height: 30px;
+    margin-left: 10px;
 
     &:hover {
-        opacity: 0.8;
+        background-color: var(--textColor);
+    }
+`;
+
+const EditButton = styled.button`
+    background-color: var(--textColor);
+    color: var(--backgroundColor);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bolder;
+    font-size: 0.85em;
+    transition: all 0.3s ease;
+    width: 120px;
+    height: 30px;
+    margin-left: auto;
+
+    &:hover {
+        background-color: var(--AccentColor);
     }
 `;
 
@@ -76,21 +96,71 @@ const LoadingText = styled.p`
 `;
 
 const GoogleIcon = styled(FaGoogle)`
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
+    fill: var(--backgroundColor);
 `;
 
 const SpotifyIcon = styled(SiSpotify)`
-    width: 20px;
-    height: 20px;
-    margin-left: 5px;
+    width: 15px;
+    height: 15px;
+    fill: var(--backgroundColor);
 `;
 
+const BadgeDiv = styled.div`
+    background-color: var(--textColor);
+    border-radius: 20px;
+    padding: 5px;
+    width: 15px;
+    height: 15px;
+    margin-left: 10px;
+    margin-top: 2px;
+    cursor: pointer;
+`;
+
+const Row = styled.div`
+    display: flex;
+    align-items: center;
+    width: 100%;
+`;
+
+const HourglassIcon = styled(BiSolidHourglass)`
+    width: 100px;
+    height: 100px;
+    fill: var(--textColor);
+    margin-top: 150px;
+`;
+
+const NoActivityText = styled.p`
+    color: var(--textColor);
+    font-size: 1.35em;
+    margin-top: 20px;
+`;
+
+const NotMobileDiv = styled.div`
+    display: flex;
+    margin-left: auto;
+
+    @media screen and (max-width: 900px) {
+        display: none;
+    }
+`;
+
+const MobileDiv = styled.div`
+    display: none;
+    width: 80%;
+    margin-top: 20px;
+
+    @media screen and (max-width: 900px) {
+        display: flex;
+    }
+`;
 
 export default function Dashboard() {
     const navigate = useNavigate();
     const { user, loading, logout, isAuthenticated } = useAuth();
     const [userProfile, setUserProfile] = useState(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
@@ -122,7 +192,7 @@ export default function Dashboard() {
             <Container>
                 <Navbar iconColor="var(--AccentColor)" />
                 <Content>
-                    <LoadingText>Loading...</LoadingText>
+                    <LoadingText>{t('Loading')}</LoadingText>
                 </Content>
             </Container>
         );
@@ -135,23 +205,38 @@ export default function Dashboard() {
     return (
         <Container>
             <Navbar iconColor="var(--AccentColor)" />
-            <Content>
+            <ProfileContainer>
+                {userProfile?.avatar && (
+                    <Avatar src={userProfile.avatar} alt={userProfile.name} />
+                )}
                 <UserInfo>
-                    {userProfile?.avatar && (
-                        <Avatar src={userProfile.avatar} alt={userProfile.name} />
-                    )}
-                    <UserDetail><strong>Name:</strong> {userProfile?.name || user.name}</UserDetail>
-                    <UserDetail><strong>Username:</strong> @{userProfile?.username || user.username}</UserDetail>
-                    <UserDetail><strong>Email:</strong> {userProfile?.email || user.email}</UserDetail>
-                    <UserDetail>
-                        <strong>Connected Accounts:</strong> {userProfile?.hasGoogle && <GoogleIcon />} {userProfile?.hasSpotify && <SpotifyIcon />}
-                    </UserDetail>
-                </UserInfo>
+                    <Row>
+                        <UserName>
+                            {userProfile?.name || user.name}
+                        </UserName>
+                        {userProfile?.hasGoogle && (
+                            <BadgeDiv title={t('ConnectedToGoogle')}><GoogleIcon /></BadgeDiv>
+                        )}
+                        {userProfile?.hasSpotify && (
+                            <BadgeDiv title={t('ConnectedToSpotify')}><SpotifyIcon /></BadgeDiv>
+                        )}
 
-                <LogoutButton onClick={handleLogout}>
-                    Logout
-                </LogoutButton>
-            </Content>
-        </Container>
+                        <NotMobileDiv>
+                            <EditButton>{t('EditProfile')}</EditButton>
+                            <LogoutButton onClick={handleLogout}>{t('Logout')}</LogoutButton>
+                        </NotMobileDiv>
+                    </Row>
+                    <Username>@{userProfile?.username || user.username}</Username>
+                </UserInfo>
+            </ProfileContainer>
+
+            <MobileDiv>
+                <EditButton>{t('EditProfile')}</EditButton>
+                <LogoutButton onClick={handleLogout}>{t('Logout')}</LogoutButton>
+            </MobileDiv>
+
+            <HourglassIcon/>
+            <NoActivityText>{t('NoActivityYet')}</NoActivityText>
+    </Container>
     );
 }
