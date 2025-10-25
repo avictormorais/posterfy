@@ -154,9 +154,10 @@ No, this project is for educational and non-commercial use only. All album artwo
 
 ### Backend Features
 - **🔐 OAuth Authentication**: Secure login with Google and Spotify
-- **👤 User Management**: Profile creation and management with unique usernames
+- **� JWT Tokens**: Token-based authentication (serverless-compatible)
+- **�👤 User Management**: Profile creation and management with unique usernames
 - **🔗 Account Linking**: Link multiple OAuth providers to the same account
-- **🛡️ Session Management**: Secure session-based authentication
+- **🛡️ Session Management**: Secure JWT-based authentication
 - **📊 User Dashboard**: View and manage user profiles and account connections
 
 ---
@@ -192,8 +193,12 @@ No, this project is for educational and non-commercial use only. All album artwo
    # Database
    MONGO_URI=mongodb://localhost:27017/posterfy
    
-   # Session
-   SESSION_SECRET=your-super-secret-session-key
+   # JWT Authentication (recommended for serverless deployments)
+   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+   JWT_EXPIRES_IN=24h
+   
+   # Session (legacy - not used with JWT)
+   SESSION_SECRET=your-session-secret-key
    
    # OAuth - Google (optional)
    GOOGLE_CLIENT_ID=your_google_client_id

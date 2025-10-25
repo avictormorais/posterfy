@@ -1,38 +1,43 @@
+import { generateToken } from '../utils/jwt.js'
+import UserService from '../services/userService.js'
+
 class AuthController {
   googleCallback(req, res) {
-    res.redirect(`${process.env.CLIENT_URL}/dashboard?login=success`)
+    const token = generateToken(req.user)
+    res.redirect(`${process.env.CLIENT_URL}/dashboard?token=${token}&login=success`)
   }
 
   spotifyCallback(req, res) {
-    res.redirect(`${process.env.CLIENT_URL}/dashboard?login=success`)
+    const token = generateToken(req.user)
+    res.redirect(`${process.env.CLIENT_URL}/dashboard?token=${token}&login=success`)
   }
 
-  logout(req, res) {
-    req.logout((err) => {
-      if (err) {
-        return res.status(500).json({ error: 'Logout failed' })
+  async logout(req, res) {
+    res.json({ message: 'Logout successful' })
+  }
+
+  async getUser(req, res) {
+    try {
+      const user = await UserService.findById(req.user.id)
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' })
       }
-      res.json({ message: 'Logout successful' })
-    })
-  }
 
-  getUser(req, res) {
-    if (req.user) {
       res.json({
         user: {
-          id: req.user._id,
-          name: req.user.name,
-          username: req.user.username,
-          email: req.user.email,
-          avatar: req.user.avatar,
-          hasGoogle: !!req.user.googleId,
-          hasSpotify: !!req.user.spotifyId,
-          permissions: req.user.permissions,
-          status: req.user.status
+          id: user._id,
+          name: user.name,
+          username: user.username,
+          email: user.email,
+          avatar: user.avatar,
+          hasGoogle: !!user.googleId,
+          hasSpotify: !!user.spotifyId,
+          permissions: user.permissions,
+          status: user.status
         }
       })
-    } else {
-      res.status(401).json({ error: 'User not authenticated' })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
     }
   }
 }

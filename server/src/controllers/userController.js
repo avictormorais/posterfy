@@ -3,7 +3,7 @@ import UserService from '../services/userService.js'
 class UserController {
   async getProfile(req, res) {
     try {
-      const user = await UserService.findById(req.user._id)
+      const user = await UserService.findById(req.user.id)
       if (!user) {
         return res.status(404).json({ error: 'User not found' })
       }
@@ -29,7 +29,7 @@ class UserController {
     try {
       const { name, username } = req.body
 
-      const user = await UserService.updateProfile(req.user._id, { name, username })
+      const user = await UserService.updateProfile(req.user.id, { name, username })
 
       req.user = user
 

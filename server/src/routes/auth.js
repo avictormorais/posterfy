@@ -1,18 +1,19 @@
 import express from 'express'
 import passport from 'passport'
 import AuthController from '../controllers/authController.js'
+import { authenticateToken } from '../utils/jwt.js'
 
 const router = express.Router()
 
-router.get('/google', 
-  passport.authenticate('google', { 
-    scope: ['profile', 'email'] 
+router.get('/google',
+  passport.authenticate('google', {
+    scope: ['profile', 'email']
   })
 )
 
 router.get('/google/callback',
-  passport.authenticate('google', { 
-    failureRedirect: `${process.env.CLIENT_URL}/login?error=google_failed` 
+  passport.authenticate('google', {
+    failureRedirect: `${process.env.CLIENT_URL}/login?error=google_failed`
   }),
   AuthController.googleCallback
 )
@@ -31,6 +32,6 @@ router.get('/spotify/callback',
 )
 
 router.post('/logout', AuthController.logout)
-router.get('/user', AuthController.getUser)
+router.get('/user', authenticateToken, AuthController.getUser)
 
 export default router

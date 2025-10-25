@@ -5,6 +5,11 @@ const API_BASE_URL = API_CONFIG.BASE_URL
 class ApiService {
   constructor(baseURL = API_BASE_URL) {
     this.baseURL = baseURL
+    this.authToken = null
+  }
+
+  setAuthToken(token) {
+    this.authToken = token
   }
 
   async request(endpoint, options = {}) {
@@ -16,6 +21,10 @@ class ApiService {
         ...options.headers
       },
       ...options
+    }
+
+    if (this.authToken) {
+      config.headers.Authorization = `Bearer ${this.authToken}`
     }
 
     try {

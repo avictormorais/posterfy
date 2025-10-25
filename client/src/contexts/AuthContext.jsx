@@ -17,15 +17,37 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const token = urlParams.get('token')
+
+    if (token) {
+      localStorage.setItem('authToken', token)
+      window.history.replaceState({}, document.title, window.location.pathname)
+
+      apiService.setAuthToken(token)
+    }
+
     checkAuthStatus()
   }, [])
 
   const checkAuthStatus = async () => {
+    const token = localStorage.getItem('authToken')
+
+    if (!token) {
+      setUser(null)
+      setIsAuthenticated(false)
+      setLoading(false)
+      return
+    }
+
     try {
+      apiService.setAuthToken(token)
       const data = await apiService.getCurrentUser()
       setUser(data.user)
       setIsAuthenticated(true)
     } catch (error) {
+      localStorage.removeItem('authToken')
+      apiService.setAuthToken(null)
       setUser(null)
       setIsAuthenticated(false)
     } finally {
@@ -44,10 +66,16 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await apiService.logout()
+      localStorage.removeItem('authToken')
+      apiService.setAuthToken(null)
       setUser(null)
       setIsAuthenticated(false)
     } catch (error) {
       console.error('Logout failed:', error)
+      localStorage.removeItem('authToken')
+      apiService.setAuthToken(null)
+      setUser(null)
+      setIsAuthenticated(false)
     }
   }
 
