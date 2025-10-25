@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Loading from './components/Commom/Loading';
 import SEOComponent from './components/SEOComponent';
 import IndexingMonitor from './components/IndexingMonitor';
@@ -15,6 +15,49 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Error from './pages/Error/Error';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useEffect, useState } from 'react';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
+
+  useEffect(() => {
+    setRouteLoading(true);
+    setShowLoading(true);
+    window.scrollTo(0, 0);
+    
+    const timer = setTimeout(() => {
+      setRouteLoading(false);
+      setTimeout(() => {
+        setShowLoading(false);
+      }, 300);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  if (!showLoading) {
+    return null;
+  }
+
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 9999,
+        opacity: routeLoading ? 1 : 0,
+        transition: 'opacity 0.3s ease-out',
+        pointerEvents: routeLoading ? 'auto' : 'none'
+      }}
+    >
+      <Loading isVisible={true} />
+    </div>
+  );
+}
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -56,10 +99,9 @@ function App() {
           <IndexingMonitor />
           <AnalyticsInitializer />
           
-          <Router>
-            <Routes>
-
-              <Route path="/" element={<Layout showNavbar={true} showFooter={true} />}>
+        <Router>
+          <ScrollToTop />
+          <Routes>              <Route path="/" element={<Layout showNavbar={true} showFooter={true} />}>
                 <Route index element={<Home loadingComplete={loadingComplete} />} />
               </Route>
               

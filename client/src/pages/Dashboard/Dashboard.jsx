@@ -8,6 +8,7 @@ import { FaGoogle } from "react-icons/fa";
 import { SiSpotify } from "react-icons/si";
 import { useTranslation } from 'react-i18next';
 import { BiSolidHourglass } from "react-icons/bi";
+import Loading from "../../components/Commom/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -36,6 +37,7 @@ const Avatar = styled.img`
     height: 110px;
     border-radius: 50%;
     object-fit: cover;
+    background-color: var(--textColor);
 `;
 
 const UserName = styled.h2`
@@ -189,12 +191,7 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <Container>
-                <Navbar iconColor="var(--AccentColor)" />
-                <Content>
-                    <LoadingText>{t('Loading')}</LoadingText>
-                </Content>
-            </Container>
+            <Loading isVisible={true} initialFade={true} />
         );
     }
 
