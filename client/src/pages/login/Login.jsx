@@ -1,9 +1,12 @@
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "../../components/svgs/icon"
 import { FaGoogle } from "react-icons/fa";
 import { SiSpotify } from "react-icons/si";
 import Navbar from "../../components/Navbar/Navbar";
 import { useTranslation } from 'react-i18next';
+import { useAuth } from "../../contexts/AuthContext";
 
 const Container = styled.div`
     display: flex;
@@ -119,6 +122,35 @@ const OrText = styled.p`
 
 export default function Login(){
     const { t } = useTranslation();
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const { user, loading, loginWithGoogle, loginWithSpotify } = useAuth();
+
+    useEffect(() => {
+        if (!loading) {
+            if (user) {
+                navigate('/dashboard');
+                return;
+            }
+
+            const loginSuccess = searchParams.get('login');
+            if (loginSuccess === 'success') {
+                navigate('/dashboard');
+            }
+        }
+    }, [user, loading, navigate, searchParams]);
+
+    if (loading) {
+        return (
+            <Container>
+                <Navbar iconColor="var(--AccentColor)" />
+                <Content>
+                    <Icon fill={'var(--textColor)'} width={"100px"} />
+                    <TextWelcome>{t('Loading')}</TextWelcome>
+                </Content>
+            </Container>
+        );
+    }
 
     return(
         <Container>
@@ -129,7 +161,7 @@ export default function Login(){
                 <Paragraph>{t('LOGIN_JoinCommunity')}</Paragraph>
                 
                 <ButtonContainer>
-                    <LoginButton>
+                    <LoginButton onClick={loginWithGoogle}>
                         <GoogleIcon />
                         <ButtonText>{t('LOGIN_GoogleSignIn')}</ButtonText>
                     </LoginButton>
@@ -140,7 +172,7 @@ export default function Login(){
                         <Line />
                     </OrContainer>
 
-                    <LoginButton>
+                    <LoginButton onClick={loginWithSpotify}>
                         <SpotifyIcon />
                         <ButtonText>{t('LOGIN_SpotifySignIn')}</ButtonText>
                     </LoginButton>

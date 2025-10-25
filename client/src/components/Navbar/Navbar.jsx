@@ -4,6 +4,8 @@ import Icon from "../svgs/icon"
 import LanguageSelector from "./Languageselector"
 import ThemeSelector from "./ThemeSelector"
 import { RiUser3Fill } from "react-icons/ri";
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom"
 
 const NavbarContainer = styled.header`
   position: fixed;
@@ -32,6 +34,7 @@ const NavbarContent = styled.div`
 const LogoContainer = styled.div`
   display: flex;
   align-items: center;
+  cursor: pointer;
 `
 
 const BrandName = styled.h1`
@@ -124,9 +127,10 @@ const UserIcon = styled(RiUser3Fill)`
   color: var(--textColor);
 `;
 
-const SoonIndicator = styled.p`
-  font-size: 0.7em;
-  font-weight: bolder;
+const AvatarImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `;
 
 function Navbar() {
@@ -135,6 +139,8 @@ function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0)
   const [soon, setSoon] = useState(false)
   const domain = import.meta.env.VITE_DOMAIN
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -160,17 +166,18 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [lastScrollY])
 
-  const handleSoon = () => {
-    setSoon(true)
-    setTimeout(() => {
-      setSoon(false)
-    }, 3000)
+  const handleClickAccount = () => {
+    if(isAuthenticated){
+      navigate('/dashboard')
+    } else{
+      navigate('/login')
+    }
   }
 
   return (
     <NavbarContainer scrolled={scrolled} visible={visible}>
       <NavbarContent>
-        <LogoContainer>
+        <LogoContainer onClick={() => navigate('/')}>
           <IconContainer>
             <Icon fill={"var(--AccentColor)"} width={"40px"} height={"44.05px"} />
           </IconContainer>
@@ -182,9 +189,13 @@ function Navbar() {
         <SelectorContainer>
           <LanguageSelector />
           <ThemeSelector />
-          <ProfileButton onClick={handleSoon}>
+          <ProfileButton onClick={handleClickAccount}>
             <ProfileWrapper>
-              {soon ? <SoonIndicator>Soon!</SoonIndicator> : <UserIcon />}
+              {user?.avatar ? (
+                <AvatarImage src={user.avatar} />
+              ) : (
+                <UserIcon />
+              )}
             </ProfileWrapper>
           </ProfileButton>
         </SelectorContainer>
