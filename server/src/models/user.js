@@ -8,7 +8,9 @@ const UserSchema = new mongoose.Schema({
   googleId: { type: String, unique: true, sparse: true },
   spotifyId: { type: String, unique: true, sparse: true },
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
+  permissions: { type: [String], enum: ['user', 'admin'], default: ['user'] },
+  status: { type: String, enum: ['active', 'suspended'], default: 'active' }
 })
 
 UserSchema.pre('save', function(next){

@@ -24,7 +24,11 @@ class AuthController {
           name: req.user.name,
           username: req.user.username,
           email: req.user.email,
-          avatar: req.user.avatar
+          avatar: req.user.avatar,
+          hasGoogle: !!req.user.googleId,
+          hasSpotify: !!req.user.spotifyId,
+          permissions: req.user.permissions,
+          status: req.user.status
         }
       })
     } else {
