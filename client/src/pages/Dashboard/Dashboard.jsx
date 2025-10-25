@@ -9,6 +9,7 @@ import { SiSpotify } from "react-icons/si";
 import { useTranslation } from 'react-i18next';
 import { BiSolidHourglass } from "react-icons/bi";
 import Loading from "../../components/Commom/Loading";
+import EditProfileModal from "../../components/EditProfileModal";
 
 const Container = styled.div`
     display: flex;
@@ -38,6 +39,7 @@ const Avatar = styled.img`
     border-radius: 50%;
     object-fit: cover;
     background-color: var(--textColor);
+    border: 3px solid var(--textColor);
 `;
 
 const UserName = styled.h2`
@@ -162,6 +164,7 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const { user, loading, logout, isAuthenticated } = useAuth();
     const [userProfile, setUserProfile] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -187,6 +190,18 @@ export default function Dashboard() {
     const handleLogout = async () => {
         await logout();
         navigate('/login');
+    };
+
+    const handleEditProfile = () => {
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+    };
+
+    const handleProfileUpdate = () => {
+        fetchUserProfile();
     };
 
     if (loading) {
@@ -219,7 +234,7 @@ export default function Dashboard() {
                         )}
 
                         <NotMobileDiv>
-                            <EditButton>{t('EditProfile')}</EditButton>
+                            <EditButton onClick={handleEditProfile}>{t('EditProfile')}</EditButton>
                             <LogoutButton onClick={handleLogout}>{t('Logout')}</LogoutButton>
                         </NotMobileDiv>
                     </Row>
@@ -228,12 +243,18 @@ export default function Dashboard() {
             </ProfileContainer>
 
             <MobileDiv>
-                <EditButton>{t('EditProfile')}</EditButton>
+                <EditButton onClick={handleEditProfile}>{t('EditProfile')}</EditButton>
                 <LogoutButton onClick={handleLogout}>{t('Logout')}</LogoutButton>
             </MobileDiv>
 
             <HourglassIcon/>
             <NoActivityText>{t('NoActivityYet')}</NoActivityText>
-    </Container>
+
+            <EditProfileModal
+                isOpen={isEditModalOpen}
+                onClose={handleCloseEditModal}
+                onProfileUpdate={handleProfileUpdate}
+            />
+        </Container>
     );
 }
