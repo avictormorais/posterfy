@@ -27,22 +27,11 @@ class UserController {
 
   async updateProfile(req, res) {
     try {
-      const { name, avatar } = req.body
-      const user = await UserService.findById(req.user._id)
-      
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' })
-      }
+      const { name, username } = req.body
 
-      if (name && name.trim()) {
-        user.name = name.trim()
-      }
-      
-      if (avatar && avatar.trim()) {
-        user.avatar = avatar.trim()
-      }
+      const user = await UserService.updateProfile(req.user._id, { name, username })
 
-      await user.save()
+      req.user = user
 
       res.json({
         message: 'Profile updated successfully',
@@ -55,6 +44,16 @@ class UserController {
         }
       })
     } catch (error) {
+      console.error('Update profile error:', error)
+
+      if (error.statusCode === 409) {
+        return res.status(409).json({ error: error.message })
+      }
+
+      if (error.message.includes('required') || error.message.includes('format') || error.message.includes('characters')) {
+        return res.status(400).json({ error: error.message })
+      }
+
       res.status(500).json({ error: 'Internal server error' })
     }
   }

@@ -89,6 +89,47 @@ class UserService {
   async findById(id) {
     return await User.findById(id)
   }
+
+  async updateProfile(userId, profileData) {
+    const { name, username } = profileData
+
+    const user = await User.findById(userId)
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    if (name && name.trim()) {
+      user.name = name.trim()
+    }
+
+    if (username && username.trim() && username.trim().toLowerCase() !== user.username) {
+      const trimmedUsername = username.trim().toLowerCase()
+
+      if (!/^[a-z0-9]+$/.test(trimmedUsername)) {
+        throw new Error('Username can only contain letters and numbers')
+      }
+
+      if (trimmedUsername.length < 3) {
+        throw new Error('Username must be at least 3 characters')
+      }
+
+      const existingUser = await User.findOne({ 
+        username: trimmedUsername,
+        _id: { $ne: userId }
+      })
+
+      if (existingUser) {
+        const error = new Error('Username already taken')
+        error.statusCode = 409
+        throw error
+      }
+
+      user.username = trimmedUsername
+    }
+
+    await user.save()
+    return user
+  }
 }
 
 export default new UserService()
