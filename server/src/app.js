@@ -24,8 +24,8 @@ app.use(cors({
       'http://localhost:3000',
       'http://localhost:5173',
       'https://posterfy.space',
-      'https://www.api.posterfy.space',
-      'http://www.api.posterfy.space',
+      'https://api.posterfy.space',
+      'http://api.posterfy.space',
     ].filter(Boolean)
 
     if (allowedOrigins.includes(origin) || allowedOrigins.some(allowed => allowed instanceof RegExp ? allowed.test(origin) : false)) {
@@ -66,7 +66,7 @@ app.get('/', (req, res) => {
       id: req.user._id,
       username: req.user.username,
       name: req.user.name
-    } : null
+    } : 'Not logged in'
   })
 })
 

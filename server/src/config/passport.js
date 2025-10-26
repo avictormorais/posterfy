@@ -6,6 +6,8 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { Strategy as SpotifyStrategy } from 'passport-spotify'
 import UserService from '../services/userService.js'
 
+const SERVER_URL = process.env.SERVER_URL || 'http://localhost:5000'
+
 passport.serializeUser((user, done) => {
   done(null, user._id)
 })
@@ -22,7 +24,7 @@ passport.deserializeUser(async (id, done) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: '/auth/google/callback'
+  callbackURL: `${SERVER_URL}/auth/google/callback`
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const user = await UserService.handleGoogleLogin(profile)
@@ -35,7 +37,7 @@ passport.use(new GoogleStrategy({
 passport.use(new SpotifyStrategy({
   clientID: process.env.SPOTIFY_CLIENT_ID,
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  callbackURL: '/auth/spotify/callback'
+  callbackURL: `${SERVER_URL}/auth/spotify/callback`
 }, async (accessToken, refreshToken, expires_in, profile, done) => {
   try {
     const user = await UserService.handleSpotifyLogin(profile)
