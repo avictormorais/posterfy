@@ -130,6 +130,50 @@ class UserService {
     await user.save()
     return user
   }
+
+  async changeUsername(userId, newUsername) {
+    // Validate username format
+    if (!newUsername || typeof newUsername !== 'string') {
+      throw new Error('Username is required')
+    }
+
+    const trimmedUsername = newUsername.trim().toLowerCase()
+
+    // Check format (only letters and numbers)
+    if (!/^[a-z0-9]+$/.test(trimmedUsername)) {
+      throw new Error('Username can only contain letters and numbers')
+    }
+
+    // Check length
+    if (trimmedUsername.length < 3) {
+      throw new Error('Username must be at least 3 characters')
+    }
+
+    // Check if username is already taken by another user
+    const existingUser = await User.findOne({ 
+      username: trimmedUsername,
+      _id: { $ne: userId } // Exclude current user
+    })
+
+    if (existingUser) {
+      const error = new Error('Username already taken')
+      error.statusCode = 409
+      throw error
+    }
+
+    // Update the username
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { username: trimmedUsername },
+      { new: true }
+    )
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    return user
+  }
 }
 
 export default new UserService()

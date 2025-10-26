@@ -195,7 +195,7 @@ No, this project is for educational and non-commercial use only. All album artwo
    
    # JWT Authentication (recommended for serverless deployments)
    JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-   JWT_EXPIRES_IN=24h
+   JWT_EXPIRES_IN=30d
    
    # Session (legacy - not used with JWT)
    SESSION_SECRET=your-session-secret-key

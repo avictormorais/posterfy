@@ -57,6 +57,41 @@ class UserController {
       res.status(500).json({ error: 'Internal server error' })
     }
   }
+
+  async changeUsername(req, res) {
+    try {
+      const { username } = req.body
+
+      if (!username || typeof username !== 'string') {
+        return res.status(400).json({ error: 'Username is required' })
+      }
+
+      const user = await UserService.changeUsername(req.user.id, username)
+
+      res.json({
+        message: 'Username changed successfully',
+        user: {
+          id: user._id,
+          name: user.name,
+          username: user.username,
+          email: user.email,
+          avatar: user.avatar
+        }
+      })
+    } catch (error) {
+      console.error('Change username error:', error)
+
+      if (error.statusCode === 409) {
+        return res.status(409).json({ error: error.message })
+      }
+
+      if (error.message.includes('required') || error.message.includes('format') || error.message.includes('characters')) {
+        return res.status(400).json({ error: error.message })
+      }
+
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
 }
 
 export default new UserController()
