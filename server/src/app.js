@@ -24,7 +24,8 @@ app.use(cors({
       'http://localhost:3000',
       'http://localhost:5173',
       'https://posterfy.space',
-      /\.vercel\.app$/.test(origin) ? origin : false
+      'https://www.api.posterfy.space',
+      'http://www.api.posterfy.space',
     ].filter(Boolean)
 
     if (allowedOrigins.includes(origin) || allowedOrigins.some(allowed => allowed instanceof RegExp ? allowed.test(origin) : false)) {
