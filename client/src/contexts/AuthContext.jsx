@@ -17,17 +17,20 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const token = urlParams.get('token')
+    const initAuth = async () => {
+      const urlParams = new URLSearchParams(window.location.search)
+      const token = urlParams.get('token')
 
-    if (token) {
-      localStorage.setItem('authToken', token)
-      window.history.replaceState({}, document.title, window.location.pathname)
+      if (token) {
+        localStorage.setItem('authToken', token)
+        apiService.setAuthToken(token)
+        window.history.replaceState({}, document.title, window.location.pathname)
+      }
 
-      apiService.setAuthToken(token)
+      await checkAuthStatus()
     }
 
-    checkAuthStatus()
+    initAuth()
   }, [])
 
   const checkAuthStatus = async () => {
@@ -41,16 +44,15 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      apiService.setAuthToken(token)
       const data = await apiService.getCurrentUser()
       setUser(data.user)
       setIsAuthenticated(true)
+      setLoading(false)
     } catch (error) {
       localStorage.removeItem('authToken')
       apiService.setAuthToken(null)
       setUser(null)
       setIsAuthenticated(false)
-    } finally {
       setLoading(false)
     }
   }
