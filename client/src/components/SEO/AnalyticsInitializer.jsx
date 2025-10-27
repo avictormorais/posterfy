@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { initGA } from '../services/analytics';
+import { initGA } from '../../services/analytics';
 
 const AnalyticsInitializer = () => {
   useEffect(() => {

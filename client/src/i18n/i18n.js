@@ -86,8 +86,8 @@ i18n
                 LOGIN_Or: "Or",
                 LOGIN_GoogleSignIn: "Sign in with Google",
                 LOGIN_SpotifySignIn: "Sign in with Spotify",
-                LOGIN_Welcome: "Welcome to Posterfy!",
-                LOGIN_JoinCommunity: "Join our community and start creating amazing posters.",
+                LOGIN_Welcome: "Music and design.",
+                LOGIN_JoinCommunity: "Join us and create amazing posters.",
                 
                 Logout: "Logout",
                 EditProfile: "Edit profile",
@@ -193,8 +193,8 @@ i18n
                 LOGIN_Or: "Ou",
                 LOGIN_GoogleSignIn: "Entrar com Google",
                 LOGIN_SpotifySignIn: "Entrar com Spotify",
-                LOGIN_Welcome: "Bem-vindo ao Posterfy!",
-                LOGIN_JoinCommunity: "Junte-se à nossa comunidade e comece a criar pôsteres incríveis.",
+                LOGIN_Welcome: "Música e design.",
+                LOGIN_JoinCommunity: "Junte-se e crie pôsteres incríveis.",
 
                 Logout: "Sair",
                 EditProfile: "Editar Perfil",
@@ -300,8 +300,8 @@ i18n
                 LOGIN_Or: "O",
                 LOGIN_GoogleSignIn: "Iniciar sesión con Google",
                 LOGIN_SpotifySignIn: "Iniciar sesión con Spotify",
-                LOGIN_Welcome: "¡Bienvenido a Posterfy!",
-                LOGIN_JoinCommunity: "Únete a nuestra comunidad y comienza a crear carteles increíbles.",
+                LOGIN_Welcome: "Música y diseño.",
+                LOGIN_JoinCommunity: "Únete y crea carteles increíbles.",
 
                 Logout: "Cerrar sesión",
                 EditProfile: "Editar perfil",
@@ -407,8 +407,8 @@ i18n
                 LOGIN_Or: "或者",
                 LOGIN_GoogleSignIn: "用谷歌登录",
                 LOGIN_SpotifySignIn: "用Spotify登录",
-                LOGIN_Welcome: "欢迎来到 Posterfy！",
-                LOGIN_JoinCommunity: "加入我们的社区，开始创建惊人的海报。",
+                LOGIN_Welcome: "音乐和设计。",
+                LOGIN_JoinCommunity: "加入我们并创建惊人的海报。",
 
                 Logout: "退出登录",
                 EditProfile: "编辑个人资料",

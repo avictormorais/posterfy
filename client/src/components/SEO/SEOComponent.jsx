@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { getCanonicalUrl } from '../utils/urlNormalization';
+import { getCanonicalUrl } from '../../utils/urlNormalization';
 
 const SEOComponent = ({ 
   title = "Posterfy - Free Album Poster Generator | Create Custom Music Posters Online",

@@ -1,8 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Loading from './components/Commom/Loading';
-import SEOComponent from './components/SEOComponent';
-import IndexingMonitor from './components/IndexingMonitor';
-import AnalyticsInitializer from './components/AnalyticsInitializer';
 import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -15,6 +12,9 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Error from './pages/Error/Error';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useEffect, useState } from 'react';
+import AnalyticsInitializer from './components/SEO/AnalyticsInitializer';
+import IndexingMonitor from './components/SEO/IndexingMonitor';
+import SEOComponent from './components/SEO/SEOComponent';
 
 function ScrollToTop() {
   const { pathname } = useLocation();

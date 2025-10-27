@@ -85,6 +85,7 @@ const SelectorContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;
+  margin-left: auto;
 `;
 
 const ProfileButton = styled.button`
@@ -133,7 +134,7 @@ const AvatarImage = styled.img`
   object-fit: cover;
 `;
 
-function Navbar() {
+function Navbar({ hideLogo = false, hideAccount = false }) {
   const [scrolled, setScrolled] = useState(false)
   const [visible, setVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
@@ -177,27 +178,31 @@ function Navbar() {
   return (
     <NavbarContainer scrolled={scrolled} visible={visible}>
       <NavbarContent>
-        <LogoContainer onClick={() => navigate('/')}>
-          <IconContainer>
-            <Icon fill={"var(--AccentColor)"} width={"40px"} height={"44.05px"} />
-          </IconContainer>
-          <BrandName>
-            Posterfy
-            {domain && <DomainText>{domain}</DomainText>}
-          </BrandName>
-        </LogoContainer>
+        {!hideLogo && (
+          <LogoContainer onClick={() => navigate('/')}>
+            <IconContainer>
+              <Icon fill={"var(--AccentColor)"} width={"40px"} height={"44.05px"} />
+            </IconContainer>
+            <BrandName>
+              Posterfy
+              {domain && <DomainText>{domain}</DomainText>}
+            </BrandName>
+          </LogoContainer>
+        )}
         <SelectorContainer>
           <LanguageSelector />
           <ThemeSelector />
-          <ProfileButton onClick={handleClickAccount}>
-            <ProfileWrapper>
-              {user?.avatar ? (
-                <AvatarImage src={user.avatar} />
-              ) : (
-                <UserIcon />
-              )}
-            </ProfileWrapper>
-          </ProfileButton>
+          {!hideAccount && (
+            <ProfileButton onClick={handleClickAccount}>
+              <ProfileWrapper>
+                {user?.avatar ? (
+                  <AvatarImage src={user.avatar} />
+                ) : (
+                  <UserIcon />
+                )}
+              </ProfileWrapper>
+            </ProfileButton>
+          )}
         </SelectorContainer>
       </NavbarContent>
       <Divider scrolled={scrolled} />

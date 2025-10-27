@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { BiSolidHourglass } from "react-icons/bi";
 import Loading from "../../components/Commom/Loading";
 import EditProfileModal from "../../components/EditProfileModal";
+import Hint from "../../components/Commom/Hint";
 
 const Container = styled.div`
     display: flex;
@@ -227,10 +228,14 @@ export default function Dashboard() {
                             {userProfile?.name || user.name}
                         </UserName>
                         {userProfile?.hasGoogle && (
-                            <BadgeDiv title={t('ConnectedToGoogle')}><GoogleIcon /></BadgeDiv>
+                            <Hint text={t('ConnectedToGoogle')} delay={200}>
+                                <BadgeDiv><GoogleIcon /></BadgeDiv>
+                            </Hint>
                         )}
                         {userProfile?.hasSpotify && (
-                            <BadgeDiv title={t('ConnectedToSpotify')}><SpotifyIcon /></BadgeDiv>
+                            <Hint text={t('ConnectedToSpotify')} delay={200}>
+                                <BadgeDiv><SpotifyIcon /></BadgeDiv>
+                            </Hint>
                         )}
 
                         <NotMobileDiv>

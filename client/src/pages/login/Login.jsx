@@ -22,6 +22,7 @@ const Content = styled.div`
     align-items: center;
     justify-content: center;
     gap: 30px;
+    padding-top: 20px;
 `;
 
 const TextWelcome = styled.h1`
@@ -29,6 +30,10 @@ const TextWelcome = styled.h1`
     font-size: 2rem;
     text-align: center;
     font-weight: bolder;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+    max-width: 450px;
 `;
 
 const Paragraph = styled.p`
@@ -36,7 +41,9 @@ const Paragraph = styled.p`
     font-size: 1em;
     text-align: center;
     opacity: 0.7;
-    max-width: 500px;
+    max-width: 450px;
+    width: 100%;
+    text-align: left;
 `;
 
 const ButtonContainer = styled.div`
@@ -120,6 +127,64 @@ const OrText = styled.p`
     color: var(--textColor);
 `;
 
+const NoPersonalDataText = styled.p`
+    color: var(--textColor);
+    font-size: 0.9em;
+    text-align: center;
+    opacity: 0.7;
+    max-width: 500px;
+    font-weight: bolder;
+    font-style: italic;
+    opacity: 0.35;
+`;
+
+const Row = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+const Column = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+`;
+
+const IconContainer = styled.div`
+    display: flex;
+    margin-right: 200px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: scale(1.025);
+    }
+
+    @media (max-width: 1125px) {
+        margin-right: 150px;
+    }
+
+    @media (max-width: 900px) {
+        margin-right: 70px;
+    }
+
+    @media (max-width: 750px) {
+        display: none;
+    }
+`;
+
+const MobileIconContainer = styled.div`
+    display: none;
+    width: 100%;
+    max-width: 450px;
+    margin-bottom: 30px;
+
+    @media (max-width: 750px) {
+        display: flex;
+    }
+`;
+
 export default function Login(){
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -152,31 +217,44 @@ export default function Login(){
         );
     }
 
+    const handleGoHome = () => {
+        navigate('/');
+    }
+
     return(
         <Container>
-            <Navbar iconColor="var(--AccentColor)" />
+            <Navbar hideAccount hideLogo iconColor="var(--AccentColor)" />
             <Content>
-                <Icon fill={'var(--textColor)'} width={"100px"} />
-                <TextWelcome>{t('LOGIN_Welcome')}</TextWelcome>
-                <Paragraph>{t('LOGIN_JoinCommunity')}</Paragraph>
-                
-                <ButtonContainer>
-                    <LoginButton onClick={loginWithGoogle}>
-                        <GoogleIcon />
-                        <ButtonText>{t('LOGIN_GoogleSignIn')}</ButtonText>
-                    </LoginButton>
+                <Row>
+                    <IconContainer onClick={handleGoHome}>
+                        <Icon fill={'var(--textColor)'} width={"25vw"} />
+                    </IconContainer>
+                    <Column>
+                        <MobileIconContainer>
+                            <Icon fill={'var(--textColor)'} width={"90px"} />
+                        </MobileIconContainer>
+                        <TextWelcome>{t('LOGIN_Welcome')}</TextWelcome>
+                        <Paragraph>{t('LOGIN_JoinCommunity')}</Paragraph>
+                        
+                        <ButtonContainer>
+                            <LoginButton onClick={loginWithGoogle}>
+                                <GoogleIcon />
+                                <ButtonText>{t('LOGIN_GoogleSignIn')}</ButtonText>
+                            </LoginButton>
 
-                    <OrContainer>
-                        <Line />
-                        <OrText>{t('LOGIN_Or')}</OrText>
-                        <Line />
-                    </OrContainer>
+                            <OrContainer>
+                                <Line />
+                                <OrText>{t('LOGIN_Or')}</OrText>
+                                <Line />
+                            </OrContainer>
 
-                    <LoginButton onClick={loginWithSpotify}>
-                        <SpotifyIcon />
-                        <ButtonText>{t('LOGIN_SpotifySignIn')}</ButtonText>
-                    </LoginButton>
-                </ButtonContainer>
+                            <LoginButton onClick={loginWithSpotify}>
+                                <SpotifyIcon />
+                                <ButtonText>{t('LOGIN_SpotifySignIn')}</ButtonText>
+                            </LoginButton>
+                        </ButtonContainer>
+                    </Column>
+                </Row>
             </Content>
         </Container>
     )

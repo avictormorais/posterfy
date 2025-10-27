@@ -73,7 +73,7 @@ function Loading({ isVisible, initialFade = false }) {
     return (
         <Container isVisible={isVisible} fadeOutContainer={fadeOutContainer} initialFade={initialFade}>
             <IconContainer isExiting={isExiting}>
-                <Icon fill={'var(--AccentColor)'} width="100px" height={'118.23px'} />
+                <Icon fill={'var(--textColor)'} width="100px" height={'118.23px'} />
             </IconContainer>
         </Container>
     );
