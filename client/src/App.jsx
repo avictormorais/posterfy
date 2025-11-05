@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import AnalyticsInitializer from './components/SEO/AnalyticsInitializer';
 import IndexingMonitor from './components/SEO/IndexingMonitor';
 import SEOComponent from './components/SEO/SEOComponent';
+import Lenis from 'lenis';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -66,6 +67,31 @@ function App() {
   usePageTracking();
 
   useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
+  useEffect(() => {
     const cleanup = initScrollTracking();
     return cleanup;
   }, []);
@@ -76,7 +102,7 @@ function App() {
       setTimeout(() => {
         setLoadingComplete(true);
       }, 1000);
-    }, 1100);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
