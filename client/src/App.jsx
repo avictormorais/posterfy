@@ -125,9 +125,10 @@ function App() {
           <IndexingMonitor />
           <AnalyticsInitializer />
           
-        <Router>
-          <ScrollToTop />
-          <Routes>              <Route path="/" element={<Layout showNavbar={true} showFooter={true} />}>
+          <Router>
+            <ScrollToTop />
+            <Routes>              
+              <Route path="/" element={<Layout showNavbar={true} showFooter={true} />}>
                 <Route index element={<Home loadingComplete={loadingComplete} />} />
               </Route>
               
@@ -147,7 +148,6 @@ function App() {
 
             </Routes>
           </Router>
-          
           <Loading isVisible={loading} />
         </AuthProvider>
       </ModalProvider>

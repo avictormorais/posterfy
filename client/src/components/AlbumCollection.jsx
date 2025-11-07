@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import styled from "styled-components"
 import { albumData } from "./albumData"
 import { useTranslation } from "react-i18next"
+import { useScrollAnimation } from "../hooks/useScrollAnimation"
 
 const AlbumsContainer = styled.div`
   display: flex;
@@ -33,28 +34,14 @@ const AlbumPoster = styled.div`
       ? "405px"
       : "345px"};
   margin: 0 -30px;
-  transition: ${(props) => {
-    if (props.isHovered) {
-      return `transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s, 
-              box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s,
-              z-index 0s 0.3s`;
-    } else {
-      
-      return `transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-              box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              z-index 0s`;
+  
+  opacity: ${(props) => props.$hasAppeared ? 1 : 0};
+  transform: ${(props) => {
+    const { isHovered, index, hoveredIndex, isMobile, $hasAppeared } = props;
+    
+    if (!$hasAppeared) {
+      return "scale(0.8) translateY(30px)";
     }
-  }};
-  z-index: ${(props) => {
-    if (props.isHovered) return 15;
-    if (props.index === 2) return 10;
-    if (props.index === 3) return 9;
-    if (props.index === 1) return 8;
-    if (props.index === 4) return 7;
-    if (props.index === 0) return 6;
-    return 5;
-  }};  transform: ${(props) => {
-    const { isHovered, index, hoveredIndex, isMobile } = props;
     
     if (isMobile) return "scale(1)";
     
@@ -94,6 +81,31 @@ const AlbumPoster = styled.div`
     
     return baseTransform;
   }};
+  
+  transition: ${(props) => {
+    if (props.isHovered) {
+      return `transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s, 
+              box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s,
+              opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              z-index 0s 0.3s`;
+    } else {
+      return `transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              z-index 0s`;
+    }
+  }};
+  
+  z-index: ${(props) => {
+    if (props.isHovered) return 15;
+    if (props.index === 2) return 10;
+    if (props.index === 3) return 9;
+    if (props.index === 1) return 8;
+    if (props.index === 4) return 7;
+    if (props.index === 0) return 6;
+    return 5;
+  }};
+  
   box-shadow: ${(props) =>
     props.isHovered
       ? "0 25px 50px rgba(0,0,0,0.5), 0 8px 16px rgba(0,0,0,0.3)"
@@ -357,6 +369,20 @@ const AlbumCollection = ({ onRecreate }) => {
   const [isTablet, setIsTablet] = useState(false)
   const [modalImage, setModalImage] = useState(null)
   const [imageJSON, setImageJSON] = useState(null)
+  const [containerRef, isVisible] = useScrollAnimation()
+  const [appearedPosters, setAppearedPosters] = useState([])
+
+  const appearanceOrder = [2, 3, 1, 4, 0]
+  
+  useEffect(() => {
+    if (isVisible && appearedPosters.length === 0) {
+      appearanceOrder.forEach((posterIndex, orderIndex) => {
+        setTimeout(() => {
+          setAppearedPosters(prev => [...prev, posterIndex])
+        }, orderIndex * 177)
+      })
+    }
+  }, [isVisible])
 
   useEffect(() => {
     const handleResize = () => {
@@ -388,7 +414,7 @@ const AlbumCollection = ({ onRecreate }) => {
 
   return (
     <>
-      <AlbumsContainer>
+      <AlbumsContainer ref={containerRef}>
         {albumData.map((album, index) => (
           <AlbumPoster
             key={album.id}
@@ -398,6 +424,7 @@ const AlbumCollection = ({ onRecreate }) => {
             otherIsHovered={hoveredIndex !== null}
             isMobile={isMobile}
             isTablet={isTablet}
+            $hasAppeared={appearedPosters.includes(index)}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
             onClick={() => openModal(album.coverImage || "/placeholder.svg", album.JSONConfig)}
