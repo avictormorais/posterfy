@@ -8,6 +8,7 @@ import ColorInput from "./inputs/ColorInput";
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
+import ReactDOM from 'react-dom';
 import CheckInput from "./inputs/CheckInput";
 import FileInput from "./inputs/FileInput";
 import FontInput from "./inputs/FontInput";
@@ -601,11 +602,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
     };
 
-    function handleColorInputClick(e, colorInputName) {
-        const position = {
-            top: e.clientY - 50,
-            left: e.clientX,
-        };
+    function handleColorInputClick(position, colorInputName) {
         setColorInputPosition(position);
         setCurrentColorInput(colorInputName);
         setShowColorSelector(true);
@@ -901,35 +898,35 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <ColorInput 
                                             title={t('EDITOR_BackgroundColor')} 
                                             value={backgroundColor} 
-                                            onClick={(e) => handleColorInputClick(e, 'backgroundColor')}
+                                            onClick={(position) => handleColorInputClick(position, 'backgroundColor')}
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={550}>
                                         <ColorInput 
                                             title={t('EDITOR_TextColor')} 
                                             value={textColor} 
-                                            onClick={(e) => handleColorInputClick(e, 'textColor')}
+                                            onClick={(position) => handleColorInputClick(position, 'textColor')}
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={600}>
                                         <ColorInput 
                                             title={`${t('EDITOR_Color')} 1`} 
                                             value={color1} 
-                                            onClick={(e) => handleColorInputClick(e, 'color1')}
+                                            onClick={(position) => handleColorInputClick(position, 'color1')}
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={650}>
                                         <ColorInput 
                                             title={`${t('EDITOR_Color')} 2`} 
                                             value={color2} 
-                                            onClick={(e) => handleColorInputClick(e, 'color2')}
+                                            onClick={(position) => handleColorInputClick(position, 'color2')}
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={700}>
                                         <ColorInput 
                                             title={`${t('EDITOR_Color')} 3`} 
                                             value={color3} 
-                                            onClick={(e) => handleColorInputClick(e, 'color3')}
+                                            onClick={(position) => handleColorInputClick(position, 'color3')}
                                         />
                                     </AnimatedInput>
             
@@ -1029,7 +1026,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         </EditorColumn>
                     </ContainerEditor>
                     
-                    {showColorSelector && colorInputPosition && currentColorInput && (
+                    {showColorSelector && colorInputPosition && currentColorInput && ReactDOM.createPortal(
                         <ColorSelector
                             DefaultColor={currentColorInput === 'backgroundColor' ? backgroundColor : 
                                         currentColorInput === 'textColor' ? textColor : 
@@ -1061,7 +1058,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             }}
                             position={colorInputPosition}
                             onClose={handleColorSelectorClose}
-                        />
+                        />, document.body
                     )}
                 </Container>
             )}

@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
+import { useRef } from "react";
 
 const Container = styled.div`
     display: flex;
@@ -41,10 +42,15 @@ const Color = styled.p`
 `
 
 function ColorInput({ title, value, onClick }) {
+    const valueDivRef = useRef(null);
+
     return (
         <Container data-color-input>
             <Title>{title}</Title>
-            <ValueDiv onClick={onClick}>
+            <ValueDiv ref={valueDivRef} onClick={() => {
+                const newRect = valueDivRef.current.getBoundingClientRect();
+                onClick({ top: newRect.bottom + 1 + window.scrollY, left: newRect.left + window.scrollX });
+            }}>
                 <ColorPreview style={{backgroundColor: value}}/>
                 <Color>
                     {value}

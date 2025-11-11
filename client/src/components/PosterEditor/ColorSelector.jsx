@@ -15,37 +15,6 @@ const Container = styled.div`
     flex-direction: column;
     overflow: hidden;
     border: 3px solid var(--borderColor);
-    
-    /* Animação de entrada suave */
-    animation: slideInScale 0.3s ease-out forwards;
-    opacity: 0;
-    transform: scale(0.9) translateY(-10px);
-    
-    @keyframes slideInScale {
-        from {
-            opacity: 0;
-            transform: scale(0.9) translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-    }
-    
-    &.closing {
-        animation: slideOutScale 0.2s ease-in forwards;
-    }
-    
-    @keyframes slideOutScale {
-        from {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-        to {
-            opacity: 0;
-            transform: scale(0.9) translateY(-10px);
-        }
-    }
 `
 
 const ColorPicker = styled(HexColorPicker)`
@@ -343,7 +312,7 @@ function ColorSelector({ DefaultColor, image, predefinedColors, position, onDone
     }
 
     return (
-        <Container style={{ position: 'fixed', top: position.top, left: position.left, zIndex: 10000 }} data-lenis-prevent>
+        <Container style={{ position: 'absolute', top: position.top, left: position.left, zIndex: 2147483647 }}>
             <canvas ref={canvasRef} style={{ display: 'none' }} />
             {toggleDropper ? (
                 <Image
