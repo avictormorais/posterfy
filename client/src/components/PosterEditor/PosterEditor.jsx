@@ -229,7 +229,7 @@ const TracklistTextarea = styled.textarea`
     font-size: 14px;
     resize: none;
     border-radius: 8px;
-    overflow-y: auto;
+    overflow-y: scroll;
     max-height: 300px;
     line-height: 1.5em;
     scrollbar-width: none;
@@ -983,6 +983,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         value={tracklist}
                                         onChange={(e) => setTracklist(e.target.value)}
                                         placeholder={t('EDITOR_TracklistPlaceholder')}
+                                        data-lenis-prevent
                                     />
                                     <TracklistButtonsContainer>
                                         <TracklistButton onClick={handleRemoveParentheses}>

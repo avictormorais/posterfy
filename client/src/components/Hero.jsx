@@ -58,10 +58,10 @@ const Title = styled.h1`
 `
 
 const Paragraph = styled.p`
-    font-size: 1em;
+    font-size: 1.1em;
     opacity: ${props => props.visible ? 0.5 : 0};
     width: 80%;
-    font-weight: 500;
+    font-weight: bolder;
     margin: 2px 0;
     transform: translateY(${props => props.visible ? '0' : '20px'});
     transition: opacity 0.5s ease, transform 0.5s ease;

@@ -47,6 +47,7 @@ const Container = styled.div`
   align-items: center;
   margin: 20px auto;
   animation: ${fadeInUp} 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  margin-top: 40px;
 
   svg {
     transition: transform 0.2s ease-in-out;

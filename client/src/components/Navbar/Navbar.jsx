@@ -53,6 +53,10 @@ const DomainText = styled.span`
   font-size: 0.65em;
   opacity: 0.4;
   font-weight: 600;
+
+  @media (max-width: 465px) {
+    display: none;
+  }
 `
 
 const Divider = styled.div`

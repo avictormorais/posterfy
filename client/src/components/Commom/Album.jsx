@@ -28,14 +28,14 @@ const Container = styled.div`
         bottom: 0;
         border-radius: 10px;
         background-color: transparent;
-        transition: background-color 0.3s;
+        transition: all 0.3s;
         background-color: var(--glassBackground);
         z-index: 1;
         border: 1px solid transparent;
     }
 
     :hover::before {
-        border: 3px solid var(--PosterShare-light);
+        border: 2px solid var(--PosterShare-light);
     }
 
     @media (max-width: 650px) {

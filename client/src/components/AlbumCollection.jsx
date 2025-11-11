@@ -259,7 +259,7 @@ const ModalContent = styled.div`
 const ModalControls = styled.div`
   position: absolute;
   top: 0px;
-  right: -80px;
+  right: -50px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -273,13 +273,13 @@ const ModalControls = styled.div`
 `
 
 const CloseButton = styled.button`
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--backgroundColor);
   border-radius: 50%;
   width: 44px;
   height: 44px;
-  color: white;
-  font-size: 1.4em;
+  border: none;
+  color: var(--textColor);
+  font-size: 2em;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -289,10 +289,9 @@ const CloseButton = styled.button`
   font-weight: 300;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.4);
     transform: scale(1.05);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    background-color: var(--AccentColor);
+    color: var(--backgroundColor);
   }
 
   &:active {
@@ -307,12 +306,12 @@ const CloseButton = styled.button`
 `
 
 const RecreateButton = styled.button`
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--backgroundColor);
+  border: none;
   border-radius: 22px;
   padding: 0 16px;
   height: 44px;
-  color: white;
+  color: var(--textColor);
   font-size: 0.9em;
   font-weight: 600;
   cursor: pointer;
@@ -326,20 +325,13 @@ const RecreateButton = styled.button`
   min-width: 120px;
 
   &:hover {
-    background: var(--AccentColor);
-    border-color: var(--AccentColor);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(223, 109, 64, 0.3);
+    transform: scale(1.05);
+    background-color: var(--AccentColor);
+    color: var(--backgroundColor);
   }
 
   &:active {
     transform: translateY(0);
-  }
-
-  &::before {
-    content: "↻";
-    font-size: 1.1em;
-    margin-right: 4px;
   }
 
   @media (max-width: 768px) {
