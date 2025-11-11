@@ -42,7 +42,7 @@ const Color = styled.p`
 
 function ColorInput({ title, value, onClick }) {
     return (
-        <Container>
+        <Container data-color-input>
             <Title>{title}</Title>
             <ValueDiv onClick={onClick}>
                 <ColorPreview style={{backgroundColor: value}}/>

@@ -602,11 +602,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     };
 
     function handleColorInputClick(e, colorInputName) {
-        const rect = e.target.getBoundingClientRect();
-        setColorInputPosition({
-            top: rect.top + window.scrollY,
-            left: rect.left + window.scrollX,
-        });
+        const position = {
+            top: e.clientY - 50,
+            left: e.clientX,
+        };
+        setColorInputPosition(position);
         setCurrentColorInput(colorInputName);
         setShowColorSelector(true);
     }
@@ -979,41 +979,6 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                             onChange={setCustomFontFile}
                                         />
                                     </AnimatedInput>
-            
-                                    {showColorSelector && colorInputPosition && currentColorInput && (
-                                        <ColorSelector
-                                            DefaultColor={currentColorInput === 'backgroundColor' ? backgroundColor : 
-                                                        currentColorInput === 'textColor' ? textColor : 
-                                                        currentColorInput === 'color1' ? color1 : 
-                                                        currentColorInput === 'color2' ? color2 : color3}
-                                            image={albumCover}
-                                            predefinedColors={[color1, color2, color3, backgroundColor, textColor]}
-                                            onDone={(selectedColor) => {
-                                                switch (currentColorInput) {
-                                                    case 'backgroundColor':
-                                                        setbackgroundColor(selectedColor);
-                                                        break;
-                                                    case 'textColor':
-                                                        setTextColor(selectedColor);
-                                                        break;
-                                                    case 'color1':
-                                                        setcolor1(selectedColor);
-                                                        break;
-                                                    case 'color2':
-                                                        setcolor2(selectedColor);
-                                                        break;
-                                                    case 'color3':
-                                                        setcolor3(selectedColor);
-                                                        break;
-                                                    default:
-                                                        break;
-                                                }
-                                                setColorInputPosition(null);
-                                            }}
-                                            position={colorInputPosition}
-                                            onClose={handleColorSelectorClose}
-                                        />
-                                    )}
                                 </EditorSettings>
                             ) : (
                                 <TracklistContainer>
@@ -1063,6 +1028,41 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             </AnimatedInput>
                         </EditorColumn>
                     </ContainerEditor>
+                    
+                    {showColorSelector && colorInputPosition && currentColorInput && (
+                        <ColorSelector
+                            DefaultColor={currentColorInput === 'backgroundColor' ? backgroundColor : 
+                                        currentColorInput === 'textColor' ? textColor : 
+                                        currentColorInput === 'color1' ? color1 : 
+                                        currentColorInput === 'color2' ? color2 : color3}
+                            image={albumCover}
+                            predefinedColors={[color1, color2, color3, backgroundColor, textColor]}
+                            onDone={(selectedColor) => {
+                                switch (currentColorInput) {
+                                    case 'backgroundColor':
+                                        setbackgroundColor(selectedColor);
+                                        break;
+                                    case 'textColor':
+                                        setTextColor(selectedColor);
+                                        break;
+                                    case 'color1':
+                                        setcolor1(selectedColor);
+                                        break;
+                                    case 'color2':
+                                        setcolor2(selectedColor);
+                                        break;
+                                    case 'color3':
+                                        setcolor3(selectedColor);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                handleColorSelectorClose();
+                            }}
+                            position={colorInputPosition}
+                            onClose={handleColorSelectorClose}
+                        />
+                    )}
                 </Container>
             )}
         </>

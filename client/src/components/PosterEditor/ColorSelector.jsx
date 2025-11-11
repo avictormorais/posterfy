@@ -343,7 +343,7 @@ function ColorSelector({ DefaultColor, image, predefinedColors, position, onDone
     }
 
     return (
-        <Container style={{ position: 'absolute', top: position.top, left: position.left, zIndex: 1000 }}>
+        <Container style={{ position: 'fixed', top: position.top, left: position.left, zIndex: 10000 }} data-lenis-prevent>
             <canvas ref={canvasRef} style={{ display: 'none' }} />
             {toggleDropper ? (
                 <Image
