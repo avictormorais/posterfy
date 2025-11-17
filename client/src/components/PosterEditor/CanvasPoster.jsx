@@ -1,9 +1,13 @@
 /* eslint-disable react/prop-types */
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { generateLogoWatermark } from '../svgs/LogoName.jsx';
 
-const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, customFont }) => {
+const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, customFont }, ref) => {
     const canvasRef = useRef(null);
+
+    useImperativeHandle(ref, () => ({
+        getCanvas: () => canvasRef.current
+    }));
 
     useEffect(() => {
         const generatePosterContent = async () => {
@@ -229,6 +233,8 @@ const CanvasPoster = ({ onImageReady, posterData, generatePoster, onTitleSizeAdj
     }, [generatePoster, posterData, onImageReady]);
 
     return <canvas ref={canvasRef} width={2480} height={3508} style={{ display: 'none' }} />;
-};
+});
+
+CanvasPoster.displayName = 'CanvasPoster';
 
 export default CanvasPoster;

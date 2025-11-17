@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { getCanonicalUrl } from '../../utils/urlNormalization';
 
 const SEOComponent = ({ 
-  title = "Posterfy - Free Album Poster Generator | Create Custom Music Posters Online",
+  title = "Posterfy",
   description = "Create stunning album posters for free with Posterfy. Design custom music posters from Spotify albums with professional templates. Best album poster generator online - no signup required!",
   keywords = "album poster generator, music poster maker, spotify poster, album cover poster, custom music posters, free poster generator, album art poster, music poster design, posterfy"
 }) => {

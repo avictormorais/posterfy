@@ -21,6 +21,7 @@ import CanvasPoster from "./CanvasPoster";
 import AnimatedInput from "./inputs/AnimatedInput";
 import { trackPosterDownload, trackPosterPreview } from "../../services/analytics";
 import { exportPosterJson, importPosterJson } from "./PosterJsonIO";
+import jsPDF from 'jspdf';
 
 const Container = styled.div`
     width: 80%;
@@ -252,61 +253,50 @@ const TracklistTextarea = styled.textarea`
 const DivButtons = styled.div`
     display: flex;
     flex-direction: row;
+    gap: 10px;
     margin-top: 15px;
-    margin-inline: -20px;
-    justify-content: end;
+    padding: 0 20px;
+    justify-content: flex-end;
 
-    @media (max-width: 450px) {
+    @media (max-width: 700px) {
         justify-content: center;
     }
 
-    @media (max-width: 350px) {
+    @media (max-width: 500px) {
         flex-direction: column;
     }
 `
 
 const ButtonDiv = styled.div`
-    position: relative;
     display: flex;
     flex-direction: row;
-    border-radius: 10px;
-    background-color: var(--glassBackground);
-    padding: 7px 15px;
-    width: min-content;
-    margin-left: 15px;
-    cursor: pointer;
-    justify-content: center;
     align-items: center;
-    z-index: 1;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: var(--glassBackground);
+    border: 1px solid var(--borderColor);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 
-    ::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: 10px;
-        background-color: transparent;
-        transition: background-color 0.5s;
-        z-index: -1;
+    &:hover {
+        background: var(--borderColor);
     }
 
-    :hover::before {
-        background-color: var(--glassBackground);
+    &:active {
+        transform: scale(0.98);
     }
 
-    @media (max-width: 350px) {
-        margin-inline: auto;
-        margin-bottom: 20px;
-        padding-inline: 50px;
+    @media (max-width: 500px) {
+        width: 100%;
     }
 `
 
-const ButtonText = styled.p`
-    font-size: .85em;
-    margin-inline: 10px;
-    font-weight: bold;
+const ButtonText = styled.span`
+    font-size: 0.9em;
+    font-weight: 600;
 `
 
 const IconDownload = styled(IoMdDownload)`
@@ -343,26 +333,22 @@ const FakePoster = styled.div`
 `
 
 const ShortcutsInfo = styled.p`
-    font-size: 0.75em;
+    font-size: 0.8em;
     color: var(--textSecondary);
-    margin-top: 10px;
-    margin-right: 20px;
+    margin-top: 12px;
+    padding: 0 20px;
     text-align: right;
-    width: 100%;
-    margin-left: 20px;
+    line-height: 1.6;
 
-    @media (max-width: 450px) {
+    @media (max-width: 700px) {
         text-align: center;
-    }
-
-    @media (max-width: 350px) {
-        margin-bottom: 10px;
     }
 `
 
 const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson }, ref) => {
     const { t } = useTranslation();
     const previewRef = useRef(null);
+    const canvasRef = useRef(null);
 
     const [albumName, setAlbumName] = useState('');
     const [artistsName, setArtistsName] = useState('');
@@ -577,6 +563,27 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         link.click();
         trackPosterDownload(albumName, 'poster', artistsName);
     };
+
+    const handleDownloadPDFClick = () => {
+        if (!canvasRef.current) return;
+        
+        const canvas = canvasRef.current.getCanvas();
+        if (!canvas) return;
+
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: false
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        
+        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        
+        pdf.save(`Posterfy - ${albumName}.pdf`);
+        trackPosterDownload(albumName, 'poster_pdf', artistsName);
+    };
     
     const handleCoverDownloadClick = async () => {
         if (useUncompressed) {
@@ -739,6 +746,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             if (event.ctrlKey && event.key === 's') {
                 event.preventDefault();
                 handleApplyClick();
+            } else if (event.ctrlKey && event.shiftKey && event.key === 'D') {
+                event.preventDefault();
+                handleDownloadPDFClick();
             } else if (event.ctrlKey && event.key === 'd') {
                 event.preventDefault();
                 handleDownloadClick();
@@ -780,6 +790,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                     </DivBack>
                     <ContainerEditor>
                         <CanvasPoster
+                            ref={canvasRef}
                             onImageReady={handleImageReady}
                             posterData={posterData}
                             generatePoster={generatePoster}
@@ -999,15 +1010,15 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                 <DivButtons>
                                     <ButtonDiv onClick={handleDownloadClick}>
                                         <IconDownload/>
-                                        <ButtonText>
-                                            {t('EDITOR_Download')}
-                                        </ButtonText>
+                                        <ButtonText>PNG</ButtonText>
+                                    </ButtonDiv>
+                                    <ButtonDiv onClick={handleDownloadPDFClick}>
+                                        <IconDownload/>
+                                        <ButtonText>PDF</ButtonText>
                                     </ButtonDiv>
                                     <ButtonDiv onClick={handleApplyClick}>
                                         <IconApply $spinning={spinApplyButton}/>
-                                        <ButtonText>
-                                            {t('EDITOR_Apply')}
-                                        </ButtonText>
+                                        <ButtonText>{t('EDITOR_Apply')}</ButtonText>
                                     </ButtonDiv>
                                     {/* <ButtonDiv onClick={() => exportPosterJson(posterData)}>
                                         <IconDownload/>
@@ -1021,7 +1032,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             </AnimatedInput>
                             <AnimatedInput animationDelay={1100}>
                                 <ShortcutsInfo>
-                                    {t('EDITOR_Shortcuts')}: Ctrl+S ({t('EDITOR_Apply')}), Ctrl+D ({t('EDITOR_Download')})
+                                    Ctrl+S: {t('EDITOR_Apply')} • Ctrl+D: PNG • Ctrl+Shift+D: PDF
                                 </ShortcutsInfo>
                             </AnimatedInput>
                         </EditorColumn>
