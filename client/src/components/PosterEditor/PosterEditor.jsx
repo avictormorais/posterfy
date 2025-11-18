@@ -22,6 +22,7 @@ import AnimatedInput from "./inputs/AnimatedInput";
 import { trackPosterDownload, trackPosterPreview } from "../../services/analytics";
 import { exportPosterJson, importPosterJson } from "./PosterJsonIO";
 import jsPDF from 'jspdf';
+import { getHighestQualitySpotifyImage } from "../../utils/spotifyImageOptimizer";
 
 const Container = styled.div`
     width: 80%;
@@ -700,7 +701,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 const formattedArtistsName = albumData.artists.map((artist) => artist.name).join(", ");
                 setAlbumName(albumData.name);
                 setArtistsName(formattedArtistsName);
-                setAlbumCover(albumData.images[0]?.url);
+                
+                const originalCoverUrl = albumData.images[0]?.url;
+                const highQualityCoverUrl = await getHighestQualitySpotifyImage(originalCoverUrl);
+                setAlbumCover(highQualityCoverUrl);
+                
                 setReleaseDate(albumData.release_date);
                 setUncompressedAlbumCover(await getItunesUncompressedAlbumCover(albumData.name + " " + formattedArtistsName));
                 
