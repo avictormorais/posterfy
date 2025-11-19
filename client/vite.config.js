@@ -2,13 +2,18 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// https://vite.dev/config/
 export default defineConfig({
+  define: {
+    '__BUILD_TIME__': JSON.stringify(Date.now().toString())
+  },
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
         runtimeCaching: [
           {
@@ -65,6 +70,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
