@@ -23,6 +23,8 @@ import { trackPosterDownload, trackPosterPreview } from "../../services/analytic
 import { exportPosterJson, importPosterJson } from "./PosterJsonIO";
 import jsPDF from 'jspdf';
 import { getHighestQualitySpotifyImage } from "../../utils/spotifyImageOptimizer";
+import { TbFileTypePdf } from "react-icons/tb";
+import { TbFileTypePng } from "react-icons/tb";
 
 const Container = styled.div`
     width: 80%;
@@ -255,12 +257,14 @@ const DivButtons = styled.div`
     display: flex;
     flex-direction: row;
     gap: 10px;
+    width: 100%;
     margin-top: 15px;
-    padding: 0 20px;
+    margin-left: 22px;
     justify-content: flex-end;
 
     @media (max-width: 700px) {
         justify-content: center;
+        margin-left: 0px;
     }
 
     @media (max-width: 500px) {
@@ -274,8 +278,8 @@ const ButtonDiv = styled.div`
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 18px;
-    border-radius: 8px;
+    padding: 8px 22px;
+    border-radius: 10px;
     background: var(--glassBackground);
     border: 1px solid var(--borderColor);
     cursor: pointer;
@@ -283,7 +287,16 @@ const ButtonDiv = styled.div`
     white-space: nowrap;
 
     &:hover {
-        background: var(--borderColor);
+        background-color: var(--AccentColor);
+        
+        svg {
+            stroke: var(--backgroundColor) !important;
+            fill: ${props => props.apply ? 'var(--backgroundColor) !important' : 'none' } ;
+        }
+
+        span {
+            color: var(--backgroundColor) !important;
+        }
     }
 
     &:active {
@@ -298,11 +311,23 @@ const ButtonDiv = styled.div`
 const ButtonText = styled.span`
     font-size: 0.9em;
     font-weight: 600;
+    transition: color 0.2s ease;
 `
 
 const IconDownload = styled(IoMdDownload)`
     font-size: 1.15em;
+    transition: color 0.2s ease;
 `
+
+const IconPDF = styled(TbFileTypePdf)`
+    font-size: 1.15em;
+    transition: color 0.2s ease;
+`;
+
+const IconPNG = styled(TbFileTypePng)`
+    font-size: 1.15em;
+    transition: color 0.2s ease;
+`;
 
 const IconApply = styled(MdOutlineRefresh)`
     font-size: 1.15em;
@@ -337,12 +362,14 @@ const ShortcutsInfo = styled.p`
     font-size: 0.8em;
     color: var(--textSecondary);
     margin-top: 12px;
-    padding: 0 20px;
     text-align: right;
     line-height: 1.6;
+    margin-left: 20px;
+    width: 100%;
 
     @media (max-width: 700px) {
         text-align: center;
+        margin-left: 0px;
     }
 `
 
@@ -1014,14 +1041,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             <AnimatedInput animationDelay={1050}>
                                 <DivButtons>
                                     <ButtonDiv onClick={handleDownloadClick}>
-                                        <IconDownload/>
+                                        <IconPNG/>
                                         <ButtonText>PNG</ButtonText>
                                     </ButtonDiv>
                                     <ButtonDiv onClick={handleDownloadPDFClick}>
-                                        <IconDownload/>
+                                        <IconPDF/>
                                         <ButtonText>PDF</ButtonText>
                                     </ButtonDiv>
-                                    <ButtonDiv onClick={handleApplyClick}>
+                                    <ButtonDiv apply onClick={handleApplyClick}>
                                         <IconApply $spinning={spinApplyButton}/>
                                         <ButtonText>{t('EDITOR_Apply')}</ButtonText>
                                     </ButtonDiv>

@@ -259,7 +259,7 @@ const ModalContent = styled.div`
 const ModalControls = styled.div`
   position: absolute;
   top: 0px;
-  right: -50px;
+  right: -60px;
   display: flex;
   flex-direction: column;
   gap: 12px;
