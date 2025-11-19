@@ -2,7 +2,7 @@
   --backgroundColor: #070815;
   --textColor: #ffffff;
   --textSecondary: rgba(255, 255, 255, 0.7);
-  --AccentColor: #c1c1a5;
+  --AccentColor: #df6d40;
   --borderColor: rgba(255, 255, 255, 0.1);
   --glassBackground: rgba(255, 255, 255, 0.05);
   --shadowColor: rgba(0, 0, 0, 0.3);
@@ -94,7 +94,7 @@
 }
 
 .theme-brown {
-  --backgroundColor: #051c14;
+  --backgroundColor: #18110b;
   --textColor: #ffffff;
   --textSecondary: rgba(255, 255, 255, 0.7);
   --borderColor: rgba(255, 255, 255, 0.1);

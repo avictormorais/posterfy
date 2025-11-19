@@ -672,10 +672,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             let data = await response.json();
             if (!data.results?.length) {
                 console.warn("No album data found.");
-                if (!isLoadedFromJson) {
-                    setUseUncompressed(false);
-                }
-                return '';
+                setUseUncompressed(false)
+                return false;
             }
     
             let result = data.results[0];
@@ -734,7 +732,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 setAlbumCover(highQualityCoverUrl);
                 
                 setReleaseDate(albumData.release_date);
-                setUncompressedAlbumCover(await getItunesUncompressedAlbumCover(albumData.name + " " + formattedArtistsName));
+                const uncompressedCover = await getItunesUncompressedAlbumCover(albumData.name + " " + formattedArtistsName);
+                setUncompressedAlbumCover(uncompressedCover ? uncompressedCover : highQualityCoverUrl);
                 
                 const runtime = albumData.tracks.items.reduce((totalDuration, track) => totalDuration + track.duration_ms, 0);
                 const totalSeconds = Math.floor(runtime / 1000);
