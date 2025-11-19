@@ -972,14 +972,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         />
                                     </AnimatedInput>
             
-                                    {/* <AnimatedInput animationDelay={750}>
+                                    <AnimatedInput animationDelay={750}>
                                         <CheckInput
                                             title={t('EDITOR_Watermark')}
                                             value={useWatermark}
                                             onChange={(newValue) => setUseWatermark(newValue)}
                                             text={t('EDITOR_WatermarkText')}
                                         />
-                                    </AnimatedInput> */}
+                                    </AnimatedInput>
                                     <AnimatedInput animationDelay={800}>
                                         <CheckInput
                                             title={t('EDITOR_Fade')}
