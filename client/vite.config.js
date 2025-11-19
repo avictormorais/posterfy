@@ -9,11 +9,12 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      injectRegister: 'auto',
       workbox: {
         cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true,
+        skipWaiting: false,
+        clientsClaim: false,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
         runtimeCaching: [
           {

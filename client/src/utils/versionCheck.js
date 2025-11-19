@@ -13,6 +13,8 @@ export const checkVersion = () => {
       if (value) preserved[key] = value;
     });
     
+    localStorage.clear();
+    
     Object.keys(preserved).forEach(key => {
       localStorage.setItem(key, preserved[key]);
     });
@@ -24,5 +26,13 @@ export const checkVersion = () => {
         names.forEach(name => caches.delete(name));
       });
     }
+    
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => registration.unregister());
+      });
+    }
+    
+    window.location.reload(true);
   }
 };
