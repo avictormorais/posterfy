@@ -9,13 +9,13 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt',
-      injectRegister: 'auto',
+      registerType: false,
+      injectRegister: false,
       workbox: {
         cleanupOutdatedCaches: true,
         skipWaiting: false,
         clientsClaim: false,
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
+        globPatterns: [],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\.spotify\.com\/.*/i,
@@ -74,6 +74,9 @@ export default defineConfig({
     cssCodeSplit: true,
     rollupOptions: {
       output: {
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]',
         manualChunks: {
           vendor: ['react', 'react-dom'],
           ui: ['styled-components', 'react-icons'],
