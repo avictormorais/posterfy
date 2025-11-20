@@ -30,6 +30,8 @@ i18n
                 FAQ_SaveData_Answer: "No, Posterfy does not store any user data. Each poster is generated temporarily and is only available for download.",
                 FAQ_ReportIssue_Question: "How can I report an issue or suggest a feature to Posterfy?",
                 FAQ_ReportIssue_Answer: "You can report issues or suggest features by accessing the project's GitHub repository, linked at the bottom of the site.",
+                FAQ_ExportHighRes_Question: "How can I export the poster in high resolution?",
+                FAQ_ExportHighRes_Answer: "After customizing, you can export the poster in high resolution as PNG or PDF by clicking the buttons next to 'Apply'.",
             
                 EDITOR_ReleaseTitle: "Release date",
                 EDITOR_RuntimeTitle: "Runtime",
@@ -137,6 +139,8 @@ i18n
                 FAQ_SaveData_Answer: "Não, o Posterfy não armazena nenhum dado do usuário. Cada pôster é gerado temporariamente e só fica disponível para download.",
                 FAQ_ReportIssue_Question: "Como posso relatar um problema ou sugerir uma funcionalidade?",
                 FAQ_ReportIssue_Answer: "Você pode relatar problemas ou sugerir funcionalidades acessando o repositório do projeto no GitHub, que está vinculado na parte inferior do site.",
+                FAQ_ExportHighRes_Question: "Como posso exportar o pôster em alta resolução?",
+                FAQ_ExportHighRes_Answer: "Após personalizar, é possível exportar o pôster em alta resolução em PNG ou em PDF, clicando nos botões ao lado de 'Aplicar'.",
 
                 EDITOR_ReleaseTitle: "Lançamento",
                 EDITOR_RuntimeTitle: "Duração",
@@ -244,6 +248,8 @@ i18n
                 FAQ_SaveData_Answer: "No, Posterfy no almacena ningún dato del usuario. Cada cartel se genera temporalmente y solo está disponible para descarga.",
                 FAQ_ReportIssue_Question: "¿Cómo puedo informar un problema o sugerir una función para posterfy?",
                 FAQ_ReportIssue_Answer: "Puedes informar problemas o sugerir funciones accediendo al repositorio de GitHub del proyecto, vinculado en la parte inferior del sitio.",
+                FAQ_ExportHighRes_Question: "¿Cómo puedo exportar el póster en alta resolución?",
+                FAQ_ExportHighRes_Answer: "Después de personalizar, puedes exportar el póster en alta resolución en PNG o PDF haciendo clic en los botones junto a 'Aplicar'.",
                 
                 EDITOR_ReleaseTitle: "Fecha de lanzamiento",
                 EDITOR_RuntimeTitle: "Duración",
@@ -351,6 +357,8 @@ i18n
                 FAQ_SaveData_Answer: "不，Posterfy不存储任何用户数据。每个海报都是临时生成的，仅可供下载。",
                 FAQ_ReportIssue_Question: "我如何报告问题或向Posterfy建议功能？",
                 FAQ_ReportIssue_Answer: "您可以通过访问项目的GitHub存储库来报告问题或建议功能，链接在网站底部。",
+                FAQ_ExportHighRes_Question: "如何导出高分辨率海报？",
+                FAQ_ExportHighRes_Answer: "自定义后，您可以通过点击'应用'旁边的按钮以PNG或PDF格式导出高分辨率海报。",
             
                 EDITOR_ReleaseTitle: "发布日期",
                 EDITOR_RuntimeTitle: "时长",

@@ -118,6 +118,16 @@
   transition: color 0.5s, background-color 0.5s;
 }
 
+::selection {
+  background-color: var(--textColor);
+  color: var(--backgroundColor);
+}
+
+::-moz-selection {
+  background-color: var(--textColor);
+  color: var(--backgroundColor);
+}
+
 html.lenis, html.lenis body {
   height: auto;
 }

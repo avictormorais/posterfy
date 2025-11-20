@@ -32,9 +32,9 @@ const Hr = styled.hr`
 `
 
 const AnswerDiv = styled.div`
-    max-height: ${({ showA }) => (showA ? '1000px' : '0')};
+    max-height: ${({ showA }) => (showA ? '400px' : '0')};
     overflow: hidden;
-    transition: max-height 0.5s ease;
+    transition: max-height 1s ease;
 `
 
 const A = styled.p`

@@ -46,6 +46,10 @@ function Faq() {
                     q={t('FAQ_ReportIssue_Question')} 
                     a={t('FAQ_ReportIssue_Answer')}
                 />
+                <Question 
+                    q={t('FAQ_ExportHighRes_Question')} 
+                    a={t('FAQ_ExportHighRes_Answer')}
+                />
             </Questions>
         </Container>
     );
