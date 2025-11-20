@@ -33,7 +33,7 @@ const ErrorPage = () => {
 
   return (
     <Container playing={playing}>
-        <IconQuestion width={'150px'} height={'150px'} fillHeart={playing ? '#edcd6b' : 'var(--textColor)'} fillQuestion={playing ? '#edcd6b' : 'var(--textColor)'} pulse={true} onClick={handleOnClick}/>
+        <IconQuestion width={'150px'} height={'150px'} fillHeart={playing ? '#edcd6b' : 'var(--textColor)'} fillQuestion={playing ? '#edcd6b' : 'var(--textColor)'} pulse={!playing} onClick={handleOnClick}/>
         <ContainerSteps>
           <Step playing={playing} active={clickCount >= 1}/>
           <Step playing={playing} active={clickCount >= 2}/>
