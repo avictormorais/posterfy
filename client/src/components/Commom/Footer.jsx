@@ -1,40 +1,38 @@
 import styled, { keyframes } from "styled-components"
 import { useTranslation } from "react-i18next"
 import Icon from "../svgs/icon"
-import { FaGithub, FaHeart, FaPalette, FaMoon, FaSun, FaLeaf, FaFire, FaWater, FaGem, FaMountain } from "react-icons/fa"
-import { useEffect, useState } from "react"
+import { FaGithub, FaHeart, FaMoon, FaSun, FaLeaf, FaFire, FaGem, FaMountain } from "react-icons/fa"
 import { useTheme } from "../../contexts/ThemeContext"
 
-const float = keyframes`
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(0deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
-`
-
-const pulse = keyframes`
-  0% { transform: scale(1); opacity: 0.3; }
-  50% { transform: scale(1.1); opacity: 0.4; }
-  100% { transform: scale(1); opacity: 0.3; }
-`
-
-const slideIn = keyframes`
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+const fadeInUp = keyframes`
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 `
 
 const shimmer = keyframes`
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 `
 
-const Container = styled.div`
+const heartbeat = keyframes`
+  0%, 100% { transform: scale(1); }
+  10% { transform: scale(1.2); }
+  20% { transform: scale(1); }
+  30% { transform: scale(1.2); }
+  40% { transform: scale(1); }
+`
+
+const Container = styled.footer`
   width: 100%;
-  background: linear-gradient(180deg, transparent 0%, var(--shadowColor) 100%);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid var(--borderColor);
-  padding: 40px 0;
-  margin-top: 100px;
   position: relative;
+  margin-top: 120px;
+  background: var(--backgroundColor);
   overflow: hidden;
   
   &::before {
@@ -43,314 +41,317 @@ const Container = styled.div`
     top: 0;
     left: 0;
     right: 0;
-    height: 0px;
-    background: linear-gradient(190deg, transparent, var(--AccentColor), transparent);
+    height: 1px;
+    background: var(--borderColor);
   }
   
   @media (max-width: 768px) {
-    padding: 30px 0;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 25px 0;
+    margin-top: 80px;
   }
 `
 
 const FooterContent = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  padding: 0 20px;
+  padding: 80px 40px 40px;
   
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  @media (max-width: 968px) {
+    padding: 60px 30px 30px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 50px 20px 25px;
   }
 `
 
-const CreditsSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  animation: ${slideIn} 0.5s ease-out;
+const FooterGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 60px;
+  animation: ${fadeInUp} 0.8s ease-out;
+  align-items: center;
   
   @media (max-width: 768px) {
-    align-items: center;
+    grid-template-columns: 1fr;
+    gap: 40px;
     text-align: center;
   }
 `
 
-const AnimatedIconWrapper = styled.div`
-  position: relative;
-  width: 100px;
-  height: 100px;
-  margin-bottom: 10px;
-  
-  .icon-main {
-    animation: ${float} 3s ease infinite;
-  }
-  
-  .icon-shadow {
-    animation: ${pulse} 3s ease infinite;
-  }
+const BrandSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   
   @media (max-width: 768px) {
-    margin: 0 auto 20px;
+    align-items: center;
   }
 `
 
-const IconMain = styled.div`
-  position: absolute;
-  top: 0;
-  left: 10;
-  transition: all 0.3s ease;
-  margin-inline: auto;
+const LogoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  svg {
+    filter: drop-shadow(0 4px 12px var(--shadowColor));
+  }
 `
 
-const IconShadow = styled.div`
-  position: absolute;
-  bottom: 0px;
-  width: 105px;
-  height: 20px;
-  background: var(--textColor);
-  opacity: 0.4;
-  filter: blur(15px);
-  border-radius: 50%;
-  transition: all 0.3s ease;
+const BrandName = styled.h2`
+  font-size: 2em;
+  font-weight: 700;
+  color: var(--textColor);
+  letter-spacing: -0.02em;
+  
+  @media (max-width: 640px) {
+    font-size: 1.75em;
+  }
 `
 
-const CreditText = styled.div`
-  font-size: 1.1em;
-  line-height: 1.6;
+const BrandDescription = styled.p`
+  font-size: 0.95em;
+  line-height: 1.7;
   color: var(--textSecondary);
   max-width: 400px;
-  position: relative;
+  font-weight: 400;
   
-  .credit-content {
-    display: inline-block;
-    background: var(--textColor);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: ${shimmer} 6s linear infinite;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+  @media (max-width: 768px) {
+    text-align: center;
+    max-width: 100%;
+  }
+`
+
+const GitHubSection = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
+`
+
+const GithubLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--textColor);
+  font-weight: 500;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--borderColor);
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+  letter-spacing: 0.01em;
+  
+  svg {
+    font-size: 1.1em;
+    transition: transform 0.2s ease;
   }
   
-  .emoji {
-    display: inline-block;
-    margin: 0 4px;
-    transition: transform 0.3s ease;
+  &:hover {
+    border-color: var(--textColor);
+    transform: translateX(2px);
+    
+    svg {
+      transform: translateX(2px);
+    }
   }
+`
+
+
+
+
+
+const FooterBottom = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 40px;
+  border-top: 1px solid var(--borderColor);
+  animation: ${fadeInUp} 0.8s ease-out 0.2s backwards;
   
-  &:hover .emoji {
-    transform: scale(1.2) rotate(10deg);
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 30px;
+  }
+`
+
+const CopyrightSection = styled.div`
+  display: flex;
+  align-items: center;
+  
+  @media (max-width: 768px) {
+    order: 1;
+  }
+`
+
+const AllRightsSection = styled.div`
+  display: flex;
+  align-items: center;
+  
+  @media (max-width: 768px) {
+    order: 2;
+  }
+`
+
+const CopyrightText = styled.p`
+  font-size: 0.9em;
+  color: var(--textSecondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  svg {
+    color: var(--AccentColor);
+    animation: ${heartbeat} 1.5s ease-in-out infinite;
   }
   
   a {
     color: var(--AccentColor);
     text-decoration: none;
-    font-weight: 700;
-    position: relative;
+    font-weight: 600;
     transition: all 0.3s ease;
+    
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+`
+
+const LegalLinks = styled.div`
+  display: flex;
+  gap: 24px;
+  font-size: 0.85em;
+  
+  a {
+    color: var(--textSecondary);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    padding: 4px 0;
     
     &::after {
       content: '';
       position: absolute;
-      bottom: -2px;
+      bottom: 0;
       left: 0;
-      width: 100%;
-      height: 2px;
+      width: 0;
+      height: 1px;
       background: var(--AccentColor);
-      transform: scaleX(0);
-      transform-origin: right;
-      transition: transform 0.3s ease;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    &:hover::after {
-      transform: scaleX(1);
-      transform-origin: left;
+    &:hover {
+      color: var(--AccentColor);
+      
+      &::after {
+        width: 100%;
+      }
     }
   }
   
-  @media (max-width: 480px) {
-    font-size: 1em;
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
   }
 `
 
-const CopyrightText = styled.div`
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85em;
-  color: var(--textSecondary);
-  
-  svg {
-    color: var(--textSecondary);
-  }
-  
-  @media (max-width: 768px) {
-    justify-content: center;
-  }
-`
-
-const ThemeSection = styled.div`
+const ThemeSelector = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  animation: ${slideIn} 0.5s ease-out;
-  animation-delay: 0.2s;
-  opacity: 0;
-  animation-fill-mode: forwards;
-  margin-top: auto;
+  gap: 20px;
+  align-items: flex-end;
   
   @media (max-width: 768px) {
     align-items: center;
   }
 `
 
-const ThemeTitle = styled.h3`
-  font-size: 1.1em;
-  font-weight: 600;
+const ThemeSelectorTitle = styled.h3`
+  font-size: 0.9em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--textColor);
-  margin-bottom: 5px;
-  margin-left: 5px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  
-  svg {
-    color: var(--AccentColor);
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 1em;
-  }
+  opacity: 0.95;
 `
 
-const ThemeCards = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  width: 100%;
-  justify-content: right;
-  margin-right: auto;
-
-  @media (max-width: 770px) {
-    justify-content: center;
-    margin-top: 20px;
-  }
-`
-
-const ThemeCard = styled.button`
-  background-color: ${(props) => props.color};
-  border: none;
-  border-radius: 8px;
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 8px var(--shadowColor);
-  border-radius: 100%;
-  border: ${(props) => (props.active ? "1px solid var(--AccentColor)" : "1px solid var(--borderColor)")};
-  
-  &:hover {
-    box-shadow: 0 6px 12px var(--shadowColor);
-    transform: scale(1.02);
-  }
-  
-  svg {
-    font-size: 1.5em;
-    fill: ${(props) => props.themeId === 'light' ? '#000000' : '#ffffff'} !important;
-    opacity: 0.9;
-  }
-  
-  span {
-    font-size: 0.7em;
-    fill: ${(props) => props.themeId === 'light' ? '#000000' : '#ffffff'} !important;
-    opacity: 0.9;
-    font-weight: 500;
-  }
-  
-  @media (max-width: 480px) {
-    width: 35px;
-    height: 35px;
-  }
-`
-
-const ThemeDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  max-width: 45px;
-`;
-
-const ThemeName = styled.p`
-  font-size: 0.8em;
-  margin-top: 10px;
-  right: 20px;
-  font-weight: bolder;
-  transition: all 0.3s ease;
-  opacity: ${(props) => (props.active ? "0.5" : "0")};;
-`;
-
-const SocialSection = styled.div`
-  grid-column: span 2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  padding-top: 15px;
-  border-top: 1px solid var(--borderColor);
-  animation: ${slideIn} 0.5s ease-out;
-  animation-delay: 0.4s;
-  opacity: 0;
-  animation-fill-mode: forwards;
+const ThemeGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  background: var(--glassBackground);
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--borderColor);
+  backdrop-filter: blur(10px);
   
   @media (max-width: 768px) {
-    grid-column: span 1;
-  }
-`
-
-const GithubLink = styled.a`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: var(--textSecondary);
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 20px;
-  background: var(--glassBackground);
-  transition: all 0.3s ease;
-  margin-top: 25px;
-  
-  svg {
-    font-size: 1.3em;
-    transition: transform 0.3s ease;
-  }
-  
-  &:hover {
-    background: var(--glassBackground);
-    opacity: 0.8;
-    box-shadow: 0 6px 12px var(--shadowColor);
-    transform: scale(1.05);
+    grid-template-columns: repeat(6, 1fr);
   }
   
   @media (max-width: 480px) {
-    font-size: 0.9em;
-    padding: 6px 12px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+`
+
+const ThemeButton = styled.button`
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 2px solid ${props => props.active ? 'var(--AccentColor)' : 'transparent'};
+  background: ${props => props.color};
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  
+  svg {
+    font-size: 1.2em;
+    color: ${props => props.themeId === 'light' ? '#000000' : '#ffffff'};
+    opacity: 0.9;
+    transition: all 0.3s ease;
+  }
+  
+  &::after {
+    content: '${props => props.themeName}';
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    font-size: 0.75em;
+    color: var(--textSecondary);
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px var(--shadowColor);
+    
+    &::after {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+    
+    svg {
+      transform: scale(1.1);
+    }
+  }
+  
+  &:active {
+    transform: translateY(-2px);
   }
 `
 
@@ -375,6 +376,7 @@ function Footer() {
 
   return (
     <Container>
+      {/* SEO Hidden Content */}
       <div style={{ 
         position: 'absolute', 
         left: '-10000px', 
@@ -383,7 +385,7 @@ function Footer() {
         height: '1px', 
         overflow: 'hidden' 
       }}>
-        <footer>
+        <div>
           <h4>Album Poster Generator Links</h4>
           <nav>
             <a href="https://posterfy.space">Free Album Poster Maker</a>
@@ -399,57 +401,56 @@ function Footer() {
             Website: https://posterfy.space
             Keywords: album poster generator, music poster maker, spotify poster, free poster creator
           </address>
-        </footer>
+        </div>
       </div>
       
       <FooterContent>
-        <CreditsSection>
-          <AnimatedIconWrapper>
-            <IconShadow className="icon-shadow" />
-            <IconMain className="icon-main">
-              <Icon fill={theme === 'light' ? "#2c2929" : "white"} width={"100px"} height={"88.1px"} />
-            </IconMain>
-          </AnimatedIconWrapper>
+        <FooterGrid>
+          {/* Brand Section - Left Block */}
+          <BrandSection>
+            <LogoWrapper>
+              <Icon 
+                fill={theme === 'light' ? "#2c2929" : "white"} 
+                width={"48px"} 
+                height={"42.2px"} 
+              />
+              <BrandName>Posterfy</BrandName>
+            </LogoWrapper>
+            <BrandDescription>
+              {t("FooterDescription", "Create stunning album posters from your favorite music. Free, fast, and beautiful.")}
+            </BrandDescription>
+          </BrandSection>
 
-          <CreditText>
-            <div className="credit-content">
-              {t("MadeBy")}{" "}
-              <a href="https://github.com/avictormorais" target="blank">
-                Victor
+          {/* GitHub Section - Right Block */}
+          <GitHubSection>
+            <GithubLink 
+              href="https://github.com/avictormorais/posterfy" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <FaGithub /> {t("ViewGitHub", "View on GitHub")}
+            </GithubLink>
+          </GitHubSection>
+        </FooterGrid>
+
+        {/* Footer Bottom */}
+        <FooterBottom>
+          <CopyrightSection>
+            <CopyrightText>
+              <FaHeart />
+              {t("MadeBy", "Made with love by")}{" "}
+              <a href="https://github.com/avictormorais" target="_blank" rel="noopener noreferrer">
+                Victor Morais
               </a>
-            </div>
-          </CreditText>
-
-          <CopyrightText>
-            <FaHeart /> © {currentYear} Posterfy. {t("AllRights", "All rights reserved.")}
-          </CopyrightText>
-        </CreditsSection>
-
-        <ThemeSection>
-          <ThemeCards>
-            {themes.map((themeOption) => (
-              <ThemeDiv key={themeOption.id}>
-                <ThemeCard
-                  key={themeOption.id}
-                  color={themeOption.color}
-                  active={theme === themeOption.id}
-                  themeId={themeOption.id}
-                  onClick={() => handleThemeChange(themeOption.id)}
-                  aria-label={`${t("SwitchTo", "Switch to")} ${themeOption.name} ${t("Theme").toLowerCase()}`}
-                >
-                  {themeOption.icon}
-                </ThemeCard>
-                <ThemeName active={theme === themeOption.id} >{themeOption.name}</ThemeName>
-              </ThemeDiv>
-            ))}
-          </ThemeCards>
-        </ThemeSection>
-
-        <SocialSection>
-          <GithubLink href="https://github.com/avictormorais/posterfy" target="blank">
-            <FaGithub /> {t("ViewGitHub", "GitHub")}
-          </GithubLink>
-        </SocialSection>
+            </CopyrightText>
+          </CopyrightSection>
+          
+          <AllRightsSection>
+            <CopyrightText>
+              © {currentYear} Posterfy. {t("AllRights", "All rights reserved.")}
+            </CopyrightText>
+          </AllRightsSection>
+        </FooterBottom>
       </FooterContent>
     </Container>
   )
