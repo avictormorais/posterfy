@@ -61,6 +61,10 @@ const PaginationContainer = styled.div`
     align-items: center;
     margin-top: 20px;
     margin-inline: auto;
+    opacity: ${props => props.$visible ? 1 : 0};
+    transform: translateY(${props => props.$visible ? '0' : '10px'});
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 `;
 
 function Grid({ query, onclick }) {
@@ -72,6 +76,8 @@ function Grid({ query, onclick }) {
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
+    const [previousAlbumsCount, setPreviousAlbumsCount] = useState(0);
+    const [showButton, setShowButton] = useState(false);
     const limit = 20;
 
     useEffect(() => {
@@ -99,6 +105,8 @@ function Grid({ query, onclick }) {
         setAlbums([]);
         setOffset(0);
         setHasMore(true);
+        setPreviousAlbumsCount(0);
+        setShowButton(false);
     }, [query]);
 
     useEffect(() => {
@@ -145,10 +153,21 @@ function Grid({ query, onclick }) {
                 }));
 
                 if (isLoadMore) {
+                    setShowButton(false);
+                    setPreviousAlbumsCount(albums.length);
                     setAlbums(prevAlbums => [...prevAlbums, ...newAlbums]);
                 } else {
+                    setShowButton(false);
+                    setPreviousAlbumsCount(0);
                     setAlbums(newAlbums);
                 }
+
+                // Show button after last album animation completes
+                const lastAlbumDelay = (newAlbums.length - 1) * 80;
+                const animationDuration = 800; // 0.8s from transition
+                setTimeout(() => {
+                    setShowButton(true);
+                }, lastAlbumDelay + animationDuration);
 
                 const totalResults = query ? data.albums.total : data.albums.total;
                 const currentTotal = isLoadMore ? albums.length + newAlbums.length : newAlbums.length;
@@ -206,7 +225,16 @@ function Grid({ query, onclick }) {
                 cover: album.images[0]?.url
             }));
 
+            setShowButton(false);
+            setPreviousAlbumsCount(albums.length);
             setAlbums(prevAlbums => [...prevAlbums, ...newAlbums]);
+
+            // Show button after last album animation completes
+            const lastAlbumDelay = (newAlbums.length - 1) * 80;
+            const animationDuration = 800;
+            setTimeout(() => {
+                setShowButton(true);
+            }, lastAlbumDelay + animationDuration);
 
             const totalResults = query ? data.albums.total : data.albums.total;
             const currentTotal = albums.length + newAlbums.length;
@@ -227,20 +255,23 @@ function Grid({ query, onclick }) {
             ) : (
                 <>
                     <Container>
-                        {albums.map((album, index) => (
-                            <Album 
-                                key={album.id} 
-                                onClick={() => onclick(album.id)} 
-                                cover={album.cover} 
-                                title={album.title} 
-                                artist={album.artist} 
-                                id={album.id}
-                                animationDelay={index - offset * 100}
-                            />
-                        ))}
+                        {albums.map((album, index) => {
+                            const relativeIndex = index >= previousAlbumsCount ? index - previousAlbumsCount : index;
+                            return (
+                                <Album 
+                                    key={album.id} 
+                                    onClick={() => onclick(album.id)} 
+                                    cover={album.cover} 
+                                    title={album.title} 
+                                    artist={album.artist} 
+                                    id={album.id}
+                                    animationDelay={relativeIndex * 80}
+                                />
+                            );
+                        })}
                     </Container>
                     {hasMore && (
-                        <PaginationContainer>
+                        <PaginationContainer $visible={showButton}>
                             <LoadMoreButton 
                                 onClick={loadMoreAlbums} 
                                 disabled={loadingMore}

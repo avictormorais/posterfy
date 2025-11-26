@@ -11,12 +11,15 @@ const Container = styled.div`
     cursor: pointer;
     min-width: 200px;
     max-width: 220px;
-    opacity: ${props => props.visible ? 1 : 0};
-    transform: translateY(${props => props.visible ? '0' : '20px'});
-    transition: all 0.6s ease, transform 0.6s ease;
+    opacity: ${props => props.$visible ? 1 : 0};
+    transform: translateY(${props => props.$visible ? '0' : '20px'});
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, transform;
 
     &:hover{
-        transform: scale(1.02);
+        transform: translateY(0) scale(1.03);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     ::before {
@@ -64,6 +67,8 @@ const Cover = styled.img`
     height: auto;
     border-radius: 10px;
     z-index: 10;
+    opacity: ${props => props.$loaded ? 1 : 0};
+    transition: opacity 0.3s ease;
 
     @media (max-width: 650px) {
         width: 100px;
@@ -131,18 +136,34 @@ const AlbumInfos = styled.div`
 
 function Album({ title, artist, cover, id, onClick, animationDelay = 0 }) {
     const [visible, setVisible] = useState(false);
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [hasAnimated, setHasAnimated] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setVisible(true);
-        }, animationDelay);
+        if (!hasAnimated) {
+            const timer = setTimeout(() => {
+                setVisible(true);
+                setHasAnimated(true);
+            }, animationDelay);
 
-        return () => clearTimeout(timer);
-    }, [animationDelay]);
+            return () => clearTimeout(timer);
+        } else {
+            setVisible(true);
+        }
+    }, [animationDelay, hasAnimated]);
+
+    const handleImageLoad = () => {
+        setImageLoaded(true);
+    };
 
     return (
-        <Container onClick={() => onClick(id)} visible={visible}>
-            <Cover src={cover} />
+        <Container onClick={() => onClick(id)} $visible={visible}>
+            <Cover 
+                src={cover} 
+                $loaded={imageLoaded}
+                onLoad={handleImageLoad}
+                loading="lazy"
+            />
             <AlbumInfos>
                 <Title>{title}</Title>
                 <Artist>{artist}</Artist>
