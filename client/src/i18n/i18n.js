@@ -7,8 +7,7 @@ i18n
     resources: {
         en: {
             translation: {
-                paragraphHero1: "Posterfy transforms music passion into visual art.",
-                paragraphHero2: "Create custom posters for your favorite albums using Spotify API.",
+                heroDescription: "Transform your music passion into visual art by creating custom posters for your favorite albums.",
                 anchorArt: "Art.",
                 ArtTitle: "Watch the music\ntake shape",
                 ArtParagraph: "It's simple, search for your favorite album, select it and let the art flow!",
@@ -123,8 +122,7 @@ i18n
         },
         pt: {
             translation: {
-                paragraphHero1: "Posterfy transforma a paixão por música em arte visual.",
-                paragraphHero2: "Crie pôsters personalizados para seus álbuns favoritos usando a API do Spotify.",
+                heroDescription: "Transforme sua paixão por música em arte visual criando pôsteres personalizados dos seus álbuns favoritos.",
                 anchorArt: "Arte.",
                 ArtTitle: "Veja a música\ntomar forma",
                 ArtParagraph: "É simples, procure seu álbum favorito, selecione-o e deixe a arte fluir!",
@@ -239,8 +237,7 @@ i18n
         },
         es: {
             translation: {
-                paragraphHero1: "Posterfy transforma la pasión por la música en arte visual.",
-                paragraphHero2: "Crea carteles personalizados para tus álbumes favoritos usando la API de Spotify.",
+                heroDescription: "Transforma tu pasión por la música en arte visual creando pósters personalizados de tus álbumes favoritos.",
                 anchorArt: "Arte.",
                 ArtTitle: "Mira la música\ntomar forma",
                 ArtParagraph: "Es simple, busca tu álbum favorito, selecciónalo y deja fluir el arte.",
@@ -355,8 +352,7 @@ i18n
         },
         zh: {
             translation: {
-                paragraphHero1: "Posterfy将音乐热情转化为视觉艺术。",
-                paragraphHero2: "使用Spotify API为您最喜爱的专辑创建定制海报。",
+                heroDescription: "将您的音乐热情转化为视觉艺术，为您最喜爱的专辑制作定制海报。",
                 anchorArt: "艺术。",
                 ArtTitle: "观看音乐\n成型",
                 ArtParagraph: "很简单，搜索您最喜爱的专辑，选择它，让艺术流淌！",
