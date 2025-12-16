@@ -155,10 +155,10 @@ const GithubLink = styled.a`
   
   &:hover {
     border-color: var(--textColor);
-    transform: translateX(2px);
+    transform: scale(1.05);
     
     svg {
-      transform: translateX(2px);
+      transform: scale(1.05);
     }
   }
 `
@@ -217,9 +217,25 @@ const CopyrightText = styled.p`
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--AccentColor), var(--AccentColor));
+      transition: width 0.3s ease;
+    }
     
     &:hover {
       opacity: 0.8;
+      
+      &::after {
+        width: 100%;
+      }
     }
   }
 `
