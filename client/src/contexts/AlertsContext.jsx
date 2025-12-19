@@ -28,25 +28,29 @@ export const ModalProvider = ({ children }) => {
                 title: '🚀 Pre-made models',
                 paragraph: 'Pre-made models allow you to quickly create posters based on existing templates. Choose a template, customize it, and generate your poster in seconds.',
                 confirmText: 'Ok, I\'ll try!',
-                postImageText: 'The models can be chosen after selecting a album.'
+                postImageText: 'The models can be chosen after selecting a album.',
+                customButtonText: 'Join Server'
             },
             pt: {
                 title: '🚀 Modelos pré-definidos',
                 paragraph: 'Os modelos pré-definidos permitem que você crie rapidamente pôsteres baseados em templates existentes. Escolha um modelo, personalize-o e gere seu pôster em segundos.',
                 confirmText: 'Ok, vou tentar!',
-                postImageText: 'Os modelos podem ser escolhidos após selecionar um álbum.'
+                postImageText: 'Os modelos podem ser escolhidos após selecionar um álbum.',
+                customButtonText: 'Entrar no servidor'
             },
             es: {
                 title: '🚀 Modelos predefinidos',
                 paragraph: 'Los modelos predefinidos te permiten crear rápidamente pósters basados en plantillas existentes. Elige una plantilla, personalízala y genera tu póster en segundos.',
                 confirmText: '¡Ok, lo intentaré!',
-                postImageText: 'Los modelos se pueden elegir después de seleccionar un álbum.'
+                postImageText: 'Los modelos se pueden elegir después de seleccionar un álbum.',
+                customButtonText: 'Unirse al servidor'
             },
             zh: {
                 title: '🚀 预制模型',
                 paragraph: '预制模型允许您基于现有模板快速创建海报。选择一个模板，自定义它，并在几秒钟内生成您的海报。',
                 confirmText: '好的，我试试！',
-                postImageText: '可以在选择专辑后选择模型。'
+                postImageText: '可以在选择专辑后选择模型。',
+                customButtonText: '加入服务器'
             }
         };
 
@@ -55,7 +59,7 @@ export const ModalProvider = ({ children }) => {
 
         return {
             id: 'default-premade-models',
-            persistentId: 'premade-models-intro',
+            persistentId: 'premade-models-intro-1',
             title: langData.title,
             paragraph: langData.paragraph,
             imageURL: Models,
@@ -63,7 +67,11 @@ export const ModalProvider = ({ children }) => {
             confirmText: langData.confirmText,
             canClose: true,
             type: 'alert',
-            limitDate: '2025-11-11T23:59:59.999Z'
+            limitDate: '2025-11-11T23:59:59.999Z',
+            customButton: {
+                text: langData.customButtonText,
+                url: 'https://discord.gg/example'
+            }
         };
     };
 
@@ -193,6 +201,7 @@ export const ModalProvider = ({ children }) => {
                     cancelText={modal.cancelText || null}
                     onCancel={modal.cancelText ? handleCancel : (modal.canClose ? closeModal : null)}
                     isClosing={isClosing}
+                    customButton={modal.customButton}
                 />
             )}
         </ModalContext.Provider>

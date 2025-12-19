@@ -217,7 +217,7 @@ const Divisor = styled.div`
     opacity: 0.1;
 `;
 
-export default function AlertModal({ title, paragraph, imageURL, postImageText, canClose, confirmText, onConfirm, cancelText, onCancel, isClosing}){
+export default function AlertModal({ title, paragraph, imageURL, postImageText, canClose, confirmText, onConfirm, cancelText, onCancel, isClosing, customButton }){
 
     document.body.style.overflow = 'hidden';
 
@@ -254,20 +254,27 @@ export default function AlertModal({ title, paragraph, imageURL, postImageText, 
                     </PostImageText>
                 )}
 
-                {cancelText && confirmText ? (
-                    <ButtonsContainer>
-                        <OutlinedButton onClick={onCancel}>{cancelText}</OutlinedButton>
-                        <FilledButton onClick={onConfirm}>{confirmText}</FilledButton>
-                    </ButtonsContainer>
-                ) : (
-                    <ButtonsContainer style={{ justifyContent: "center" }}>
-                        {cancelText ? (
-                            <FilledButton onClick={onCancel}>{cancelText}</FilledButton>
-                        ) : (
+                <ButtonsContainer style={{ justifyContent: "center" }}>
+                    {customButton && (
+                        <FilledButton onClick={() => window.open(customButton.url, '_blank')}>
+                            {customButton.text}
+                        </FilledButton>
+                    )}
+                    {cancelText && confirmText ? (
+                        <>
+                            <OutlinedButton onClick={onCancel}>{cancelText}</OutlinedButton>
                             <FilledButton onClick={onConfirm}>{confirmText}</FilledButton>
-                        )}
-                    </ButtonsContainer>
-                )}
+                        </>
+                    ) : (
+                        <>
+                            {cancelText ? (
+                                <FilledButton onClick={onCancel}>{cancelText}</FilledButton>
+                            ) : (
+                                confirmText && <FilledButton onClick={onConfirm}>{confirmText}</FilledButton>
+                            )}
+                        </>
+                    )}
+                </ButtonsContainer>
             </Container>
         </Background>
     )
