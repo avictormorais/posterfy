@@ -1,7 +1,7 @@
 import styled, { keyframes } from "styled-components"
 import { useTranslation } from "react-i18next"
 import Icon from "../svgs/icon"
-import { FaGithub, FaHeart, FaMoon, FaSun, FaLeaf, FaFire, FaGem, FaMountain } from "react-icons/fa"
+import { FaGithub, FaHeart, FaMoon, FaSun, FaLeaf, FaFire, FaGem, FaMountain, FaDiscord } from "react-icons/fa"
 import { useTheme } from "../../contexts/ThemeContext"
 
 const fadeInUp = keyframes`
@@ -123,17 +123,49 @@ const BrandDescription = styled.p`
   }
 `
 
-const GitHubSection = styled.div`
+const SocialSection = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 16px;
   
   @media (max-width: 768px) {
     justify-content: center;
+    flex-wrap: wrap;
   }
 `
 
 const GithubLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--textColor);
+  font-weight: 500;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--borderColor);
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+  letter-spacing: 0.01em;
+  
+  svg {
+    font-size: 1.1em;
+    transition: transform 0.2s ease;
+  }
+  
+  &:hover {
+    border-color: var(--textColor);
+    transform: scale(1.05);
+    
+    svg {
+      transform: scale(1.05);
+    }
+  }
+`
+
+const DiscordLink = styled.a`
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -437,8 +469,8 @@ function Footer() {
             </BrandDescription>
           </BrandSection>
 
-          {/* GitHub Section - Right Block */}
-          <GitHubSection>
+          {/* Social Section - Right Block */}
+          <SocialSection>
             <GithubLink 
               href="https://github.com/avictormorais/posterfy" 
               target="_blank" 
@@ -446,7 +478,14 @@ function Footer() {
             >
               <FaGithub /> {t("ViewGitHub", "View on GitHub")}
             </GithubLink>
-          </GitHubSection>
+            <DiscordLink 
+              href="https://discord.gg/983sEBVzcs" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <FaDiscord /> {t("JoinDiscord", "Join Discord")}
+            </DiscordLink>
+          </SocialSection>
         </FooterGrid>
 
         {/* Footer Bottom */}

@@ -114,6 +114,7 @@ i18n
 
                 FooterDescription: "Create stunning album posters from your favorite music. Free, fast, and beautiful.",
                 ViewGitHub: "View on GitHub",
+                JoinDiscord: "Join Discord",
                 SwitchTo: "Switch to",
                 FooterPrivacy: "Privacy Policy",
                 FooterTerms: "Terms of Service",
@@ -229,6 +230,7 @@ i18n
 
                 FooterDescription: "Crie pôsteres incríveis de álbuns da sua música favorita. Grátis, rápido e bonito.",
                 ViewGitHub: "Ver no GitHub",
+                JoinDiscord: "Entrar no Discord",
                 SwitchTo: "Mudar para",
                 FooterPrivacy: "Política de Privacidade",
                 FooterTerms: "Termos de Serviço",
@@ -344,6 +346,7 @@ i18n
 
                 FooterDescription: "Crea increíbles pósters de álbumes de tu música favorita. Gratis, rápido y hermoso.",
                 ViewGitHub: "Ver en GitHub",
+                JoinDiscord: "Unirse a Discord",
                 SwitchTo: "Cambiar a",
                 FooterPrivacy: "Política de Privacidad",
                 FooterTerms: "Términos de Servicio",
@@ -459,6 +462,7 @@ i18n
 
                 FooterDescription: "从您最喜欢的音乐创建令人惊叹的专辑海报。免费、快速、美观。",
                 ViewGitHub: "在 GitHub 上查看",
+                JoinDiscord: "加入 Discord",
                 SwitchTo: "切换到",
                 FooterPrivacy: "隐私政策",
                 FooterTerms: "服务条款",
