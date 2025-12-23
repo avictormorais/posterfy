@@ -25,32 +25,28 @@ export const ModalProvider = ({ children }) => {
     const getLocalizedDefaultAlert = () => {
         const translations = {
             en: {
-                title: '🚀 Pre-made models',
-                paragraph: 'Pre-made models allow you to quickly create posters based on existing templates. Choose a template, customize it, and generate your poster in seconds.',
-                confirmText: 'Ok, I\'ll try!',
-                postImageText: 'The models can be chosen after selecting a album.',
-                customButtonText: 'Join Server'
+                title: 'Join the community!',
+                paragraph: 'Join our Discord server to contribute to the platform and help other users. Share ideas, report bugs, and connect with fellow music lovers!',
+                confirmText: 'Join the server',
+                postImageText: 'Help us grow the Posterfy community.'
             },
             pt: {
-                title: '🚀 Modelos pré-definidos',
-                paragraph: 'Os modelos pré-definidos permitem que você crie rapidamente pôsteres baseados em templates existentes. Escolha um modelo, personalize-o e gere seu pôster em segundos.',
-                confirmText: 'Ok, vou tentar!',
-                postImageText: 'Os modelos podem ser escolhidos após selecionar um álbum.',
-                customButtonText: 'Entrar no servidor'
+                title: 'Junte-se à comunidade!',
+                paragraph: 'Entre no nosso servidor do Discord para contribuir com a plataforma e ajudar outros usuários. Compartilhe ideias, reporte bugs e conecte-se com outros amantes da música!',
+                confirmText: 'Entrar no servidor',
+                postImageText: 'Ajude-nos a crescer a comunidade do Posterfy.'
             },
             es: {
-                title: '🚀 Modelos predefinidos',
-                paragraph: 'Los modelos predefinidos te permiten crear rápidamente pósters basados en plantillas existentes. Elige una plantilla, personalízala y genera tu póster en segundos.',
-                confirmText: '¡Ok, lo intentaré!',
-                postImageText: 'Los modelos se pueden elegir después de seleccionar un álbum.',
-                customButtonText: 'Unirse al servidor'
+                title: '¡Únete a la comunidad!',
+                paragraph: 'Únete a nuestro servidor de Discord para contribuir a la plataforma y ayudar a otros usuarios. Comparte ideas, reporta errores y conéctate con otros amantes de la música!',
+                confirmText: 'Entrar al servidor',
+                postImageText: 'Ayúdanos a crecer la comunidad de Posterfy.'
             },
             zh: {
-                title: '🚀 预制模型',
-                paragraph: '预制模型允许您基于现有模板快速创建海报。选择一个模板，自定义它，并在几秒钟内生成您的海报。',
-                confirmText: '好的，我试试！',
-                postImageText: '可以在选择专辑后选择模型。',
-                customButtonText: '加入服务器'
+                title: '加入社区！',
+                paragraph: '加入我们的 Discord 服务器，为平台做出贡献并帮助其他用户。分享想法、报告错误，并与其他音乐爱好者联系！',
+                confirmText: '加入服务器',
+                postImageText: '帮助我们发展 Posterfy 社区。'
             }
         };
 
@@ -58,20 +54,16 @@ export const ModalProvider = ({ children }) => {
         const langData = translations[currentLang] || translations.en;
 
         return {
-            id: 'default-premade-models',
-            persistentId: 'premade-models-intro-1',
+            id: 'discord-community',
+            persistentId: 'discord-community-intro-1',
             title: langData.title,
             paragraph: langData.paragraph,
-            imageURL: Models,
             postImageText: langData.postImageText,
             confirmText: langData.confirmText,
             canClose: true,
             type: 'alert',
-            limitDate: '2025-11-11T23:59:59.999Z',
-            customButton: {
-                text: langData.customButtonText,
-                url: 'https://discord.gg/example'
-            }
+            limitDate: '2026-01-02T23:59:59.999Z',
+            onConfirm: () => window.open('https://discord.gg/983sEBVzcs', '_blank')
         };
     };
 
