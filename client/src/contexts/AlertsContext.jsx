@@ -55,14 +55,14 @@ export const ModalProvider = ({ children }) => {
 
         return {
             id: 'discord-community',
-            persistentId: 'discord-community-intro-1',
+            persistentId: 'discord-community-intro-2',
             title: langData.title,
             paragraph: langData.paragraph,
             postImageText: langData.postImageText,
             confirmText: langData.confirmText,
             canClose: true,
             type: 'alert',
-            limitDate: '2026-01-02T23:59:59.999Z',
+            limitDate: '2026-01-20T23:59:59.999Z',
             onConfirm: () => window.open('https://discord.gg/983sEBVzcs', '_blank')
         };
     };
@@ -85,7 +85,7 @@ export const ModalProvider = ({ children }) => {
         if (!hasAlertBeenShown(defaultAlert.persistentId) && !modal && isAlertValid(defaultAlert)) {
             setModal(defaultAlert);
         }
-    }, [i18n.language, shownAlerts, modal]);
+    }, [i18n.language, shownAlerts]);
 
     const showModal = (modalData) => {
         if (isAlertValid(modalData)) {
