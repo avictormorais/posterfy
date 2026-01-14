@@ -471,6 +471,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     const [userAdjustedTitleSize, setUserAdjustedTitleSize] = useState(false);
     const [initialTitleSizeSet, setInitialTitleSizeSet] = useState(false);
+    const [userAdjustedTracksSize, setUserAdjustedTracksSize] = useState(false);
+    const [initialTracksSizeSet, setInitialTracksSizeSet] = useState(false);
     const [isLoadedFromJson, setIsLoadedFromJson] = useState(false);
 
     const handleTitleSizeChange = (e) => {
@@ -484,6 +486,20 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             setInitialTitleSizeSet(true);
         } else if (!userAdjustedTitleSize) {
             setTitleSize(adjustedSize);
+        }
+    };
+
+    const handleTracksSizeChange = (e) => {
+        setTracksSize(e.target.value);
+        setUserAdjustedTracksSize(true);
+    };
+
+    const handleTracksSizeAdjust = (adjustedSize, isInitial) => {
+        if (isInitial && !initialTracksSizeSet) {
+            setTracksSize(adjustedSize);
+            setInitialTracksSizeSet(true);
+        } else if (!userAdjustedTracksSize) {
+            setTracksSize(adjustedSize);
         }
     };
 
@@ -515,7 +531,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         color3,
         albumID,
         userAdjustedTitleSize,
-        initialTitleSizeSet
+        initialTitleSizeSet,
+        userAdjustedTracksSize,
+        initialTracksSizeSet
     };
 
     const [image, setImage] = useState(null);
@@ -556,6 +574,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     const handleApplyClick = () => {
         setUserAdjustedTitleSize(false);
+        setUserAdjustedTracksSize(false);
         setPreviewVisible(false);
         requestAnimationFrame(() => {
             setSpinApplyButton(true);
@@ -826,6 +845,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             posterData={posterData}
                             generatePoster={generatePoster}
                             onTitleSizeAdjust={handleTitleSizeAdjust}
+                            onTracksSizeAdjust={handleTracksSizeAdjust}
                             customFont={customFont}
                         />
                         <PreviewContainer>
@@ -887,7 +907,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <NormalInput 
                                             title={t('EDITOR_TracksSize')} 
                                             value={tracksSize} 
-                                            onChange={(e) => setTracksSize(e.target.value)}
+                                            onChange={handleTracksSizeChange}
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={250}>

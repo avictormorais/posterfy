@@ -2,7 +2,7 @@
 import { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { generateLogoWatermark } from '../svgs/LogoName.jsx';
 
-const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, customFont }, ref) => {
+const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont }, ref) => {
     const canvasRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
@@ -119,36 +119,81 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
 
             const drawTracklist = async () => {
                 ctx.fillStyle = posterData.textColor;
-                let paddingMusic = posterData.marginSide + 10;
-                let maxWidth = 0;
-                let paddingColumn = 0;
-                const fontSize = posterData.tracksSize ? parseInt(posterData.tracksSize) : 50;
-                ctx.font = `bold ${fontSize}px ${customFont || 'Montserrat'}`;
-                const musicSize = fontSize;
-
+                let fontSize = posterData.tracksSize ? parseInt(posterData.tracksSize) : 50;
+                
                 const marginTop = parseInt(posterData.marginTop || 0);
                 const rectY = parseInt(posterData.artistsSize)
                     ? (2500 + marginTop) + parseInt(posterData.artistsSize) * 1.3 + 130
                     : (2500 + marginTop) + (110 * 1.2) + 130;
                 const rectHeight = 500;
-                const rectWidth = width - (posterData.marginSide * 2);
-                const rectX = parseInt(posterData.marginSide);
                 const maxTextHeight = rectY + rectHeight - 10 - parseInt(posterData.marginTop);
+                const maxHorizontalLimit = 2480 - posterData.marginSide;
 
+                const tracks = posterData.tracklist.split('\n').filter(t => t.trim() !== '');
+
+                if (!posterData.userAdjustedTracksSize && !posterData.initialTracksSizeSet) {
+                    const measureLastCharPosition = (currentFontSize) => {
+                        ctx.font = `bold ${currentFontSize}px ${customFont || 'Montserrat'}`;
+                        const musicSize = currentFontSize;
+                        
+                        let paddingMusic = posterData.marginSide + 10;
+                        let maxWidthInColumn = 0;
+                        let textHeight = rectY;
+                        let lastCharPosition = 0;
+
+                        tracks.forEach((track) => {
+                            if (textHeight + musicSize * 1.3 >= maxTextHeight) {
+                                textHeight = rectY;
+                                paddingMusic = paddingMusic + maxWidthInColumn + currentFontSize;
+                                maxWidthInColumn = 0;
+                            }
+                            
+                            const textWidth = ctx.measureText(`${track}`).width;
+                            const trackEndPosition = paddingMusic + textWidth;
+                            
+                            if (textWidth > maxWidthInColumn) {
+                                maxWidthInColumn = textWidth;
+                            }
+                            
+                            lastCharPosition = Math.max(lastCharPosition, trackEndPosition);
+                            textHeight += (musicSize * 1.3);
+                        });
+
+                        return lastCharPosition;
+                    };
+
+                    let lastCharPosition = measureLastCharPosition(fontSize);
+                    
+                    while (lastCharPosition > maxHorizontalLimit && fontSize > 1) {
+                        fontSize -= 1;
+                        lastCharPosition = measureLastCharPosition(fontSize);
+                    }
+
+                    if (onTracksSizeAdjust) {
+                        onTracksSizeAdjust(fontSize, true);
+                    }
+                }
+
+                ctx.font = `bold ${fontSize}px ${customFont || 'Montserrat'}`;
+                const musicSize = fontSize;
+                
+                let paddingMusic = posterData.marginSide + 10;
+                let maxWidthInColumn = 0;
                 let textHeight = rectY;
 
-                posterData.tracklist.split('\n').forEach((track) => {
+                tracks.forEach((track) => {
                     if (textHeight + musicSize * 1.3 >= maxTextHeight) {
                         textHeight = rectY;
-                        paddingMusic = maxWidth + (musicSize * 2.5) + paddingColumn;
-                        if (paddingMusic >= rectX + rectWidth) return;
-                        paddingColumn = paddingMusic - (musicSize * 2.5);
-                        maxWidth = 0;
+                        paddingMusic = paddingMusic + maxWidthInColumn + fontSize;
+                        maxWidthInColumn = 0;
                     }
-                    const textWidth = ctx.measureText(`${track}`).width + posterData.marginSide;
-                    if (textWidth > maxWidth) {
-                        maxWidth = textWidth;
+                    
+                    const textWidth = ctx.measureText(`${track}`).width;
+                    
+                    if (textWidth > maxWidthInColumn) {
+                        maxWidthInColumn = textWidth;
                     }
+                    
                     ctx.fillText(`${track}`, paddingMusic, textHeight);
                     textHeight += (musicSize * 1.3);
                 });
