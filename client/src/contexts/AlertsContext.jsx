@@ -62,8 +62,8 @@ export const ModalProvider = ({ children }) => {
             confirmText: langData.confirmText,
             canClose: true,
             type: 'alert',
-            limitDate: '2026-01-20T23:59:59.999Z',
-            onConfirm: () => window.open('https://discord.gg/983sEBVzcs', '_blank')
+            limitDate: '2026-01-01T23:59:59.999Z',
+            onConfirm: () => window.open('https://posterfy.com', '_blank')
         };
     };
 

@@ -478,13 +478,6 @@ function Footer() {
             >
               <FaGithub /> {t("ViewGitHub", "View on GitHub")}
             </GithubLink>
-            <DiscordLink 
-              href="https://discord.gg/983sEBVzcs" 
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              <FaDiscord /> {t("JoinDiscord", "Join Discord")}
-            </DiscordLink>
           </SocialSection>
         </FooterGrid>
 
