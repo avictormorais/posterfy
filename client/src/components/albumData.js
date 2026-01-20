@@ -1,5 +1,5 @@
 import IMG1 from "../assets/albunsHero/Posterfy - Starboy.png"
-import IMG2 from "../assets/albunsHero/Posterfy - JACKBOYS 2.png"
+import IMG2 from "../assets/albunsHero/Posterfy - Teenage Dream.png"
 import IMG3 from "../assets/albunsHero/Posterfy - SOS.png"
 import IMG4 from "../assets/albunsHero/Posterfy - Don't Be Dumb.png"
 import IMG5 from "../assets/albunsHero/Posterfy - SOUR.png"
@@ -45,34 +45,36 @@ export const albumData = [
     id: 2,
     coverImage: IMG2,
     JSONConfig: {
-      "albumCover": "https://i.scdn.co/image/ab67616d0000b273b547c9858fee61547e6b0fd8",
-      "uncompressedAlbumCover": "https://a5.mzstatic.com/us/r1000/0/Music221/v4/bb/00/09/bb0009b4-37e3-b924-b703-eb3d3a7f362d/196873402772.jpg",
-      "useUncompressed": true,
-      "albumName": "JACKBOYS 2",
-      "artistsName": "JACKBOYS, Travis Scott",
+      "albumCover": "https://i.scdn.co/image/ab67616d000082c143219fb4e2c45a0b7df6ef87",
+      "uncompressedAlbumCover": "https://a5.mzstatic.com/us/r1000/0/Music116/v4/7c/cb/c1/7ccbc1a3-9476-8f85-3c14-4e7e91f67f25/13UABIM57788.rgb.jpg",
+      "useUncompressed": false,
+      "albumName": "Teenage Dream",
+      "artistsName": "Katy Perry",
       "titleSize": 200,
       "artistsSize": "110",
-      "tracksSize": "50",
-      "marginTop": "50",
+      "tracksSize": "49",
+      "marginTop": "100",
       "marginSide": 160,
-      "marginCover": -1100,
-      "marginBackground": -1200,
+      "marginCover": "-80",
+      "marginBackground": 0,
       "titleRelease": "Release date",
-      "releaseDate": "2025-07-13",
+      "releaseDate": "2010-08-24",
       "titleRuntime": "Runtime",
-      "runtime": "55min 50s",
-      "backgroundColor": "#b4aba6",
-      "textColor": "#79736e",
+      "runtime": "46min 49s",
+      "backgroundColor": "#debbc8",
+      "textColor": "#486394",
       "useWatermark": true,
-      "useFade": false,
+      "useFade": true,
       "showTracklist": true,
-      "tracklist": "1. JB2 RADIO\n2. CHAMPAIN & VACAY\n3. 2000 EXCURSION\n4. KICK OUT\n5. DUMBO\n6. MM3\n7. VELOUR\n8. CONTEST\n9. ILMB\n10. WHERE WAS YOU\n11. NO COMMENTS\n12. BEEP BEEP\n13. PBT\n14. SHYNE\n15. OUTSIDE\n16. CANT STOP\n17. FLORIDA FLOW",
-      "color1": "#7a736f",
-      "color2": "#938c8c",
-      "color3": "#94948c",
-      "albumID": "32lGAqeVkdJxEj2iv2Q01B",
+      "tracklist": "1. Teenage Dream\n2. Last Friday Night (T.G.I.F.)\n3. California Gurls\n4. Firework\n5. Peacock\n6. Circle The Drain\n7. The One That Got Away\n8. E.T.\n9. Who Am I Living For?\n10. Pearl\n11. Hummingbird Heartbeat\n12. Not Like The Movies",
+      "color1": "#b26f57",
+      "color2": "#8b5249",
+      "color3": "#897f93",
+      "albumID": "32Uy0GLddTw4559CWja1f1",
       "userAdjustedTitleSize": false,
-      "initialTitleSizeSet": true
+      "initialTitleSizeSet": true,
+      "userAdjustedTracksSize": false,
+      "initialTracksSizeSet": true
     }
   },
   {

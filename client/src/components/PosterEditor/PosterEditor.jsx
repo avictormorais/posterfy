@@ -1071,14 +1071,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <IconApply $spinning={spinApplyButton}/>
                                         <ButtonText>{t('EDITOR_Apply')}</ButtonText>
                                     </ButtonDiv>
-                                    {/* <ButtonDiv onClick={() => exportPosterJson(posterData)}>
+                                    <ButtonDiv onClick={() => exportPosterJson(posterData)}>
                                         <IconDownload/>
                                         <ButtonText>Exportar JSON</ButtonText>
                                     </ButtonDiv>
                                     <ButtonDiv onClick={() => importPosterJson(applyPosterJson)}>
                                         <IconDownload/>
                                         <ButtonText>Importar JSON</ButtonText>
-                                    </ButtonDiv> */}
+                                    </ButtonDiv>
                                 </DivButtons>
                             </AnimatedInput>
                             <AnimatedInput animationDelay={1100}>
