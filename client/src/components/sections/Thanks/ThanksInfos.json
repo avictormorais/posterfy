@@ -17,22 +17,6 @@
     "url": "https://storyset.com/"
   },
   {
-    "key": "debug420",
-    "title": {
-      "en": "debug420",
-      "pt": "debug420",
-      "es": "debug420",
-      "zh": "debug420"
-    },
-    "text": {
-      "en": "Enhanced quality cover feature.",
-      "pt": "Recurso de melhoria de qualidade das capas.",
-      "es": "Funcionalidad de mejora de calidad de portadas.",
-      "zh": "增强封面质量功能。"
-    },
-    "url": "https://github.com/debug420"
-  },
-  {
     "key": "github_issues",
     "title": {
       "en": "Github issues",
