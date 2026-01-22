@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
 import ReactDOM from 'react-dom';
 import CheckInput from "./inputs/CheckInput";
-import FileInput from "./inputs/FileInput";
-import FontInput from "./inputs/FontInput";
+import ClickInput from "./inputs/ClickInput";
+import { FaFile, FaFont } from "react-icons/fa6";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
@@ -1025,17 +1025,21 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={950}>
-                                        <FileInput
+                                        <ClickInput
                                             title={t('EDITOR_Cover')}
                                             onChange={handleFileChange}
                                             text={fileName}
+                                            accept="image/png, image/jpg, image/jpeg"
+                                            icon={FaFile}
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={1000}>
-                                        <FontInput
+                                        <ClickInput
                                             title={t('EDITOR_Font')}
                                             text={customFontFile?.name || t('EDITOR_DefaultFont')}
                                             onChange={setCustomFontFile}
+                                            accept=".ttf,.otf"
+                                            icon={FaFont}
                                         />
                                     </AnimatedInput>
                                 </EditorSettings>

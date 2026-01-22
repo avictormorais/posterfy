@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
 import React, { useRef } from "react";
-import { FaFont } from "react-icons/fa6";
 
 const Container = styled.div`
     display: flex;
@@ -61,13 +60,7 @@ const Text = styled.p`
     white-space: nowrap;
 `;
 
-const IconFont = styled(FaFont)`
-    width: 16px;
-    height: 16px;
-    margin-left: 10px;
-`;
-
-function FontInput({ title, text, onChange }) {
+function ClickInput({ title, text, onChange, accept = "image/png, image/jpg, image/jpeg", icon: Icon }) {
     const fileInputRef = useRef();
 
     const handleToggle = () => {
@@ -76,7 +69,7 @@ function FontInput({ title, text, onChange }) {
 
     const handleChange = (e) => {
         const file = e.target.files[0];
-        text = file.name;
+        text = file.name
         if (file) onChange(file);
     };
 
@@ -84,11 +77,11 @@ function FontInput({ title, text, onChange }) {
         <Container onClick={handleToggle}>
             <Title>{title}</Title>
             <InputBox>
-                <IconFont />
+                {Icon && <Icon style={{ width: '16px', height: '16px', marginLeft: '10px' }} />}
                 <Input
                     ref={fileInputRef}
                     type="file"
-                    accept=".ttf,.otf"
+                    accept={accept}
                     onChange={handleChange}
                 />
                 <Text active={true}>{text}</Text>
@@ -97,4 +90,4 @@ function FontInput({ title, text, onChange }) {
     );
 }
 
-export default FontInput;
+export default ClickInput;
