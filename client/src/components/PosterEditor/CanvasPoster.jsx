@@ -21,6 +21,9 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             posterData.marginTop = parseInt(posterData.marginTop) || 0;
             posterData.marginCover = parseInt(posterData.marginCover) || 0;
             posterData.marginBackground = parseInt(posterData.marginBackground) || 0;
+            posterData.coverHorizontalPosition = parseInt(posterData.coverHorizontalPosition) || 0;
+            posterData.coverVerticalPosition = parseInt(posterData.coverVerticalPosition) || 0;
+            posterData.coverBlur = parseInt(posterData.coverBlur) || 0;
 
             const loadCover = async (url) => {
                 const image = new Image();
@@ -28,7 +31,20 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                 image.src = url;
                 return new Promise((resolve) => {
                     image.onload = () => {
-                        ctx.drawImage(image, posterData.marginCover, posterData.marginCover, width - posterData.marginCover * 2, width - posterData.marginCover * 2);
+                        const coverSize = width - posterData.marginCover * 2;
+                        const scale = coverSize / width * 11;
+
+                        const coverX = posterData.marginCover + (posterData.coverHorizontalPosition * scale);
+                        const coverY = posterData.marginCover + (posterData.coverVerticalPosition * scale);
+                        
+                        if (posterData.coverBlur > 0) {
+                            ctx.filter = `blur(${posterData.coverBlur * 2}px)`;
+                        }
+                        
+                        ctx.drawImage(image, coverX, coverY, coverSize, coverSize);
+                        
+                        ctx.filter = 'none';
+                        
                         if (posterData.useFade) {
                             let verticalFade = ctx.createLinearGradient(0, 0, 0, 3000 - posterData.marginBackground);
                             const rgb = hexToRgb(posterData.backgroundColor);

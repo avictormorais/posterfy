@@ -8,12 +8,15 @@ import ColorInput from "./inputs/ColorInput";
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
+import CoverEditor from "./CoverEditor";
 import ReactDOM from 'react-dom';
 import CheckInput from "./inputs/CheckInput";
 import ClickInput from "./inputs/ClickInput";
+import ButtonInput from "./inputs/ButtonInput";
 import { FaFile, FaFont } from "react-icons/fa6";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
+import { RiImage2Fill } from "react-icons/ri";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import LoadingDiv from "../Commom/LoadingDiv";
 import { Palette } from "color-thief-react";
@@ -373,6 +376,10 @@ const ShortcutsInfo = styled.p`
     }
 `
 
+const IconImage = styled(RiImage2Fill)`
+    font-size: 3em;
+`;
+
 const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson }, ref) => {
     const { t } = useTranslation();
     const previewRef = useRef(null);
@@ -417,6 +424,18 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setcolor1(json.color1 || '#ff0000');
         setcolor2(json.color2 || '#00ff40');
         setcolor3(json.color3 || '#2600ff');
+        
+        if (json.coverZoom !== undefined) {
+            setCoverZoom(json.coverZoom);
+        } else if (json.marginCover !== undefined) {
+            setCoverZoom(-json.marginCover / 11);
+        } else {
+            setCoverZoom(0);
+        }
+        
+        setCoverHorizontalPosition(json.coverHorizontalPosition || 0);
+        setCoverVerticalPosition(json.coverVerticalPosition || 0);
+        setCoverBlur(json.coverBlur || 0);
         setUseWatermark(json.useWatermark !== undefined ? json.useWatermark : true);
         setUseFade(json.useFade !== undefined ? json.useFade : true);
         setShowTracklist(json.showTracklist !== undefined ? json.showTracklist : false);
@@ -468,12 +487,27 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [showColorSelector, setShowColorSelector] = useState(false);
     const [colorInputPosition, setColorInputPosition] = useState(null);
     const [currentColorInput, setCurrentColorInput] = useState(null);
+    
+    const [showCoverEditor, setShowCoverEditor] = useState(false);
+    const [coverEditorPosition, setCoverEditorPosition] = useState(null);
+    
+    const [coverZoom, setCoverZoom] = useState(0);
+    const [coverHorizontalPosition, setCoverHorizontalPosition] = useState(0);
+    const [coverVerticalPosition, setCoverVerticalPosition] = useState(0);
+    const [coverBlur, setCoverBlur] = useState(0);
 
     const [userAdjustedTitleSize, setUserAdjustedTitleSize] = useState(false);
     const [initialTitleSizeSet, setInitialTitleSizeSet] = useState(false);
     const [userAdjustedTracksSize, setUserAdjustedTracksSize] = useState(false);
     const [initialTracksSizeSet, setInitialTracksSizeSet] = useState(false);
     const [isLoadedFromJson, setIsLoadedFromJson] = useState(false);
+
+    useEffect(() => {
+        if (!isLoadedFromJson) {
+            const calculatedMargin = -coverZoom * 10;
+            setMarginCover(calculatedMargin);
+        }
+    }, [coverZoom, isLoadedFromJson]);
 
     const handleTitleSizeChange = (e) => {
         setTitleSize(e.target.value);
@@ -530,6 +564,10 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         color2,
         color3,
         albumID,
+        coverZoom,
+        coverHorizontalPosition,
+        coverVerticalPosition,
+        coverBlur,
         userAdjustedTitleSize,
         initialTitleSizeSet,
         userAdjustedTracksSize,
@@ -665,6 +703,15 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     function handleColorSelectorClose() {
         setShowColorSelector(false);
     };
+    
+    function handleCoverEditorClick(position) {
+        setCoverEditorPosition(position);
+        setShowCoverEditor(true);
+    }
+    
+    function handleCoverEditorClose() {
+        setShowCoverEditor(false);
+    }
 
     const handleRemoveParentheses = () => {
         const lines = tracklist.split('\n');
@@ -925,10 +972,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={350}>
-                                        <NormalInput 
-                                            title={t('EDITOR_MarginCover')} 
-                                            value={marginCover} 
-                                            onChange={(e) => setMarginCover(e.target.value)}
+                                        <ButtonInput
+                                            title={t('EDITOR_CoverEditor')}
+                                            text={t('EDITOR_EditCover')}
+                                            onClick={handleCoverEditorClick}
+                                            icon={IconImage}
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={375}>
@@ -1042,6 +1090,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                             icon={FaFont}
                                         />
                                     </AnimatedInput>
+
                                 </EditorSettings>
                             ) : (
                                 <TracklistContainer>
@@ -1125,6 +1174,26 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             }}
                             position={colorInputPosition}
                             onClose={handleColorSelectorClose}
+                        />, document.body
+                    )}
+                    
+                    {showCoverEditor && coverEditorPosition && ReactDOM.createPortal(
+                        <CoverEditor
+                            position={coverEditorPosition}
+                            albumCoverUrl={useUncompressed ? uncompressedAlbumCover : albumCover}
+                            initialZoom={coverZoom}
+                            initialHorizontalPosition={coverHorizontalPosition}
+                            initialVerticalPosition={coverVerticalPosition}
+                            initialBlur={coverBlur}
+                            onDone={(values) => {
+                                setIsLoadedFromJson(false);
+                                setCoverZoom(values.zoom);
+                                setCoverHorizontalPosition(values.horizontalPosition);
+                                setCoverVerticalPosition(values.verticalPosition);
+                                setCoverBlur(values.blur);
+                                handleCoverEditorClose();
+                            }}
+                            onClose={handleCoverEditorClose}
                         />, document.body
                     )}
                 </Container>

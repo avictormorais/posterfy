@@ -68,6 +68,13 @@ i18n
                 EDITOR_MarginBackground: "Background size",
                 ModelTitle: "Poster Models",
                 ModelText: "Click on a pre-defined model to select it",
+                
+                COVER_EDITOR_Size: "Size",
+                COVER_EDITOR_Blur: "Blur",
+                COVER_EDITOR_HorizontalPosition: "Horizontal",
+                COVER_EDITOR_VerticalPosition: "Vertical",
+                EDITOR_CoverEditor: "Cover editor",
+                EDITOR_EditCover: "Edit cover",
 
                 Share: "Share.",
                 ShareTitle: "Share your poster\nto us",
@@ -184,6 +191,13 @@ i18n
                 EDITOR_MarginBackground: "Tamanho fundo",
                 ModelTitle: "Modelos de Pôster",
                 ModelText: "Clique em um modelo pré-definido para selecioná-lo",
+                
+                COVER_EDITOR_Size: "Tamanho",
+                COVER_EDITOR_Blur: "Desfoque",
+                COVER_EDITOR_HorizontalPosition: "Horizontal",
+                COVER_EDITOR_VerticalPosition: "Vertical",
+                EDITOR_CoverEditor: "Editor de capa",
+                EDITOR_EditCover: "Editar capa",
 
                 Share: "Compartilhe.",
                 ShareTitle: "Compartilhe seu pôster\n conosco",
@@ -300,6 +314,13 @@ i18n
                 EDITOR_MarginBackground: "Tamaño de fondo",
                 ModelTitle: "Modelos de Póster",
                 ModelText: "Haz clic en un modelo predefinido para seleccionarlo",
+                
+                COVER_EDITOR_Size: "Tamaño",
+                COVER_EDITOR_Blur: "Desenfoque",
+                COVER_EDITOR_HorizontalPosition: "Horizontal",
+                COVER_EDITOR_VerticalPosition: "Vertical",
+                EDITOR_CoverEditor: "Editor de portada",
+                EDITOR_EditCover: "Editar portada",
 
                 Share: "Compartir.",
                 ShareTitle: "Compartir su póster\n con nosotros",
@@ -416,6 +437,13 @@ i18n
                 EDITOR_MarginBackground: "背景大小",
                 ModelTitle: "海报模型",
                 ModelText: "点击预定义模型进行选择",
+                
+                COVER_EDITOR_Size: "大小",
+                COVER_EDITOR_Blur: "模糊",
+                COVER_EDITOR_HorizontalPosition: "水平",
+                COVER_EDITOR_VerticalPosition: "垂直",
+                EDITOR_CoverEditor: "封面编辑器",
+                EDITOR_EditCover: "编辑封面",
 
                 Share: "分享。",
                 ShareTitle: "将您的海报\n分享给我们",
