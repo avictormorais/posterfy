@@ -106,6 +106,7 @@ const Title = styled.h2`
     margin-left: 10px;
     font-weight: bolder;
     margin-right: auto;
+    margin-top: 3px;
 `;
 
 const CloseIcon = styled(IoClose)`

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AlertModal from '../components/Commom/AlertModal';
-import Models from '../assets/models.png'
+import CoverEditorGif from '../assets/coverEditor.gif'
 
 const ModalContext = createContext();
 
@@ -22,31 +22,31 @@ export const ModalProvider = ({ children }) => {
         return stored ? JSON.parse(stored) : {};
     });
 
-    const getLocalizedDefaultAlert = () => {
+    const getCoverEditorAlert = () => {
         const translations = {
             en: {
-                title: 'Join the community!',
-                paragraph: 'Join our Discord server to contribute to the platform and help other users. Share ideas, report bugs, and connect with fellow music lovers!',
-                confirmText: 'Join the server',
-                postImageText: 'Help us grow the Posterfy community.'
+                title: 'New Cover Editor!',
+                paragraph: 'Inside the poster editor, you can now customize your album cover with zoom, position adjustments, and blur effects. Click on "Cover editor" to try it out!',
+                confirmText: 'Try it now!',
+                postImageText: 'Customize your poster like never before.'
             },
             pt: {
-                title: 'Junte-se à comunidade!',
-                paragraph: 'Entre no nosso servidor do Discord para contribuir com a plataforma e ajudar outros usuários. Compartilhe ideias, reporte bugs e conecte-se com outros amantes da música!',
-                confirmText: 'Entrar no servidor',
-                postImageText: 'Ajude-nos a crescer a comunidade do Posterfy.'
+                title: 'Novo Editor de Capa!',
+                paragraph: 'Dentro do editor de poster, agora você pode personalizar a capa do álbum com zoom, ajustes de posição e efeitos de desfoque. Clique em "Editor de capa" para experimentar!',
+                confirmText: 'Experimentar agora!',
+                postImageText: 'Personalize seu poster como nunca antes.'
             },
             es: {
-                title: '¡Únete a la comunidad!',
-                paragraph: 'Únete a nuestro servidor de Discord para contribuir a la plataforma y ayudar a otros usuarios. Comparte ideas, reporta errores y conéctate con otros amantes de la música!',
-                confirmText: 'Entrar al servidor',
-                postImageText: 'Ayúdanos a crecer la comunidad de Posterfy.'
+                title: '¡Nuevo Editor de Portada!',
+                paragraph: 'Dentro del editor de póster, ahora puedes personalizar la portada del álbum con zoom, ajustes de posición y efectos de desenfoque. ¡Haz clic en "Editor de portada" para probarlo!',
+                confirmText: '¡Probar ahora!',
+                postImageText: 'Personaliza tu póster como nunca antes.'
             },
             zh: {
-                title: '加入社区！',
-                paragraph: '加入我们的 Discord 服务器，为平台做出贡献并帮助其他用户。分享想法、报告错误，并与其他音乐爱好者联系！',
-                confirmText: '加入服务器',
-                postImageText: '帮助我们发展 Posterfy 社区。'
+                title: '新封面编辑器！',
+                paragraph: '在海报编辑器中，您现在可以使用缩放、位置调整和模糊效果来自定义专辑封面。点击“封面编辑器”试试吧！',
+                confirmText: '立即试用！',
+                postImageText: '像从未有过的方式定制您的海报。'
             }
         };
 
@@ -54,16 +54,16 @@ export const ModalProvider = ({ children }) => {
         const langData = translations[currentLang] || translations.en;
 
         return {
-            id: 'discord-community',
-            persistentId: 'discord-community-intro-2',
+            id: 'cover-editor-feature',
+            persistentId: 'cover-editor-feature-announcement',
             title: langData.title,
             paragraph: langData.paragraph,
             postImageText: langData.postImageText,
             confirmText: langData.confirmText,
             canClose: true,
             type: 'alert',
-            limitDate: '2026-01-01T23:59:59.999Z',
-            onConfirm: () => window.open('https://posterfy.com', '_blank')
+            imageURL: CoverEditorGif,
+            limitDate: '2026-02-07T23:59:59.999Z'
         };
     };
 
@@ -80,10 +80,10 @@ export const ModalProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        const defaultAlert = getLocalizedDefaultAlert();
+        const coverEditorAlert = getCoverEditorAlert();
         
-        if (!hasAlertBeenShown(defaultAlert.persistentId) && !modal && isAlertValid(defaultAlert)) {
-            setModal(defaultAlert);
+        if (!hasAlertBeenShown(coverEditorAlert.persistentId) && !modal && isAlertValid(coverEditorAlert)) {
+            setModal(coverEditorAlert);
         }
     }, [i18n.language, shownAlerts]);
 
