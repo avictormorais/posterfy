@@ -63,7 +63,7 @@ export const ModalProvider = ({ children }) => {
             canClose: true,
             type: 'alert',
             imageURL: CoverEditorGif,
-            limitDate: '2026-02-07T23:59:59.999Z'
+            limitDate: '2026-02-10T23:59:59.999Z'
         };
     };
 

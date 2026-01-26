@@ -105,7 +105,6 @@ const VisualContent = styled.div`
 const IconWrapper = styled.div`
     position: relative;
     z-index: 2;
-    animation: float 6s ease-in-out infinite;
     width: 320px;
     height: 352px;
 
