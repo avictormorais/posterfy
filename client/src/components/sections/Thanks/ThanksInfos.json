@@ -35,23 +35,23 @@
   {
     "key": "contribute_area",
     "title": {
-      "en": "Want to appear in the project?",
-      "pt": "Quer aparecer no projeto?",
-      "es": "¿Quieres aparecer en el proyecto?",
-      "zh": "想出现在项目中吗？"
+      "en": "Help improve the project!",
+      "pt": "Ajude a melhorar o projeto!",
+      "es": "¡Ayuda a mejorar el proyecto!",
+      "zh": "帮助改进项目！"
     },
     "text": {
-      "en": "The project is open source! Feel free to suggest improvements, report bugs, or submit a pull request.",
-      "pt": "O projeto é open source! Sinta-se à vontade para sugerir melhorias, reportar bugs ou enviar um pull request.",
-      "es": "¡El proyecto es open source! Siéntete libre de sugerir mejoras, reportar errores o enviar un pull request.",
-      "zh": "该项目是开源的！欢迎提出改进建议、报告错误或提交 pull request。"
+      "en": "This project is open source and evolves with the community! Contribute with code, suggestions, or reporting bugs.",
+      "pt": "Esse projeto é open source e evolui com a comunidade! Contribua com código, sugestões ou reportando bugs.",
+      "es": "¡Este proyecto es open source y evoluciona con la comunidad! Contribuye con código, sugerencias o reportando errores.",
+      "zh": "这个项目是开源的，随着社区的发展而发展！贡献代码、建议或报告错误。"
     },
     "url": "https://github.com/avictormorais/posterfy",
     "button": {
-      "en": "Github Repository",
-      "pt": "Repositório no Github",
-      "es": "Repositorio en Github",
-      "zh": "Github 仓库"
+      "en": "Contribute on Github",
+      "pt": "Contribua no Github",
+      "es": "Contribuye en Github",
+      "zh": "在 Github 上贡献"
     }
   }
 ]
