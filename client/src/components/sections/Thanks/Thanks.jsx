@@ -76,7 +76,7 @@ const ContributeArea = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 50px;
+    margin-top: 100px;
 `;
 
 const ContributeTitle = styled.h2`
