@@ -15,7 +15,7 @@ const NavbarContainer = styled.header`
   z-index: 50;
   transition: all 0.3s ease;
   background-color: var(--backgroundColor);
-  padding: ${({ scrolled }) => (scrolled ? "10px 0" : "20px 0")};
+  padding: ${({ scrolled }) => (scrolled ? "13px 0" : "13px 0")};
   box-shadow: ${({ scrolled }) => (scrolled ? "0 2px 15px var(--shadowColor)" : "none")};
   transform: ${({ visible }) => (visible ? "translateY(0)" : "translateY(-100%)")};
 `
@@ -71,7 +71,7 @@ const Divider = styled.div`
 `
 
 const IconContainer = styled.div`
-  animation: spin 10s linear infinite;
+  /* animation: spin 10s linear infinite; */
   width: 40px;
   height: 44.05px;
 

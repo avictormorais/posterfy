@@ -99,6 +99,22 @@ const LogoWrapper = styled.div`
   }
 `
 
+const IconRotate = styled.div`
+  animation: spin 10s linear infinite;
+  width: 48px;
+  height: 42.2px;
+  margin-right: 5px;
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
 const BrandName = styled.h2`
   font-size: 2em;
   font-weight: 700;
@@ -457,11 +473,13 @@ function Footer() {
           {/* Brand Section - Left Block */}
           <BrandSection>
             <LogoWrapper>
-              <Icon 
-                fill={theme === 'light' ? "#2c2929" : "white"} 
-                width={"48px"} 
-                height={"42.2px"} 
-              />
+              <IconRotate>
+                <Icon 
+                  fill={theme === 'light' ? "#2c2929" : "white"} 
+                  width={"48px"} 
+                  height={"42.2px"} 
+                />
+              </IconRotate>
               <BrandName>Posterfy</BrandName>
             </LogoWrapper>
             <BrandDescription>
