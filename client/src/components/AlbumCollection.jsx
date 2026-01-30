@@ -123,7 +123,7 @@ const AlbumPoster = styled.div`
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: ${(props) => {
       if (props.isHovered) {
         return "filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s";
