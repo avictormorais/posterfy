@@ -505,7 +505,7 @@ function Footer() {
             <CopyrightText>
               <FaHeart />
               {t("MadeBy", "Made with love by")}{" "}
-              <a href="https://github.com/avictormorais" target="_blank" rel="noopener noreferrer">
+              <a href="https://avictormorais.vercel.app/" target="_blank" rel="noopener noreferrer">
                 Victor Morais
               </a>
             </CopyrightText>
