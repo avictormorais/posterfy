@@ -129,21 +129,6 @@ const IconWrapper = styled.div`
         100% { transform: translateY(0px); }
     }
 
-    /* Glow effect */
-    &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 120%;
-        height: 120%;
-        background: var(--textColor);
-        opacity: 0.08;
-        filter: blur(80px);
-        border-radius: 50%;
-        z-index: -1;
-    }
 `
 
 const ScrollIndicator = styled(MdOutlineKeyboardDoubleArrowDown)`
