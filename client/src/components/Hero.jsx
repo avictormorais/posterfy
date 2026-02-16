@@ -92,12 +92,10 @@ const VisualContent = styled.div`
     align-items: center;
     position: relative;
     opacity: ${props => props.visible ? 1 : 0};
-    transform: translateX(${props => props.visible ? '0' : '50px'});
-    transition: opacity 1s ease, transform 1s ease;
+    transition: opacity 1s ease;
     transition-delay: 600ms;
 
     @media (max-width: 900px) {
-        transform: translateY(${props => props.visible ? '0' : '50px'});
         width: 100%;
     }
 `
