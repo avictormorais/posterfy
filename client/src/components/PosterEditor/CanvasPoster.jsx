@@ -2,7 +2,7 @@
 import { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { generateLogoWatermark } from '../svgs/LogoName.jsx';
 
-const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont }, ref) => {
+const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont, scale = 1.0, isThumbnail = false }, ref) => {
     const canvasRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
@@ -15,15 +15,18 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
 
             const canvas = canvasRef.current;
             const ctx = canvas.getContext('2d');
-            const width = 2480;
-            const height = 3508;
-            posterData.marginSide = parseInt(posterData.marginSide) || 0;
-            posterData.marginTop = parseInt(posterData.marginTop) || 0;
-            posterData.marginCover = parseInt(posterData.marginCover) || 0;
-            posterData.marginBackground = parseInt(posterData.marginBackground) || 0;
-            posterData.coverHorizontalPosition = parseInt(posterData.coverHorizontalPosition) || 0;
-            posterData.coverVerticalPosition = parseInt(posterData.coverVerticalPosition) || 0;
-            posterData.coverBlur = parseInt(posterData.coverBlur) || 0;
+            const baseWidth = 2480;
+            const baseHeight = 3508;
+            const width = Math.round(baseWidth * scale);
+            const height = Math.round(baseHeight * scale);
+            
+            const marginSide = Math.round((parseInt(posterData.marginSide) || 0) * scale);
+            const marginTop = Math.round((parseInt(posterData.marginTop) || 0) * scale);
+            const marginCover = Math.round((parseInt(posterData.marginCover) || 0) * scale);
+            const marginBackground = Math.round((parseInt(posterData.marginBackground) || 0) * scale);
+            const coverHorizontalPosition = Math.round((parseInt(posterData.coverHorizontalPosition) || 0) * scale);
+            const coverVerticalPosition = Math.round((parseInt(posterData.coverVerticalPosition) || 0) * scale);
+            const coverBlur = Math.round((parseInt(posterData.coverBlur) || 0) * scale * (isThumbnail ? 0.5 : 2));
 
             const loadCover = async (url) => {
                 const image = new Image();
@@ -31,14 +34,14 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                 image.src = url;
                 return new Promise((resolve) => {
                     image.onload = () => {
-                        const coverSize = width - posterData.marginCover * 2;
-                        const scale = coverSize / width * 11;
+                        const coverSize = width - marginCover * 2;
+                        const coverScale = coverSize / width * 11;
 
-                        const coverX = posterData.marginCover + (posterData.coverHorizontalPosition * scale);
-                        const coverY = posterData.marginCover + (posterData.coverVerticalPosition * scale);
+                        const coverX = marginCover + (coverHorizontalPosition * coverScale);
+                        const coverY = marginCover + (coverVerticalPosition * coverScale);
                         
-                        if (posterData.coverBlur > 0) {
-                            ctx.filter = `blur(${posterData.coverBlur * 2}px)`;
+                        if (coverBlur > 0) {
+                            ctx.filter = `blur(${coverBlur}px)`;
                         }
                         
                         ctx.drawImage(image, coverX, coverY, coverSize, coverSize);
@@ -46,12 +49,12 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                         ctx.filter = 'none';
                         
                         if (posterData.useFade) {
-                            let verticalFade = ctx.createLinearGradient(0, 0, 0, 3000 - posterData.marginBackground);
+                            let verticalFade = ctx.createLinearGradient(0, 0, 0, Math.round((3000 - (parseInt(posterData.marginBackground) || 0)) * scale));
                             const rgb = hexToRgb(posterData.backgroundColor);
                             verticalFade.addColorStop(0.5, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
                             verticalFade.addColorStop(0.8, posterData.backgroundColor);
                             ctx.fillStyle = verticalFade;
-                            ctx.fillRect(0, 0, canvas.width, 2500 - posterData.marginBackground);
+                            ctx.fillRect(0, 0, canvas.width, Math.round((2500 - (parseInt(posterData.marginBackground) || 0)) * scale));
                         }
                         resolve();
                     };
@@ -59,7 +62,9 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             };
 
             const drawWaterMark = async () => {
-                const svgString = generateLogoWatermark(posterData.textColor, 500, 134);
+                const watermarkWidth = Math.round(500 * scale);
+                const watermarkHeight = Math.round(134 * scale);
+                const svgString = generateLogoWatermark(posterData.textColor, watermarkWidth, watermarkHeight);
 
                 const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
                 const url = URL.createObjectURL(svgBlob);
@@ -70,7 +75,7 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                 return new Promise((resolve) => {
                     image.onload = () => {
                         ctx.globalAlpha = '0.5';
-                        ctx.drawImage(image, width - 70 - 500, 50, 500, 134);
+                        ctx.drawImage(image, width - Math.round(70 * scale) - watermarkWidth, Math.round(50 * scale), watermarkWidth, watermarkHeight);
                         ctx.globalAlpha = '1';
                         URL.revokeObjectURL(url);
                         resolve();
@@ -79,86 +84,104 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             };
 
             const drawAlbumInfos = async () => {
-                let titleFontSize = posterData.titleSize ? parseInt(posterData.titleSize) : 230;
+                let baseTitleFontSize = posterData.titleSize ? parseInt(posterData.titleSize) : 230;
+                let titleFontSize = Math.round(baseTitleFontSize * scale);
 
                 const fontFamily = customFont || 'Montserrat';
                 if (!posterData.userAdjustedTitleSize && !posterData.initialTitleSizeSet) {
                     ctx.font = `bold ${titleFontSize}px ${fontFamily}`;
                     let titleWidth = ctx.measureText(posterData.albumName).width;
 
-                    while (titleWidth > (2480 - posterData.marginSide * 2)) {
-                        titleFontSize -= 1;
+                    while (titleWidth > (width - marginSide * 2)) {
+                        baseTitleFontSize -= 1;
+                        titleFontSize = Math.round(baseTitleFontSize * scale);
                         ctx.font = `bold ${titleFontSize}px ${fontFamily}`;
                         titleWidth = ctx.measureText(posterData.albumName).width;
                     }
 
-                    onTitleSizeAdjust(titleFontSize, true);
+                    if (onTitleSizeAdjust && !isThumbnail) {
+                        onTitleSizeAdjust(baseTitleFontSize, true);
+                    }
                 } else {
                     ctx.font = `bold ${titleFontSize}px ${fontFamily}`;
                 }
 
                 ctx.fillStyle = posterData.textColor;
 
+                const baseY = Math.round(2500 * scale);
+                const altY = Math.round(2790 * scale);
+
                 if (posterData.showTracklist) {
-                    ctx.fillText(posterData.albumName, posterData.marginSide, 2500 + posterData.marginTop);
+                    ctx.fillText(posterData.albumName, marginSide, baseY + marginTop);
                 } else {
-                    ctx.fillText(posterData.albumName, posterData.marginSide, 2790 + posterData.marginTop);
+                    ctx.fillText(posterData.albumName, marginSide, altY + marginTop);
                 }
 
-                let artistsFontSize = posterData.artistsSize ? parseInt(posterData.artistsSize) : 110;
+                let artistsFontSize = posterData.artistsSize ? Math.round(parseInt(posterData.artistsSize) * scale) : Math.round(110 * scale);
                 ctx.font = `bold ${artistsFontSize}px ${customFont || 'Montserrat'}`;
 
                 if (posterData.showTracklist) {
-                    ctx.fillText(posterData.artistsName, posterData.marginSide, (2500 + posterData.marginTop) + artistsFontSize * 1.3);
+                    ctx.fillText(posterData.artistsName, marginSide, (baseY + marginTop) + artistsFontSize * 1.3);
                 } else {
-                    ctx.fillText(posterData.artistsName, posterData.marginSide, (2820 + posterData.marginTop) + artistsFontSize);
+                    ctx.fillText(posterData.artistsName, marginSide, (Math.round(2820 * scale) + marginTop) + artistsFontSize);
                 }
 
-                ctx.font = `bold 70px ${customFont || 'Montserrat'}`;
-                ctx.fillText(posterData.titleRelease, posterData.marginSide, 3310);
+                const infoFontSize = Math.round(70 * scale);
+                const detailFontSize = Math.round(60 * scale);
+                const infoY = Math.round(3310 * scale);
+                const detailY = Math.round(3390 * scale);
+
+                ctx.font = `bold ${infoFontSize}px ${customFont || 'Montserrat'}`;
+                ctx.fillText(posterData.titleRelease, marginSide, infoY);
                 let releaseWidth = ctx.measureText(posterData.titleRelease).width;
-                ctx.fillText(posterData.titleRuntime, releaseWidth + posterData.marginSide + 100, 3310);
+                ctx.fillText(posterData.titleRuntime, releaseWidth + marginSide + Math.round(100 * scale), infoY);
 
                 ctx.globalAlpha = 0.7;
-                ctx.font = `bold 60px ${customFont || 'Montserrat'}`;
-                ctx.fillText(posterData.runtime, releaseWidth + posterData.marginSide + 100, 3390);
-                ctx.fillText(posterData.releaseDate, posterData.marginSide, 3390);
+                ctx.font = `bold ${detailFontSize}px ${customFont || 'Montserrat'}`;
+                ctx.fillText(posterData.runtime, releaseWidth + marginSide + Math.round(100 * scale), detailY);
+                ctx.fillText(posterData.releaseDate, marginSide, detailY);
                 ctx.globalAlpha = 1;
 
+                const colorBarY = Math.round(3368 * scale);
+                const colorBarWidth = Math.round(145 * scale);
+                const colorBarHeight = Math.round(30 * scale);
+
                 ctx.fillStyle = posterData.color1;
-                ctx.fillRect(2045 - posterData.marginSide, 3368, 145, 30);
+                ctx.fillRect(Math.round((2045 - (parseInt(posterData.marginSide) || 0)) * scale), colorBarY, colorBarWidth, colorBarHeight);
                 ctx.fillStyle = posterData.color2;
-                ctx.fillRect(2190 - posterData.marginSide, 3368, 145, 30);
+                ctx.fillRect(Math.round((2190 - (parseInt(posterData.marginSide) || 0)) * scale), colorBarY, colorBarWidth, colorBarHeight);
                 ctx.fillStyle = posterData.color3;
-                ctx.fillRect(2335 - posterData.marginSide, 3368, 145, 30);
+                ctx.fillRect(Math.round((2335 - (parseInt(posterData.marginSide) || 0)) * scale), colorBarY, colorBarWidth, colorBarHeight);
             };
 
             const drawTracklist = async () => {
                 ctx.fillStyle = posterData.textColor;
-                let fontSize = posterData.tracksSize ? parseInt(posterData.tracksSize) : 50;
+                let baseFontSize = posterData.tracksSize ? parseInt(posterData.tracksSize) : 50;
+                let fontSize = baseFontSize * scale;
                 
-                const marginTop = parseInt(posterData.marginTop || 0);
-                const rectY = parseInt(posterData.artistsSize)
-                    ? (2500 + marginTop) + parseInt(posterData.artistsSize) * 1.3 + 130
-                    : (2500 + marginTop) + (110 * 1.2) + 130;
-                const rectHeight = 500;
-                const maxTextHeight = rectY + rectHeight - 10 - parseInt(posterData.marginTop);
-                const maxHorizontalLimit = 2480 - posterData.marginSide;
+                const baseMarginTop = parseInt(posterData.marginTop || 0);
+                const baseArtistsSize = parseInt(posterData.artistsSize) || 110;
+                const rectY = Math.round((2500 + baseMarginTop + baseArtistsSize * 1.3 + 130) * scale);
+                const releaseDateY = Math.round(3310 * scale);
+                const maxTextHeight = releaseDateY - Math.round(50 * scale);
+                const maxHorizontalLimit = width - marginSide;
 
                 const tracks = posterData.tracklist.split('\n').filter(t => t.trim() !== '');
 
                 if (!posterData.userAdjustedTracksSize && !posterData.initialTracksSizeSet) {
-                    const measureLastCharPosition = (currentFontSize) => {
+                    const measureLastCharPosition = (currentBaseFontSize) => {
+                        const currentFontSize = currentBaseFontSize * scale;
                         ctx.font = `bold ${currentFontSize}px ${customFont || 'Montserrat'}`;
-                        const musicSize = currentFontSize;
+                        const baseMusicSize = currentBaseFontSize * 1.3;
+                        const musicSizeIncrement = baseMusicSize * scale;
                         
-                        let paddingMusic = posterData.marginSide + 10;
+                        let paddingMusic = marginSide + Math.round(10 * scale);
                         let maxWidthInColumn = 0;
                         let textHeight = rectY;
                         let lastCharPosition = 0;
 
                         tracks.forEach((track) => {
-                            if (textHeight + musicSize * 1.3 >= maxTextHeight) {
+                            if (textHeight + musicSizeIncrement >= maxTextHeight) {
                                 textHeight = rectY;
                                 paddingMusic = paddingMusic + maxWidthInColumn + currentFontSize;
                                 maxWidthInColumn = 0;
@@ -172,33 +195,36 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                             }
                             
                             lastCharPosition = Math.max(lastCharPosition, trackEndPosition);
-                            textHeight += (musicSize * 1.3);
+                            textHeight += musicSizeIncrement;
                         });
 
                         return lastCharPosition;
                     };
 
-                    let lastCharPosition = measureLastCharPosition(fontSize);
+                    let lastCharPosition = measureLastCharPosition(baseFontSize);
                     
-                    while (lastCharPosition > maxHorizontalLimit && fontSize > 1) {
-                        fontSize -= 1;
-                        lastCharPosition = measureLastCharPosition(fontSize);
+                    while (lastCharPosition > maxHorizontalLimit && baseFontSize > 1) {
+                        baseFontSize -= 1;
+                        lastCharPosition = measureLastCharPosition(baseFontSize);
                     }
 
-                    if (onTracksSizeAdjust) {
-                        onTracksSizeAdjust(fontSize, true);
+                    fontSize = baseFontSize * scale;
+
+                    if (onTracksSizeAdjust && !isThumbnail) {
+                        onTracksSizeAdjust(baseFontSize, true);
                     }
                 }
 
                 ctx.font = `bold ${fontSize}px ${customFont || 'Montserrat'}`;
-                const musicSize = fontSize;
+                const baseMusicSize = baseFontSize * 1.3;
+                const musicSizeIncrement = baseMusicSize * scale;
                 
-                let paddingMusic = posterData.marginSide + 10;
+                let paddingMusic = marginSide + Math.round(7 * scale);
                 let maxWidthInColumn = 0;
                 let textHeight = rectY;
 
                 tracks.forEach((track) => {
-                    if (textHeight + musicSize * 1.3 >= maxTextHeight) {
+                    if (textHeight + musicSizeIncrement >= maxTextHeight) {
                         textHeight = rectY;
                         paddingMusic = paddingMusic + maxWidthInColumn + fontSize;
                         maxWidthInColumn = 0;
@@ -211,7 +237,7 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                     }
                     
                     ctx.fillText(`${track}`, paddingMusic, textHeight);
-                    textHeight += (musicSize * 1.3);
+                    textHeight += musicSizeIncrement;
                 });
             };
 
@@ -234,7 +260,8 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                 const contrastColor = getContrast(rgb);
                 const targetColor = posterData.textColor;
             
-                const svgUrl = `https://scannables.scdn.co/uri/plain/svg/${posterData.backgroundColor.replace('#', '')}/${contrastColor}/640/spotify:album:${posterData.albumID}`;
+                const scannableSize = isThumbnail ? 320 : 640;
+                const svgUrl = `https://scannables.scdn.co/uri/plain/svg/${posterData.backgroundColor.replace('#', '')}/${contrastColor}/${scannableSize}/spotify:album:${posterData.albumID}`;
                 
                 const response = await fetch(svgUrl);
                 let svgText = await response.text();
@@ -255,9 +282,18 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                     image.src = updatedSvgUrl;
             
                     image.onload = function () {
-                        ctx.drawImage(image, 2020 - posterData.marginSide, 3235, 480, 120);
-                        const imageUrl = canvas.toDataURL('image/png');
+                        const scannableWidth = Math.round(480 * scale);
+                        const scannableHeight = Math.round(120 * scale);
+                        const scannableX = Math.round((2020 - (parseInt(posterData.marginSide) || 0)) * scale);
+                        const scannableY = Math.round(3235 * scale);
+                        
+                        ctx.drawImage(image, scannableX, scannableY, scannableWidth, scannableHeight);
+                        
+                        const imageFormat = isThumbnail ? 'image/jpeg' : 'image/png';
+                        const imageQuality = isThumbnail ? 0.7 : 1.0;
+                        const imageUrl = canvas.toDataURL(imageFormat, imageQuality);
                         onImageReady(imageUrl);
+                        URL.revokeObjectURL(updatedSvgUrl);
                         resolve();
                     };
                 });
@@ -265,7 +301,9 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
 
             const drawBackground = async () => {
                 ctx.fillStyle = posterData.backgroundColor;
-                ctx.fillRect(0, 2480 - posterData.marginBackground, width, height - 2480 + posterData.marginBackground);
+                const bgY = Math.round(2480 * scale) - marginBackground;
+                const bgHeight = height - bgY;
+                ctx.fillRect(0, bgY, width, bgHeight);
             };
 
             ctx.clearRect(0, 0, width, height);
@@ -291,9 +329,12 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
         };
 
         generatePosterContent();
-    }, [generatePoster, posterData, onImageReady]);
+    }, [generatePoster, posterData, onImageReady, customFont, scale, isThumbnail, onTitleSizeAdjust, onTracksSizeAdjust]);
 
-    return <canvas ref={canvasRef} width={2480} height={3508} style={{ display: 'none' }} />;
+    const canvasWidth = Math.round(2480 * scale);
+    const canvasHeight = Math.round(3508 * scale);
+
+    return <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} style={{ display: 'none' }} />;
 });
 
 CanvasPoster.displayName = 'CanvasPoster';
