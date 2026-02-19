@@ -384,6 +384,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const { t } = useTranslation();
     const previewRef = useRef(null);
     const canvasRef = useRef(null);
+    const exportCanvasRef = useRef(null);
 
     const [albumName, setAlbumName] = useState('');
     const [artistsName, setArtistsName] = useState('');
@@ -575,7 +576,10 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     };
 
     const [image, setImage] = useState(null);
+    const [exportImage, setExportImage] = useState(null);
+    const [exportMode, setExportMode] = useState(null);
     const [generatePoster, setGeneratePoster] = useState(false);
+    const [generateExport, setGenerateExport] = useState(false);
     const [previewVisible, setPreviewVisible] = useState(false);
     const [infosLoaded, setInfosLoaded] = useState(false);
     const [spinApplyButton, setSpinApplyButton] = useState(false);
@@ -595,7 +599,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
     }, [generatePoster]);
 
-    const handleImageReady = (imageUrl) => {
+    const handlePreviewReady = (imageUrl) => {
         setImage(imageUrl);
         setGeneratePoster(false);
         setSpinApplyButton(false);
@@ -609,6 +613,39 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             }, 300);
         }, 100);
     };
+
+    const handleExportReady = (imageUrl) => {
+        setExportImage(imageUrl);
+        setGenerateExport(false);
+    };
+
+    useEffect(() => {
+        if (exportImage && exportMode) {
+            if (exportMode === 'png') {
+                const link = document.createElement('a');
+                link.href = exportImage;
+                link.download = `Posterfy - ${albumName}.png`;
+                link.click();
+                trackPosterDownload(albumName, 'poster', artistsName);
+            } else if (exportMode === 'pdf') {
+                const img = new Image();
+                img.onload = () => {
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4',
+                        compress: false
+                    });
+                    pdf.addImage(exportImage, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+                    pdf.save(`Posterfy - ${albumName}.pdf`);
+                    trackPosterDownload(albumName, 'poster_pdf', artistsName);
+                };
+                img.src = exportImage;
+            }
+            setExportImage(null);
+            setExportMode(null);
+        }
+    }, [exportImage, exportMode, albumName, artistsName]);
 
     const handleApplyClick = () => {
         setUserAdjustedTitleSize(false);
@@ -641,33 +678,13 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     };
 
     const handleDownloadClick = () => {
-        if (!image) return;
-        const link = document.createElement('a');
-        link.href = image;
-        link.download = `Posterfy - ${albumName}.png`;
-        link.click();
-        trackPosterDownload(albumName, 'poster', artistsName);
+        setExportMode('png');
+        setGenerateExport(true);
     };
 
     const handleDownloadPDFClick = () => {
-        if (!canvasRef.current) return;
-        
-        const canvas = canvasRef.current.getCanvas();
-        if (!canvas) return;
-
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-            compress: false
-        });
-
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
-        
-        pdf.save(`Posterfy - ${albumName}.pdf`);
-        trackPosterDownload(albumName, 'poster_pdf', artistsName);
+        setExportMode('pdf');
+        setGenerateExport(true);
     };
     
     const handleCoverDownloadClick = async () => {
@@ -886,15 +903,31 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         </TextBack>
                     </DivBack>
                     <ContainerEditor>
+
                         <CanvasPoster
                             ref={canvasRef}
-                            onImageReady={handleImageReady}
+                            onImageReady={handlePreviewReady}
                             posterData={posterData}
                             generatePoster={generatePoster}
                             onTitleSizeAdjust={handleTitleSizeAdjust}
                             onTracksSizeAdjust={handleTracksSizeAdjust}
                             customFont={customFont}
+                            scale={0.3}
                         />
+
+                        {generateExport && (
+                            <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+                                <CanvasPoster
+                                    ref={exportCanvasRef}
+                                    onImageReady={handleExportReady}
+                                    posterData={posterData}
+                                    generatePoster={generateExport}
+                                    customFont={customFont}
+                                    scale={1.0}
+                                />
+                            </div>
+                        )}
+
                         <PreviewContainer>
                             {image ? (
                                 <PosterPreview src={image} ref={previewRef} visible={previewVisible} />
