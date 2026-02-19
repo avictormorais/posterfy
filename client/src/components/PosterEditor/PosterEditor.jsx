@@ -68,13 +68,38 @@ const ContainerEditor = styled.div`
     }
 `
 
+const posterRevealAnimation = keyframes`
+    0% {
+        opacity: 0;
+        transform: scale(0.95) translateY(15px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+`;
+
+const posterExitAnimation = keyframes`
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+`;
+
 const PosterPreview = styled.img`
     width: 388px;
     height: 548px;
     margin-right: 20px;
-    opacity: ${props => props.visible ? 1 : 0};
-    transform: scale(${props => props.visible ? 1 : 0.95}) translateY(${props => props.visible ? '0' : '10px'});
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    animation: ${props => props.visible 
+        ? css`${posterRevealAnimation} 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards`
+        : css`${posterExitAnimation} 0.3s cubic-bezier(0.4, 0, 1, 1) forwards`
+    };
+    transform-origin: center center;
+    will-change: opacity, transform;
 
     @media (max-width: 1292px) {
         margin: 0;
@@ -97,7 +122,6 @@ const PreviewContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: relative;
-
     @media (max-width: 1292px) {
         margin: 0;
     }
@@ -109,6 +133,38 @@ const PreviewContainer = styled.div`
         margin-bottom: 30px;
         margin-top: 20px;
     }
+`
+
+const flashAnimation = keyframes`
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.08;
+    }
+    100% {
+        opacity: 0;
+    }
+`;
+
+const FlashOverlay = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.6) 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        rgba(255, 255, 255, 0) 100%
+    );
+    pointer-events: none;
+    z-index: 5;
+    animation: ${props => props.visible 
+        ? css`${flashAnimation} 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards`
+        : 'none'
+    };
+    opacity: 0;
 `
 
 const LoadingIcon = styled(AiOutlineLoading3Quarters)`
@@ -600,18 +656,18 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     }, [generatePoster]);
 
     const handlePreviewReady = (imageUrl) => {
-        setImage(imageUrl);
         setGeneratePoster(false);
         setSpinApplyButton(false);
         
         trackPosterPreview(albumName, artistsName);
         
         setTimeout(() => {
+            setImage(imageUrl);
             setLoadingVisible(false);
             setTimeout(() => {
                 setPreviewVisible(true);
-            }, 300);
-        }, 100);
+            }, 50);
+        }, 300);
     };
 
     const handleExportReady = (imageUrl) => {
@@ -929,6 +985,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         )}
 
                         <PreviewContainer>
+                            <FlashOverlay visible={previewVisible} />
                             {image ? (
                                 <PosterPreview src={image} ref={previewRef} visible={previewVisible} />
                             ) : (
