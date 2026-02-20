@@ -18,6 +18,7 @@ import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh } from "react-icons/md";
 import { RiImage2Fill } from "react-icons/ri";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { HiInformationCircle } from "react-icons/hi";
 import LoadingDiv from "../Commom/LoadingDiv";
 import { Palette } from "color-thief-react";
 import CanvasPoster from "./CanvasPoster";
@@ -229,7 +230,7 @@ const EditorSettings = styled.div`
 `
 
 const TracklistContainer = styled.div`
-    padding: 20px 30px;
+    padding: 15px 40px;
     width: 100%;
     height: 100%;
     display: flex;
@@ -293,10 +294,8 @@ const TracklistTextarea = styled.textarea`
     resize: none;
     border-radius: 8px;
     overflow-y: scroll;
-    max-height: 300px;
+    max-height: 400px;
     line-height: 1.5em;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
 
     &::-webkit-scrollbar {
         display: none;
@@ -436,6 +435,119 @@ const IconImage = styled(RiImage2Fill)`
     font-size: 3em;
 `;
 
+const ExportContainer = styled.div`
+    padding: 40px;
+    padding-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+    @media (max-width: 1300px) {
+        width: 90%;
+    }
+
+    @media (max-width: 530px) {
+        padding: 20px;
+    }
+`;
+
+const ExportSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+`;
+
+const ExportLabel = styled.h3`
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--textColor);
+    margin: 0;
+`;
+
+const FormatGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+`;
+
+const FormatOption = styled.div`
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--glassBackground);
+    border: 2px solid ${props => props.$selected ? 'var(--AccentColor)' : 'var(--borderColor)'};
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    
+    &:hover {
+        border-color: var(--AccentColor);
+        transform: translateY(-2px);
+    }
+`;
+
+const FormatName = styled.div`
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--textColor);
+`;
+
+const FormatDescription = styled.div`
+    font-size: 0.75em;
+    color: var(--textSecondary);
+`;
+
+const TipBox = styled.div`
+    padding: 10px 10px;
+    border-radius: 10px;
+    background: var(--glassBackground);
+    border: 1px solid var(--borderColor);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+`;
+
+const TipText = styled.p`
+    font-size: 0.9em;
+    color: var(--textColor);
+    margin: 0;
+    line-height: 1.5;
+`;
+
+const DownloadButton = styled.button`
+    padding: 10px 15px;
+    border-radius: 12px;
+    background: var(--AccentColor);
+    color: var(--backgroundColor);
+    border: none;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px var(--borderColor);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+    
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+`;
+
 const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson }, ref) => {
     const { t } = useTranslation();
     const previewRef = useRef(null);
@@ -558,6 +670,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [userAdjustedTracksSize, setUserAdjustedTracksSize] = useState(false);
     const [initialTracksSizeSet, setInitialTracksSizeSet] = useState(false);
     const [isLoadedFromJson, setIsLoadedFromJson] = useState(false);
+
+    const [exportFormat, setExportFormat] = useState('png');
+    const [exportScale, setExportScale] = useState(1.0);
 
     useEffect(() => {
         if (!isLoadedFromJson) {
@@ -697,11 +812,35 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                     trackPosterDownload(albumName, 'poster_pdf', artistsName);
                 };
                 img.src = exportImage;
+            } else if (exportMode === 'jpg') {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob((blob) => {
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = `Posterfy - ${albumName}.jpg`;
+                        link.click();
+                        URL.revokeObjectURL(link.href);
+                        trackPosterDownload(albumName, 'poster_jpg', artistsName);
+                    }, 'image/jpeg', 0.95);
+                };
+                img.src = exportImage;
             }
             setExportImage(null);
             setExportMode(null);
         }
     }, [exportImage, exportMode, albumName, artistsName]);
+
+    useEffect(() => {
+        setExportImage(null);
+    }, [exportScale]);
 
     const handleApplyClick = () => {
         setUserAdjustedTitleSize(false);
@@ -710,18 +849,6 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         requestAnimationFrame(() => {
             setSpinApplyButton(true);
             setGeneratePoster(true);
-            if (previewRef.current) {
-                const rect = previewRef.current.getBoundingClientRect();
-                const elementTop = rect.top + window.scrollY;
-                const elementHeight = rect.height;
-                const windowHeight = window.innerHeight;
-                const centerOffset = (windowHeight - elementHeight) / 2;
-                
-                window.scrollTo({
-                    top: elementTop - centerOffset,
-                    behavior: 'smooth'
-                });
-            }
         });
     };
 
@@ -740,6 +867,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     const handleDownloadPDFClick = () => {
         setExportMode('pdf');
+        setGenerateExport(true);
+    };
+
+    const handleDownloadJPGClick = () => {
+        setExportMode('jpg');
         setGenerateExport(true);
     };
     
@@ -931,6 +1063,55 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         };
     }, [image, albumName, handleDownloadClick]);
 
+    const isFirstRender = useRef(true);
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        if (!infosLoaded) return;
+
+        const debounceTimer = setTimeout(() => {
+            console.log('🔄 Auto-aplicando alterações após 500ms de inatividade...');
+            handleApplyClick();
+        }, 1000);
+
+        return () => {
+            clearTimeout(debounceTimer);
+        };
+    }, [
+        albumName,
+        artistsName,
+        titleSize,
+        artistsSize,
+        tracksSize,
+        marginTop,
+        marginSide,
+        marginCover,
+        marginBackground,
+        backgroundColor,
+        textColor,
+        color1,
+        color2,
+        color3,
+        useWatermark,
+        useFade,
+        showTracklist,
+        tracklist,
+        useUncompressed,
+        titleRelease,
+        releaseDate,
+        titleRuntime,
+        runtime,
+        coverZoom,
+        coverHorizontalPosition,
+        coverVerticalPosition,
+        coverBlur,
+        customFont,
+        infosLoaded
+    ]);
+
     return(
         <>
             {!infosLoaded ? (
@@ -979,7 +1160,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                     posterData={posterData}
                                     generatePoster={generateExport}
                                     customFont={customFont}
-                                    scale={1.0}
+                                    scale={exportScale}
                                 />
                             </div>
                         )}
@@ -1007,6 +1188,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         onClick={() => setActiveTab('tracklist')}
                                     >
                                         {t('EDITOR_TracklistTab')}
+                                    </Tab>
+                                    <Tab 
+                                        $active={activeTab === 'export'} 
+                                        onClick={() => setActiveTab('export')}
+                                    >
+                                        {t('EDITOR_ExportTab')}
                                     </Tab>
                                 </TabsContainer>
                             </AnimatedInput>
@@ -1182,7 +1369,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                     </AnimatedInput>
 
                                 </EditorSettings>
-                            ) : (
+                            ) : activeTab === 'tracklist' ? (
                                 <TracklistContainer>
                                     <TracklistTextarea
                                         value={tracklist}
@@ -1199,8 +1386,74 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         </TracklistButton>
                                     </TracklistButtonsContainer>
                                 </TracklistContainer>
+                            ) : (
+                                <ExportContainer>
+                                    <ExportSection>
+                                        <ExportLabel>{t('EXPORT_Format')}</ExportLabel>
+                                        <FormatGrid>
+                                            <FormatOption 
+                                                $selected={exportFormat === 'png'}
+                                                onClick={() => setExportFormat('png')}
+                                            >
+                                                <FormatName>PNG</FormatName>
+                                            </FormatOption>
+                                            <FormatOption 
+                                                $selected={exportFormat === 'pdf'}
+                                                onClick={() => setExportFormat('pdf')}
+                                            >
+                                                <FormatName>PDF</FormatName>
+                                            </FormatOption>
+                                            <FormatOption 
+                                                $selected={exportFormat === 'jpg'}
+                                                onClick={() => setExportFormat('jpg')}
+                                            >
+                                                <FormatName>JPG</FormatName>
+                                            </FormatOption>
+                                        </FormatGrid>
+                                    </ExportSection>
+
+                                    <ExportSection>
+                                        <ExportLabel>{t('EXPORT_Size')}</ExportLabel>
+                                        <FormatGrid>
+                                            <FormatOption 
+                                                $selected={exportScale === 0.3}
+                                                onClick={() => setExportScale(0.3)}
+                                            >
+                                                <FormatName>{t('EXPORT_SizeThumbnail')}</FormatName>
+                                                <FormatDescription>{t('EXPORT_SizeDescription_Thumbnail')}</FormatDescription>
+                                            </FormatOption>
+                                            <FormatOption 
+                                                $selected={exportScale === 0.6}
+                                                onClick={() => setExportScale(0.6)}
+                                            >
+                                                <FormatName>{t('EXPORT_SizeMedium')}</FormatName>
+                                                <FormatDescription>{t('EXPORT_SizeDescription_Medium')}</FormatDescription>
+                                            </FormatOption>
+                                            <FormatOption 
+                                                $selected={exportScale === 1.0}
+                                                onClick={() => setExportScale(1.0)}
+                                            >
+                                                <FormatName>{t('EXPORT_SizeNormal')}</FormatName>
+                                                <FormatDescription>{t('EXPORT_SizeDescription_Normal')}</FormatDescription>
+                                            </FormatOption>
+                                        </FormatGrid>
+                                    </ExportSection>
+
+                                    <TipBox>
+                                        <HiInformationCircle size={24} style={{ color: 'var(--AccentColor)', flexShrink: 0 }} />
+                                        <TipText>{t('EXPORT_PrintTip')}</TipText>
+                                    </TipBox>
+
+                                    <DownloadButton onClick={() => {
+                                        if (exportFormat === 'png') handleDownloadClick();
+                                        else if (exportFormat === 'pdf') handleDownloadPDFClick();
+                                        else if (exportFormat === 'jpg') handleDownloadJPGClick();
+                                    }}>
+                                        {t('EXPORT_DownloadButton')}
+                                    </DownloadButton>
+                                </ExportContainer>
                             )}
-                            <AnimatedInput animationDelay={1050}>
+                            {/* <AnimatedInput animationDelay={1050}>
                                 <DivButtons>
                                     <ButtonDiv onClick={handleDownloadClick}>
                                         <IconPNG/>
@@ -1214,21 +1467,21 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <IconApply $spinning={spinApplyButton}/>
                                         <ButtonText>{t('EDITOR_Apply')}</ButtonText>
                                     </ButtonDiv>
-                                    {/* <ButtonDiv onClick={() => exportPosterJson(posterData)}>
+                                    <ButtonDiv onClick={() => exportPosterJson(posterData)}>
                                         <IconDownload/>
                                         <ButtonText>Exportar JSON</ButtonText>
                                     </ButtonDiv>
                                     <ButtonDiv onClick={() => importPosterJson(applyPosterJson)}>
                                         <IconDownload/>
                                         <ButtonText>Importar JSON</ButtonText>
-                                    </ButtonDiv> */}
+                                    </ButtonDiv>
                                 </DivButtons>
                             </AnimatedInput>
                             <AnimatedInput animationDelay={1100}>
                                 <ShortcutsInfo>
                                     Ctrl+S: {t('EDITOR_Apply')} • Ctrl+D: PNG • Ctrl+Shift+D: PDF
                                 </ShortcutsInfo>
-                            </AnimatedInput>
+                            </AnimatedInput> */}
                         </EditorColumn>
                     </ContainerEditor>
                     
