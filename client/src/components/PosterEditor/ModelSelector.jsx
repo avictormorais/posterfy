@@ -154,23 +154,23 @@ export default function ModelSelector({ onSelectModel, onBack }) {
     const { t } = useTranslation();
 
     const BasicParams = {
-        marginCover: -500,
+        coverZoom: 50,
         marginBackground: -700,
         showTracklist: false,
         marginTop: 200,
     };
     const FrameParams = {
-        marginCover: 160,
+        coverZoom: -16,
         useFade: false,
         marginTop: 20,
     };
     const FullCoverParams = {
-        marginCover: -1100,
+        coverZoom: 110,
         marginBackground: -1200,
         useFade: false
     };
     const StandartParams = {
-        marginCover: 0,
+        coverZoom: 0,
         marginBackground: 0,
         showTracklist: true,
         useFade: true,

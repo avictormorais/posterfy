@@ -660,7 +660,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [showCoverEditor, setShowCoverEditor] = useState(false);
     const [coverEditorPosition, setCoverEditorPosition] = useState(null);
     
-    const [coverZoom, setCoverZoom] = useState(0);
+    const [coverZoom, setCoverZoom] = useState(modelParams?.coverZoom ?? 0);
     const [coverHorizontalPosition, setCoverHorizontalPosition] = useState(0);
     const [coverVerticalPosition, setCoverVerticalPosition] = useState(0);
     const [coverBlur, setCoverBlur] = useState(0);
