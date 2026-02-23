@@ -43,6 +43,8 @@ export const AuthProvider = ({ children }) => {
       return
     }
 
+    apiService.setAuthToken(token)
+
     try {
       const data = await apiService.getCurrentUser()
       setUser(data.user)
