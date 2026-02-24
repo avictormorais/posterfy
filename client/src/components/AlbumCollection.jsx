@@ -26,13 +26,13 @@ const AlbumPoster = styled.div`
       ? "329px"
       : props.index === 1 || props.index === 3
       ? "288px"
-      : "249px"};
+      : "247px"};
   height: ${(props) =>
     props.index === 2
       ? "465px"
       : props.index === 1 || props.index === 3
       ? "405px"
-      : "345px"};
+      : "350px"};
   margin: 0 -30px;
   
   opacity: ${(props) => props.$hasAppeared ? 1 : 0};
