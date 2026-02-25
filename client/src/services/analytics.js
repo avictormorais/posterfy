@@ -110,3 +110,74 @@ export const trackPosterRecreation = (albumName, artistName = '', albumId = '', 
     });
   }
 };
+
+// ─── Community events ─────────────────────────────────────────
+
+export const trackCommunityPosterView = (posterId, albumName, artistName = '') => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'community_poster_view', {
+      event_category: 'Community',
+      event_label: artistName ? `${artistName} - ${albumName}` : albumName,
+      poster_id: posterId,
+      album_name: albumName,
+      artist_name: artistName,
+    });
+  }
+};
+
+export const trackCommunityPosterPublish = (albumName, artistName = '', visibility = 'public') => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'community_poster_publish', {
+      event_category: 'Community',
+      event_label: artistName ? `${artistName} - ${albumName}` : albumName,
+      album_name: albumName,
+      artist_name: artistName,
+      visibility,
+    });
+  }
+};
+
+export const trackCommunityPosterDownload = (posterId, albumName, artistName = '', format = 'png') => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'community_poster_download', {
+      event_category: 'Community',
+      event_label: artistName ? `${artistName} - ${albumName}` : albumName,
+      poster_id: posterId,
+      album_name: albumName,
+      artist_name: artistName,
+      file_type: format,
+    });
+  }
+};
+
+export const trackCommunityPosterOpenInEditor = (posterId, albumName, artistName = '') => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'community_poster_open_editor', {
+      event_category: 'Community',
+      event_label: artistName ? `${artistName} - ${albumName}` : albumName,
+      poster_id: posterId,
+      album_name: albumName,
+      artist_name: artistName,
+    });
+  }
+};
+
+export const trackCommunitySearch = (searchTerm) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'community_search', {
+      event_category: 'Community',
+      event_label: searchTerm,
+      search_term: searchTerm,
+    });
+  }
+};
+
+export const trackCommunityFilterChange = (filterKey) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'community_filter_change', {
+      event_category: 'Community',
+      event_label: filterKey,
+      filter_key: filterKey,
+    });
+  }
+};

@@ -6,6 +6,9 @@ import NormalInput from "./inputs/NormalInput";
 import DoubleInput from "./inputs/DoubleInput";
 import ColorInput from "./inputs/ColorInput";
 import { useState, useEffect, useRef, forwardRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import apiService from "../../services/apiService";
 import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
 import CoverEditor from "./CoverEditor";
@@ -15,7 +18,7 @@ import ClickInput from "./inputs/ClickInput";
 import ButtonInput from "./inputs/ButtonInput";
 import { FaFile, FaFont } from "react-icons/fa6";
 import { IoMdDownload } from "react-icons/io";
-import { MdOutlineRefresh } from "react-icons/md";
+import { MdOutlineRefresh, MdPublic, MdLockOutline } from "react-icons/md";
 import { RiImage2Fill } from "react-icons/ri";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { HiInformationCircle } from "react-icons/hi";
@@ -23,12 +26,13 @@ import LoadingDiv from "../Commom/LoadingDiv";
 import { Palette } from "color-thief-react";
 import CanvasPoster from "./CanvasPoster";
 import AnimatedInput from "./inputs/AnimatedInput";
-import { trackPosterDownload, trackPosterPreview } from "../../services/analytics";
+import { trackPosterDownload, trackPosterPreview, trackCommunityPosterPublish, trackCommunityPosterDownload } from "../../services/analytics";
 import { exportPosterJson, importPosterJson } from "./PosterJsonIO";
 import jsPDF from 'jspdf';
 import { getHighestQualitySpotifyImage } from "../../utils/spotifyImageOptimizer";
 import { TbFileTypePdf } from "react-icons/tb";
 import { TbFileTypePng } from "react-icons/tb";
+import SetPasswordSVG from "../svgs/Login/SetPasswordSVG"
 
 const Container = styled.div`
     width: 80%;
@@ -548,8 +552,111 @@ const DownloadButton = styled.button`
     }
 `;
 
-const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson }, ref) => {
+const PublishErrorBox = styled.div`
+    background: rgba(231, 76, 60, 0.12);
+    border: 1px solid rgba(231, 76, 60, 0.35);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.88em;
+    color: #e74c3c;
+    line-height: 1.5;
+`;
+
+const VisibilityOptions = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+`;
+
+const VisibilityCard = styled.button`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid ${({ $selected }) => $selected ? 'var(--AccentColor)' : 'var(--borderColor)'};
+    background: ${({ $selected }) => $selected ? 'var(--AccentColor)20' : 'transparent'};
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+
+    &:hover {
+        border-color: var(--AccentColor);
+        background: var(--AccentColor)14;
+    }
+`;
+
+const VCardIconWrap = styled.div`
+    font-size: 1.5em;
+    color: ${({ $selected }) => $selected ? 'var(--AccentColor)' : 'var(--textColor)'};
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+`;
+
+const VCardBody = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+`;
+
+const VCardTitle = styled.span`
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--textColor);
+`;
+
+const VCardDesc = styled.span`
+    font-size: 1.1em;
+    opacity: 0.65;
+    color: var(--textColor);
+`;
+
+const IconPublic = styled(MdPublic)`
+    font-size: 2em;
+`;
+
+const IconPrivate = styled(MdLockOutline)`
+    font-size: 2em;
+`;
+
+const EmptyStateContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 70%;
+    padding: 1rem;
+`;
+
+const TextLogin = styled.p`
+    font-size: 1em;
+    color: var(--textColor);
+    margin-top: 15px;
+    font-weight: bolder;
+`;
+
+const LoginButton = styled.button`
+    margin-top: 20px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    background: var(--AccentColor);
+    color: var(--backgroundColor);
+    border: none;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+`;
+
+const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson, source, posterId, onPublishSuccess }, ref) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
     const previewRef = useRef(null);
     const canvasRef = useRef(null);
     const exportCanvasRef = useRef(null);
@@ -576,6 +683,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [customFont, setCustomFont] = useState('');
     const [customFontFile, setCustomFontFile] = useState(null);
     const [activeTab, setActiveTab] = useState('information');
+
+    // Publish tab state
+    const [publishVisibility, setPublishVisibility] = useState('public');
+    const [isPublishing, setIsPublishing] = useState(false);
+    const [publishError, setPublishError] = useState('');
 
     function applyPosterJson(json) {
         setIsLoadedFromJson(true);
@@ -798,6 +910,10 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 link.download = `Posterfy - ${albumName}.png`;
                 link.click();
                 trackPosterDownload(albumName, 'poster', artistsName);
+                if (posterId) {
+                    apiService.registerDownload(posterId).catch(() => {});
+                    trackCommunityPosterDownload(posterId, albumName, artistsName, 'png');
+                }
             } else if (exportMode === 'pdf') {
                 const img = new Image();
                 img.onload = () => {
@@ -810,6 +926,10 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                     pdf.addImage(exportImage, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
                     pdf.save(`Posterfy - ${albumName}.pdf`);
                     trackPosterDownload(albumName, 'poster_pdf', artistsName);
+                    if (posterId) {
+                        apiService.registerDownload(posterId).catch(() => {});
+                        trackCommunityPosterDownload(posterId, albumName, artistsName, 'pdf');
+                    }
                 };
                 img.src = exportImage;
             } else if (exportMode === 'jpg') {
@@ -829,6 +949,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         link.click();
                         URL.revokeObjectURL(link.href);
                         trackPosterDownload(albumName, 'poster_jpg', artistsName);
+                        if (posterId) apiService.registerDownload(posterId).catch(() => {});
                     }, 'image/jpeg', 0.95);
                 };
                 img.src = exportImage;
@@ -863,6 +984,29 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const handleDownloadClick = () => {
         setExportMode('png');
         setGenerateExport(true);
+    };
+
+    const handlePublish = async () => {
+        setIsPublishing(true);
+        setPublishError('');
+        try {
+            const payload = {
+                spotifyAlbumId: albumID,
+                albumName,
+                artistsName,
+                releaseDate,
+                visibility: publishVisibility,
+                posterJson: posterData,
+            };
+            const result = await apiService.publishPoster(payload);
+            trackCommunityPosterPublish(albumName, artistsName, publishVisibility);
+            onPublishSuccess?.(result.poster._id);
+            handleClickBack();
+        } catch (err) {
+            setPublishError(err.message || t('COMMUNITY_PublishError'));
+        } finally {
+            setIsPublishing(false);
+        }
     };
 
     const handleDownloadPDFClick = () => {
@@ -1195,6 +1339,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                     >
                                         {t('EDITOR_ExportTab')}
                                     </Tab>
+                                    {source === 'search_creation' && (
+                                        <Tab 
+                                            $active={activeTab === 'publish'} 
+                                            onClick={() => setActiveTab('publish')}
+                                        >
+                                            {t('EDITOR_PublishTab')}
+                                        </Tab>
+                                    )}
                                 </TabsContainer>
                             </AnimatedInput>
                             {activeTab === 'information' ? (
@@ -1386,7 +1538,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         </TracklistButton>
                                     </TracklistButtonsContainer>
                                 </TracklistContainer>
-                            ) : (
+                            ) : activeTab === 'export' ? (
                                 <ExportContainer>
                                     <ExportSection>
                                         <ExportLabel>{t('EXPORT_Format')}</ExportLabel>
@@ -1452,7 +1604,58 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         {t('EXPORT_DownloadButton')}
                                     </DownloadButton>
                                 </ExportContainer>
-                            )}
+                            ) : activeTab === 'publish' && source === 'search_creation' ? (
+                                <ExportContainer>
+                                    {!isAuthenticated ? (
+                                        <EmptyStateContainer>
+                                            <SetPasswordSVG width={'62%'} height={120} />
+                                            <TextLogin>{t('COMMUNITY_LoginToPublish')}</TextLogin>
+                                            <LoginButton onClick={() => navigate('/login')}>{t('Login')}</LoginButton>
+                                        </EmptyStateContainer>
+                                    ) : (
+                                        <>
+                                            <ExportSection>
+                                                <ExportLabel>{t('COMMUNITY_VisibilityLabel')}</ExportLabel>
+                                                <VisibilityOptions>
+                                                    <VisibilityCard
+                                                        $selected={publishVisibility === 'public'}
+                                                        onClick={() => setPublishVisibility('public')}
+                                                    >
+                                                        <VCardIconWrap $selected={publishVisibility === 'public'}>
+                                                            <IconPublic />
+                                                        </VCardIconWrap>
+                                                        <VCardBody>
+                                                            <VCardTitle>{t('COMMUNITY_Public')}</VCardTitle>
+                                                            <VCardDesc>{t('COMMUNITY_PublicDesc')}</VCardDesc>
+                                                        </VCardBody>
+                                                    </VisibilityCard>
+                                                    <VisibilityCard
+                                                        $selected={publishVisibility === 'private'}
+                                                        onClick={() => setPublishVisibility('private')}
+                                                    >
+                                                        <VCardIconWrap $selected={publishVisibility === 'private'}>
+                                                            <IconPrivate />
+                                                        </VCardIconWrap>
+                                                        <VCardBody>
+                                                            <VCardTitle>{t('COMMUNITY_Private')}</VCardTitle>
+                                                            <VCardDesc>{t('COMMUNITY_PrivateDesc')}</VCardDesc>
+                                                        </VCardBody>
+                                                    </VisibilityCard>
+                                                </VisibilityOptions>
+                                            </ExportSection>
+                                            {publishError && (
+                                                <PublishErrorBox>{publishError}</PublishErrorBox>
+                                            )}
+                                            <DownloadButton
+                                                onClick={handlePublish}
+                                                disabled={isPublishing}
+                                            >
+                                                {isPublishing ? t('COMMUNITY_Publishing') : t('COMMUNITY_Publish')}
+                                            </DownloadButton>
+                                        </>
+                                    )}
+                                </ExportContainer>
+                            ) : null}
                             {/* <AnimatedInput animationDelay={1050}>
                                 <DivButtons>
                                     <ButtonDiv onClick={handleDownloadClick}>

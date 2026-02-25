@@ -131,6 +131,10 @@ function App() {
               <Route path="/" element={<Layout showNavbar={true} showFooter={true} />}>
                 <Route index element={<Home loadingComplete={loadingComplete} />} />
               </Route>
+
+              <Route path="/p/:posterId" element={<Layout showNavbar={true} showFooter={true} />}>
+                <Route index element={<Home loadingComplete={loadingComplete} />} />
+              </Route>
               
               <Route path="/login" element={<Layout showNavbar={false} showFooter={false} />}>
                 <Route index element={<Login />} />

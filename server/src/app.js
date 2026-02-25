@@ -5,15 +5,21 @@ import express from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
 import session from 'express-session'
+import swaggerUi from 'swagger-ui-express'
+import basicAuth from 'express-basic-auth'
 
 import './config/passport.js'
 import passport from './config/passport.js'
 import authRoutes from './routes/auth.js'
 import userRoutes from './routes/user.js'
+import posterRoutes from './routes/poster.js'
+import communityRoutes from './routes/community.js'
+import adminRoutes from './routes/admin.js'
+import { swaggerSpec } from './config/swagger.js'
 
 const app = express()
 
-mongoose.connect(process.env.MONGO_URI).then(()=>console.log('MongoDB connected'))
+mongoose.connect(process.env.MONGO_URI).then(() => console.log('MongoDB connected'))
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -28,7 +34,7 @@ app.use(cors({
       'http://api.posterfy.space',
     ].filter(Boolean)
 
-    if (allowedOrigins.includes(origin) || allowedOrigins.some(allowed => allowed instanceof RegExp ? allowed.test(origin) : false)) {
+    if (allowedOrigins.includes(origin)) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
@@ -39,7 +45,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
-app.use(express.json())
+app.use(express.json({ limit: '2mb' }))
 app.use(express.urlencoded({ extended: true }))
 
 app.use(session({
@@ -56,34 +62,45 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use(
+  '/docs',
+  basicAuth({
+    users: { admin: 'posterfyadmins' },
+    challenge: true,
+    realm: 'Posterfy API Docs'
+  }),
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: 'Posterfy API',
+    swaggerOptions: { persistAuthorization: true }
+  })
+)
+
 app.use('/auth', authRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/posters', posterRoutes)
+app.use('/api/community', communityRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Posterfy API running',
-    user: req.user ? {
-      id: req.user._id,
-      username: req.user.username,
-      name: req.user.name
-    } : 'Not logged in'
+    docs: '/docs',
+    version: '2.0.0'
   })
 })
 
 app.use((err, req, res, next) => {
-  res.status(500).json({
-    error: 'Internal server error'
-  })
+  res.status(500).json({ error: 'Internal server error' })
 })
 
 app.use((req, res) => {
-  res.status(404).json({
-    error: 'Route not found'
-  })
+  res.status(404).json({ error: 'Route not found' })
 })
 
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
+  console.log(`API docs: http://localhost:${PORT}/docs`)
 })

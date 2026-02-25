@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import User from '../models/user.js'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key'
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '30d'
@@ -23,7 +24,7 @@ export const verifyToken = (token) => {
   }
 }
 
-export const authenticateToken = (req, res, next) => {
+export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers.authorization
   const token = authHeader && authHeader.split(' ')[1]
 
@@ -36,6 +37,20 @@ export const authenticateToken = (req, res, next) => {
     return res.status(403).json({ error: 'Invalid or expired token' })
   }
 
-  req.user = decoded
-  next()
+  try {
+    const user = await User.findById(decoded.id).select('_id username email permissions status').lean()
+    if (!user) return res.status(403).json({ error: 'User not found' })
+    if (user.status === 'suspended') return res.status(403).json({ error: 'Account suspended', code: 'SUSPENDED' })
+
+    req.user = {
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      permissions: user.permissions,
+      status: user.status
+    }
+    next()
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' })
+  }
 }

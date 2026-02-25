@@ -1,15 +1,38 @@
 import { generateToken } from '../utils/jwt.js'
 import UserService from '../services/userService.js'
 
+const decodeState = (state) => {
+  try {
+    return JSON.parse(Buffer.from(state, 'base64url').toString())
+  } catch {
+    return {}
+  }
+}
+
+const safeRedirect = (raw, fallback) => {
+  try {
+    const url = new URL(raw)
+    // Only allow http/https schemes
+    if (url.protocol === 'http:' || url.protocol === 'https:') return raw
+  } catch { /* ignore */ }
+  return fallback
+}
+
 class AuthController {
   googleCallback(req, res) {
     const token = generateToken(req.user)
-    res.redirect(`${process.env.CLIENT_URL}/dashboard?token=${token}&login=success`)
+    const fallback = `${process.env.CLIENT_URL}/dashboard`
+    const { redirect } = decodeState(req.query.state || '')
+    const dest = safeRedirect(redirect, fallback)
+    res.redirect(`${dest}?token=${token}&login=success`)
   }
 
   spotifyCallback(req, res) {
     const token = generateToken(req.user)
-    res.redirect(`${process.env.CLIENT_URL}/dashboard?token=${token}&login=success`)
+    const fallback = `${process.env.CLIENT_URL}/dashboard`
+    const { redirect } = decodeState(req.query.state || '')
+    const dest = safeRedirect(redirect, fallback)
+    res.redirect(`${dest}?token=${token}&login=success`)
   }
 
   async logout(req, res) {
