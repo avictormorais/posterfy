@@ -1,7 +1,7 @@
 import express from 'express'
 import CommunityController from '../controllers/communityController.js'
 import PosterController from '../controllers/posterController.js'
-import { authenticateToken } from '../utils/jwt.js'
+import { authenticateToken, optionalAuthenticateToken } from '../utils/jwt.js'
 import { searchLimiter } from '../middlewares/rateLimiter.js'
 
 const router = express.Router()
@@ -35,7 +35,7 @@ const router = express.Router()
  *       200:
  *         description: Paginated list of posters
  */
-router.get('/', CommunityController.list)
+router.get('/', optionalAuthenticateToken, CommunityController.list)
 
 /**
  * @openapi
@@ -61,7 +61,7 @@ router.get('/', CommunityController.list)
  *       200:
  *         description: Search results
  */
-router.get('/search', searchLimiter, CommunityController.search)
+router.get('/search', searchLimiter, optionalAuthenticateToken, CommunityController.search)
 
 /**
  * @openapi

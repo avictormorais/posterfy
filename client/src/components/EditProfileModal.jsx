@@ -179,6 +179,38 @@ const Input = styled.input`
     }
 `;
 
+const Textarea = styled.textarea`
+    padding: 12px 15px;
+    border: 2px solid var(--textColor);
+    border-radius: 8px;
+    background-color: var(--backgroundColor);
+    color: var(--textColor);
+    font-size: 1em;
+    font-family: inherit;
+    line-height: 1.5;
+    resize: none;
+    height: 88px;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+        outline: none;
+        border-color: var(--AccentColor);
+    }
+
+    &::placeholder {
+        color: var(--textColor);
+        opacity: 0.5;
+    }
+`;
+
+const CharCounter = styled.span`
+    font-size: 0.75em;
+    opacity: 0.38;
+    text-align: right;
+    font-weight: 600;
+    margin-top: -2px;
+`;
+
 const ErrorMessage = styled.span`
     color: #ff6b6b;
     font-size: 0.8em;
@@ -247,12 +279,13 @@ const SuccessMessage = styled.div`
     margin-top: 10px;
 `;
 
-export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
+export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, initialBio = '' }) {
     const { user, updateUser } = useAuth();
     const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: '',
-        username: ''
+        username: '',
+        bio: ''
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -263,10 +296,11 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
         if (user) {
             setFormData({
                 name: user.name || '',
-                username: user.username || ''
+                username: user.username || '',
+                bio: initialBio
             });
         }
-    }, [user]);
+    }, [user, initialBio]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -283,12 +317,27 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
             newErrors.username = t('UsernameFormat');
         }
 
+        if (formData.bio.trim()) {
+            const lines = formData.bio.split('\n').filter((_, i) => i < 4);
+            const hasEmpty = lines.some(l => l.trim() === '');
+            if (hasEmpty) newErrors.bio = t('DASH_BioNoEmptyLines');
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === 'bio') {
+            // Block if trying to add more than 4 lines
+            const lines = value.split('\n');
+            if (lines.length > 4) return;
+            // Block consecutive empty lines (typed \n on blank line)
+            if (lines.length >= 2 && lines[lines.length - 1] === '' && lines[lines.length - 2] === '') return;
+        }
+
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -320,14 +369,16 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
             // Update profile (name and username in a single request)
             await apiService.updateUserProfile({
                 name: formData.name.trim(),
-                username: formData.username.trim()
+                username: formData.username.trim(),
+                bio: formData.bio.trim()
             });
 
             // Update local user state
             updateUser({
                 ...user,
                 name: formData.name.trim(),
-                username: formData.username.trim()
+                username: formData.username.trim(),
+                bio: formData.bio.trim()
             });
 
             setSuccessMessage(t('ProfileUpdatedSuccessfully'));
@@ -366,9 +417,13 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
         }, 300);
     };
 
-    if (!isOpen) return null;
+    useEffect(() => {
+        if (!isOpen) return;
+        document.body.style.overflow = 'hidden';
+        return () => { document.body.style.overflow = ''; };
+    }, [isOpen]);
 
-    document.body.style.overflow = 'hidden';
+    if (!isOpen) return null;
 
     return (
         <Background isClosing={isClosing}>
@@ -411,6 +466,21 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
                             disabled={isLoading}
                         />
                         {errors.username && <ErrorMessage>{errors.username}</ErrorMessage>}
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label htmlFor="bio">{t('DASH_Bio')}</Label>
+                        <Textarea
+                            id="bio"
+                            name="bio"
+                            value={formData.bio}
+                            onChange={handleInputChange}
+                            placeholder={t('DASH_BioPlaceholder')}
+                            maxLength={160}
+                            disabled={isLoading}
+                        />
+                        <CharCounter>{160 - (formData.bio?.length || 0)} {t('DASH_BioChars')}</CharCounter>
+                        {errors.bio && <ErrorMessage>{errors.bio}</ErrorMessage>}
                     </FormGroup>
 
                     {errors.general && <ErrorMessage>{errors.general}</ErrorMessage>}

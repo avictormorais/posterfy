@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { IoClose } from "react-icons/io5";
 import Icon from "../svgs/icon";
@@ -220,7 +221,10 @@ const Divisor = styled.div`
 
 export default function AlertModal({ title, paragraph, imageURL, postImageText, canClose, confirmText, onConfirm, cancelText, onCancel, isClosing, customButton }){
 
-    document.body.style.overflow = 'hidden';
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => { document.body.style.overflow = ''; };
+    }, []);
 
     return(
         <Background 

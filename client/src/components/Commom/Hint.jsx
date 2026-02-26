@@ -33,7 +33,7 @@ const HintText = styled.div`
   color: var(--backgroundColor);
   padding: 8px 12px;
   border-radius: 8px;
-  font-size: 0.85em;
+  font-size: 0.65em;
   font-weight: 600;
   white-space: nowrap;
   z-index: 1000;

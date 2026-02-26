@@ -10,6 +10,7 @@ import SectionExplanation from "../../SectionExplanation.jsx";
 import PosterCard from "../../Community/PosterCard.jsx";
 import PosterShare from "../../svgs/PosterShare.jsx";
 import apiService from "../../../services/apiService.js";
+import { useAuth } from "../../../contexts/AuthContext.jsx";
 import { trackCommunitySearch, trackCommunityFilterChange } from "../../../services/analytics.js";
 
 // ─── Keyframes ────────────────────────────────────────────────
@@ -204,15 +205,17 @@ const LoadMoreBtn = styled.button`
 // ─── Filter definitions ───────────────────────────────────────
 
 const FILTERS = [
-    { key: 'popular', labelKey: 'COMMUNITY_Popular', sort: 'popular', period: null },
-    { key: 'recent',  labelKey: 'COMMUNITY_Recent',  sort: 'recent',  period: null },
-    { key: 'week',    labelKey: 'COMMUNITY_ThisWeek', sort: 'popular', period: 'week' },
+    { key: 'popular',     labelKey: 'COMMUNITY_Popular',     sort: 'popular', period: null, requiresAuth: false },
+    { key: 'recent',      labelKey: 'COMMUNITY_Recent',      sort: 'recent',  period: null, requiresAuth: false },
+    { key: 'week',        labelKey: 'COMMUNITY_ThisWeek',    sort: 'popular', period: 'week', requiresAuth: false },
+    { key: 'myfavorites', labelKey: 'COMMUNITY_MyFavorites', sort: null,      period: null, requiresAuth: true  },
 ];
 
 // ─── Component ────────────────────────────────────────────────
 
 function Community() {
     const { t } = useTranslation();
+    const { isAuthenticated } = useAuth();
 
     const [filter,       setFilter]       = useState('popular');
     const [searchInput,  setSearchInput]  = useState('');
@@ -233,12 +236,17 @@ function Community() {
         if (pageNum === 1) setLoading(true); else setLoadingMore(true);
         setFetchError(false);
         try {
-            const result = await apiService.getCommunityPosters({
-                sort:   cfg.sort,
-                page:   pageNum,
-                limit:  8,
-                period: cfg.period,
-            });
+            let result;
+            if (filterKey === 'myfavorites') {
+                result = await apiService.getUserFavorites({ page: pageNum, limit: 8 });
+            } else {
+                result = await apiService.getCommunityPosters({
+                    sort:   cfg.sort,
+                    page:   pageNum,
+                    limit:  8,
+                    period: cfg.period,
+                });
+            }
             setPosters(prev => append ? [...prev, ...result.posters] : result.posters);
             setPage(pageNum);
             setHasMore(result.hasMore);
@@ -273,6 +281,15 @@ function Community() {
         fetchBrowse('popular', 1, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Reset favorites filter if user logs out
+    useEffect(() => {
+        if (!isAuthenticated && filter === 'myfavorites') {
+            setFilter('popular');
+            fetchBrowse('popular', 1, false);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthenticated]);
 
     // Filter change
     const handleFilterChange = (key) => {
@@ -324,26 +341,28 @@ function Community() {
             <SectionExplanation title={t('CommunityTitle')} />
 
             <Controls>
-                <SearchBar role="search">
-                    <SearchIconStyled aria-hidden="true" />
-                    <Spanbar />
-                    <SearchInput
-                        type="text"
-                        value={searchInput}
-                        onChange={handleSearchChange}
-                        placeholder={t('COMMUNITY_SearchPlaceholder')}
-                        autoComplete="off"
-                    />
-                    {searchInput && (
-                        <ClearBtn onClick={handleClearSearch} type="button" aria-label="Clear search">
-                            <IoCloseOutline />
-                        </ClearBtn>
-                    )}
-                </SearchBar>
+                {filter !== 'myfavorites' && (
+                    <SearchBar role="search">
+                        <SearchIconStyled aria-hidden="true" />
+                        <Spanbar />
+                        <SearchInput
+                            type="text"
+                            value={searchInput}
+                            onChange={handleSearchChange}
+                            placeholder={t('COMMUNITY_SearchPlaceholder')}
+                            autoComplete="off"
+                        />
+                        {searchInput && (
+                            <ClearBtn onClick={handleClearSearch} type="button" aria-label="Clear search">
+                                <IoCloseOutline />
+                            </ClearBtn>
+                        )}
+                    </SearchBar>
+                )}
 
 
                 <FilterRow>
-                    {FILTERS.map(f => (
+                    {FILTERS.filter(f => !f.requiresAuth || isAuthenticated).map(f => (
                         <FilterTab
                             key={f.key}
                             $active={filter === f.key && !activeSearch}

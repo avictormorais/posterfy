@@ -24,6 +24,32 @@ export const verifyToken = (token) => {
   }
 }
 
+export const optionalAuthenticateToken = async (req, res, next) => {
+  const authHeader = req.headers.authorization
+  const token = authHeader && authHeader.split(' ')[1]
+
+  if (!token) return next()
+
+  const decoded = verifyToken(token)
+  if (!decoded) return next()
+
+  try {
+    const user = await User.findById(decoded.id).select('_id username email permissions status').lean()
+    if (user && user.status === 'active') {
+      req.user = {
+        id: user._id.toString(),
+        username: user.username,
+        email: user.email,
+        permissions: user.permissions,
+        status: user.status
+      }
+    }
+  } catch (_) {
+    // silent — optional auth never blocks the request
+  }
+  next()
+}
+
 export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers.authorization
   const token = authHeader && authHeader.split(' ')[1]

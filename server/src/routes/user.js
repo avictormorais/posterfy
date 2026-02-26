@@ -35,6 +35,9 @@ router.get('/profile', UserController.getProfile)
  */
 router.put('/profile', UserController.updateProfile)
 
+router.put('/pinned', UserController.setPinnedPoster)
+router.delete('/pinned', UserController.removePinnedPoster)
+
 /**
  * @openapi
  * /api/user/change-username:
@@ -94,5 +97,7 @@ router.get('/posters', PosterController.getUserPosters)
  *         description: Paginated favorites list
  */
 router.get('/favorites', PosterController.getUserFavorites)
+
+router.get('/stats', UserController.getStats)
 
 export default router

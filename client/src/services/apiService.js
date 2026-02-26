@@ -107,12 +107,26 @@ class ApiService {
     return this.request(`/api/posters/${id}/favorite`, { method: 'POST' })
   }
 
+  async setPinnedPoster(posterId) {
+    if (!posterId) {
+      return this.request('/api/user/pinned', { method: 'DELETE' })
+    }
+    return this.request('/api/user/pinned', {
+      method: 'PUT',
+      body: JSON.stringify({ posterId })
+    })
+  }
+
   async getUserPosters({ page = 1, limit = 20 } = {}) {
     return this.request(`/api/user/posters?page=${page}&limit=${limit}`)
   }
 
   async getUserFavorites({ page = 1, limit = 20 } = {}) {
     return this.request(`/api/user/favorites?page=${page}&limit=${limit}`)
+  }
+
+  async getUserStats() {
+    return this.request('/api/user/stats')
   }
 
   async getCommunityPosters({ sort = 'popular', page = 1, limit = 20, period } = {}) {

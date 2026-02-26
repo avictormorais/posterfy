@@ -10,7 +10,8 @@ class CommunityController {
         sort,
         page: parseInt(page),
         limit: parseInt(limit),
-        period: period || null
+        period: period || null,
+        userId: req.user?.id || null
       })
       res.json(result)
     } catch (error) {
@@ -21,7 +22,7 @@ class CommunityController {
   async search(req, res) {
     try {
       const { q, page = 1, limit = 20 } = req.query
-      const result = await PosterService.search({ q, page: parseInt(page), limit: parseInt(limit) })
+      const result = await PosterService.search({ q, page: parseInt(page), limit: parseInt(limit), userId: req.user?.id || null })
       res.json(result)
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' })

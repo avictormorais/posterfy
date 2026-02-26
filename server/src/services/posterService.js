@@ -108,7 +108,7 @@ class PosterService {
     return { posters, total, page, hasMore: skip + posters.length < total }
   }
 
-  async findPublic({ sort = 'popular', page = 1, limit = DEFAULT_LIMIT, period = null }) {
+  async findPublic({ sort = 'popular', page = 1, limit = DEFAULT_LIMIT, period = null, userId = null }) {
     const safeLimit = Math.min(limit, MAX_LIMIT)
     const skip = (page - 1) * safeLimit
 
@@ -142,11 +142,18 @@ class PosterService {
       Poster.countDocuments(filter)
     ])
 
-    return { posters, total, page, hasMore: skip + posters.length < total }
+    if (!userId) return { posters, total, page, hasMore: skip + posters.length < total }
+
+    const posterIds = posters.map(p => p._id)
+    const favs = await Favorite.find({ userId, posterId: { $in: posterIds } }).lean()
+    const favSet = new Set(favs.map(f => f.posterId.toString()))
+    const postersWithFav = posters.map(p => ({ ...p, favorited: favSet.has(p._id.toString()) }))
+
+    return { posters: postersWithFav, total, page, hasMore: skip + posters.length < total }
   }
 
-  async search({ q, page = 1, limit = DEFAULT_LIMIT }) {
-    if (!q || !q.trim()) return this.findPublic({ sort: 'popular', page, limit })
+  async search({ q, page = 1, limit = DEFAULT_LIMIT, userId = null }) {
+    if (!q || !q.trim()) return this.findPublic({ sort: 'popular', page, limit, userId })
 
     const safeLimit = Math.min(limit, MAX_LIMIT)
     const skip = (page - 1) * safeLimit
@@ -191,10 +198,17 @@ class PosterService {
       if (!seen.has(id)) { seen.add(id); merged.push(p) }
     }
 
-    const total   = Math.max(textCount, authorCount, merged.length)
-    const posters = merged.slice(skip, skip + safeLimit)
+    const total  = Math.max(textCount, authorCount, merged.length)
+    const sliced = merged.slice(skip, skip + safeLimit)
 
-    return { posters, total, page, hasMore: skip + posters.length < total }
+    if (!userId) return { posters: sliced, total, page, hasMore: skip + sliced.length < total }
+
+    const posterIds = sliced.map(p => p._id)
+    const favs = await Favorite.find({ userId, posterId: { $in: posterIds } }).lean()
+    const favSet = new Set(favs.map(f => f.posterId.toString()))
+    const postersWithFav = sliced.map(p => ({ ...p, favorited: favSet.has(p._id.toString()) }))
+
+    return { posters: postersWithFav, total, page, hasMore: skip + sliced.length < total }
   }
 
   async trendingAlbums(limit = 10) {
