@@ -111,8 +111,6 @@ export const trackPosterRecreation = (albumName, artistName = '', albumId = '', 
   }
 };
 
-// ─── Community events ─────────────────────────────────────────
-
 export const trackCommunityPosterView = (posterId, albumName, artistName = '') => {
   if (typeof window.gtag !== 'undefined') {
     window.gtag('event', 'community_poster_view', {
@@ -181,8 +179,6 @@ export const trackCommunityFilterChange = (filterKey) => {
     });
   }
 };
-
-// ─── Profile events ───────────────────────────────────────────
 
 export const trackProfileView = (username, isOwner = false) => {
   if (typeof window.gtag !== 'undefined') {

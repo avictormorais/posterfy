@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+﻿/* eslint-disable react/prop-types */
 import { useState, useEffect, useRef, useCallback } from "react";
 import styled, { keyframes } from "styled-components";
 import { useTranslation } from 'react-i18next';
@@ -13,14 +13,11 @@ import apiService from "../../../services/apiService.js";
 import { useAuth } from "../../../contexts/AuthContext.jsx";
 import { trackCommunitySearch, trackCommunityFilterChange } from "../../../services/analytics.js";
 
-// ─── Keyframes ────────────────────────────────────────────────
-
 const spin = keyframes`
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
 `;
 
-// ─── Styled Components ────────────────────────────────────────
 
 const Container = styled.div`
     width: 100%;
@@ -202,16 +199,12 @@ const LoadMoreBtn = styled.button`
     &:disabled { background-color: #666; cursor: not-allowed; }
 `;
 
-// ─── Filter definitions ───────────────────────────────────────
-
 const FILTERS = [
     { key: 'popular',     labelKey: 'COMMUNITY_Popular',     sort: 'popular', period: null, requiresAuth: false },
     { key: 'recent',      labelKey: 'COMMUNITY_Recent',      sort: 'recent',  period: null, requiresAuth: false },
     { key: 'week',        labelKey: 'COMMUNITY_ThisWeek',    sort: 'popular', period: 'week', requiresAuth: false },
     { key: 'myfavorites', labelKey: 'COMMUNITY_MyFavorites', sort: null,      period: null, requiresAuth: true  },
 ];
-
-// ─── Component ────────────────────────────────────────────────
 
 function Community() {
     const { t } = useTranslation();
@@ -228,8 +221,6 @@ function Community() {
     const [fetchError,   setFetchError]   = useState(false);
 
     const debounceRef = useRef(null);
-
-    // ── Fetchers ──────────────────────────────────────────
 
     const fetchBrowse = useCallback(async (filterKey, pageNum, append) => {
         const cfg = FILTERS.find(f => f.key === filterKey);

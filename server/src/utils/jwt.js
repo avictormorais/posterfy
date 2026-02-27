@@ -1,7 +1,11 @@
 import jwt from 'jsonwebtoken'
 import User from '../models/user.js'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key'
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not set. Refusing to start.')
+}
+
+const JWT_SECRET = process.env.JWT_SECRET
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '30d'
 
 export const generateToken = (user) => {

@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+﻿/* eslint-disable react/prop-types */
 import { useState, useEffect, useRef, useCallback } from "react";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -13,8 +13,6 @@ import SectionExplanation from "../../SectionExplanation.jsx";
 import apiService from "../../../services/apiService.js";
 import { trackProfileSearch, trackProfileCardClick } from "../../../services/analytics.js";
 import PosterWall from "../../svgs/PosterWall.jsx";
-
-// ─── Keyframes ────────────────────────────────────────────────
 
 const spin = keyframes`
     from { transform: rotate(0deg); }
@@ -31,7 +29,6 @@ const shimmer = keyframes`
     to   { background-position: -100% 0; }
 `;
 
-// ─── Styled Components ────────────────────────────────────────
 
 const Container = styled.div`
     width: 100%;
@@ -179,8 +176,6 @@ const LoadMoreBtn = styled.button`
     &:hover:not(:disabled) { background-color: var(--AccentColor); }
     &:disabled { background-color: #666; cursor: not-allowed; }
 `;
-
-// ─── Profile Card ─────────────────────────────────────────────
 
 const ProfileCardWrap = styled.div`
     background: var(--glassBackground);
@@ -385,7 +380,6 @@ function ProfileCard({ user, index, showRank }) {
     );
 }
 
-// ─── Section Component ────────────────────────────────────────
 
 function Profiles() {
     const { t } = useTranslation();

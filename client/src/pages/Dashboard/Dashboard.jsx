@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+﻿import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
@@ -14,14 +14,12 @@ import { IoEye, IoHeart, IoCloudDownload } from "react-icons/io5";
 import { MdBarChart } from "react-icons/md";
 import PosterCard from "../../components/Community/PosterCard";
 
-// ─── Keyframes ────────────────────────────────────────────────
 
 const fadeIn = keyframes`
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
 `;
 
-// ─── Layout ───────────────────────────────────────────────────
 
 const Container = styled.div`
     display: flex;
@@ -229,8 +227,6 @@ const Btn = styled.button`
     }
 `;
 
-// ─── Tabs ─────────────────────────────────────────────────────
-
 const TabRow = styled.div`
     display: flex;
     gap: 0;
@@ -262,8 +258,6 @@ const TabContent = styled.div`
     margin-top: 16px;
     animation: ${fadeIn} 0.25s ease;
 `;
-
-// ─── Stats ────────────────────────────────────────────────────
 
 const StatsGrid = styled.div`
     display: grid;
@@ -357,7 +351,6 @@ const TopCardStat = styled.p`
     color: var(--AccentColor);
 `;
 
-// ─── Poster list / Filter & Search ──────────────────────────
 
 const PosterGrid = styled.div`
     display: grid;
@@ -415,7 +408,6 @@ const SearchInput = styled.input`
     &:focus { border-color: var(--AccentColor); }
 `;
 
-// ─── Featured Poster ────────────────────────────────────────
 const FeaturedContainer = styled.div`
     display: flex;
     width: 80%;
@@ -534,7 +526,6 @@ const FeaturedArtist = styled.p`
     text-overflow: ellipsis;
 `;
 
-// ─── Misc ─────────────────────────────────────────────────────
 
 const EmptyState = styled.div`
     display: flex;
@@ -573,15 +564,12 @@ const LoadMoreBtn = styled.button`
     &:disabled { background-color: #666; cursor: not-allowed; }
 `;
 
-// ─── Helpers ──────────────────────────────────────────────────
 
 const fmt = (n = 0) => {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.0', '') + 'M';
     if (n >= 1_000)     return (n / 1_000).toFixed(1).replace('.0', '') + 'k';
     return String(n);
 };
-
-// ─── Sub-components ───────────────────────────────────────────
 
 function StatsTab({ stats }) {
     const { t } = useTranslation();
@@ -629,7 +617,6 @@ function StatsTab({ stats }) {
     );
 }
 
-// ─── Main ─────────────────────────────────────────────────────
 
 export default function Dashboard() {
     const navigate = useNavigate();

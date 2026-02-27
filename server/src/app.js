@@ -62,10 +62,17 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
+const SWAGGER_USER = process.env.SWAGGER_USER
+const SWAGGER_PASSWORD = process.env.SWAGGER_PASSWORD
+
+if (!SWAGGER_USER || !SWAGGER_PASSWORD) {
+  console.warn('[WARN] SWAGGER_USER or SWAGGER_PASSWORD not set — /docs will be inaccessible')
+}
+
 app.use(
   '/docs',
   basicAuth({
-    users: { admin: 'posterfyadmins' },
+    users: { [SWAGGER_USER || '']: SWAGGER_PASSWORD || '' },
     challenge: true,
     realm: 'Posterfy API Docs'
   }),

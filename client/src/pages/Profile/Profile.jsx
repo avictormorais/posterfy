@@ -24,14 +24,10 @@ import {
     trackProfilePosterVisibility
 } from "../../services/analytics";
 
-// ─── Keyframes ────────────────────────────────────────────────
-
 const fadeIn = keyframes`
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
 `;
-
-// ─── Layout ───────────────────────────────────────────────────
 
 const Container = styled.div`
     display: flex;
@@ -281,8 +277,6 @@ const Btn = styled.button`
     }
 `;
 
-// ─── Tabs ─────────────────────────────────────────────────────
-
 const TabRow = styled.div`
     display: flex;
     gap: 0;
@@ -331,8 +325,6 @@ const TabContent = styled.div`
 
     @media (max-width: 600px) { width: 90%; }
 `;
-
-// ─── Stats ────────────────────────────────────────────────────
 
 const StatsGrid = styled.div`
     display: grid;
@@ -426,8 +418,6 @@ const TopCardStat = styled.p`
     color: var(--AccentColor);
 `;
 
-// ─── Poster list / Filter & Search ──────────────────────────
-
 const PosterGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -484,7 +474,6 @@ const SearchInput = styled.input`
     &:focus { border-color: var(--AccentColor); }
 `;
 
-// ─── Featured Poster ────────────────────────────────────────
 const FeaturedContainer = styled.div`
     display: flex;
     width: 80%;
@@ -607,8 +596,6 @@ const FeaturedArtist = styled.p`
     text-overflow: ellipsis;
 `;
 
-// ─── Misc ─────────────────────────────────────────────────────
-
 const EmptyState = styled.div`
     display: flex;
     flex-direction: column;
@@ -681,15 +668,11 @@ const LoadMoreBtn = styled.button`
     &:disabled { background-color: #666; cursor: not-allowed; }
 `;
 
-// ─── Helpers ──────────────────────────────────────────────────
-
 const fmt = (n = 0) => {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.0', '') + 'M';
     if (n >= 1_000)     return (n / 1_000).toFixed(1).replace('.0', '') + 'k';
     return String(n);
 };
-
-// ─── Sub-components ───────────────────────────────────────────
 
 function StatsTab({ stats }) {
     const { t } = useTranslation();
@@ -736,8 +719,6 @@ function StatsTab({ stats }) {
         </>
     );
 }
-
-// ─── Main ─────────────────────────────────────────────────────
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -1023,7 +1004,6 @@ export default function Profile() {
 
     return (
         <Container>
-            {/* Profile */}
             <ProfileSection>
                 <ProfileTop>
                     {userProfile?.avatar
@@ -1124,7 +1104,6 @@ export default function Profile() {
                 <PartialBanner>{t('PROFILE_PartialError')}</PartialBanner>
             )}
 
-            {/* Tabs */}
             <TabRow>
                 <Tab $active={activeTab === 'myposters'} onClick={() => setActiveTab('myposters')}>
                     {isOwner ? t('DASH_MyPosters') : t('DASH_Posters')}
@@ -1235,8 +1214,6 @@ export default function Profile() {
                 )}
             </TabContent>
 
-            {/* Delete confirm modal */}
-            {/* Delete confirm modal */}
             {isOwner && deleteTarget && (
                 <AlertModal
                     title={t('DASH_ConfirmDeleteTitle')}

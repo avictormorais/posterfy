@@ -1,11 +1,9 @@
-import styled, { keyframes } from 'styled-components'
+﻿import styled, { keyframes } from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import { IoBrush, IoColorPalette, IoDiamond } from 'react-icons/io5'
 import { IoMdColorFilter } from 'react-icons/io'
 import Hint from './Hint'
 import PosterfyIcon from '../svgs/icon'
-
-// ─── Tier config ──────────────────────────────────────────────
 
 const TIERS = {
   creator_bronze:  { key: 'bronze',  color: '#cd7f32', Icon: IoBrush },
@@ -14,14 +12,10 @@ const TIERS = {
   creator_diamond: { key: 'diamond', color: '#5bc4f5', Icon: IoDiamond },
 }
 
-// ─── Subtle pulse for diamond ─────────────────────────────────
-
 const shine = keyframes`
   0%, 100% { filter: brightness(1); }
   50%      { filter: brightness(1.3); }
 `
-
-// ─── Styled ───────────────────────────────────────────────────
 
 const Badge = styled.div`
   display: flex;
@@ -43,8 +37,6 @@ const Badge = styled.div`
     margin-top: -1px;
   }
 `
-
-// ─── Tier Badge ───────────────────────────────────────────────
 
 export default function TierBadge({ badge, badgeProgress, isOwner = false, size = 20 }) {
   const { t } = useTranslation()
@@ -78,7 +70,6 @@ export default function TierBadge({ badge, badgeProgress, isOwner = false, size 
   )
 }
 
-// ─── Admin Badge ──────────────────────────────────────────────
 
 const AdminBadgeWrap = styled.div`
   display: flex;
