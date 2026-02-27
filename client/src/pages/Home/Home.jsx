@@ -7,6 +7,7 @@ import SectionExplanation from '../../components/SectionExplanation';
 import Faq from '../../components/sections/Faq/Faq';
 import Share from '../../components/sections/SharePosters/Share';
 import Publish from '../../components/sections/SharePosters/Community';
+import Profiles from '../../components/sections/Profiles/Profiles';
 import Thanks from '../../components/sections/Thanks/Thanks';
 import PosterBySearch from '../../components/PosterEditor/Models/PosterBySearch';
 import PosterEditor from '../../components/PosterEditor/PosterEditor';
@@ -68,6 +69,7 @@ export default function Home({ loadingComplete }) {
   const [explanationRef, explanationVisible] = useScrollAnimation();
   const [posterSectionRef, posterSectionVisible] = useScrollAnimation();
   const [publishRef, publishVisible] = useScrollAnimation();
+  const [profilesRef, profilesVisible] = useScrollAnimation();
   const [shareRef, shareVisible] = useScrollAnimation();
   const [faqRef, faqVisible] = useScrollAnimation();
   const [thanksRef, thanksVisible] = useScrollAnimation();
@@ -133,6 +135,10 @@ export default function Home({ loadingComplete }) {
 
       <FadeInSection ref={publishRef} $isVisible={publishVisible}>
         <Publish />
+      </FadeInSection>
+
+      <FadeInSection ref={profilesRef} $isVisible={profilesVisible}>
+        <Profiles />
       </FadeInSection>
 
       <FadeInSection ref={shareRef} $isVisible={shareVisible}>

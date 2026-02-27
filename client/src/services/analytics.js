@@ -181,3 +181,102 @@ export const trackCommunityFilterChange = (filterKey) => {
     });
   }
 };
+
+// ─── Profile events ───────────────────────────────────────────
+
+export const trackProfileView = (username, isOwner = false) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'profile_view', {
+      event_category: 'Profile',
+      event_label: username,
+      username,
+      is_owner: isOwner,
+    });
+  }
+};
+
+export const trackProfileSearch = (searchTerm) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'profile_search', {
+      event_category: 'Profile',
+      event_label: searchTerm,
+      search_term: searchTerm,
+    });
+  }
+};
+
+export const trackProfileCardClick = (username, rank = null) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'profile_card_click', {
+      event_category: 'Profile',
+      event_label: username,
+      username,
+      rank: rank || undefined,
+    });
+  }
+};
+
+export const trackProfileEdit = (username) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'profile_edit', {
+      event_category: 'Profile',
+      event_label: username,
+      username,
+    });
+  }
+};
+
+export const trackProfileEditSave = (username, fieldsChanged = []) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'profile_edit_save', {
+      event_category: 'Profile',
+      event_label: username,
+      username,
+      fields_changed: fieldsChanged.join(','),
+    });
+  }
+};
+
+export const trackProfileSpotifyConnect = (username) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'profile_spotify_connect', {
+      event_category: 'Profile',
+      event_label: username,
+      username,
+    });
+  }
+};
+
+export const trackProfilePosterPin = (username, posterId) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'profile_poster_pin', {
+      event_category: 'Profile',
+      event_label: username,
+      username,
+      poster_id: posterId,
+    });
+  }
+};
+
+export const trackProfilePosterDelete = (username, posterId, albumName = '') => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'profile_poster_delete', {
+      event_category: 'Profile',
+      event_label: albumName || posterId,
+      username,
+      poster_id: posterId,
+    });
+  }
+};
+
+export const trackProfilePosterVisibility = (username, posterId, visibility) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'profile_poster_visibility', {
+      event_category: 'Profile',
+      event_label: `${visibility}`,
+      username,
+      poster_id: posterId,
+      visibility,
+    });
+  }
+};

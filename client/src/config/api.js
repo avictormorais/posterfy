@@ -4,6 +4,6 @@ export const API_CONFIG = {
 }
 
 export const OAUTH_CONFIG = {
-  GOOGLE_REDIRECT_URI: `${window.location.origin}/dashboard`,
-  SPOTIFY_REDIRECT_URI: `${window.location.origin}/dashboard`,
+  GOOGLE_REDIRECT_URI: `${window.location.origin}/login`,
+  SPOTIFY_REDIRECT_URI: `${window.location.origin}/login`,
 }

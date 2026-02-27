@@ -104,6 +104,31 @@ router.get('/top-users', CommunityController.topUsers)
 
 /**
  * @openapi
+ * /api/community/search-users:
+ *   get:
+ *     tags: [Community]
+ *     summary: Search users by name or username
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Paginated list of users
+ */
+router.get('/search-users', CommunityController.searchUsers)
+
+/**
+ * @openapi
  * /api/community/albums/{spotifyAlbumId}:
  *   get:
  *     tags: [Community]
@@ -139,5 +164,25 @@ router.get('/albums/:spotifyAlbumId', CommunityController.albumPosters)
  *         $ref: '#/components/responses/NotFound'
  */
 router.get('/users/:username', CommunityController.getUserPublicProfile)
+
+/**
+ * @openapi
+ * /api/community/users/{username}/stats:
+ *   get:
+ *     tags: [Community]
+ *     summary: Get public stats of a user
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Public user stats
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get('/users/:username/stats', CommunityController.getUserPublicStats)
 
 export default router

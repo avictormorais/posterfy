@@ -1,5 +1,6 @@
 import UserService from '../services/userService.js'
 import Poster from '../models/poster.js'
+import BadgeService from '../services/badgeService.js'
 
 class UserController {
   async getProfile(req, res) {
@@ -8,6 +9,8 @@ class UserController {
       if (!user) {
         return res.status(404).json({ error: 'User not found' })
       }
+
+      const badgeProgress = BadgeService.getBadgeProgress(user)
 
       res.json({
         user: {
@@ -21,7 +24,11 @@ class UserController {
           createdAt: user.createdAt,
           hasGoogle: !!user.googleId,
           hasSpotify: !!user.spotifyId,
-          spotifyId: user.spotifyId || null
+          spotifyId: user.spotifyId || null,
+          showSpotifyProfile: user.showSpotifyProfile || false,
+          badge: user.badge,
+          badgeScore: user.badgeScore || 0,
+          badgeProgress
         }
       })
     } catch (error) {
@@ -31,9 +38,9 @@ class UserController {
 
   async updateProfile(req, res) {
     try {
-      const { name, username, bio } = req.body
+      const { name, username, bio, showSpotifyProfile } = req.body
 
-      const user = await UserService.updateProfile(req.user.id, { name, username, bio })
+      const user = await UserService.updateProfile(req.user.id, { name, username, bio, showSpotifyProfile })
 
       req.user = user
 
@@ -45,7 +52,10 @@ class UserController {
           username: user.username,
           email: user.email,
           avatar: user.avatar,
-          bio: user.bio || ''
+          bio: user.bio || '',
+          hasSpotify: !!user.spotifyId,
+          spotifyId: user.spotifyId || null,
+          showSpotifyProfile: user.showSpotifyProfile || false
         }
       })
     } catch (error) {

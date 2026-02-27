@@ -172,8 +172,8 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
   }, [lastScrollY])
 
   const handleClickAccount = () => {
-    if(isAuthenticated){
-      navigate('/dashboard')
+    if(isAuthenticated && user){
+      navigate(`/u/${user.username}`)
     } else{
       navigate('/login')
     }

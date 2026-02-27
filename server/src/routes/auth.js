@@ -9,7 +9,7 @@ const encodeState = (redirect) =>
   Buffer.from(JSON.stringify({ redirect })).toString('base64url')
 
 router.get('/google', (req, res, next) => {
-  const redirect = req.query.redirect || `${process.env.CLIENT_URL}/dashboard`
+  const redirect = req.query.redirect || `${process.env.CLIENT_URL}/login`
   passport.authenticate('google', {
     scope: ['profile', 'email'],
     state: encodeState(redirect)
@@ -24,7 +24,7 @@ router.get('/google/callback',
 )
 
 router.get('/spotify', (req, res, next) => {
-  const redirect = req.query.redirect || `${process.env.CLIENT_URL}/dashboard`
+  const redirect = req.query.redirect || `${process.env.CLIENT_URL}/login`
   passport.authenticate('spotify', {
     scope: ['user-read-email', 'user-read-private'],
     state: encodeState(redirect)

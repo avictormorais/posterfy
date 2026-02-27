@@ -7,12 +7,22 @@ import { FaGoogle } from "react-icons/fa";
 import { SiSpotify } from "react-icons/si";
 import { useTranslation } from 'react-i18next';
 import Loading from "../../components/Commom/Loading";
+import PosterWall from "../../components/svgs/PosterWall.jsx";
 import EditProfileModal from "../../components/EditProfileModal";
 import Hint from "../../components/Commom/Hint";
+import TierBadge, { AdminBadge } from "../../components/Commom/TierBadge";
 import AlertModal from "../../components/Commom/AlertModal";
 import { IoEye, IoHeart, IoCloudDownload } from "react-icons/io5";
 import { MdBarChart } from "react-icons/md";
 import PosterCard from "../../components/Community/PosterCard";
+import {
+    trackProfileView,
+    trackProfileEdit,
+    trackProfileSpotifyConnect,
+    trackProfilePosterPin,
+    trackProfilePosterDelete,
+    trackProfilePosterVisibility
+} from "../../services/analytics";
 
 // ─── Keyframes ────────────────────────────────────────────────
 
@@ -36,6 +46,11 @@ const ProfileSection = styled.div`
     flex-direction: column;
     width: 80%;
     margin-top: 100px;
+
+    @media (max-width: 600px) {
+        width: 90%;
+        margin-top: 80px;
+    }
 `;
 
 const BioSection = styled.div`
@@ -43,6 +58,8 @@ const BioSection = styled.div`
     flex-direction: column;
     width: 80%;
     padding-inline: 10px;
+
+    @media (max-width: 600px) { width: 90%; }
 `;
 
 const ProfileTop = styled.div`
@@ -51,6 +68,12 @@ const ProfileTop = styled.div`
     align-items: center;
 
     @media (max-width: 900px) { flex-wrap: wrap; }
+
+    @media (max-width: 600px) {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
 `;
 
 const ProfileBottom = styled.div`
@@ -66,6 +89,8 @@ const Avatar = styled.img`
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
+
+    @media (max-width: 600px) { width: 72px; height: 72px; }
 `;
 
 const AvatarPlaceholder = styled.div`
@@ -80,6 +105,8 @@ const AvatarPlaceholder = styled.div`
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+
+    @media (max-width: 600px) { width: 72px; height: 72px; font-size: 1.6em; }
 `;
 
 const UserInfo = styled.div`
@@ -89,6 +116,12 @@ const UserInfo = styled.div`
     margin-left: 20px;
     flex: 1;
     min-width: 0;
+
+    @media (max-width: 600px) {
+        margin-left: 0;
+        margin-top: 12px;
+        align-items: center;
+    }
 `;
 
 const UserName = styled.h2`
@@ -100,6 +133,11 @@ const UserName = styled.h2`
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+
+    @media (max-width: 600px) {
+        font-size: 1.25em;
+        justify-content: center;
+    }
 `;
 
 const Username = styled.p`
@@ -136,6 +174,12 @@ const BioText = styled.p`
     white-space: pre-wrap;
     word-break: break-word;
     font-weight: bold;
+
+    @media (max-width: 600px) {
+        font-size: 0.85em;
+        max-width: 100%;
+        text-align: center;
+    }
 `;
 
 const ProfileLinks = styled.div`
@@ -144,6 +188,8 @@ const ProfileLinks = styled.div`
     flex-wrap: wrap;
     align-items: center;
     margin-top: 12px;
+
+    @media (max-width: 600px) { justify-content: center; }
 `;
 
 const SpotifyLinkBtn = styled.a`
@@ -200,6 +246,12 @@ const ActionBtns = styled.div`
     margin-left: auto;
 
     @media (max-width: 900px) { margin-left: 0; margin-top: 16px; }
+
+    @media (max-width: 600px) {
+        width: 100%;
+        justify-content: center;
+        margin-top: 16px;
+    }
 `;
 
 const Btn = styled.button`
@@ -237,6 +289,14 @@ const TabRow = styled.div`
     margin-top: 28px;
     width: 80%;
     border-bottom: 2px solid var(--borderColor, rgba(128,128,128,0.2));
+
+    @media (max-width: 600px) {
+        width: 90%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+    }
 `;
 
 const Tab = styled.button`
@@ -255,12 +315,21 @@ const Tab = styled.button`
     gap: 7px;
 
     &:hover { color: var(--AccentColor); }
+
+    @media (max-width: 600px) {
+        padding: 10px 16px;
+        font-size: 0.85em;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
 `;
 
 const TabContent = styled.div`
     width: 80%;
     margin-top: 16px;
     animation: ${fadeIn} 0.25s ease;
+
+    @media (max-width: 600px) { width: 90%; }
 `;
 
 // ─── Stats ────────────────────────────────────────────────────
@@ -366,7 +435,7 @@ const PosterGrid = styled.div`
 
     @media (max-width: 1300px) { grid-template-columns: repeat(3, 1fr); }
     @media (max-width: 900px)  { grid-template-columns: repeat(2, 1fr); }
-    @media (max-width: 500px)  { grid-template-columns: 1fr; }
+    @media (max-width: 500px)  { grid-template-columns: 1fr; gap: 12px; }
 `;
 
 const ToolRow = styled.div`
@@ -383,7 +452,7 @@ const FilterBtnGroup = styled.div`
 `;
 
 const FilterBtn = styled.button`
-    padding: 6px 16px;
+    padding: 6px 14px;
     border-radius: 20px;
     border: 1.5px solid ${({ $active }) => $active ? 'var(--AccentColor)' : 'rgba(128,128,128,0.25)'};
     background: ${({ $active }) => $active ? 'var(--AccentColor)' : 'transparent'};
@@ -401,7 +470,7 @@ const FilterBtn = styled.button`
 
 const SearchInput = styled.input`
     flex: 1;
-    min-width: 180px;
+    min-width: 0;
     padding: 10px 14px;
     border-radius: 20px;
     border: 1.5px solid rgba(128,128,128,0.25);
@@ -419,6 +488,8 @@ const SearchInput = styled.input`
 const FeaturedContainer = styled.div`
     display: flex;
     width: 80%;
+
+    @media (max-width: 600px) { width: 90%; }
 `;
 
 
@@ -501,7 +572,7 @@ const FeaturedInfo = styled.div`
     display: flex;
     flex-direction: column;
     gap: 2px;
-    flex-shrink: 0;
+    min-width: 0;
 `;
 
 const FeaturedLabel = styled.span`
@@ -521,6 +592,8 @@ const FeaturedAlbum = styled.p`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    @media (max-width: 600px) { font-size: 0.95em; }
 `;
 
 const FeaturedArtist = styled.p`
@@ -552,6 +625,41 @@ const EmptyText = styled.p`
     font-weight: 600;
     color: var(--textColor);
     margin: 0;
+`;
+
+const ErrorContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60dvh;
+    gap: 20px;
+    opacity: 0.45;
+    padding: 40px 20px;
+    text-align: center;
+`;
+
+const ErrorText = styled.p`
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--textColor);
+    max-width: 340px;
+    margin: 0;
+`;
+
+const PartialBanner = styled.div`
+    width: 80%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--glassBackground);
+    border: 1px solid var(--borderColor);
+    color: var(--textColor);
+    font-size: 0.85em;
+    text-align: center;
+    opacity: 0.7;
+    margin-bottom: 10px;
+
+    @media (max-width: 600px) { width: 90%; font-size: 0.8em; }
 `;
 
 const LoadMoreBtn = styled.button`
@@ -631,7 +739,7 @@ function StatsTab({ stats }) {
 
 // ─── Main ─────────────────────────────────────────────────────
 
-export default function Dashboard() {
+export default function Profile() {
     const navigate = useNavigate();
     const { username: routeUsername } = useParams();
     const { user, loading, logout, isAuthenticated } = useAuth();
@@ -642,6 +750,7 @@ export default function Dashboard() {
 
     const [userProfile, setUserProfile]     = useState(null);
     const [profileNotFound, setProfileNotFound] = useState(false);
+    const [profileError, setProfileError]       = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [activeTab, setActiveTab]         = useState('myposters');
 
@@ -685,22 +794,44 @@ export default function Dashboard() {
     useEffect(() => {
         if (!routeUsername) return;
 
+        setProfileError(false);
+
         if (isOwner) {
             // Owner visiting their own profile: use private endpoint for full data
+            trackProfileView(routeUsername, true);
             apiService.getUserProfile().then(d => {
                 setUserProfile(d.user);
                 if (d.user?.pinnedPosterId) setPinnedPosterId(d.user.pinnedPosterId);
-            }).catch(() => {});
+            }).catch(() => {
+                setProfileError(true);
+                // Fallback to AuthContext user data so the profile shell still renders
+                if (user) {
+                    setUserProfile({
+                        name: user.name,
+                        username: user.username,
+                        avatar: user.avatar,
+                        bio: '',
+                        badge: user.badge || null,
+                        badgeProgress: null,
+                        isAdmin: user.permissions?.includes('admin') || false,
+                        hasSpotify: false,
+                        hasGoogle: false,
+                    });
+                }
+            });
         } else {
             // Public profile: fetch via community endpoint
             apiService.getUserPublicProfile(routeUsername, { page: 1, limit: 12 })
                 .then(d => {
+                    trackProfileView(routeUsername, false);
                     setUserProfile({
                         name: d.user.name,
                         username: d.user.username,
                         avatar: d.user.avatar,
                         bio: d.user.bio || '',
                         badge: d.user.badge,
+                        badgeProgress: d.user.badgeProgress || null,
+                        isAdmin: d.user.isAdmin || false,
                         hasSpotify: d.user.hasSpotify,
                         spotifyId: d.user.spotifyId || null,
                         hasGoogle: false,
@@ -719,6 +850,7 @@ export default function Dashboard() {
                 })
                 .catch(err => {
                     if (err.status === 404) setProfileNotFound(true);
+                    else setProfileError(true);
                 });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -808,6 +940,7 @@ export default function Dashboard() {
         const newId = pinnedPosterId === posterId ? null : posterId;
         setPinnedPosterId(newId);
         if (newId) {
+            trackProfilePosterPin(routeUsername, posterId);
             const found = myPosters.find(p => p._id === newId);
             if (found) setFeaturedPoster(found);
         } else {
@@ -823,6 +956,7 @@ export default function Dashboard() {
     const handleVisibilityChange = async (posterId, visibility) => {
         try {
             await apiService.updatePosterVisibility(posterId, visibility);
+            trackProfilePosterVisibility(routeUsername, posterId, visibility);
             setMyPosters(prev => prev.map(p => p._id === posterId ? { ...p, visibility } : p));
         } catch { /* noop */ }
     };
@@ -836,6 +970,7 @@ export default function Dashboard() {
         if (!deleteTarget) return;
         try {
             await apiService.deletePoster(deleteTarget._id);
+            trackProfilePosterDelete(routeUsername, deleteTarget._id, deleteTarget.albumName);
             setMyPosters(prev => prev.filter(p => p._id !== deleteTarget._id));
             if (stats) setStats(s => ({ ...s, totalPosters: Math.max(0, s.totalPosters - 1) }));
         } catch { /* noop */ } finally { handleDeleteCancel(); }
@@ -856,6 +991,18 @@ export default function Dashboard() {
     }, [profileNotFound, navigate]);
 
     if (loading || profileNotFound) return <Loading isVisible={true} initialFade={true} />;
+
+    // Backend offline and no user data to fall back on (visitor)
+    if (profileError && !userProfile) {
+        return (
+            <Container>
+                <ErrorContainer>
+                    <PosterWall width={'25%'} />
+                    <ErrorText>{t('PROFILE_FetchError')}</ErrorText>
+                </ErrorContainer>
+            </Container>
+        );
+    }
 
     const displayName = userProfile?.name || user?.name || '';
 
@@ -886,7 +1033,7 @@ export default function Dashboard() {
                     <UserInfo>
                         <UserName>
                             {displayName}
-                            {userProfile?.hasGoogle && (
+                            {/* {userProfile?.hasGoogle && (
                                 <Hint text={t('ConnectedToGoogle')} delay={200}>
                                     <BadgeIcon><GoogleIcon /></BadgeIcon>
                                 </Hint>
@@ -895,13 +1042,26 @@ export default function Dashboard() {
                                 <Hint text={t('ConnectedToSpotify')} delay={200}>
                                     <BadgeIcon><SpotifyIcon /></BadgeIcon>
                                 </Hint>
-                            )}
+                            )} */}
+                            <>
+                                {userProfile?.badge && (
+                                    <TierBadge
+                                        badge={userProfile.badge}
+                                        badgeProgress={userProfile.badgeProgress}
+                                        isOwner={isOwner}
+                                        size={25}
+                                    />
+                                )}
+                                {(userProfile?.isAdmin || (isOwner && user?.permissions?.includes('admin'))) && (
+                                    <AdminBadge size={25} />
+                                )}
+                            </>
                         </UserName>
                         <Username>@{userProfile?.username || user?.username}</Username>
                     </UserInfo>
                     {isOwner && (
                         <ActionBtns>
-                            <Btn $variant="outline" onClick={() => setIsEditModalOpen(true)}>{t('EditProfile')}</Btn>
+                            <Btn $variant="outline" onClick={() => { trackProfileEdit(routeUsername); setIsEditModalOpen(true); }}>{t('EditProfile')}</Btn>
                             <Btn onClick={handleLogout}>{t('Logout')}</Btn>
                         </ActionBtns>
                     )}
@@ -910,26 +1070,15 @@ export default function Dashboard() {
 
             <BioSection>
                 {userProfile?.bio && <BioText>{userProfile.bio}</BioText>}
-                {userProfile !== null && isOwner && (
+                {userProfile !== null && isOwner && !userProfile?.hasSpotify && (
                     <ProfileLinks>
-                        {userProfile?.hasSpotify ? (
-                            <SpotifyLinkBtn
-                                href={`https://open.spotify.com/user/${userProfile.spotifyId}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <SpotifyIconWhite size={13} />
-                                {t('DASH_OpenSpotify')}
-                            </SpotifyLinkBtn>
-                        ) : (
-                            <ConnectSpotifyBtn onClick={() => { window.location.href = apiService.getSpotifyAuthUrl(); }}>
-                                <SiSpotify size={13} />
-                                {t('DASH_ConnectSpotify')}
-                            </ConnectSpotifyBtn>
-                        )}
+                        <ConnectSpotifyBtn onClick={() => { trackProfileSpotifyConnect(routeUsername); window.location.href = apiService.getSpotifyAuthUrl(); }}>
+                            <SiSpotify size={13} />
+                            {t('DASH_ConnectSpotify')}
+                        </ConnectSpotifyBtn>
                     </ProfileLinks>
                 )}
-                {userProfile !== null && !isOwner && userProfile?.hasSpotify && (
+                {userProfile !== null && userProfile?.hasSpotify && (isOwner ? userProfile?.showSpotifyProfile : true) && (
                     <ProfileLinks>
                         <SpotifyLinkBtn
                             href={`https://open.spotify.com/user/${userProfile.spotifyId}`}
@@ -969,6 +1118,11 @@ export default function Dashboard() {
                     </FeaturedContainer>
                 );
             })()}
+
+            {/* Partial-load banner for owner when backend is down */}
+            {profileError && userProfile && (
+                <PartialBanner>{t('PROFILE_PartialError')}</PartialBanner>
+            )}
 
             {/* Tabs */}
             <TabRow>

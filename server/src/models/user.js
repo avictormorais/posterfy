@@ -14,8 +14,11 @@ const UserSchema = new mongoose.Schema({
   posterCount: { type: Number, default: 0, min: 0 },
   totalDownloads: { type: Number, default: 0, min: 0 },
   totalFavorites: { type: Number, default: 0, min: 0 },
+  totalViews: { type: Number, default: 0, min: 0 },
   bio: { type: String, default: '', maxlength: 160 },
+  showSpotifyProfile: { type: Boolean, default: false },
   pinnedPosterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Poster', default: null },
+  badgeScore: { type: Number, default: 0 },
   badge: {
     type: String,
     enum: [

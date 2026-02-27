@@ -68,6 +68,7 @@ class UserService {
       if (user) {
         user.spotifyId = spotifyId
         if (!user.avatar && avatar) user.avatar = avatar
+        if (!user.showSpotifyProfile) user.showSpotifyProfile = true
         await user.save()
         return user
       }
@@ -104,7 +105,7 @@ class UserService {
   }
 
   async updateProfile(userId, profileData) {
-    const { name, username, bio } = profileData
+    const { name, username, bio, showSpotifyProfile } = profileData
 
     const user = await User.findById(userId)
     if (!user) {
@@ -148,6 +149,10 @@ class UserService {
       }
 
       user.username = trimmedUsername
+    }
+
+    if (typeof showSpotifyProfile === 'boolean') {
+      user.showSpotifyProfile = showSpotifyProfile
     }
 
     await user.save()

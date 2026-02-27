@@ -1,5 +1,6 @@
 import { generateToken } from '../utils/jwt.js'
 import UserService from '../services/userService.js'
+import BadgeService from '../services/badgeService.js'
 
 const decodeState = (state) => {
   try {
@@ -21,7 +22,7 @@ const safeRedirect = (raw, fallback) => {
 class AuthController {
   googleCallback(req, res) {
     const token = generateToken(req.user)
-    const fallback = `${process.env.CLIENT_URL}/dashboard`
+    const fallback = `${process.env.CLIENT_URL}/login`
     const { redirect } = decodeState(req.query.state || '')
     const dest = safeRedirect(redirect, fallback)
     res.redirect(`${dest}?token=${token}&login=success`)
@@ -29,7 +30,7 @@ class AuthController {
 
   spotifyCallback(req, res) {
     const token = generateToken(req.user)
-    const fallback = `${process.env.CLIENT_URL}/dashboard`
+    const fallback = `${process.env.CLIENT_URL}/login`
     const { redirect } = decodeState(req.query.state || '')
     const dest = safeRedirect(redirect, fallback)
     res.redirect(`${dest}?token=${token}&login=success`)
@@ -46,6 +47,8 @@ class AuthController {
         return res.status(404).json({ error: 'User not found' })
       }
 
+      const badgeProgress = BadgeService.getBadgeProgress(user)
+
       res.json({
         user: {
           id: user._id,
@@ -55,8 +58,12 @@ class AuthController {
           avatar: user.avatar,
           hasGoogle: !!user.googleId,
           hasSpotify: !!user.spotifyId,
+          showSpotifyProfile: user.showSpotifyProfile || false,
           permissions: user.permissions,
-          status: user.status
+          status: user.status,
+          badge: user.badge,
+          badgeScore: user.badgeScore || 0,
+          badgeProgress
         }
       })
     } catch (error) {

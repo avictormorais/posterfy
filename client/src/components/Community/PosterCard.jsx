@@ -494,10 +494,13 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                 <ArtistName $color={txtColor}>{poster.artistsName}</ArtistName>
 
                 {/* Community: author info */}
-                {variant === 'community' && (
+                {variant === 'community' && author?.username && (
                     <>
                         <Divider $color={txtColor} />
-                        <AuthorRow>
+                        <AuthorRow
+                            style={{ cursor: 'pointer' }}
+                            onClick={(e) => { e.stopPropagation(); navigate(`/u/${author.username}`); }}
+                        >
                             <AvatarWrap $color={txtColor}>
                                 {author?.avatar
                                     ? <AvatarImg src={author.avatar} alt={author.name} />
@@ -529,7 +532,10 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                 {variant === 'favorites' && (
                     <>
                         <Divider $color={txtColor} />
-                        <AuthorRow>
+                        <AuthorRow
+                            style={{ cursor: author?.username ? 'pointer' : 'default' }}
+                            onClick={(e) => { if (author?.username) { e.stopPropagation(); navigate(`/u/${author.username}`); } }}
+                        >
                             <AvatarWrap>
                                 {author?.avatar
                                     ? <AvatarImg src={author.avatar} alt={author.name} />

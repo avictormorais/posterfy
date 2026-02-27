@@ -30,6 +30,9 @@ class EngagementService {
 
     poster.popularityScore = recalculateScore(poster)
     await poster.save()
+
+    await User.findByIdAndUpdate(poster.authorId, { $inc: { totalViews: 1 } })
+    await BadgeService.recalculate(poster.authorId)
     return poster
   }
 

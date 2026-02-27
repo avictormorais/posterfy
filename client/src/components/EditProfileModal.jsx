@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { IoClose } from "react-icons/io5";
+import { SiSpotify } from "react-icons/si";
 import Icon from "../components/svgs/icon";
 import { useAuth } from "../contexts/AuthContext";
 import apiService from "../services/apiService";
+import { trackProfileEditSave } from "../services/analytics";
 import { useTranslation } from 'react-i18next';
 
 const fadeIn = keyframes`
@@ -212,9 +214,10 @@ const CharCounter = styled.span`
 `;
 
 const ErrorMessage = styled.span`
-    color: #ff6b6b;
+    color: var(--textColor);
     font-size: 0.8em;
     font-weight: bolder;
+    opacity: 0.8;
 `;
 
 const ButtonsContainer = styled.div`
@@ -272,11 +275,59 @@ const FilledButton = styled.button`
 `;
 
 const SuccessMessage = styled.div`
-    color: #51cf66;
+    color: var(--textColor);
     font-size: 0.9em;
     font-weight: bolder;
     text-align: center;
     margin-top: 10px;
+`;
+
+const ToggleRow = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+`;
+
+const ToggleLabel = styled.span`
+    font-size: 0.9em;
+    font-weight: bolder;
+    color: var(--textColor);
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+`;
+
+const ToggleSwitch = styled.button`
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    border: 2px solid var(--textColor);
+    background: ${props => props.$active ? 'var(--textColor)' : 'transparent'};
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    padding: 0;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: ${props => props.$active ? '20px' : '2px'};
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: ${props => props.$active ? 'var(--backgroundColor)' : 'var(--textColor)'};
+        transition: all 0.3s ease;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 `;
 
 export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, initialBio = '' }) {
@@ -285,7 +336,8 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, ini
     const [formData, setFormData] = useState({
         name: '',
         username: '',
-        bio: ''
+        bio: '',
+        showSpotifyProfile: false
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -297,7 +349,8 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, ini
             setFormData({
                 name: user.name || '',
                 username: user.username || '',
-                bio: initialBio
+                bio: initialBio,
+                showSpotifyProfile: user.showSpotifyProfile || false
             });
         }
     }, [user, initialBio]);
@@ -370,7 +423,8 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, ini
             await apiService.updateUserProfile({
                 name: formData.name.trim(),
                 username: formData.username.trim(),
-                bio: formData.bio.trim()
+                bio: formData.bio.trim(),
+                showSpotifyProfile: formData.showSpotifyProfile
             });
 
             // Update local user state
@@ -378,10 +432,19 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, ini
                 ...user,
                 name: formData.name.trim(),
                 username: formData.username.trim(),
-                bio: formData.bio.trim()
+                bio: formData.bio.trim(),
+                showSpotifyProfile: formData.showSpotifyProfile
             });
 
             setSuccessMessage(t('ProfileUpdatedSuccessfully'));
+
+            // Track which fields were changed
+            const changed = [];
+            if (formData.name.trim() !== user.name) changed.push('name');
+            if (formData.username.trim() !== user.username) changed.push('username');
+            if (formData.bio.trim() !== (user.bio || '')) changed.push('bio');
+            if (formData.showSpotifyProfile !== user.showSpotifyProfile) changed.push('showSpotifyProfile');
+            if (changed.length) trackProfileEditSave(formData.username.trim(), changed);
 
             // Call parent callback
             if (onProfileUpdate) {
@@ -482,6 +545,21 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, ini
                         <CharCounter>{160 - (formData.bio?.length || 0)} {t('DASH_BioChars')}</CharCounter>
                         {errors.bio && <ErrorMessage>{errors.bio}</ErrorMessage>}
                     </FormGroup>
+
+                    {user?.hasSpotify && (
+                        <ToggleRow>
+                            <ToggleLabel>
+                                <SiSpotify size={14} />
+                                {t('DASH_ShowSpotify')}
+                            </ToggleLabel>
+                            <ToggleSwitch
+                                type="button"
+                                $active={formData.showSpotifyProfile}
+                                disabled={isLoading}
+                                onClick={() => setFormData(prev => ({ ...prev, showSpotifyProfile: !prev.showSpotifyProfile }))}
+                            />
+                        </ToggleRow>
+                    )}
 
                     {errors.general && <ErrorMessage>{errors.general}</ErrorMessage>}
 

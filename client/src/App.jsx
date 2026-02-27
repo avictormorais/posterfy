@@ -8,9 +8,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import Layout from './components/Layout/Layout';
 import Home from './pages/Home/Home';
 import Login from './pages/login/Login';
-import Dashboard from './pages/Dashboard/Dashboard';
+import Profile from './pages/Profile/Profile';
 import Error from './pages/Error/Error';
-import ProtectedRoute from './components/ProtectedRoute';
 import { useEffect, useState } from 'react';
 import AnalyticsInitializer from './components/SEO/AnalyticsInitializer';
 import IndexingMonitor from './components/SEO/IndexingMonitor';
@@ -140,14 +139,11 @@ function App() {
                 <Route index element={<Login />} />
               </Route>
 
-              <Route path="/dashboard" element={<Layout showNavbar={true} showFooter={true} />}>
-                <Route index element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
+              <Route path="/u/:username" element={<Layout showNavbar={true} showFooter={true} />}>
+                <Route index element={<Profile />} />
               </Route>
 
+              <Route path="/error" element={<Error />} />
               <Route path="*" element={<Error />} />
 
             </Routes>

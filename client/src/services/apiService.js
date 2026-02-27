@@ -60,12 +60,12 @@ class ApiService {
   }
 
   getGoogleAuthUrl() {
-    const redirect = encodeURIComponent(`${window.location.origin}/dashboard`)
+    const redirect = encodeURIComponent(`${window.location.origin}/login`)
     return `${this.baseURL}/auth/google?redirect=${redirect}`
   }
 
   getSpotifyAuthUrl() {
-    const redirect = encodeURIComponent(`${window.location.origin}/dashboard`)
+    const redirect = encodeURIComponent(`${window.location.origin}/login`)
     return `${this.baseURL}/auth/spotify?redirect=${redirect}`
   }
 
@@ -148,12 +148,21 @@ class ApiService {
     return this.request(`/api/community/top-users?sort=${sort}&limit=${limit}`)
   }
 
+  async searchUsers({ q = '', page = 1, limit = 12 } = {}) {
+    const params = new URLSearchParams({ q, page, limit })
+    return this.request(`/api/community/search-users?${params}`)
+  }
+
   async getAlbumPosters(spotifyAlbumId, { page = 1, limit = 20 } = {}) {
     return this.request(`/api/community/albums/${spotifyAlbumId}?page=${page}&limit=${limit}`)
   }
 
   async getUserPublicProfile(username, { page = 1, limit = 20 } = {}) {
     return this.request(`/api/community/users/${username}?page=${page}&limit=${limit}`)
+  }
+
+  async getUserPublicStats(username) {
+    return this.request(`/api/community/users/${username}/stats`)
   }
 }
 

@@ -33,7 +33,7 @@ const HintText = styled.div`
   color: var(--backgroundColor);
   padding: 8px 12px;
   border-radius: 8px;
-  font-size: 0.65em;
+  font-size: 0.5em;
   font-weight: 600;
   white-space: nowrap;
   z-index: 1000;
@@ -49,9 +49,9 @@ const HintText = styled.div`
   &::before {
     content: '';
     position: absolute;
-    right: 99%;
+    right: 97%;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%) scale(1.2);
     border: 12px solid transparent;
     border-right-color: var(--textColor);
   }
