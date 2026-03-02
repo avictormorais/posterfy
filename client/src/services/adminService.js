@@ -15,6 +15,7 @@ const admin = {
   promoteUser: (id) => apiService.request(`/api/admin/users/${id}/promote`, { method: 'PUT' }),
   demoteUser: (id) => apiService.request(`/api/admin/users/${id}/demote`, { method: 'PUT' }),
   forceLogout: (id) => apiService.request(`/api/admin/users/${id}/force-logout`, { method: 'POST' }),
+  purgeUser:   (id) => apiService.request(`/api/admin/users/${id}/purge`,        { method: 'DELETE' }),
 
   bulkUsers: (data) => apiService.request('/api/admin/users/bulk', { method: 'PUT', body: JSON.stringify(data) }),
 

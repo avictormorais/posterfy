@@ -421,6 +421,28 @@ class AdminController {
     }
   }
 
+  async purgeUser(req, res) {
+    try {
+      if (req.params.id === req.user.id) return res.status(400).json({ error: 'Cannot purge yourself' })
+
+      const user = await User.findOne({ _id: req.params.id, status: 'suspended' })
+      if (!user) return res.status(404).json({ error: 'User not found or not suspended' })
+
+      const posters = await Poster.find({ authorId: user._id }).select('_id').lean()
+      const posterIds = posters.map(p => p._id)
+
+      await Promise.all([
+        Poster.deleteMany({ authorId: user._id }),
+        Favorite.deleteMany({ posterId: { $in: posterIds } }),
+        User.deleteOne({ _id: user._id }),
+      ])
+
+      res.json({ message: 'User permanently deleted', deletedPosters: posterIds.length })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
   async listUsers(req, res) {
     try {
       const { page = 1, limit = 50, status, search } = req.query
@@ -448,7 +470,7 @@ class AdminController {
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(safeLimit)
-          .select('name username email avatar status permissions posterCount totalDownloads totalFavorites totalViews badge badgeScore createdAt')
+          .select('name username email avatar bio status permissions posterCount totalDownloads totalFavorites totalViews badge badgeScore createdAt')
           .lean(),
         User.countDocuments(filter)
       ])

@@ -228,6 +228,27 @@ router.put('/users/:id/unban', [param('id').isMongoId()], auditLog('unban_user',
 
 /**
  * @openapi
+ * /api/admin/users/{id}/purge:
+ *   delete:
+ *     tags: [Admin]
+ *     summary: Permanently delete a suspended user and all their data
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: User permanently deleted
+ *       404:
+ *         description: User not found or not suspended
+ */
+router.delete('/users/:id/purge', [param('id').isMongoId()], auditLog('purge_user', 'user'), AdminController.purgeUser)
+
+/**
+ * @openapi
  * /api/admin/users/{id}/force-logout:
  *   post:
  *     tags: [Admin]

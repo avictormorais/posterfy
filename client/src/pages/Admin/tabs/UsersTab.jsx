@@ -55,6 +55,7 @@ export default function UsersTab() {
       else if (action === 'promote') await adminService.promoteUser(userId)
       else if (action === 'demote') await adminService.demoteUser(userId)
       else if (action === 'forceLogout') await adminService.forceLogout(userId)
+      else if (action === 'purge') await adminService.purgeUser(userId)
       setConfirm(null)
       fetchUsers(1)
     } catch {}
@@ -204,6 +205,11 @@ export default function UsersTab() {
                         {u.status === 'suspended' && (
                           <ActionButton onClick={() => setConfirm({ action: 'unban', id: u._id, label: t('ADMIN_Unban') })}>
                             {t('ADMIN_Unban')}
+                          </ActionButton>
+                        )}
+                        {u.status === 'suspended' && (
+                          <ActionButton $danger onClick={() => setConfirm({ action: 'purge', id: u._id, label: t('ADMIN_ConfirmPurgeUser') })}>
+                            {t('ADMIN_PurgeUser')}
                           </ActionButton>
                         )}
                         {!isAdmin && u.status === 'active' && (
