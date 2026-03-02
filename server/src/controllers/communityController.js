@@ -51,7 +51,7 @@ class CommunityController {
       const { page = 1, limit = 20 } = req.query
       const postersResult = await PosterService.findByUser(
         user._id.toString(),
-        null,
+        req.user?.id || null,
         parseInt(page),
         parseInt(limit)
       )

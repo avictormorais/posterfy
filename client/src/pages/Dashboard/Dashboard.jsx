@@ -13,6 +13,7 @@ import AlertModal from "../../components/Commom/AlertModal";
 import { IoEye, IoHeart, IoCloudDownload } from "react-icons/io5";
 import { MdBarChart } from "react-icons/md";
 import PosterCard from "../../components/Community/PosterCard";
+import Empty from "../../components/svgs/Others/Empty";
 
 
 const fadeIn = keyframes`
@@ -545,6 +546,14 @@ const EmptyText = styled.p`
     margin: 0;
 `;
 
+const EmptyContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+`;
+
 const LoadMoreBtn = styled.button`
     display: block;
     width: 81%;
@@ -991,7 +1000,10 @@ export default function Dashboard() {
                                 </ToolRow>
                             )}
                             {filteredMyPosters.length === 0 ? (
-                                <EmptyState><EmptyText>{isOwner ? t('DASH_NoPosters') : t('DASH_NoPublicPosters')}</EmptyText></EmptyState>
+                                <EmptyContainer>
+                                    <Empty width={"20%"}/>
+                                    <EmptyState><EmptyText>{isOwner ? t('DASH_NoPosters') : t('DASH_NoPublicPosters')}</EmptyText></EmptyState>
+                                </EmptyContainer>
                             ) : (
                                 <PosterGrid>
                                     {filteredMyPosters.map(p => (
@@ -1033,7 +1045,10 @@ export default function Dashboard() {
                                 />
                             </ToolRow>
                             {filteredFavorites.length === 0 ? (
-                                <EmptyState><EmptyText>{t('DASH_NoFavorites')}</EmptyText></EmptyState>
+                                <EmptyContainer>
+                                    <Empty width={"20%"}/>
+                                    <EmptyState><EmptyText>{t('DASH_NoFavorites')}</EmptyText></EmptyState>
+                                </EmptyContainer>
                             ) : (
                                 <PosterGrid>
                                     {filteredFavorites.map(p => (

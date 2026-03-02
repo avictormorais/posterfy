@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
   bio: { type: String, default: '', maxlength: 160 },
   showSpotifyProfile: { type: Boolean, default: false },
   pinnedPosterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Poster', default: null },
+  tokenVersion: { type: Number, default: 0 },
   badgeScore: { type: Number, default: 0 },
   badge: {
     type: String,

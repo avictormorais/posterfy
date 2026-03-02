@@ -10,7 +10,7 @@ import Loading from "../../components/Commom/Loading";
 import PosterWall from "../../components/svgs/PosterWall.jsx";
 import EditProfileModal from "../../components/EditProfileModal";
 import Hint from "../../components/Commom/Hint";
-import TierBadge, { AdminBadge } from "../../components/Commom/TierBadge";
+import TierBadge from "../../components/Commom/TierBadge";
 import AlertModal from "../../components/Commom/AlertModal";
 import { IoEye, IoHeart, IoCloudDownload } from "react-icons/io5";
 import { MdBarChart } from "react-icons/md";
@@ -23,6 +23,7 @@ import {
     trackProfilePosterDelete,
     trackProfilePosterVisibility
 } from "../../services/analytics";
+import Empty from "../../components/svgs/Others/Empty";
 
 const fadeIn = keyframes`
     from { opacity: 0; transform: translateY(10px); }
@@ -134,6 +135,20 @@ const UserName = styled.h2`
         font-size: 1.25em;
         justify-content: center;
     }
+`;
+
+const UserBadge = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2px;
+`;
+
+const AdminContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2px;
 `;
 
 const Username = styled.p`
@@ -340,12 +355,25 @@ const StatCard = styled.div`
     border-radius: 14px;
     padding: 20px 22px;
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+`;
+
+const StatIconWrapper = styled.div`
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--AccentColor) 15%, transparent);
+    color: var(--AccentColor);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 `;
 
 const StatValue = styled.p`
-    font-size: 2em;
+    font-size: 1.8em;
     font-weight: 800;
     margin: 0;
     color: var(--textColor);
@@ -360,7 +388,7 @@ const StatLabel = styled.p`
 `;
 
 const TopSection = styled.div`
-    margin-top: 36px;
+    margin-top: 12px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
@@ -368,17 +396,50 @@ const TopSection = styled.div`
     @media (max-width: 900px) { grid-template-columns: 1fr; }
 `;
 
+const SectionTitle = styled.p`
+    font-size: 0.8em;
+    font-weight: 700;
+    opacity: 0.45;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 28px 0 0 0;
+    color: var(--textColor);
+`;
+
 const TopCard = styled.div`
     background: var(--glassBackground);
     border-radius: 14px;
-    padding: 18px;
+    padding: 16px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    gap: 14px;
     cursor: pointer;
     transition: transform 0.2s;
 
     &:hover { transform: translateY(-3px); }
+`;
+
+const TopCardCover = styled.div`
+    width: 62px;
+    height: 62px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: color-mix(in srgb, var(--AccentColor) 20%, transparent);
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+`;
+
+const TopCardInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
 `;
 
 const TopCardLabel = styled.p`
@@ -607,6 +668,14 @@ const EmptyState = styled.div`
     text-align: center;
 `;
 
+const EmptyContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+`;
+
 const EmptyText = styled.p`
     font-size: 1em;
     font-weight: 600;
@@ -674,17 +743,26 @@ const fmt = (n = 0) => {
     return String(n);
 };
 
-function StatsTab({ stats }) {
+function StatsTab({ stats, isOwner }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
     if (!stats) return null;
 
+    if (stats.totalPosters === 0) {
+        return (
+            <EmptyContainer>
+                <Empty width={"20%"}/>
+                <EmptyState><EmptyText>{isOwner ? t('DASH_StatsEmpty') : t('DASH_StatsEmptyPublic')}</EmptyText></EmptyState>
+            </EmptyContainer>
+        );
+    }
+
     const summaryCards = [
-        { label: t('DASH_TotalPosters'),   value: stats.totalPosters   },
-        { label: t('DASH_TotalDownloads'), value: stats.totalDownloads },
-        { label: t('DASH_TotalViews'),     value: stats.totalViews     },
-        { label: t('DASH_TotalFavorites'), value: stats.totalFavorites },
+        { label: t('DASH_TotalPosters'),   value: stats.totalPosters,   icon: <MdBarChart size={22}/> },
+        { label: t('DASH_TotalDownloads'), value: stats.totalDownloads, icon: <IoCloudDownload size={22}/> },
+        { label: t('DASH_TotalViews'),     value: stats.totalViews,     icon: <IoEye size={22}/> },
+        { label: t('DASH_TotalFavorites'), value: stats.totalFavorites, icon: <IoHeart size={22}/> },
     ];
 
     const topCards = [
@@ -693,29 +771,47 @@ function StatsTab({ stats }) {
         { label: t('DASH_MostViewed'),     poster: stats.mostViewed,     stat: fmt(stats.mostViewed?.views),              icon: <IoEye size={13} /> },
     ];
 
+    const validTopCards = topCards.filter(c => c.poster);
+
     return (
         <>
             <StatsGrid>
                 {summaryCards.map(c => (
                     <StatCard key={c.label}>
-                        <StatValue>{fmt(c.value)}</StatValue>
-                        <StatLabel>{c.label}</StatLabel>
+                        <StatIconWrapper>{c.icon}</StatIconWrapper>
+                        <div>
+                            <StatValue>{fmt(c.value)}</StatValue>
+                            <StatLabel>{c.label}</StatLabel>
+                        </div>
                     </StatCard>
                 ))}
             </StatsGrid>
 
-            <TopSection>
-                {topCards.map(c => c.poster ? (
-                    <TopCard key={c.label} onClick={() => navigate(`/p/${c.poster._id}`)}>
-                        <TopCardLabel>{c.label}</TopCardLabel>
-                        <TopCardAlbum>{c.poster.albumName}</TopCardAlbum>
-                        <TopCardArtist>{c.poster.artistsName}</TopCardArtist>
-                        <TopCardStat style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            {c.icon} {c.stat}
-                        </TopCardStat>
-                    </TopCard>
-                ) : null)}
-            </TopSection>
+            {validTopCards.length > 0 && (
+                <>
+                    <SectionTitle>{t('DASH_TopHighlights')}</SectionTitle>
+                    <TopSection>
+                        {validTopCards.map(c => (
+                            <TopCard key={c.label} onClick={() => navigate(`/p/${c.poster._id}`)}>
+                                <TopCardCover>
+                                    {c.poster.posterJson?.albumCover
+                                        ? <img src={c.poster.posterJson.albumCover} alt="" />
+                                        : null
+                                    }
+                                </TopCardCover>
+                                <TopCardInfo>
+                                    <TopCardLabel>{c.label}</TopCardLabel>
+                                    <TopCardAlbum>{c.poster.albumName}</TopCardAlbum>
+                                    <TopCardArtist>{c.poster.artistsName}</TopCardArtist>
+                                    <TopCardStat style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                        {c.icon} {c.stat}
+                                    </TopCardStat>
+                                </TopCardInfo>
+                            </TopCard>
+                        ))}
+                    </TopSection>
+                </>
+            )}
         </>
     );
 }
@@ -1033,7 +1129,7 @@ export default function Profile() {
                                     />
                                 )}
                                 {(userProfile?.isAdmin || (isOwner && user?.permissions?.includes('admin'))) && (
-                                    <AdminBadge size={25} />
+                                    <TierBadge badge="admin" size={25} />
                                 )}
                             </>
                         </UserName>
@@ -1137,7 +1233,10 @@ export default function Profile() {
                                 </ToolRow>
                             )}
                             {filteredMyPosters.length === 0 ? (
-                                <EmptyState><EmptyText>{isOwner ? t('DASH_NoPosters') : t('DASH_NoPublicPosters')}</EmptyText></EmptyState>
+                                <EmptyContainer>
+                                    <Empty width={"20%"}/>
+                                    <EmptyState><EmptyText>{isOwner ? t('DASH_NoPosters') : t('DASH_NoPublicPosters')}</EmptyText></EmptyState>
+                                </EmptyContainer>
                             ) : (
                                 <PosterGrid>
                                     {filteredMyPosters.map(p => (
@@ -1179,7 +1278,10 @@ export default function Profile() {
                                 />
                             </ToolRow>
                             {filteredFavorites.length === 0 ? (
-                                <EmptyState><EmptyText>{t('DASH_NoFavorites')}</EmptyText></EmptyState>
+                                <EmptyContainer>
+                                    <Empty width={"20%"}/>
+                                    <EmptyState><EmptyText>{t('DASH_NoFavorites')}</EmptyText></EmptyState>
+                                </EmptyContainer>
                             ) : (
                                 <PosterGrid>
                                     {filteredFavorites.map(p => (
@@ -1209,7 +1311,7 @@ export default function Profile() {
                     statsLoading ? (
                         <EmptyState><EmptyText>…</EmptyText></EmptyState>
                     ) : (
-                        <StatsTab stats={stats} />
+                        <StatsTab stats={stats} isOwner={isOwner} />
                     )
                 )}
             </TabContent>

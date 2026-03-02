@@ -9,6 +9,7 @@ import Anchor from "../../Commom/Anchor.jsx";
 import SectionExplanation from "../../SectionExplanation.jsx";
 import PosterCard from "../../Community/PosterCard.jsx";
 import PosterShare from "../../svgs/PosterShare.jsx";
+import Empty from "../../svgs/Others/Empty.jsx";
 import apiService from "../../../services/apiService.js";
 import { useAuth } from "../../../contexts/AuthContext.jsx";
 import { trackCommunitySearch, trackCommunityFilterChange } from "../../../services/analytics.js";
@@ -145,11 +146,20 @@ const Spinner = styled(AiOutlineLoading3Quarters)`
     animation: ${spin} 0.8s linear infinite;
 `;
 
+const EmptyContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+`;
+
 const EmptyText = styled.p`
     font-size: 1em;
     opacity: 0.5;
     text-align: center;
-    padding: 40px 20px;
+    margin-top: 20px;
+    padding: 10px 20px;
 `;
 
 const ErrorContainer = styled.div`
@@ -373,7 +383,10 @@ function Community() {
                     <ErrorText>{t('COMMUNITY_FetchError')}</ErrorText>
                 </ErrorContainer>
             ) : posters.length === 0 ? (
-                <EmptyText>{t('COMMUNITY_NoPosters')}</EmptyText>
+                <EmptyContainer>
+                    <Empty width={"25%"}/>
+                    <EmptyText>{t('COMMUNITY_NoPosters')}</EmptyText>
+                </EmptyContainer>
             ) : (
                 <Grid>
                     {posters.map(poster => (

@@ -163,7 +163,7 @@ router.get('/albums/:spotifyAlbumId', CommunityController.albumPosters)
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-router.get('/users/:username', CommunityController.getUserPublicProfile)
+router.get('/users/:username', optionalAuthenticateToken, CommunityController.getUserPublicProfile)
 
 /**
  * @openapi

@@ -8,11 +8,12 @@ import { IoCloseOutline } from "react-icons/io5";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import ColorThief from "colorthief";
 import Anchor from "../../Commom/Anchor.jsx";
-import TierBadge, { AdminBadge } from "../../Commom/TierBadge.jsx";
+import TierBadge from "../../Commom/TierBadge.jsx";
 import SectionExplanation from "../../SectionExplanation.jsx";
 import apiService from "../../../services/apiService.js";
 import { trackProfileSearch, trackProfileCardClick } from "../../../services/analytics.js";
 import PosterWall from "../../svgs/PosterWall.jsx";
+import Empty from "../../svgs/Others/Empty.jsx";
 
 const spin = keyframes`
     from { transform: rotate(0deg); }
@@ -132,11 +133,19 @@ const Spinner = styled(AiOutlineLoading3Quarters)`
     animation: ${spin} 0.8s linear infinite;
 `;
 
+const EmptyContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+`;
+
 const EmptyText = styled.p`
     font-size: 1em;
     opacity: 0.5;
     text-align: center;
-    padding: 40px 20px;
+    padding: 10px 20px;
 `;
 
 const ErrorContainer = styled.div`
@@ -368,7 +377,7 @@ function ProfileCard({ user, index, showRank }) {
                         <TierBadge badge={user.badge} size={20} />
                     )}
                     {user.permissions?.includes('admin') && (
-                        <AdminBadge size={20} />
+                        <TierBadge badge="admin" size={20} />
                     )}
                 </CardNameRow>
                 <CardUsername>@{user.username}</CardUsername>
@@ -481,7 +490,10 @@ function Profiles() {
                     <ErrorText>{t('PROFILES_FetchError')}</ErrorText>
                 </ErrorContainer>
             ) : users.length === 0 ? (
-                <EmptyText>{t('PROFILES_NoResults')}</EmptyText>
+                <EmptyContainer>
+                    <Empty width={"25%"}/>
+                    <EmptyText>{t('PROFILES_NoResults')}</EmptyText>
+                </EmptyContainer>
             ) : (
                 <Grid>
                     {users.map((u, i) => (

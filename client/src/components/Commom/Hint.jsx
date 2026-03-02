@@ -64,7 +64,10 @@ const HintText = styled.div`
 
 const HintWrapper = styled.div`
   position: relative;
-  display: inline-block;
+  display: flex;
+  margin: 0;
+  padding: 0;
+
   &:hover ${HintText} {
     opacity: 0.9;
   }

@@ -42,3 +42,21 @@ export const searchLimiter = createLimiter(
   60,
   'Too many search requests. Slow down.'
 )
+
+export const globalLimiter = createLimiter(
+  15 * 60 * 1000,
+  300,
+  'Too many requests. Try again later.'
+)
+
+export const adminLimiter = createLimiter(
+  15 * 60 * 1000,
+  60,
+  'Too many admin requests. Try again later.'
+)
+
+export const authLimiter = createLimiter(
+  15 * 60 * 1000,
+  20,
+  'Too many auth attempts. Try again later.'
+)

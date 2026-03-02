@@ -105,6 +105,15 @@ class PosterService {
       Poster.countDocuments(filter)
     ])
 
+    // Mark favorited status for a viewer who is not the author
+    if (requesterId && requesterId !== authorId) {
+      const posterIds = posters.map(p => p._id)
+      const favs = await Favorite.find({ userId: requesterId, posterId: { $in: posterIds } }).lean()
+      const favSet = new Set(favs.map(f => f.posterId.toString()))
+      const postersWithFav = posters.map(p => ({ ...p, favorited: favSet.has(p._id.toString()) }))
+      return { posters: postersWithFav, total, page, hasMore: skip + posters.length < total }
+    }
+
     return { posters, total, page, hasMore: skip + posters.length < total }
   }
 

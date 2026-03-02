@@ -13,7 +13,8 @@ export const generateToken = (user) => {
     {
       id: user._id,
       username: user.username,
-      email: user.email
+      email: user.email,
+      tokenVersion: user.tokenVersion || 0
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
@@ -38,8 +39,8 @@ export const optionalAuthenticateToken = async (req, res, next) => {
   if (!decoded) return next()
 
   try {
-    const user = await User.findById(decoded.id).select('_id username email permissions status').lean()
-    if (user && user.status === 'active') {
+    const user = await User.findById(decoded.id).select('_id username email permissions status tokenVersion').lean()
+    if (user && user.status === 'active' && (decoded.tokenVersion ?? 0) === (user.tokenVersion ?? 0)) {
       req.user = {
         id: user._id.toString(),
         username: user.username,
@@ -68,9 +69,12 @@ export const authenticateToken = async (req, res, next) => {
   }
 
   try {
-    const user = await User.findById(decoded.id).select('_id username email permissions status').lean()
+    const user = await User.findById(decoded.id).select('_id username email permissions status tokenVersion').lean()
     if (!user) return res.status(403).json({ error: 'User not found' })
     if (user.status === 'suspended') return res.status(403).json({ error: 'Account suspended', code: 'SUSPENDED' })
+    if ((decoded.tokenVersion ?? 0) !== (user.tokenVersion ?? 0)) {
+      return res.status(403).json({ error: 'Token revoked', code: 'TOKEN_REVOKED' })
+    }
 
     req.user = {
       id: user._id.toString(),

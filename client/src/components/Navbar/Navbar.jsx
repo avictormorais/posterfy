@@ -3,9 +3,9 @@ import styled from "styled-components"
 import Icon from "../svgs/icon"
 import LanguageSelector from "./Languageselector"
 import ThemeSelector from "./ThemeSelector"
-import { RiUser3Fill } from "react-icons/ri";
+import { RiUser3Fill, RiShieldKeyholeFill } from "react-icons/ri";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 const NavbarContainer = styled.header`
   position: fixed;
@@ -16,7 +16,7 @@ const NavbarContainer = styled.header`
   transition: all 0.3s ease;
   background-color: var(--backgroundColor);
   padding: ${({ scrolled }) => (scrolled ? "13px 0" : "13px 0")};
-  box-shadow: ${({ scrolled }) => (scrolled ? "0 2px 15px var(--shadowColor)" : "none")};
+  box-shadow: ${({ scrolled, $isAdmin }) => (scrolled && !$isAdmin ? "0 2px 15px var(--shadowColor)" : "none")};
   transform: ${({ visible }) => (visible ? "translateY(0)" : "translateY(-100%)")};
 `
 
@@ -138,6 +138,44 @@ const AvatarImage = styled.img`
   object-fit: cover;
 `;
 
+const AdminButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid var(--borderColor);
+
+  &:hover {
+    background-color: var(--glassBackground);
+    transform: scale(1.05);
+    border-color: var(--textColor);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const AdminWrapper = styled.div`
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const AdminIcon = styled(RiShieldKeyholeFill)`
+  font-size: 1.2em;
+  color: var(--AccentColor);
+`;
+
 function Navbar({ hideLogo = false, hideAccount = false }) {
   const [scrolled, setScrolled] = useState(false)
   const [visible, setVisible] = useState(true)
@@ -146,6 +184,8 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
   const domain = import.meta.env.VITE_DOMAIN
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -155,6 +195,9 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
       if (currentScrollY <= 10) {
         setVisible(true)
         setScrolled(false)
+      } else if (isAdminPage) {
+        setVisible(true)
+        setScrolled(true)
       } else {
         if (currentScrollY < lastScrollY) {
           setVisible(true)
@@ -169,7 +212,7 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [lastScrollY])
+  }, [lastScrollY, isAdminPage])
 
   const handleClickAccount = () => {
     if(isAuthenticated && user){
@@ -180,7 +223,7 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
   }
 
   return (
-    <NavbarContainer scrolled={scrolled} visible={visible}>
+    <NavbarContainer scrolled={scrolled} visible={visible} $isAdmin={isAdminPage}>
       <NavbarContent>
         {!hideLogo && (
           <LogoContainer onClick={() => navigate('/')}>
@@ -194,6 +237,13 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
           </LogoContainer>
         )}
         <SelectorContainer>
+          {user?.permissions?.includes('admin') && !isAdminPage && (
+            <AdminButton onClick={() => navigate('/admin')} title="Admin">
+              <AdminWrapper>
+                <AdminIcon />
+              </AdminWrapper>
+            </AdminButton>
+          )}
           <LanguageSelector />
           <ThemeSelector />
           {!hideAccount && (

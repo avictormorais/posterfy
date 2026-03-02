@@ -10,6 +10,8 @@ import Home from './pages/Home/Home';
 import Login from './pages/login/Login';
 import Profile from './pages/Profile/Profile';
 import Error from './pages/Error/Error';
+import Admin from './pages/Admin/Admin';
+import AdminRoute from './components/AdminRoute';
 import { useEffect, useState } from 'react';
 import AnalyticsInitializer from './components/SEO/AnalyticsInitializer';
 import IndexingMonitor from './components/SEO/IndexingMonitor';
@@ -141,6 +143,14 @@ function App() {
 
               <Route path="/u/:username" element={<Layout showNavbar={true} showFooter={true} />}>
                 <Route index element={<Profile />} />
+              </Route>
+
+              <Route path="/admin" element={
+                <AdminRoute>
+                  <Layout showNavbar={true} showFooter={false} />
+                </AdminRoute>
+              }>
+                <Route index element={<Admin />} />
               </Route>
 
               <Route path="/error" element={<Error />} />

@@ -16,6 +16,7 @@ import posterRoutes from './routes/poster.js'
 import communityRoutes from './routes/community.js'
 import adminRoutes from './routes/admin.js'
 import { swaggerSpec } from './config/swagger.js'
+import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js'
 
 const app = express()
 
@@ -48,8 +49,12 @@ app.use(cors({
 app.use(express.json({ limit: '2mb' }))
 app.use(express.urlencoded({ extended: true }))
 
+if (!process.env.SESSION_SECRET) {
+  throw new Error('SESSION_SECRET environment variable is not set. Refusing to start.')
+}
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'default-secret-key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -61,6 +66,8 @@ app.use(session({
 
 app.use(passport.initialize())
 app.use(passport.session())
+
+app.use(globalLimiter)
 
 const SWAGGER_USER = process.env.SWAGGER_USER
 const SWAGGER_PASSWORD = process.env.SWAGGER_PASSWORD
@@ -83,7 +90,7 @@ app.use(
   })
 )
 
-app.use('/auth', authRoutes)
+app.use('/auth', authLimiter, authRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/posters', posterRoutes)
 app.use('/api/community', communityRoutes)

@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Album from "./Commom/Album";
 import LoadingDiv from "./Commom/LoadingDiv";
 import { useTranslation } from "react-i18next";
+import Empty from "./svgs/Others/Empty";
 
 const Container = styled.div`
     width: 81%;
@@ -52,6 +53,23 @@ const LoadMoreButton = styled.button`
     @media (max-width: 650px) {
         width: 89%;
     }
+`;
+
+const EmptyContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+`;
+
+const EmptyText = styled.p`
+    font-size: 1em;
+    font-weight: 600;
+    opacity: 0.5;
+    color: var(--textColor);
+    margin: 0;
+    margin-top: 20px;
 `;
 
 const PaginationContainer = styled.div`
@@ -254,6 +272,11 @@ function Grid({ query, onclick }) {
         <>
             {loading && albums.length === 0 ? (
                 <LoadingDiv/>
+            ) : !loading && albums.length === 0 ? (
+                <EmptyContainer>
+                    <Empty width={220}/>
+                    <EmptyText>{t('NoResults')}</EmptyText>
+                </EmptyContainer>
             ) : (
                 <>
                     <Container>

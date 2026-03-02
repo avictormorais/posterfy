@@ -1,42 +1,37 @@
 ﻿import styled, { keyframes } from 'styled-components'
 import { useTranslation } from 'react-i18next'
-import { IoBrush, IoColorPalette, IoDiamond } from 'react-icons/io5'
-import { IoMdColorFilter } from 'react-icons/io'
 import Hint from './Hint'
-import PosterfyIcon from '../svgs/icon'
+import Bronze from '../svgs/Badges/Bronze'
+import Silver from '../svgs/Badges/Silver'
+import Gold from '../svgs/Badges/Gold'
+import Diamond from '../svgs/Badges/Diamond'
+import Admin from '../svgs/Badges/Admin'
 
 const TIERS = {
-  creator_bronze:  { key: 'bronze',  color: '#cd7f32', Icon: IoBrush },
-  creator_silver:  { key: 'silver',  color: '#868686', Icon: IoColorPalette },
-  creator_gold:    { key: 'gold',    color: '#ffc107', Icon: IoMdColorFilter },
-  creator_diamond: { key: 'diamond', color: '#5bc4f5', Icon: IoDiamond },
+  creator_bronze:  { key: 'bronze',  color: '#cd7f32', Component: Bronze },
+  creator_silver:  { key: 'silver',  color: '#868686', Component: Silver },
+  creator_gold:    { key: 'gold',    color: '#e7b214', Component: Gold },
+  creator_diamond: { key: 'diamond', color: '#29a2da', Component: Diamond },
+  admin:           { key: 'admin',   color: 'var(--AccentColor)', Component: Admin },
 }
 
 const shine = keyframes`
   0%, 100% { filter: brightness(1); }
-  50%      { filter: brightness(1.3); }
+  50%      { filter: brightness(1.15) drop-shadow(0 0 2px #5bc4f5aa); }
 `
 
-const Badge = styled.div`
-  display: flex;
+const BadgeWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: ${p => p.$size || 20}px;
-  height: ${p => p.$size || 20}px;
-  border-radius: 50%;
-  background: ${p => p.$color};
+  width: ${p => p.$size}px;
+  height: ${p => p.$size}px;
   cursor: pointer;
   flex-shrink: 0;
-  animation: ${p => p.$tier === 'diamond' ? shine : 'none'} 3s ease-in-out infinite;
-
-  svg {
-    width: ${p => Math.round((p.$size || 20) * 0.65)}px !important;
-    height: ${p => Math.round((p.$size || 20) * 0.65)}px !important;
-    fill: #fff;
-    margin-left: -2px;
-    margin-top: -1px;
-  }
+  animation: ${p => p.$tier === 'diamond' ? shine : 'none'} 2.8s ease-in-out infinite;
 `
+
 
 export default function TierBadge({ badge, badgeProgress, isOwner = false, size = 20 }) {
   const { t } = useTranslation()
@@ -44,11 +39,11 @@ export default function TierBadge({ badge, badgeProgress, isOwner = false, size 
   const tier = TIERS[badge]
   if (!tier) return null
 
-  const { key, color, Icon } = tier
+  const { key, color, Component } = tier
 
-  let hintText = t(`BADGE_TIER_${key}`)
+  let hintText = key === 'admin' ? t('BADGE_Admin') : t(`BADGE_TIER_${key}`)
 
-  if (isOwner && badgeProgress) {
+  if (key !== 'admin' && isOwner && badgeProgress) {
     if (badgeProgress.nextTier) {
       const nextTierLabel = t(`BADGE_TIER_${badgeProgress.nextTier}`)
       hintText += ` — ${t('BADGE_Progress', {
@@ -63,30 +58,9 @@ export default function TierBadge({ badge, badgeProgress, isOwner = false, size 
 
   return (
     <Hint text={hintText} delay={200}>
-      <Badge $color={color} $tier={key} $size={size}>
-        <Icon />
-      </Badge>
-    </Hint>
-  )
-}
-
-
-const AdminBadgeWrap = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-`
-
-export function AdminBadge({ size = 20 }) {
-  const { t } = useTranslation()
-
-  return (
-    <Hint text={t('BADGE_Admin')} delay={200}>
-        <AdminBadgeWrap $size={size}>
-          <PosterfyIcon width={size+'px'} height={size+'px'} fill="var(--AccentColor)" />
-        </AdminBadgeWrap>
+      <BadgeWrapper $tier={key} $size={size}>
+        <Component width={size} fillColor={color} />
+      </BadgeWrapper>
     </Hint>
   )
 }
