@@ -35,6 +35,19 @@ import { TbFileTypePng } from "react-icons/tb";
 import SetPasswordSVG from "../svgs/Login/SetPasswordSVG"
 import PosterInfo from "./PosterInfo";
 
+const RELEASE_DEFAULTS = new Set([
+    'Release date',
+    'Lançamento',
+    'Fecha de lanzamiento',
+    '发布日期'
+]);
+const RUNTIME_DEFAULTS = new Set([
+    'Runtime',
+    'Duração',
+    'Duración',
+    '时长',
+]);
+
 const Container = styled.div`
     width: 80%;
     margin-inline: auto;
@@ -726,9 +739,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setUncompressedAlbumCover(json.uncompressedAlbumCover || '');
         setCustomFont(json.customFont || '');
         setTracklist(json.tracklist || '');
-        setTitleRelease(json.titleRelease || '');
+        setTitleRelease(RELEASE_DEFAULTS.has(json.titleRelease) ? t('EDITOR_ReleaseTitle') : (json.titleRelease ?? ''));
         setReleaseDate(json.releaseDate || '');
-        setTitleRuntime(json.titleRuntime || '');
+        setTitleRuntime(RUNTIME_DEFAULTS.has(json.titleRuntime) ? t('EDITOR_RuntimeTitle') : (json.titleRuntime ?? ''));
         setRuntime(json.runtime || '');
         handleApplyClick();
     }
