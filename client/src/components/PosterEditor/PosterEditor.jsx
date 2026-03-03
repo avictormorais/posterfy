@@ -48,6 +48,27 @@ const RUNTIME_DEFAULTS = new Set([
     '时长',
 ]);
 
+const LOCALE_MAP = { en: 'en-US', pt: 'pt-BR', es: 'es-ES', zh: 'zh-CN' };
+const DATE_FMT   = { day: 'numeric', month: 'short', year: 'numeric' };
+
+function tryParseDate(str) {
+    if (!str) return null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+        const [y, m, d] = str.split('-').map(Number);
+        return new Date(y, m - 1, d);
+    }
+    const d = new Date(str);
+    if (!isNaN(d.getTime()) && d.getFullYear() >= 1900 && d.getFullYear() <= 2100) return d;
+    return null;
+}
+
+function localizeDate(str, lang) {
+    const date = tryParseDate(str);
+    if (!date) return str;
+    const locale = LOCALE_MAP[lang] || 'en-US';
+    return new Intl.DateTimeFormat(locale, DATE_FMT).format(date);
+}
+
 const Container = styled.div`
     width: 80%;
     margin-inline: auto;
@@ -668,7 +689,7 @@ const LoginButton = styled.button`
 `;
 
 const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson, source, posterId, posterFullData, onPublishSuccess }, ref) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
     const previewRef = useRef(null);
@@ -740,7 +761,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setCustomFont(json.customFont || '');
         setTracklist(json.tracklist || '');
         setTitleRelease(RELEASE_DEFAULTS.has(json.titleRelease) ? t('EDITOR_ReleaseTitle') : (json.titleRelease ?? ''));
-        setReleaseDate(json.releaseDate || '');
+        rawReleaseDateRef.current = json.releaseDate || '';
+        setReleaseDate(localizeDate(json.releaseDate || '', i18n.language));
         setTitleRuntime(RUNTIME_DEFAULTS.has(json.titleRuntime) ? t('EDITOR_RuntimeTitle') : (json.titleRuntime ?? ''));
         setRuntime(json.runtime || '');
         handleApplyClick();
@@ -776,8 +798,21 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     const [titleRelease, setTitleRelease] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
+    const rawReleaseDateRef = useRef('');
     const [titleRuntime, setTitleRuntime] = useState('');
     const [runtime, setRuntime] = useState('');
+
+    useEffect(() => {
+        setTitleRelease(prev => RELEASE_DEFAULTS.has(prev) ? t('EDITOR_ReleaseTitle') : prev);
+        setTitleRuntime(prev => RUNTIME_DEFAULTS.has(prev) ? t('EDITOR_RuntimeTitle') : prev);
+        if (rawReleaseDateRef.current) {
+            const localized = localizeDate(rawReleaseDateRef.current, i18n.language);
+            if (localized !== rawReleaseDateRef.current || tryParseDate(rawReleaseDateRef.current)) {
+                setReleaseDate(localized);
+            }
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [i18n.language]);
 
     const [showColorSelector, setShowColorSelector] = useState(false);
     const [colorInputPosition, setColorInputPosition] = useState(null);
@@ -1160,7 +1195,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 const highQualityCoverUrl = await getHighestQualitySpotifyImage(originalCoverUrl);
                 setAlbumCover(highQualityCoverUrl);
                 
-                setReleaseDate(albumData.release_date);
+                rawReleaseDateRef.current = albumData.release_date;
+                setReleaseDate(localizeDate(albumData.release_date, i18n.language));
                 const uncompressedCover = await getItunesUncompressedAlbumCover(albumData.name + " " + formattedArtistsName);
                 setUncompressedAlbumCover(uncompressedCover ? uncompressedCover : highQualityCoverUrl);
                 
@@ -1435,7 +1471,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                             title={titleRelease} 
                                             value={releaseDate} 
                                             onChangeTitle={(e) => setTitleRelease(e.target.value)} 
-                                            onChangeDate={(e) => setReleaseDate(e.target.value)}
+                                            onChangeDate={(e) => { rawReleaseDateRef.current = e.target.value; setReleaseDate(e.target.value); }}
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={450}>
