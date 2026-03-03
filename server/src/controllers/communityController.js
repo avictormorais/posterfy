@@ -141,7 +141,7 @@ class CommunityController {
       const skip = (parseInt(page) - 1) * safeLimit
       const isRanking = !q.trim()
 
-      let filter = { status: 'active', posterCount: { $gt: 0 } }
+      let filter = { status: 'active' }
 
       if (!isRanking) {
         const escaped = q.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

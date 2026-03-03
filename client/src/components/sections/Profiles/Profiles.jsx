@@ -233,15 +233,14 @@ const ProfileCardWrap = styled.div`
 `;
 
 const AvatarRing = styled.div`
-    width: 46px;
-    height: 46px;
+    width: 43px;
+    height: 43px;
     border-radius: 50%;
-    padding: 3px;
-    background: ${({ $ringColor }) =>
+    padding: 1px;
+    border: 2px ${({ $ringColor }) =>
         $ringColor
             ? $ringColor
-            : 'var(--borderColor, rgba(128,128,128,0.2))'
-    };
+            : 'var(--borderColor, rgba(128,128,128,0.2))'} solid;
     flex-shrink: 0;
     transition: transform 0.3s ease;
 

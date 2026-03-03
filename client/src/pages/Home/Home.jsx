@@ -36,6 +36,7 @@ export default function Home({ loadingComplete }) {
   const { t } = useTranslation();
   const { posterId } = useParams();
   const [recreatingPosterJSON, setRecreatingPosterJSON] = useState(null);
+  const [recreatingPosterData, setRecreatingPosterData] = useState(null);
   const [publishModal, setPublishModal] = useState(null);
   const posterEditorRef = useRef(null);
 
@@ -51,6 +52,7 @@ export default function Home({ loadingComplete }) {
         trackCommunityPosterView(posterId, data.poster.albumName, data.poster.artistsName);
         const json = { ...(data.poster.posterJson || {}), albumID: data.poster.spotifyAlbumId };
         setRecreatingPosterJSON(json);
+        setRecreatingPosterData(data.poster);
         setTimeout(() => {
           if (posterEditorRef.current) {
             const y = posterEditorRef.current.getBoundingClientRect().top + window.pageYOffset - 80;
@@ -93,6 +95,7 @@ export default function Home({ loadingComplete }) {
 
   const handleClickBack = () => {
     setRecreatingPosterJSON(null);
+    setRecreatingPosterData(null);
   }
 
   return (
@@ -126,6 +129,7 @@ export default function Home({ loadingComplete }) {
             initialPosterJson={recreatingPosterJSON} 
             handleClickBack={handleClickBack}
             posterId={posterId || null}
+            posterFullData={recreatingPosterData}
             onPublishSuccess={(id) => setPublishModal({ posterId: id })}
           />
         ) : (

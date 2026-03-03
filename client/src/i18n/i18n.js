@@ -220,6 +220,8 @@ i18n
                 DASH_ConfirmDeleteTitle: "Delete poster",
                 DASH_Unfavorite: "Unfavorite",
                 DASH_All: "All",
+                POSTER_INFO_PublishedAt: "Published on",
+                POSTER_INFO_AdminControls: "Admin controls",
 
                 Name: "Name",
                 Username: "Username",
@@ -275,6 +277,8 @@ i18n
                 ADMIN_Restore: "Restore",
                 ADMIN_Purge: "Delete Permanently",
                 ADMIN_PurgeConfirm: "This will permanently delete the poster and all associated data. This cannot be undone.",
+                ADMIN_PurgeUser: "Delete User Permanently",
+                ADMIN_ConfirmPurgeUser: "This will permanently delete this user, all their posters, and all related data. This cannot be undone.",
                 ADMIN_MakePublic: "Make Public",
                 ADMIN_MakePrivate: "Make Private",
                 ADMIN_Name: "Name",
@@ -556,6 +560,8 @@ i18n
                 DASH_ConfirmDeleteTitle: "Excluir pôster",
                 DASH_Unfavorite: "Desfavoritar",
                 DASH_All: "Todos",
+                POSTER_INFO_PublishedAt: "Publicado em",
+                POSTER_INFO_AdminControls: "Controles de admin",
                 NoActivityYet: "Nenhuma atividade ainda",
 
                 Name: "Nome",
@@ -612,6 +618,8 @@ i18n
                 ADMIN_Restore: "Restaurar",
                 ADMIN_Purge: "Excluir Permanentemente",
                 ADMIN_PurgeConfirm: "Isso excluirá permanentemente o pôster e todos os dados associados. Esta ação não pode ser desfeita.",
+                ADMIN_PurgeUser: "Excluir Usuário Permanentemente",
+                ADMIN_ConfirmPurgeUser: "Isso excluirá permanentemente este usuário, todos os seus pôsteres e dados relacionados. Esta ação não pode ser desfeita.",
                 ADMIN_MakePublic: "Tornar Público",
                 ADMIN_MakePrivate: "Tornar Privado",
                 ADMIN_Name: "Nome",
@@ -893,6 +901,8 @@ i18n
                 DASH_ConfirmDeleteTitle: "Eliminar póster",
                 DASH_Unfavorite: "Quitar de favoritos",
                 DASH_All: "Todos",
+                POSTER_INFO_PublishedAt: "Publicado el",
+                POSTER_INFO_AdminControls: "Controles del administrador",
                 NoActivityYet: "Aún no hay actividad",
 
                 Name: "Nombre",
@@ -1135,6 +1145,8 @@ i18n
                 DASH_ConfirmDeleteTitle: "删除海报",
                 DASH_Unfavorite: "取消收藏",
                 DASH_All: "全部",
+                POSTER_INFO_PublishedAt: "发布于",
+                POSTER_INFO_AdminControls: "管理员控制",
                 NoActivityYet: "还没有活动",
 
                 Name: "名称",

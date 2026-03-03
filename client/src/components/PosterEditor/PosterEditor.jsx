@@ -33,6 +33,7 @@ import { getHighestQualitySpotifyImage } from "../../utils/spotifyImageOptimizer
 import { TbFileTypePdf } from "react-icons/tb";
 import { TbFileTypePng } from "react-icons/tb";
 import SetPasswordSVG from "../svgs/Login/SetPasswordSVG"
+import PosterInfo from "./PosterInfo";
 
 const Container = styled.div`
     width: 80%;
@@ -653,7 +654,7 @@ const LoginButton = styled.button`
     transition: all 0.2s ease;
 `;
 
-const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson, source, posterId, onPublishSuccess }, ref) => {
+const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson, source, posterId, posterFullData, onPublishSuccess }, ref) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
@@ -1687,6 +1688,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             </AnimatedInput> */}
                         </EditorColumn>
                     </ContainerEditor>
+
+                    {posterFullData && (
+                        <PosterInfo
+                            poster={posterFullData}
+                            onDeleted={handleClickBack}
+                            onVisibilityChanged={() => {}}
+                        />
+                    )}
                     
                     {showColorSelector && colorInputPosition && currentColorInput && ReactDOM.createPortal(
                         <ColorSelector
