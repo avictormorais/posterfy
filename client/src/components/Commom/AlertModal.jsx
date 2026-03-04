@@ -107,7 +107,7 @@ const Title = styled.h2`
     margin-left: 10px;
     font-weight: bolder;
     margin-right: auto;
-    margin-top: 3px;
+    margin-top: 1px;
 `;
 
 const CloseIcon = styled(IoClose)`
@@ -131,6 +131,10 @@ const Button = styled.div`
 
     &:hover {
         background-color: var(--AccentColor);
+
+        ${CloseIcon} {
+            fill: var(--backgroundColor);
+        }
     }
 `;
 
@@ -203,6 +207,15 @@ const PostImageText = styled(Paragraph)`
     text-align: justify;
 `;
 
+const DisclaimerText = styled(Paragraph)`
+    opacity: 0.4;
+    font-size: 0.75em;
+    margin-top: 6px;
+    width: 93%;
+    text-align: justify;
+    font-style: italic;
+`;
+
 const IconDiv = styled.div`
     margin-right: 5px;
     display: flex;
@@ -219,7 +232,7 @@ const Divisor = styled.div`
     opacity: 0.1;
 `;
 
-export default function AlertModal({ title, paragraph, imageURL, postImageText, canClose, confirmText, onConfirm, cancelText, onCancel, isClosing, customButton }){
+export default function AlertModal({ title, paragraph, imageURL, postImageText, disclaimerText, canClose, confirmText, onConfirm, cancelText, onCancel, isClosing, customButton }){
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -233,7 +246,7 @@ export default function AlertModal({ title, paragraph, imageURL, postImageText, 
             <Container isClosing={isClosing}>
                 <TitleContainer>
                     <IconDiv>
-                        <Icon width={25} height={25} fill={"var(--textColor)"}/>
+                        <Icon width={25} height={25} fill={"var(--AccentColor)"}/>
                     </IconDiv>
                     {title && (
                         <Title>{title}</Title>
@@ -257,6 +270,11 @@ export default function AlertModal({ title, paragraph, imageURL, postImageText, 
                     <PostImageText>
                         {postImageText}
                     </PostImageText>
+                )}
+                {disclaimerText && (
+                    <DisclaimerText>
+                        {disclaimerText}
+                    </DisclaimerText>
                 )}
 
                 <ButtonsContainer style={{ justifyContent: "center" }}>
