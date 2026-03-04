@@ -15,12 +15,17 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-basic-auth": "^1.2.1",
+    "express-rate-limit": "^8.2.1",
     "express-session": "^1.18.2",
+    "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "passport-spotify": "^2.0.0"
+    "passport-spotify": "^2.0.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

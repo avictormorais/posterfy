@@ -4,7 +4,7 @@ import ModelSelector from "../ModelSelector";
 import Searchbar from "../../Searchbar";
 import Grid from "../../Grid";
 
-const PosterBySearch = ({ onBack }) => {
+const PosterBySearch = ({ onBack, onPublishSuccess }) => {
     const [query, setQuery] = useState("");
     const [albumId, setAlbumId] = useState(null);
     const [showModelSelector, setShowModelSelector] = useState(false);
@@ -51,6 +51,7 @@ const PosterBySearch = ({ onBack }) => {
                 model={selectedModel} 
                 modelParams={modelParams}
                 source="search_creation"
+                onPublishSuccess={onPublishSuccess}
             />
         );
     }

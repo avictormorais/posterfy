@@ -194,13 +194,13 @@ export default function Login(){
     useEffect(() => {
         if (!loading) {
             if (user) {
-                navigate('/dashboard');
+                navigate(`/u/${user.username}`);
                 return;
             }
 
             const loginSuccess = searchParams.get('login');
-            if (loginSuccess === 'success') {
-                navigate('/dashboard');
+            if (loginSuccess === 'success' && user) {
+                navigate(`/u/${user.username}`);
             }
         }
     }, [user, loading, navigate, searchParams]);

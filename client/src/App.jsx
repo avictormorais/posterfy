@@ -8,9 +8,10 @@ import { AuthProvider } from './contexts/AuthContext';
 import Layout from './components/Layout/Layout';
 import Home from './pages/Home/Home';
 import Login from './pages/login/Login';
-import Dashboard from './pages/Dashboard/Dashboard';
+import Profile from './pages/Profile/Profile';
 import Error from './pages/Error/Error';
-import ProtectedRoute from './components/ProtectedRoute';
+import Admin from './pages/Admin/Admin';
+import AdminRoute from './components/AdminRoute';
 import { useEffect, useState } from 'react';
 import AnalyticsInitializer from './components/SEO/AnalyticsInitializer';
 import IndexingMonitor from './components/SEO/IndexingMonitor';
@@ -131,19 +132,28 @@ function App() {
               <Route path="/" element={<Layout showNavbar={true} showFooter={true} />}>
                 <Route index element={<Home loadingComplete={loadingComplete} />} />
               </Route>
+
+              <Route path="/p/:posterId" element={<Layout showNavbar={true} showFooter={true} />}>
+                <Route index element={<Home loadingComplete={loadingComplete} />} />
+              </Route>
               
               <Route path="/login" element={<Layout showNavbar={false} showFooter={false} />}>
                 <Route index element={<Login />} />
               </Route>
 
-              <Route path="/dashboard" element={<Layout showNavbar={true} showFooter={true} />}>
-                <Route index element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
+              <Route path="/u/:username" element={<Layout showNavbar={true} showFooter={true} />}>
+                <Route index element={<Profile />} />
               </Route>
 
+              <Route path="/admin" element={
+                <AdminRoute>
+                  <Layout showNavbar={true} showFooter={false} />
+                </AdminRoute>
+              }>
+                <Route index element={<Admin />} />
+              </Route>
+
+              <Route path="/error" element={<Error />} />
               <Route path="*" element={<Error />} />
 
             </Routes>

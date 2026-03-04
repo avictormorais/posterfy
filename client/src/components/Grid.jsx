@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Album from "./Commom/Album";
 import LoadingDiv from "./Commom/LoadingDiv";
 import { useTranslation } from "react-i18next";
+import Empty from "./svgs/Others/Empty";
 
 const Container = styled.div`
     width: 81%;
@@ -54,6 +55,23 @@ const LoadMoreButton = styled.button`
     }
 `;
 
+const EmptyContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+`;
+
+const EmptyText = styled.p`
+    font-size: 1em;
+    font-weight: 600;
+    opacity: 0.5;
+    color: var(--textColor);
+    margin: 0;
+    margin-top: 20px;
+`;
+
 const PaginationContainer = styled.div`
     width: 30%;
     display: flex;
@@ -78,7 +96,7 @@ function Grid({ query, onclick }) {
     const [loadingMore, setLoadingMore] = useState(false);
     const [previousAlbumsCount, setPreviousAlbumsCount] = useState(0);
     const [showButton, setShowButton] = useState(false);
-    const limit = 20;
+    const limit = 10;
 
     useEffect(() => {
         const fetchAccessToken = async () => {
@@ -130,7 +148,8 @@ function Grid({ query, onclick }) {
                         }
                     });
                 } else {
-                    response = await fetch(`https://api.spotify.com/v1/browse/new-releases?offset=${currentOffset}&limit=${limit}&locale=en-US`, {
+                    const year = new Date().getFullYear();
+                    response = await fetch(`https://api.spotify.com/v1/search?q=tag%3Anew+year%3A${year}&type=album&limit=${limit}&offset=${currentOffset}`, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -143,7 +162,7 @@ function Grid({ query, onclick }) {
                 }
                 
                 const data = await response.json();
-                const albumsData = (query ? data.albums.items : data.albums.items).filter(album => album !== null && album !== undefined);
+                const albumsData = (data.albums?.items || []).filter(album => album !== null && album !== undefined);
                 
                 const newAlbums = albumsData.map(album => ({
                     id: album.id,
@@ -169,7 +188,7 @@ function Grid({ query, onclick }) {
                     setShowButton(true);
                 }, lastAlbumDelay + animationDuration);
 
-                const totalResults = query ? data.albums.total : data.albums.total;
+                const totalResults = data.albums?.total || 0;
                 const currentTotal = isLoadMore ? albums.length + newAlbums.length : newAlbums.length;
                 setHasMore(currentTotal < totalResults && newAlbums.length === limit);
                 
@@ -203,7 +222,8 @@ function Grid({ query, onclick }) {
                     }
                 });
             } else {
-                response = await fetch(`https://api.spotify.com/v1/browse/new-releases?offset=${newOffset}&limit=${limit}&locale=en-US`, {
+                const year = new Date().getFullYear();
+                response = await fetch(`https://api.spotify.com/v1/search?q=tag%3Anew+year%3A${year}&type=album&limit=${limit}&offset=${newOffset}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -216,7 +236,7 @@ function Grid({ query, onclick }) {
             }
             
             const data = await response.json();
-            const albumsData = (query ? data.albums.items : data.albums.items).filter(album => album !== null && album !== undefined);
+            const albumsData = (data.albums?.items || []).filter(album => album !== null && album !== undefined);
             
             const newAlbums = albumsData.map(album => ({
                 id: album.id,
@@ -236,7 +256,7 @@ function Grid({ query, onclick }) {
                 setShowButton(true);
             }, lastAlbumDelay + animationDuration);
 
-            const totalResults = query ? data.albums.total : data.albums.total;
+            const totalResults = data.albums?.total || 0;
             const currentTotal = albums.length + newAlbums.length;
             setHasMore(currentTotal < totalResults && newAlbums.length === limit);
             
@@ -252,6 +272,11 @@ function Grid({ query, onclick }) {
         <>
             {loading && albums.length === 0 ? (
                 <LoadingDiv/>
+            ) : !loading && albums.length === 0 ? (
+                <EmptyContainer>
+                    <Empty width={220}/>
+                    <EmptyText>{t('NoResults')}</EmptyText>
+                </EmptyContainer>
             ) : (
                 <>
                     <Container>

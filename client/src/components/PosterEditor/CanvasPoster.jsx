@@ -133,12 +133,20 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
 
                 ctx.font = `bold ${infoFontSize}px ${customFont || 'Montserrat'}`;
                 ctx.fillText(posterData.titleRelease, marginSide, infoY);
-                let releaseWidth = ctx.measureText(posterData.titleRelease).width;
-                ctx.fillText(posterData.titleRuntime, releaseWidth + marginSide + Math.round(100 * scale), infoY);
+                const titleReleaseWidth = ctx.measureText(posterData.titleRelease).width;
+
+                ctx.font = `bold ${detailFontSize}px ${customFont || 'Montserrat'}`;
+                const releaseDateWidth = ctx.measureText(posterData.releaseDate).width;
+
+                const releaseColWidth = Math.max(titleReleaseWidth, releaseDateWidth);
+                const runtimeX = releaseColWidth + marginSide + Math.round(100 * scale);
+
+                ctx.font = `bold ${infoFontSize}px ${customFont || 'Montserrat'}`;
+                ctx.fillText(posterData.titleRuntime, runtimeX, infoY);
 
                 ctx.globalAlpha = 0.7;
                 ctx.font = `bold ${detailFontSize}px ${customFont || 'Montserrat'}`;
-                ctx.fillText(posterData.runtime, releaseWidth + marginSide + Math.round(100 * scale), detailY);
+                ctx.fillText(posterData.runtime, runtimeX, detailY);
                 ctx.fillText(posterData.releaseDate, marginSide, detailY);
                 ctx.globalAlpha = 1;
 

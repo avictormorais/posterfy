@@ -68,6 +68,7 @@ class UserService {
       if (user) {
         user.spotifyId = spotifyId
         if (!user.avatar && avatar) user.avatar = avatar
+        if (!user.showSpotifyProfile) user.showSpotifyProfile = true
         await user.save()
         return user
       }
@@ -90,8 +91,21 @@ class UserService {
     return await User.findById(id)
   }
 
+  async setPinnedPoster(userId, posterId) {
+    const user = await User.findById(userId)
+    if (!user) throw new Error('User not found')
+    if (posterId === null) {
+      user.pinnedPosterId = null
+    } else {
+      // Toggle: unpin if already pinned, else pin
+      user.pinnedPosterId = user.pinnedPosterId?.toString() === posterId ? null : posterId
+    }
+    await user.save()
+    return user
+  }
+
   async updateProfile(userId, profileData) {
-    const { name, username } = profileData
+    const { name, username, bio, showSpotifyProfile } = profileData
 
     const user = await User.findById(userId)
     if (!user) {
@@ -100,6 +114,16 @@ class UserService {
 
     if (name && name.trim()) {
       user.name = name.trim()
+    }
+
+    if (typeof bio === 'string') {
+      const sanitized = bio
+        .split('\n')
+        .slice(0, 4)
+        .filter(line => line.trim() !== '')
+        .join('\n')
+        .substring(0, 160)
+      user.bio = sanitized
     }
 
     if (username && username.trim() && username.trim().toLowerCase() !== user.username) {
@@ -125,6 +149,10 @@ class UserService {
       }
 
       user.username = trimmedUsername
+    }
+
+    if (typeof showSpotifyProfile === 'boolean') {
+      user.showSpotifyProfile = showSpotifyProfile
     }
 
     await user.save()

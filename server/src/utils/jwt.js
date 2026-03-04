@@ -1,6 +1,11 @@
 import jwt from 'jsonwebtoken'
+import User from '../models/user.js'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key'
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not set. Refusing to start.')
+}
+
+const JWT_SECRET = process.env.JWT_SECRET
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '30d'
 
 export const generateToken = (user) => {
@@ -8,7 +13,8 @@ export const generateToken = (user) => {
     {
       id: user._id,
       username: user.username,
-      email: user.email
+      email: user.email,
+      tokenVersion: user.tokenVersion || 0
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
@@ -23,7 +29,33 @@ export const verifyToken = (token) => {
   }
 }
 
-export const authenticateToken = (req, res, next) => {
+export const optionalAuthenticateToken = async (req, res, next) => {
+  const authHeader = req.headers.authorization
+  const token = authHeader && authHeader.split(' ')[1]
+
+  if (!token) return next()
+
+  const decoded = verifyToken(token)
+  if (!decoded) return next()
+
+  try {
+    const user = await User.findById(decoded.id).select('_id username email permissions status tokenVersion').lean()
+    if (user && user.status === 'active' && (decoded.tokenVersion ?? 0) === (user.tokenVersion ?? 0)) {
+      req.user = {
+        id: user._id.toString(),
+        username: user.username,
+        email: user.email,
+        permissions: user.permissions,
+        status: user.status
+      }
+    }
+  } catch (_) {
+    // silent — optional auth never blocks the request
+  }
+  next()
+}
+
+export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers.authorization
   const token = authHeader && authHeader.split(' ')[1]
 
@@ -36,6 +68,23 @@ export const authenticateToken = (req, res, next) => {
     return res.status(403).json({ error: 'Invalid or expired token' })
   }
 
-  req.user = decoded
-  next()
+  try {
+    const user = await User.findById(decoded.id).select('_id username email permissions status tokenVersion').lean()
+    if (!user) return res.status(403).json({ error: 'User not found' })
+    if (user.status === 'suspended') return res.status(403).json({ error: 'Account suspended', code: 'SUSPENDED' })
+    if ((decoded.tokenVersion ?? 0) !== (user.tokenVersion ?? 0)) {
+      return res.status(403).json({ error: 'Token revoked', code: 'TOKEN_REVOKED' })
+    }
+
+    req.user = {
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      permissions: user.permissions,
+      status: user.status
+    }
+    next()
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' })
+  }
 }

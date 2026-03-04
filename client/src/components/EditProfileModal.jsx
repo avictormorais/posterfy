@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { IoClose } from "react-icons/io5";
+import { SiSpotify } from "react-icons/si";
 import Icon from "../components/svgs/icon";
 import { useAuth } from "../contexts/AuthContext";
 import apiService from "../services/apiService";
+import { trackProfileEditSave } from "../services/analytics";
 import { useTranslation } from 'react-i18next';
 
 const fadeIn = keyframes`
@@ -179,10 +181,43 @@ const Input = styled.input`
     }
 `;
 
+const Textarea = styled.textarea`
+    padding: 12px 15px;
+    border: 2px solid var(--textColor);
+    border-radius: 8px;
+    background-color: var(--backgroundColor);
+    color: var(--textColor);
+    font-size: 1em;
+    font-family: inherit;
+    line-height: 1.5;
+    resize: none;
+    height: 88px;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+        outline: none;
+        border-color: var(--AccentColor);
+    }
+
+    &::placeholder {
+        color: var(--textColor);
+        opacity: 0.5;
+    }
+`;
+
+const CharCounter = styled.span`
+    font-size: 0.75em;
+    opacity: 0.38;
+    text-align: right;
+    font-weight: 600;
+    margin-top: -2px;
+`;
+
 const ErrorMessage = styled.span`
-    color: #ff6b6b;
+    color: var(--textColor);
     font-size: 0.8em;
     font-weight: bolder;
+    opacity: 0.8;
 `;
 
 const ButtonsContainer = styled.div`
@@ -240,19 +275,69 @@ const FilledButton = styled.button`
 `;
 
 const SuccessMessage = styled.div`
-    color: #51cf66;
+    color: var(--textColor);
     font-size: 0.9em;
     font-weight: bolder;
     text-align: center;
     margin-top: 10px;
 `;
 
-export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
+const ToggleRow = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+`;
+
+const ToggleLabel = styled.span`
+    font-size: 0.9em;
+    font-weight: bolder;
+    color: var(--textColor);
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+`;
+
+const ToggleSwitch = styled.button`
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    border: 2px solid var(--textColor);
+    background: ${props => props.$active ? 'var(--textColor)' : 'transparent'};
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    padding: 0;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: ${props => props.$active ? '20px' : '2px'};
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: ${props => props.$active ? 'var(--backgroundColor)' : 'var(--textColor)'};
+        transition: all 0.3s ease;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+`;
+
+export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, initialBio = '' }) {
     const { user, updateUser } = useAuth();
     const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: '',
-        username: ''
+        username: '',
+        bio: '',
+        showSpotifyProfile: false
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -263,10 +348,12 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
         if (user) {
             setFormData({
                 name: user.name || '',
-                username: user.username || ''
+                username: user.username || '',
+                bio: initialBio,
+                showSpotifyProfile: user.showSpotifyProfile || false
             });
         }
-    }, [user]);
+    }, [user, initialBio]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -283,12 +370,27 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
             newErrors.username = t('UsernameFormat');
         }
 
+        if (formData.bio.trim()) {
+            const lines = formData.bio.split('\n').filter((_, i) => i < 4);
+            const hasEmpty = lines.some(l => l.trim() === '');
+            if (hasEmpty) newErrors.bio = t('DASH_BioNoEmptyLines');
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === 'bio') {
+            // Block if trying to add more than 4 lines
+            const lines = value.split('\n');
+            if (lines.length > 4) return;
+            // Block consecutive empty lines (typed \n on blank line)
+            if (lines.length >= 2 && lines[lines.length - 1] === '' && lines[lines.length - 2] === '') return;
+        }
+
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -320,17 +422,29 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
             // Update profile (name and username in a single request)
             await apiService.updateUserProfile({
                 name: formData.name.trim(),
-                username: formData.username.trim()
+                username: formData.username.trim(),
+                bio: formData.bio.trim(),
+                showSpotifyProfile: formData.showSpotifyProfile
             });
 
             // Update local user state
             updateUser({
                 ...user,
                 name: formData.name.trim(),
-                username: formData.username.trim()
+                username: formData.username.trim(),
+                bio: formData.bio.trim(),
+                showSpotifyProfile: formData.showSpotifyProfile
             });
 
             setSuccessMessage(t('ProfileUpdatedSuccessfully'));
+
+            // Track which fields were changed
+            const changed = [];
+            if (formData.name.trim() !== user.name) changed.push('name');
+            if (formData.username.trim() !== user.username) changed.push('username');
+            if (formData.bio.trim() !== (user.bio || '')) changed.push('bio');
+            if (formData.showSpotifyProfile !== user.showSpotifyProfile) changed.push('showSpotifyProfile');
+            if (changed.length) trackProfileEditSave(formData.username.trim(), changed);
 
             // Call parent callback
             if (onProfileUpdate) {
@@ -366,9 +480,13 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
         }, 300);
     };
 
-    if (!isOpen) return null;
+    useEffect(() => {
+        if (!isOpen) return;
+        document.body.style.overflow = 'hidden';
+        return () => { document.body.style.overflow = ''; };
+    }, [isOpen]);
 
-    document.body.style.overflow = 'hidden';
+    if (!isOpen) return null;
 
     return (
         <Background isClosing={isClosing}>
@@ -412,6 +530,36 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate }) {
                         />
                         {errors.username && <ErrorMessage>{errors.username}</ErrorMessage>}
                     </FormGroup>
+
+                    <FormGroup>
+                        <Label htmlFor="bio">{t('DASH_Bio')}</Label>
+                        <Textarea
+                            id="bio"
+                            name="bio"
+                            value={formData.bio}
+                            onChange={handleInputChange}
+                            placeholder={t('DASH_BioPlaceholder')}
+                            maxLength={160}
+                            disabled={isLoading}
+                        />
+                        <CharCounter>{160 - (formData.bio?.length || 0)} {t('DASH_BioChars')}</CharCounter>
+                        {errors.bio && <ErrorMessage>{errors.bio}</ErrorMessage>}
+                    </FormGroup>
+
+                    {user?.hasSpotify && (
+                        <ToggleRow>
+                            <ToggleLabel>
+                                <SiSpotify size={14} />
+                                {t('DASH_ShowSpotify')}
+                            </ToggleLabel>
+                            <ToggleSwitch
+                                type="button"
+                                $active={formData.showSpotifyProfile}
+                                disabled={isLoading}
+                                onClick={() => setFormData(prev => ({ ...prev, showSpotifyProfile: !prev.showSpotifyProfile }))}
+                            />
+                        </ToggleRow>
+                    )}
 
                     {errors.general && <ErrorMessage>{errors.general}</ErrorMessage>}
 

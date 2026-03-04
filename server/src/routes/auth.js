@@ -5,11 +5,16 @@ import { authenticateToken } from '../utils/jwt.js'
 
 const router = express.Router()
 
-router.get('/google',
+const encodeState = (redirect) =>
+  Buffer.from(JSON.stringify({ redirect })).toString('base64url')
+
+router.get('/google', (req, res, next) => {
+  const redirect = req.query.redirect || `${process.env.CLIENT_URL}/login`
   passport.authenticate('google', {
-    scope: ['profile', 'email']
-  })
-)
+    scope: ['profile', 'email'],
+    state: encodeState(redirect)
+  })(req, res, next)
+})
 
 router.get('/google/callback',
   passport.authenticate('google', {
@@ -18,11 +23,13 @@ router.get('/google/callback',
   AuthController.googleCallback
 )
 
-router.get('/spotify',
+router.get('/spotify', (req, res, next) => {
+  const redirect = req.query.redirect || `${process.env.CLIENT_URL}/login`
   passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private']
-  })
-)
+    scope: ['user-read-email', 'user-read-private'],
+    state: encodeState(redirect)
+  })(req, res, next)
+})
 
 router.get('/spotify/callback',
   passport.authenticate('spotify', {
