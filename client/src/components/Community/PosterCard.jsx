@@ -1,14 +1,16 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import { trackCommunityPosterOpenInEditor } from "../../services/analytics";
 import CanvasPoster from "../PosterEditor/CanvasPoster";
-import { IoEye, IoHeart, IoHeartOutline, IoCloudDownload, IoTrashOutline, IoEarthOutline, IoLockClosedOutline, IoHeartDislikeOutline, IoBookmark, IoBookmarkOutline } from "react-icons/io5";
+import { IoEye, IoHeart, IoHeartOutline, IoCloudDownload, IoTrashOutline, IoEarthOutline, IoLockClosedOutline, IoHeartDislikeOutline, IoBookmark, IoBookmarkOutline, IoOpenOutline, IoPersonOutline, IoCopyOutline } from "react-icons/io5";
 import { FiEdit2 } from "react-icons/fi";
 import apiService from "../../services/apiService";
+import adminService from "../../services/adminService";
 
 
 const spin = keyframes`
@@ -19,6 +21,11 @@ const spin = keyframes`
 const fadeIn = keyframes`
     from { opacity: 0; }
     to   { opacity: 1; }
+`;
+
+const ctxScale = keyframes`
+    from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
 `;
 
 
@@ -346,6 +353,69 @@ const CardVisibilityBadge = styled.span`
     gap: 4px;
 `;
 
+const CtxOverlay = styled.div`
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+`;
+
+const CtxMenu = styled.div`
+    position: fixed;
+    z-index: 9999;
+    min-width: 222px;
+    background: var(--backgroundColor);
+    border: 1px solid color-mix(in srgb, var(--textColor) 11%, transparent);
+    border-radius: 14px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 5px;
+    animation: ${ctxScale} 0.13s cubic-bezier(0.22, 1, 0.36, 1) both;
+`;
+
+const CtxItem = styled.button`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    background: none;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    color: var(--textColor);
+    font-size: 0.875em;
+    font-weight: 500;
+    text-align: left;
+    transition: background 0.12s;
+
+    &:hover {
+        background: color-mix(in srgb, var(--textColor) 8%, transparent);
+    }
+
+    &[data-danger='true'] {
+        color: var(--AccentColor);
+        &:hover { background: rgba(224, 82, 82, 0.09); }
+    }
+
+    svg { font-size: 1.1em; flex-shrink: 0; opacity: 0.7; }
+`;
+
+const CtxDivider = styled.div`
+    height: 1px;
+    background: color-mix(in srgb, var(--textColor) 10%, transparent);
+    margin: 4px 0;
+`;
+
+const CtxLabel = styled.div`
+    font-size: 0.68em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.35;
+    padding: 6px 12px 2px;
+    color: var(--textColor);
+    user-select: none;
+`;
+
 
 const fmt = (n = 0) => {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.0', '') + 'M';
@@ -370,13 +440,18 @@ const getBadgeInfo = (badge) => {
 function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChange, onUnfavorite, onPin, pinned = false }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
+    const isAdmin = user?.permissions?.includes('admin');
     const cardRef = useRef(null);
 
-    const [isVisible, setIsVisible]         = useState(false);
-    const [thumbnailUrl, setThumbnailUrl]   = useState(null);
-    const [favorited, setFavorited]         = useState(poster.favorited || false);
-    const [favLoading, setFavLoading]       = useState(false);
+    const [isVisible, setIsVisible]               = useState(false);
+    const [thumbnailUrl, setThumbnailUrl]         = useState(null);
+    const [favorited, setFavorited]               = useState(poster.favorited || false);
+    const [favLoading, setFavLoading]             = useState(false);
+    const [ctxMenu, setCtxMenu]                   = useState(null);
+    const [ctxCopied, setCtxCopied]               = useState('');
+    const [adminDeleted, setAdminDeleted]         = useState(false);
+    const [localVisibility, setLocalVisibility]   = useState(poster.visibility);
 
     useEffect(() => {
         const el = cardRef.current;
@@ -418,6 +493,63 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
         navigate(`/p/${poster._id}`);
     };
 
+    useEffect(() => {
+        if (!ctxMenu) return;
+        const preventScroll = (e) => e.preventDefault();
+        const preventKeys = (e) => {
+            if ([' ', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key))
+                e.preventDefault();
+        };
+        document.addEventListener('wheel',     preventScroll, { passive: false });
+        document.addEventListener('touchmove', preventScroll, { passive: false });
+        document.addEventListener('keydown',   preventKeys);
+        return () => {
+            document.removeEventListener('wheel',     preventScroll);
+            document.removeEventListener('touchmove', preventScroll);
+            document.removeEventListener('keydown',   preventKeys);
+        };
+    }, [ctxMenu]);
+
+    const handleContextMenu = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const menuW = 240;
+        const menuH = isAdmin ? 340 : 220;
+        const x = e.clientX + menuW > window.innerWidth  ? e.clientX - menuW : e.clientX;
+        const y = e.clientY + menuH > window.innerHeight ? e.clientY - menuH : e.clientY;
+        setCtxMenu({ x, y });
+    };
+
+    const handleCtxFavorite = async () => {
+        setCtxMenu(null);
+        if (!isAuthenticated || favLoading) return;
+        setFavLoading(true);
+        const prev = favorited;
+        setFavorited(!prev);
+        try { await apiService.toggleFavorite(poster._id); }
+        catch { setFavorited(prev); }
+        finally { setFavLoading(false); }
+    };
+
+    const copyToClipboard = (text, label) => {
+        navigator.clipboard.writeText(text).catch(() => {});
+        setCtxCopied(label);
+        setTimeout(() => { setCtxCopied(''); setCtxMenu(null); }, 1200);
+    };
+
+    const handleAdminDelete = async () => {
+        setCtxMenu(null);
+        try { await adminService.deletePoster(poster._id); setAdminDeleted(true); }
+        catch { /* silent */ }
+    };
+
+    const handleAdminVisibility = async () => {
+        setCtxMenu(null);
+        const next = localVisibility === 'public' ? 'private' : 'public';
+        try { await adminService.changeVisibility(poster._id, next); setLocalVisibility(next); }
+        catch { /* silent */ }
+    };
+
     const author   = poster.authorId;
     const pj       = poster.posterJson || {};
     const badgeInfo = author ? getBadgeInfo(author.badge) : null;
@@ -435,8 +567,10 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
     const bgColor  = pj.backgroundColor || '#1a1a1a';
     const txtColor = pj.textColor || '#ffffff';
 
-    return (
-        <Card ref={cardRef} onClick={handleCardClick} $bg={bgColor}>
+    if (adminDeleted) return null;
+
+    return (<>
+        <Card ref={cardRef} onClick={handleCardClick} $bg={bgColor} onContextMenu={handleContextMenu}>
             <ThumbnailWrapper $bg={bgColor}>
                 {/* CanvasPoster renders to a hidden canvas internally */}
                 {isVisible && hasAlbumCover && !thumbnailUrl && (
@@ -592,7 +726,70 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                 </CardActionRow>
             )}
         </Card>
-    );
+
+        {ctxMenu && createPortal(
+            <>
+                <CtxOverlay
+                    onClick={() => setCtxMenu(null)}
+                    onContextMenu={(e) => { e.preventDefault(); setCtxMenu(null); }}
+                />
+                <CtxMenu style={{ left: ctxMenu.x, top: ctxMenu.y }}>
+                    {isAuthenticated && variant !== 'favorites' && (
+                        <CtxItem onClick={handleCtxFavorite}>
+                            {favorited ? <IoHeart /> : <IoHeartOutline />}
+                            {favorited ? t('CARD_CTX_Unlike') : t('CARD_CTX_Like')}
+                        </CtxItem>
+                    )}
+                    <CtxItem onClick={() => { setCtxMenu(null); navigate(`/p/${poster._id}`); }}>
+                        <IoEye />
+                        {t('CARD_CTX_Open')}
+                    </CtxItem>
+                    <CtxItem onClick={() => { setCtxMenu(null); window.open(`/p/${poster._id}`, '_blank'); }}>
+                        <IoOpenOutline />
+                        {t('CARD_CTX_OpenNewTab')}
+                    </CtxItem>
+                    {author?.username && (
+                        <CtxItem onClick={() => { setCtxMenu(null); navigate(`/u/${author.username}`); }}>
+                            <IoPersonOutline />
+                            {t('CARD_CTX_UserProfile')}
+                        </CtxItem>
+                    )}
+                    {author?.username && (
+                        <CtxItem onClick={() => { setCtxMenu(null); window.open(`/u/${author.username}`, '_blank'); }}>
+                            <IoOpenOutline />
+                            {t('CARD_CTX_UserProfileNewTab')}
+                        </CtxItem>
+                    )}
+
+                    {isAdmin && (
+                        <>
+                            <CtxDivider />
+                            <CtxLabel>{t('CARD_CTX_Admin')}</CtxLabel>
+                            {author?._id && (
+                                <CtxItem onClick={() => copyToClipboard(String(author._id), 'user')}>
+                                    <IoCopyOutline />
+                                    {ctxCopied === 'user' ? t('CARD_CTX_Copied') : t('CARD_CTX_CopyUserId')}
+                                </CtxItem>
+                            )}
+                            <CtxItem onClick={() => copyToClipboard(String(poster._id), 'poster')}>
+                                <IoCopyOutline />
+                                {ctxCopied === 'poster' ? t('CARD_CTX_Copied') : t('CARD_CTX_CopyPosterId')}
+                            </CtxItem>
+                            <CtxItem onClick={handleAdminVisibility}>
+                                {localVisibility === 'public' ? <IoLockClosedOutline /> : <IoEarthOutline />}
+                                {localVisibility === 'public' ? t('DASH_MakePrivate') : t('DASH_MakePublic')}
+                            </CtxItem>
+                            <CtxItem data-danger="true" onClick={handleAdminDelete}>
+                                <IoTrashOutline />
+                                {t('CARD_CTX_Delete')}
+                            </CtxItem>
+                        </>
+                    )}
+                </CtxMenu>
+            </>,
+            document.body
+        )}
+    </>);
 }
 
 export default PosterCard;
