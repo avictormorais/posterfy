@@ -49,17 +49,22 @@ class CommunityController {
       if (!user) return res.status(404).json({ error: 'User not found' })
 
       const { page = 1, limit = 20 } = req.query
+      const requesterIsAdmin = req.user?.permissions?.includes('admin') || false
       const postersResult = await PosterService.findByUser(
         user._id.toString(),
         req.user?.id || null,
         parseInt(page),
-        parseInt(limit)
+        parseInt(limit),
+        requesterIsAdmin
       )
 
       // Include pinned poster data if it exists
       let pinnedPoster = null
       if (user.pinnedPosterId) {
-        pinnedPoster = await Poster.findOne({ _id: user.pinnedPosterId, isDeleted: false, visibility: 'public' }).lean()
+        const pinnedFilter = requesterIsAdmin
+          ? { _id: user.pinnedPosterId, isDeleted: false }
+          : { _id: user.pinnedPosterId, isDeleted: false, visibility: 'public' }
+        pinnedPoster = await Poster.findOne(pinnedFilter).lean()
       }
 
       // Only expose Spotify if user opted in
@@ -68,8 +73,8 @@ class CommunityController {
       const { spotifyId: _sid, showSpotifyProfile: _ssp, ...publicUser } = user
 
       const badgeProgress = BadgeService.getBadgeProgress(user)
-      const isAdmin = (user.permissions || []).includes('admin')
-      res.json({ user: { ...publicUser, hasSpotify, spotifyId: publicSpotifyId, badgeProgress, isAdmin }, pinnedPoster, ...postersResult })
+      const userIsAdmin = (user.permissions || []).includes('admin')
+      res.json({ user: { ...publicUser, hasSpotify, spotifyId: publicSpotifyId, badgeProgress, isAdmin: userIsAdmin }, pinnedPoster, ...postersResult })
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' })
     }
@@ -80,7 +85,12 @@ class CommunityController {
       const user = await User.findOne({ username: req.params.username, status: 'active' }).lean()
       if (!user) return res.status(404).json({ error: 'User not found' })
 
-      const posters = await Poster.find({ authorId: user._id, isDeleted: false, visibility: 'public' })
+      const requesterIsAdmin = req.user?.permissions?.includes('admin') || false
+      const posterFilter = requesterIsAdmin
+        ? { authorId: user._id, isDeleted: false }
+        : { authorId: user._id, isDeleted: false, visibility: 'public' }
+
+      const posters = await Poster.find(posterFilter)
         .select('_id albumName artistsName views downloads favoritesCount posterJson createdAt')
         .lean()
 

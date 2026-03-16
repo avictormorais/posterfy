@@ -29,7 +29,8 @@ class PosterController {
 
   async getById(req, res) {
     try {
-      const poster = await PosterService.findById(req.params.id, req.user?.id || null)
+      const isAdmin = req.user?.permissions?.includes('admin') || false
+      const poster = await PosterService.findById(req.params.id, req.user?.id || null, isAdmin)
       if (!poster) return res.status(404).json({ error: 'Poster not found' })
       res.json({ poster })
     } catch (error) {

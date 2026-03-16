@@ -72,7 +72,7 @@ class PosterService {
     return poster
   }
 
-  async findById(posterId, requesterId = null) {
+  async findById(posterId, requesterId = null, isAdmin = false) {
     const poster = await Poster.findOne({ _id: posterId, isDeleted: false })
       .populate('authorId', 'name username avatar badge')
       .lean()
@@ -80,7 +80,8 @@ class PosterService {
     if (!poster) return null
 
     if (poster.visibility === 'private') {
-      if (!requesterId || poster.authorId._id.toString() !== requesterId) return null
+      const isOwner = requesterId && poster.authorId._id.toString() === requesterId
+      if (!isAdmin && !isOwner) return null
     }
 
     let favorited = false
@@ -92,11 +93,12 @@ class PosterService {
     return { ...poster, favorited }
   }
 
-  async findByUser(authorId, requesterId = null, page = 1, limit = DEFAULT_LIMIT) {
+  async findByUser(authorId, requesterId = null, page = 1, limit = DEFAULT_LIMIT, isAdmin = false) {
     const safeLimit = Math.min(limit, MAX_LIMIT)
     const skip = (page - 1) * safeLimit
 
-    const filter = requesterId === authorId
+    const isOwner = requesterId === authorId
+    const filter = isOwner || isAdmin
       ? { authorId, isDeleted: false }
       : buildPublicFilter({ authorId })
 
@@ -106,7 +108,7 @@ class PosterService {
     ])
 
     // Mark favorited status for a viewer who is not the author
-    if (requesterId && requesterId !== authorId) {
+    if (requesterId && !isOwner) {
       const posterIds = posters.map(p => p._id)
       const favs = await Favorite.find({ userId: requesterId, posterId: { $in: posterIds } }).lean()
       const favSet = new Set(favs.map(f => f.posterId.toString()))
