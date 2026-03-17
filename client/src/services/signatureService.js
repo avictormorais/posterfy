@@ -75,10 +75,58 @@ async function searchWikimediaCommons(name) {
   }
 }
 
+async function searchSpotifyIdByArtistName(artistName) {
+  const sparqlQuery = `
+    SELECT ?artist ?spotifyId WHERE {
+      ?artist ?label "${artistName}"@en .
+      ?artist wdt:P1902 ?spotifyId .
+    }`;
+
+  try {
+    const wikiRes = await fetch(
+      `${WIKIDATA_ENDPOINT}?query=${encodeURIComponent(sparqlQuery)}&format=json`,
+      {
+        headers: {
+          'User-Agent': USER_AGENT,
+          'Accept': 'application/sparql-results+json'
+        }
+      }
+    );
+
+    const wikiData = await wikiRes.json();
+    if (wikiData.results.bindings.length > 0) {
+      return wikiData.results.bindings[0].spotifyId.value;
+    }
+  } catch (e) {
+  }
+
+  return null;
+}
+
 async function getSignatureBySpotifyId(spotifyId, fallbackName = null) {
+  let resolvedSpotifyId = spotifyId;
+  let signatureUrl = null;
+
+  if (!spotifyId && fallbackName) {
+    resolvedSpotifyId = await searchSpotifyIdByArtistName(fallbackName);
+  }
+
+  if (!resolvedSpotifyId) {
+    if (fallbackName) {
+      const commonsResults = await searchWikimediaCommons(fallbackName);
+      if (commonsResults.svg) {
+        return { url: commonsResults.svg, spotifyId: null };
+      }
+      if (commonsResults.png) {
+        return { url: commonsResults.png, spotifyId: null };
+      }
+    }
+    return null;
+  }
+
   const sparqlQuery = `
     SELECT ?artistLabel ?signature WHERE {
-      ?artist wdt:P1902 "${spotifyId}" .
+      ?artist wdt:P1902 "${resolvedSpotifyId}" .
       OPTIONAL { ?artist wdt:P109 ?signature . }
       SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
     }`;
@@ -95,46 +143,24 @@ async function getSignatureBySpotifyId(spotifyId, fallbackName = null) {
     );
 
     const wikiData = await wikiRes.json();
-    let artistName = fallbackName;
     let wikidataUrl = null;
 
     if (wikiData.results.bindings.length > 0) {
       const result = wikiData.results.bindings[0];
-      artistName = result.artistLabel.value;
       wikidataUrl = result.signature ? result.signature.value.replace("http://", "https://") : null;
 
       if (wikidataUrl && wikidataUrl.toLowerCase().endsWith('.svg')) {
         const directUrl = await getRealDirectUrl(wikidataUrl);
-        if (directUrl) {
-          return directUrl;
-        }
-        return wikidataUrl;
+        signatureUrl = directUrl || wikidataUrl;
+      } else if (wikidataUrl && wikidataUrl.toLowerCase().endsWith('.png')) {
+        const directUrl = await getRealDirectUrl(wikidataUrl);
+        signatureUrl = directUrl || wikidataUrl;
       }
-    }
-
-    if (artistName) {
-      const commonsResults = await searchWikimediaCommons(artistName);
-
-      if (commonsResults.svg) {
-        return commonsResults.svg;
-      }
-
-      if (commonsResults.png) {
-        return commonsResults.png;
-      }
-    }
-
-    if (wikidataUrl && wikidataUrl.toLowerCase().endsWith('.png')) {
-      const directUrl = await getRealDirectUrl(wikidataUrl);
-      if (directUrl) {
-        return directUrl;
-      }
-      return wikidataUrl;
     }
   } catch (e) {
   }
 
-  return null;
+  return signatureUrl ? { url: signatureUrl, spotifyId: resolvedSpotifyId } : null;
 }
 
 export { getSignatureBySpotifyId, searchWikimediaCommons };

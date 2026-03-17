@@ -874,6 +874,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
     };
 
+    const handleArtistIdDiscovered = (artistId) => {
+        if (!spotifyArtistId) {
+            setSpotifyArtistId(artistId);
+        }
+    };
+
     const posterData = {
         albumCover,
         uncompressedAlbumCover,
@@ -1352,6 +1358,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             generatePoster={generatePoster}
                             onTitleSizeAdjust={handleTitleSizeAdjust}
                             onTracksSizeAdjust={handleTracksSizeAdjust}
+                            onArtistIdDiscovered={handleArtistIdDiscovered}
                             customFont={customFont}
                             scale={0.3}
                         />
@@ -1363,6 +1370,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                     onImageReady={handleExportReady}
                                     posterData={posterData}
                                     generatePoster={generateExport}
+                                    onArtistIdDiscovered={handleArtistIdDiscovered}
                                     customFont={customFont}
                                     scale={exportScale}
                                 />

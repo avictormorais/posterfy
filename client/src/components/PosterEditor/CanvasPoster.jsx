@@ -3,7 +3,7 @@ import { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { generateLogoWatermark } from '../svgs/LogoName.jsx';
 import { getSignatureBySpotifyId } from '../../services/signatureService.js';
 
-const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont, scale = 1.0, isThumbnail = false }, ref) => {
+const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont, scale = 1.0, isThumbnail = false, onArtistIdDiscovered }, ref) => {
     const canvasRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
@@ -314,10 +314,16 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                 }
 
                 try {
-                    const signatureUrl = await getSignatureBySpotifyId(posterData.spotifyArtistId, posterData.artistsName);
+                    const result = await getSignatureBySpotifyId(posterData.spotifyArtistId, posterData.artistsName);
                     
-                    if (!signatureUrl) {
+                    if (!result) {
                         return;
+                    }
+
+                    const { url: signatureUrl, spotifyId } = result;
+
+                    if (!posterData.spotifyArtistId && spotifyId && onArtistIdDiscovered) {
+                        onArtistIdDiscovered(spotifyId);
                     }
 
                     const signatureWidth = Math.round(480 * scale);
@@ -394,7 +400,7 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
         };
 
         generatePosterContent();
-    }, [generatePoster, posterData, onImageReady, customFont, scale, isThumbnail, onTitleSizeAdjust, onTracksSizeAdjust]);
+    }, [generatePoster, posterData, onImageReady, customFont, scale, isThumbnail, onTitleSizeAdjust, onTracksSizeAdjust, onArtistIdDiscovered]);
 
     const canvasWidth = Math.round(2480 * scale);
     const canvasHeight = Math.round(3508 * scale);
