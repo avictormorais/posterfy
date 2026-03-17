@@ -698,6 +698,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     const [albumName, setAlbumName] = useState('');
     const [artistsName, setArtistsName] = useState('');
+    const [spotifyArtistId, setSpotifyArtistId] = useState('');
     const [titleSize, setTitleSize] = useState('200');
     const [artistsSize, setArtistsSize] = useState('110');
     const [tracksSize, setTracksSize] = useState('50');
@@ -713,6 +714,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [useWatermark, setUseWatermark] = useState(true);
     const [useFade, setUseFade] = useState(modelParams?.useFade ?? true);
     const [showTracklist, setShowTracklist] = useState(modelParams?.showTracklist ?? false);
+    const [showArtistSignature, setShowArtistSignature] = useState(modelParams?.showArtistSignature ?? false);
     const [albumCover, setAlbumCover] = useState('');
     const [uncompressedAlbumCover, setUncompressedAlbumCover] = useState('');
     const [customFont, setCustomFont] = useState('');
@@ -728,6 +730,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setIsLoadedFromJson(true);
         setAlbumName(json.albumName || '');
         setArtistsName(json.artistsName || '');
+        setSpotifyArtistId(json.spotifyArtistId || '');
         setTitleSize(json.titleSize || '200');
         setArtistsSize(json.artistsSize || '110');
         setTracksSize(json.tracksSize || '50');
@@ -755,6 +758,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setUseWatermark(json.useWatermark !== undefined ? json.useWatermark : true);
         setUseFade(json.useFade !== undefined ? json.useFade : true);
         setShowTracklist(json.showTracklist !== undefined ? json.showTracklist : false);
+        setShowArtistSignature(json.showArtistSignature !== undefined ? json.showArtistSignature : false);
         setUseUncompressed(json.useUncompressed !== undefined ? json.useUncompressed : false);
         setAlbumCover(json.albumCover || '');
         setUncompressedAlbumCover(json.uncompressedAlbumCover || '');
@@ -876,6 +880,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         useUncompressed,
         albumName,
         artistsName,
+        spotifyArtistId,
         titleSize,
         artistsSize,
         tracksSize,
@@ -892,6 +897,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         useWatermark,
         useFade,
         showTracklist,
+        showArtistSignature,
         tracklist,
         color1,
         color2,
@@ -1190,6 +1196,10 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 const formattedArtistsName = albumData.artists.map((artist) => artist.name).join(", ");
                 setAlbumName(albumData.name);
                 setArtistsName(formattedArtistsName);
+                if (albumData.artists.length > 0) {
+                    console.debug("Setting Spotify artist ID:", albumData.artists[0].id);
+                    setSpotifyArtistId(albumData.artists[0].id);
+                }
                 
                 const originalCoverUrl = albumData.images[0]?.url;
                 const highQualityCoverUrl = await getHighestQualitySpotifyImage(originalCoverUrl);
@@ -1267,7 +1277,6 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         if (!infosLoaded) return;
 
         const debounceTimer = setTimeout(() => {
-            console.log('🔄 Auto-aplicando alterações após 500ms de inatividade...');
             handleApplyClick();
         }, 1000);
 
@@ -1292,6 +1301,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         useWatermark,
         useFade,
         showTracklist,
+        showArtistSignature,
         tracklist,
         useUncompressed,
         titleRelease,
@@ -1552,6 +1562,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         />
                                     </AnimatedInput>
                                     <AnimatedInput animationDelay={950}>
+                                        <CheckInput
+                                            title={t('EDITOR_Signature')}
+                                            value={showArtistSignature}
+                                            onChange={(newValue) => setShowArtistSignature(newValue)}
+                                            text={t('EDITOR_SignatureText')}
+                                        />
+                                    </AnimatedInput>
+                                    <AnimatedInput animationDelay={1000}>
                                         <ClickInput
                                             title={t('EDITOR_Cover')}
                                             onChange={handleFileChange}

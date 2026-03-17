@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { generateLogoWatermark } from '../svgs/LogoName.jsx';
+import { getSignatureBySpotifyId } from '../../services/signatureService.js';
 
 const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont, scale = 1.0, isThumbnail = false }, ref) => {
     const canvasRef = useRef(null);
@@ -307,6 +308,59 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                 });
             };
 
+            const drawSignature = async () => {
+                if (!posterData.spotifyArtistId && !posterData.artistsName) {
+                    return;
+                }
+
+                try {
+                    const signatureUrl = await getSignatureBySpotifyId(posterData.spotifyArtistId, posterData.artistsName);
+                    
+                    if (!signatureUrl) {
+                        return;
+                    }
+
+                    const signatureWidth = Math.round(480 * scale);
+                    const signatureX = Math.round((2020 - (parseInt(posterData.marginSide) || 0)) * scale);
+                    const signatureGap = Math.round(30 * scale);
+                    const signatureBaseY = Math.round(3235 * scale);
+                    const signatureColor = posterData.textColor;
+
+                    let imageUrl = signatureUrl;
+
+                    if (signatureUrl.toLowerCase().endsWith('.svg')) {
+                        try {
+                            const res = await fetch(signatureUrl, { mode: 'cors' });
+                            let svgText = await res.text();
+
+                            svgText = svgText.replace(/#000000/gi, signatureColor);
+                            svgText = svgText.replace(/<svg([^>]*)/, `<svg fill="${signatureColor}"$1`);
+
+                            const base64Svg = btoa(unescape(encodeURIComponent(svgText)));
+                            imageUrl = `data:image/svg+xml;base64,${base64Svg}`;
+                        } catch (error) {
+                        }
+                    }
+
+                    const image = new Image();
+                    image.crossOrigin = 'anonymous';
+                    
+                    image.onload = () => {
+                        const aspectRatio = image.width / image.height;
+                        const signatureHeight = Math.round(signatureWidth / aspectRatio);
+                        const finalY = signatureBaseY - signatureGap - signatureHeight;
+
+                        ctx.drawImage(image, signatureX, finalY, signatureWidth, signatureHeight);
+                    };
+
+                    image.onerror = () => {
+                    };
+                    
+                    image.src = imageUrl;
+                } catch (error) {
+                }
+            };
+
             const drawBackground = async () => {
                 ctx.fillStyle = posterData.backgroundColor;
                 const bgY = Math.round(2480 * scale) - marginBackground;
@@ -332,6 +386,9 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             }
             if (posterData.useWatermark) { 
                 await drawWaterMark();
+            }
+            if (posterData.showArtistSignature) {
+                await drawSignature();
             }
             await scannable();
         };
