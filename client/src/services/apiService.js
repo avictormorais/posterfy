@@ -69,10 +69,10 @@ class ApiService {
     return `${this.baseURL}/auth/spotify?redirect=${redirect}`
   }
 
-  async publishPoster({ spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility = 'public' }) {
+  async publishPoster({ spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility = 'public', albumNameOriginal, artistsNameOriginal }) {
     return this.request('/api/posters', {
       method: 'POST',
-      body: JSON.stringify({ spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility })
+      body: JSON.stringify({ spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility, albumNameOriginal, artistsNameOriginal })
     })
   }
 
@@ -84,6 +84,13 @@ class ApiService {
     return this.request(`/api/posters/${id}/visibility`, {
       method: 'PUT',
       body: JSON.stringify({ visibility })
+    })
+  }
+
+  async updatePosterJson(id, posterJson, albumName, artistsName) {
+    return this.request(`/api/posters/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ posterJson, albumName, artistsName })
     })
   }
 

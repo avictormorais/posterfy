@@ -21,9 +21,17 @@ const PosterSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  albumNameOriginal: {
+    type: String,
+    default: null
+  },
   artistsName: {
     type: String,
     required: true
+  },
+  artistsNameOriginal: {
+    type: String,
+    default: null
   },
   releaseDate: {
     type: String,
@@ -70,7 +78,7 @@ const PosterSchema = new mongoose.Schema({
   }
 })
 
-PosterSchema.index({ albumName: 'text', artistsName: 'text' })
+PosterSchema.index({ albumName: 'text', artistsName: 'text', albumNameOriginal: 'text', artistsNameOriginal: 'text' })
 PosterSchema.index({ authorId: 1, isDeleted: 1 })
 PosterSchema.index({ spotifyAlbumId: 1, isDeleted: 1 })
 PosterSchema.index({ popularityScore: -1, isDeleted: 1 })

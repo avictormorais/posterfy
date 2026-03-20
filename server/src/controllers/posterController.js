@@ -10,7 +10,7 @@ class PosterController {
     }
 
     try {
-      const { spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility } = req.body
+      const { spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility, albumNameOriginal, artistsNameOriginal } = req.body
       const poster = await PosterService.create({
         authorId: req.user.id,
         spotifyAlbumId,
@@ -18,7 +18,9 @@ class PosterController {
         artistsName,
         releaseDate,
         posterJson,
-        visibility
+        visibility,
+        albumNameOriginal,
+        artistsNameOriginal
       })
 
       res.status(201).json({ poster })
@@ -46,6 +48,17 @@ class PosterController {
 
     try {
       const poster = await PosterService.updateVisibility(req.params.id, req.user.id, req.body.visibility)
+      if (!poster) return res.status(404).json({ error: 'Poster not found' })
+      res.json({ poster })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async updatePosterJson(req, res) {
+    try {
+      const { posterJson, albumName, artistsName } = req.body
+      const poster = await PosterService.updatePosterJson(req.params.id, req.user.id, posterJson, albumName, artistsName)
       if (!poster) return res.status(404).json({ error: 'Poster not found' })
       res.json({ poster })
     } catch (error) {

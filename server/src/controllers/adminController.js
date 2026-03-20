@@ -262,16 +262,30 @@ class AdminController {
 
   async editPoster(req, res) {
     try {
-      const { views, downloads, favoritesCount } = req.body
+      const { views, downloads, favoritesCount, edits } = req.body
       const poster = await Poster.findById(req.params.id)
       if (!poster) return res.status(404).json({ error: 'Poster not found' })
 
       if (views !== undefined) poster.views = Math.max(0, parseInt(views) || 0)
       if (downloads !== undefined) poster.downloads = Math.max(0, parseInt(downloads) || 0)
       if (favoritesCount !== undefined) poster.favoritesCount = Math.max(0, parseInt(favoritesCount) || 0)
+      if (edits !== undefined) poster.edits = Math.max(0, parseInt(edits) || 0)
+
+      const POPULARITY_WEIGHTS = {
+        view: 1,
+        edit: 3,
+        download: 5,
+        favorite: 10
+      }
+      poster.popularityScore = (
+        poster.views * POPULARITY_WEIGHTS.view +
+        poster.edits * POPULARITY_WEIGHTS.edit +
+        poster.downloads * POPULARITY_WEIGHTS.download +
+        poster.favoritesCount * POPULARITY_WEIGHTS.favorite
+      )
 
       await poster.save()
-      res.json({ message: 'Poster updated', poster: { _id: poster._id, views: poster.views, downloads: poster.downloads, favoritesCount: poster.favoritesCount } })
+      res.json({ message: 'Poster updated', poster: { _id: poster._id, views: poster.views, downloads: poster.downloads, favoritesCount: poster.favoritesCount, edits: poster.edits, popularityScore: poster.popularityScore } })
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' })
     }
@@ -316,7 +330,9 @@ class AdminController {
           const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
           filter.$or = [
             { albumName: { $regex: escaped, $options: 'i' } },
-            { artistsName: { $regex: escaped, $options: 'i' } }
+            { artistsName: { $regex: escaped, $options: 'i' } },
+            { albumNameOriginal: { $regex: escaped, $options: 'i' } },
+            { artistsNameOriginal: { $regex: escaped, $options: 'i' } }
           ]
         }
       }
@@ -330,7 +346,7 @@ class AdminController {
           .skip(skip)
           .limit(safeLimit)
           .populate('authorId', 'name username avatar')
-          .select('albumName artistsName visibility isDeleted views downloads favoritesCount popularityScore createdAt authorId')
+          .select('albumName albumNameOriginal artistsName artistsNameOriginal visibility isDeleted views downloads favoritesCount popularityScore createdAt authorId')
           .lean(),
         Poster.countDocuments(filter)
       ])

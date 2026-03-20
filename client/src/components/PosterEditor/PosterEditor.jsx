@@ -697,7 +697,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const exportCanvasRef = useRef(null);
 
     const [albumName, setAlbumName] = useState('');
+    const [albumNameOriginal, setAlbumNameOriginal] = useState('');
     const [artistsName, setArtistsName] = useState('');
+    const [artistsNameOriginal, setArtistsNameOriginal] = useState('');
     const [spotifyArtistId, setSpotifyArtistId] = useState('');
     const [titleSize, setTitleSize] = useState('200');
     const [artistsSize, setArtistsSize] = useState('110');
@@ -729,7 +731,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     function applyPosterJson(json) {
         setIsLoadedFromJson(true);
         setAlbumName(json.albumName || '');
+        setAlbumNameOriginal(json.albumNameOriginal || json.albumName || '');
         setArtistsName(json.artistsName || '');
+        setArtistsNameOriginal(json.artistsNameOriginal || json.artistsName || '');
         setSpotifyArtistId(json.spotifyArtistId || '');
         setTitleSize(json.titleSize || '200');
         setArtistsSize(json.artistsSize || '110');
@@ -1051,13 +1055,26 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setIsPublishing(true);
         setPublishError('');
         try {
+            const posterJsonPayload = posterData;
+
+            // If editing an existing poster
+            if (posterId) {
+                const result = await apiService.updatePosterJson(posterId, posterJsonPayload, albumName, artistsName);
+                onPublishSuccess?.(result.poster._id);
+                handleClickBack();
+                return;
+            }
+
+            // If creating a new poster
             const payload = {
                 spotifyAlbumId: albumID,
                 albumName,
+                albumNameOriginal: albumNameOriginal || albumName,
                 artistsName,
+                artistsNameOriginal: artistsNameOriginal || artistsName,
                 releaseDate,
                 visibility: publishVisibility,
-                posterJson: posterData,
+                posterJson: posterJsonPayload,
             };
             const result = await apiService.publishPoster(payload);
             trackCommunityPosterPublish(albumName, artistsName, publishVisibility);
@@ -1201,7 +1218,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 const albumData = await albumResponse.json();
                 const formattedArtistsName = albumData.artists.map((artist) => artist.name).join(", ");
                 setAlbumName(albumData.name);
+                setAlbumNameOriginal(albumData.name);
                 setArtistsName(formattedArtistsName);
+                setArtistsNameOriginal(formattedArtistsName);
                 if (albumData.artists.length > 0) {
                     console.debug("Setting Spotify artist ID:", albumData.artists[0].id);
                     setSpotifyArtistId(albumData.artists[0].id);

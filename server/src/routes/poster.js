@@ -108,6 +108,37 @@ router.put('/:id/visibility', authenticateToken, updateVisibilityRules, PosterCo
 /**
  * @openapi
  * /api/posters/{id}:
+ *   patch:
+ *     tags: [Posters]
+ *     summary: Update poster configuration (posterJson) - increments edit count
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               posterJson:
+ *                 type: object
+ *     responses:
+ *       200:
+ *         description: Poster updated
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.patch('/:id', authenticateToken, [posterIdParam, body('posterJson').isObject()], PosterController.updatePosterJson)
+
+/**
+ * @openapi
+ * /api/posters/{id}:
  *   delete:
  *     tags: [Posters]
  *     summary: Delete a poster (owner or admin)

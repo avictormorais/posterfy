@@ -31,14 +31,16 @@ const sanitizePosterJson = (json) => {
 }
 
 class PosterService {
-  async create({ authorId, spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility }) {
+  async create({ authorId, spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility, albumNameOriginal, artistsNameOriginal }) {
     const sanitized = sanitizePosterJson(posterJson)
 
     const poster = await Poster.create({
       authorId,
       spotifyAlbumId,
       albumName: albumName.trim(),
+      albumNameOriginal: albumNameOriginal ? albumNameOriginal.trim() : albumName.trim(),
       artistsName: artistsName.trim(),
+      artistsNameOriginal: artistsNameOriginal ? artistsNameOriginal.trim() : artistsName.trim(),
       releaseDate: releaseDate || '',
       posterJson: sanitized,
       visibility: visibility || 'public'
@@ -54,6 +56,40 @@ class PosterService {
     const poster = await Poster.findOne({ _id: posterId, authorId, isDeleted: false })
     if (!poster) return null
     poster.visibility = visibility
+    await poster.save()
+    return poster
+  }
+
+  async updatePosterJson(posterId, authorId, posterJson, albumName, artistsName) {
+    const poster = await Poster.findOne({ _id: posterId, authorId, isDeleted: false })
+    if (!poster) return null
+
+    const sanitized = sanitizePosterJson(posterJson)
+    poster.posterJson = sanitized
+    
+    // Allow editing of album and artist names (customization) while keeping originals
+    if (albumName !== undefined) {
+      poster.albumName = albumName.trim()
+    }
+    if (artistsName !== undefined) {
+      poster.artistsName = artistsName.trim()
+    }
+    
+    poster.edits = (poster.edits || 0) + 1
+
+    const POPULARITY_WEIGHTS = {
+      view: 1,
+      edit: 3,
+      download: 5,
+      favorite: 10
+    }
+    poster.popularityScore = (
+      poster.views * POPULARITY_WEIGHTS.view +
+      poster.edits * POPULARITY_WEIGHTS.edit +
+      poster.downloads * POPULARITY_WEIGHTS.download +
+      poster.favoritesCount * POPULARITY_WEIGHTS.favorite
+    )
+
     await poster.save()
     return poster
   }
@@ -178,15 +214,34 @@ class PosterService {
     ).lean()
     const matchedUserIds = matchedUsers.map(u => u._id)
 
-    // Run text search (album/artist) and username-based search in parallel
+    // Text search filter for album/artist names
     const textFilter   = { $text: { $search: trimmed }, ...buildPublicFilter() }
+    
+    // Regex filter for name search (searches current and original names)
+    const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regexFilter = {
+      $or: [
+        { albumName: { $regex: escaped, $options: 'i' } },
+        { artistsName: { $regex: escaped, $options: 'i' } },
+        { albumNameOriginal: { $regex: escaped, $options: 'i' } },
+        { artistsNameOriginal: { $regex: escaped, $options: 'i' } }
+      ],
+      ...buildPublicFilter()
+    }
+    
     const authorFilter = matchedUserIds.length
       ? { authorId: { $in: matchedUserIds }, ...buildPublicFilter() }
       : null
 
-    const [textPosters, authorPosters, textCount, authorCount] = await Promise.all([
+    // Run all searches in parallel
+    const [textPosters, regexPosters, authorPosters, textCount, regexCount, authorCount] = await Promise.all([
       Poster.find(textFilter, { score: { $meta: 'textScore' } })
         .sort({ score: { $meta: 'textScore' }, popularityScore: -1 })
+        .limit(safeLimit + skip)
+        .populate('authorId', 'name username avatar badge')
+        .lean(),
+      Poster.find(regexFilter)
+        .sort({ popularityScore: -1 })
         .limit(safeLimit + skip)
         .populate('authorId', 'name username avatar badge')
         .lean(),
@@ -198,18 +253,19 @@ class PosterService {
             .lean()
         : Promise.resolve([]),
       Poster.countDocuments(textFilter),
+      Poster.countDocuments(regexFilter),
       authorFilter ? Poster.countDocuments(authorFilter) : Promise.resolve(0),
     ])
 
-    // Merge & deduplicate by _id, text results first
+    // Merge & deduplicate: text results first, then regex, then authors
     const seen = new Set()
     const merged = []
-    for (const p of [...textPosters, ...authorPosters]) {
+    for (const p of [...textPosters, ...regexPosters, ...authorPosters]) {
       const id = p._id.toString()
       if (!seen.has(id)) { seen.add(id); merged.push(p) }
     }
 
-    const total  = Math.max(textCount, authorCount, merged.length)
+    const total  = Math.max(textCount, regexCount, authorCount, merged.length)
     const sliced = merged.slice(skip, skip + safeLimit)
 
     if (!userId) return { posters: sliced, total, page, hasMore: skip + sliced.length < total }
