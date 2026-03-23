@@ -183,6 +183,6 @@ router.get('/users/:username', optionalAuthenticateToken, CommunityController.ge
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-router.get('/users/:username/stats', CommunityController.getUserPublicStats)
+router.get('/users/:username/stats', optionalAuthenticateToken, CommunityController.getUserPublicStats)
 
 export default router
