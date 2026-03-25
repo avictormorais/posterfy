@@ -1244,6 +1244,7 @@ export default function Profile() {
                                             key={p._id}
                                             poster={p}
                                             variant={isOwner ? 'myposters' : 'community'}
+                                            isOwner={isOwner}
                                             onDelete={isOwner ? handleDeleteRequest : undefined}
                                             onVisibilityChange={isOwner ? handleVisibilityChange : undefined}
                                             onPin={isOwner ? handlePin : undefined}
@@ -1289,6 +1290,7 @@ export default function Profile() {
                                             key={p._id}
                                             poster={p}
                                             variant="favorites"
+                                            isOwner={isOwner}
                                             onUnfavorite={handleUnfavorite}
                                         />
                                     ))}

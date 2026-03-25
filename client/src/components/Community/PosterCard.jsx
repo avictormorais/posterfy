@@ -437,7 +437,7 @@ const getBadgeInfo = (badge) => {
 };
 
 
-function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChange, onUnfavorite, onPin, pinned = false }) {
+function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChange, onUnfavorite, onPin, pinned = false, isOwner = false }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
@@ -659,6 +659,12 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                 {variant === 'myposters' && (
                     <CardVisibilityBadge $backgroundColor={bgColor} $color={txtColor} $public={poster.visibility === 'public'}>
                         {poster.visibility === 'public' ? t('DASH_Public') : t('DASH_Private')}
+                    </CardVisibilityBadge>
+                )}
+
+                {variant === 'community' && isAdmin && !isOwner && poster.visibility === 'private' && (
+                    <CardVisibilityBadge $backgroundColor={bgColor} $color={txtColor} $public={false}>
+                        {t('DASH_Private')} <IoLockClosedOutline size={12} style={{ marginLeft: 4 }} />
                     </CardVisibilityBadge>
                 )}
 
