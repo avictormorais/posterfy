@@ -23,10 +23,11 @@ import { RiImage2Fill } from "react-icons/ri";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { HiInformationCircle } from "react-icons/hi";
 import LoadingDiv from "../Commom/LoadingDiv";
+import AlertModal from "../Commom/AlertModal";
 import { Palette } from "color-thief-react";
 import CanvasPoster from "./CanvasPoster";
 import AnimatedInput from "./inputs/AnimatedInput";
-import { trackPosterDownload, trackPosterPreview, trackCommunityPosterPublish, trackCommunityPosterDownload } from "../../services/analytics";
+import { trackPosterDownload, trackPosterPreview, trackCommunityPosterPublish, trackCommunityPosterDownload, trackCommunityPosterSave } from "../../services/analytics";
 import { exportPosterJson, importPosterJson } from "./PosterJsonIO";
 import jsPDF from 'jspdf';
 import { getHighestQualitySpotifyImage } from "../../utils/spotifyImageOptimizer";
@@ -81,6 +82,50 @@ const DivBack = styled.div`
     width: min-content;
     margin-top: 25px;
     cursor: pointer;
+`
+
+const TopActionsBar = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+
+    @media (max-width: 600px) {
+        width: 100%;
+        justify-content: flex-start;
+    }
+`
+
+const SaveButton = styled.button`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--AccentColor);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 `
 
 const ArrowBack = styled(IoArrowBack)`
@@ -691,7 +736,7 @@ const LoginButton = styled.button`
 const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson, source, posterId, posterFullData, onPublishSuccess }, ref) => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const previewRef = useRef(null);
     const canvasRef = useRef(null);
     const exportCanvasRef = useRef(null);
@@ -723,10 +768,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [customFontFile, setCustomFontFile] = useState(null);
     const [activeTab, setActiveTab] = useState('information');
 
-    // Publish tab state
     const [publishVisibility, setPublishVisibility] = useState('public');
     const [isPublishing, setIsPublishing] = useState(false);
     const [publishError, setPublishError] = useState('');
+
+    const [saveConfirmModal, setSaveConfirmModal] = useState(false);
+    const [isSavingPoster, setIsSavingPoster] = useState(false);
 
     function applyPosterJson(json) {
         setIsLoadedFromJson(true);
@@ -1087,6 +1134,26 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
     };
 
+    const handleSavePoster = async () => {
+        setIsSavingPoster(true);
+        try {
+            const posterJsonPayload = posterData;
+            await apiService.updatePosterJson(posterId, posterJsonPayload, albumName, artistsName);
+            trackCommunityPosterSave(posterId, albumName, artistsName);
+            setSaveConfirmModal(false);
+            onPublishSuccess?.(posterId);
+            handleClickBack();
+        } catch (err) {
+            console.error('Failed to save poster:', err);
+            if (err.response?.status === 403 || err.response?.status === 401) {
+                console.warn('Unauthorized: Only the poster owner can edit it');
+            }
+            setSaveConfirmModal(false);
+        } finally {
+            setIsSavingPoster(false);
+        }
+    };
+
     const handleDownloadPDFClick = () => {
         setExportMode('pdf');
         setGenerateExport(true);
@@ -1362,12 +1429,26 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         return null;
                     }}
                 </Palette>
-                    <DivBack onClick={handleClickBack}>
-                        <ArrowBack/>
-                        <TextBack>
-                            {t('GoBack')}
-                        </TextBack>
-                    </DivBack>
+                    {posterId && (user?.id === posterFullData?.authorId || user?.permissions?.includes('admin')) ? (
+                        <TopActionsBar>
+                            <DivBack onClick={handleClickBack}>
+                                <ArrowBack/>
+                                <TextBack>
+                                    {t('GoBack')}
+                                </TextBack>
+                            </DivBack>
+                            <SaveButton onClick={() => setSaveConfirmModal(true)} disabled={isSavingPoster}>
+                                {isSavingPoster ? '…' : t('EDITOR_SaveButton')}
+                            </SaveButton>
+                        </TopActionsBar>
+                    ) : (
+                        <DivBack onClick={handleClickBack}>
+                            <ArrowBack/>
+                            <TextBack>
+                                {t('GoBack')}
+                            </TextBack>
+                        </DivBack>
+                    )}
                     <ContainerEditor>
 
                         <CanvasPoster
@@ -1844,6 +1925,19 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             }}
                             onClose={handleCoverEditorClose}
                         />, document.body
+                    )}
+
+                    {posterId && saveConfirmModal && (
+                        <AlertModal
+                            title={t('EDITOR_SavePosterTitle')}
+                            paragraph={t('EDITOR_SavePosterMessage')}
+                            confirmText={t('EDITOR_SaveConfirm')}
+                            onConfirm={handleSavePoster}
+                            cancelText={t('EDITOR_SaveCancel')}
+                            onCancel={() => setSaveConfirmModal(false)}
+                            canClose={true}
+                            isClosing={false}
+                        />
                     )}
                 </Container>
             )}

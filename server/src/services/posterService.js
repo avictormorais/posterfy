@@ -60,8 +60,11 @@ class PosterService {
     return poster
   }
 
-  async updatePosterJson(posterId, authorId, posterJson, albumName, artistsName) {
-    const poster = await Poster.findOne({ _id: posterId, authorId, isDeleted: false })
+  async updatePosterJson(posterId, authorId, posterJson, albumName, artistsName, isAdmin = false) {
+    const filter = isAdmin
+      ? { _id: posterId, isDeleted: false }
+      : { _id: posterId, authorId, isDeleted: false }
+    const poster = await Poster.findOne(filter)
     if (!poster) return null
 
     const sanitized = sanitizePosterJson(posterJson)

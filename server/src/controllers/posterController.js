@@ -58,7 +58,8 @@ class PosterController {
   async updatePosterJson(req, res) {
     try {
       const { posterJson, albumName, artistsName } = req.body
-      const poster = await PosterService.updatePosterJson(req.params.id, req.user.id, posterJson, albumName, artistsName)
+      const isAdmin = req.user.permissions?.includes('admin') || false
+      const poster = await PosterService.updatePosterJson(req.params.id, req.user.id, posterJson, albumName, artistsName, isAdmin)
       if (!poster) return res.status(404).json({ error: 'Poster not found' })
       res.json({ poster })
     } catch (error) {

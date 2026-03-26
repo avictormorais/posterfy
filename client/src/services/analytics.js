@@ -135,6 +135,18 @@ export const trackCommunityPosterPublish = (albumName, artistName = '', visibili
   }
 };
 
+export const trackCommunityPosterSave = (posterId, albumName, artistName = '') => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'community_poster_save', {
+      event_category: 'Community',
+      event_label: artistName ? `${artistName} - ${albumName}` : albumName,
+      poster_id: posterId,
+      album_name: albumName,
+      artist_name: artistName,
+    });
+  }
+};
+
 export const trackCommunityPosterDownload = (posterId, albumName, artistName = '', format = 'png') => {
   if (typeof window.gtag !== 'undefined') {
     window.gtag('event', 'community_poster_download', {
