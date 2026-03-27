@@ -12,6 +12,7 @@ import {
     IoTrashOutline,
     IoLockClosedOutline,
     IoEarthOutline,
+    IoCheckmark,
 } from "react-icons/io5";
 import TierBadge from "../Commom/TierBadge";
 
@@ -259,7 +260,40 @@ const OutlinedHeart = styled(IoHeartOutline)`
     stroke: var(--textColor);
 `;
 
-export default function PosterInfo({ poster, onDeleted, onVisibilityChanged }) {
+const SaveBtn = styled.button`
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(76, 175, 80, 0.35);
+    background: rgba(76, 175, 80, 0.07);
+    color: #4cb050;
+    font-size: 0.86em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    flex: 1;
+    min-width: 100px;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+        background: rgba(76, 175, 80, 0.16);
+        border-color: rgba(76, 175, 80, 0.65);
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+`;
+
+export default function PosterInfo({ poster, onDeleted, onVisibilityChanged, onSave, isSavingPoster, isOwnerOrAdmin }) {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
@@ -404,6 +438,14 @@ export default function PosterInfo({ poster, onDeleted, onVisibilityChanged }) {
                 {isOwner && (
                     <ControlsSection>
                         <ControlsBtnRow>
+                            {isOwnerOrAdmin && onSave && (
+                                <SaveBtn
+                                    onClick={onSave}
+                                    disabled={isSavingPoster}
+                                >
+                                    <IoCheckmark /> {isSavingPoster ? '…' : t('EDITOR_SaveButton')}
+                                </SaveBtn>
+                            )}
                             <VisibilityBtn
                                 onClick={handleVisibilityToggle}
                                 disabled={visLoading}
@@ -427,6 +469,14 @@ export default function PosterInfo({ poster, onDeleted, onVisibilityChanged }) {
                             <IoTrashOutline /> {t("POSTER_INFO_AdminControls")}
                         </ControlsLabel>
                         <ControlsBtnRow>
+                            {isOwnerOrAdmin && onSave && (
+                                <SaveBtn
+                                    onClick={onSave}
+                                    disabled={isSavingPoster}
+                                >
+                                    <IoCheckmark /> {isSavingPoster ? '…' : t('EDITOR_SaveButton')}
+                                </SaveBtn>
+                            )}
                             <VisibilityBtn
                                 onClick={handleVisibilityToggle}
                                 disabled={visLoading}

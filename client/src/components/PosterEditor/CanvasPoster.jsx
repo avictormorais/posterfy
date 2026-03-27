@@ -326,10 +326,16 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                         onArtistIdDiscovered(spotifyId);
                     }
 
-                    const signatureWidth = Math.round(480 * scale);
-                    const signatureX = Math.round((2020 - (parseInt(posterData.marginSide) || 0)) * scale);
+                    const baseSignatureWidth = 480 * scale;
+                    const signatureScaleFactor = posterData.signatureScale || 1;
+                    const signatureWidth = Math.round(baseSignatureWidth * signatureScaleFactor);
+                    
+                    const baseX = Math.round((2020 - (parseInt(posterData.marginSide) || 0)) * scale);
+                    const adjustedX = baseX + Math.round((signatureWidth / 100) * (posterData.signatureHorizontalPosition || 0));
+                    
                     const signatureGap = Math.round(30 * scale);
-                    const signatureBaseY = Math.round(3235 * scale);
+                    const baseSignatureY = Math.round(3235 * scale);
+                    
                     const signatureColor = posterData.textColor;
 
                     let imageUrl = signatureUrl;
@@ -354,9 +360,10 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                     image.onload = () => {
                         const aspectRatio = image.width / image.height;
                         const signatureHeight = Math.round(signatureWidth / aspectRatio);
-                        const finalY = signatureBaseY - signatureGap - signatureHeight;
+                        const baseY = baseSignatureY - signatureGap - signatureHeight;
+                        const adjustedY = baseY + Math.round((signatureHeight / 100) * (posterData.signatureVerticalPosition || 0));
 
-                        ctx.drawImage(image, signatureX, finalY, signatureWidth, signatureHeight);
+                        ctx.drawImage(image, adjustedX, adjustedY, signatureWidth, signatureHeight);
                     };
 
                     image.onerror = () => {

@@ -12,6 +12,7 @@ import apiService from "../../services/apiService";
 import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
 import CoverEditor from "./CoverEditor";
+import SignatureEditor from "./SignatureEditor";
 import ReactDOM from 'react-dom';
 import CheckInput from "./inputs/CheckInput";
 import ClickInput from "./inputs/ClickInput";
@@ -27,6 +28,7 @@ import AlertModal from "../Commom/AlertModal";
 import { Palette } from "color-thief-react";
 import CanvasPoster from "./CanvasPoster";
 import AnimatedInput from "./inputs/AnimatedInput";
+import { getSignatureBySpotifyId } from "../../services/signatureService.js";
 import { trackPosterDownload, trackPosterPreview, trackCommunityPosterPublish, trackCommunityPosterDownload, trackCommunityPosterSave } from "../../services/analytics";
 import { exportPosterJson, importPosterJson } from "./PosterJsonIO";
 import jsPDF from 'jspdf';
@@ -84,49 +86,9 @@ const DivBack = styled.div`
     cursor: pointer;
 `
 
-const TopActionsBar = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    margin-top: 25px;
-    flex-wrap: wrap;
 
-    @media (max-width: 600px) {
-        width: 100%;
-        justify-content: flex-start;
-    }
-`
 
-const SaveButton = styled.button`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: var(--AccentColor);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.95em;
-    transition: all 0.2s;
 
-    &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    &:active:not(:disabled) {
-        transform: translateY(0);
-    }
-
-    &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-`
 
 const ArrowBack = styled(IoArrowBack)`
     font-size: 2em;
@@ -806,6 +768,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setCoverHorizontalPosition(json.coverHorizontalPosition || 0);
         setCoverVerticalPosition(json.coverVerticalPosition || 0);
         setCoverBlur(json.coverBlur || 0);
+        setSignatureHorizontalPosition(json.signatureHorizontalPosition || 0);
+        setSignatureVerticalPosition(json.signatureVerticalPosition || 0);
+        setSignatureScale(json.signatureScale || 1);
         setUseWatermark(json.useWatermark !== undefined ? json.useWatermark : true);
         setUseFade(json.useFade !== undefined ? json.useFade : true);
         setShowTracklist(json.showTracklist !== undefined ? json.showTracklist : false);
@@ -880,6 +845,13 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [coverHorizontalPosition, setCoverHorizontalPosition] = useState(0);
     const [coverVerticalPosition, setCoverVerticalPosition] = useState(0);
     const [coverBlur, setCoverBlur] = useState(0);
+    
+    const [showSignatureEditor, setShowSignatureEditor] = useState(false);
+    const [signatureEditorPosition, setSignatureEditorPosition] = useState(null);
+    const [signatureHorizontalPosition, setSignatureHorizontalPosition] = useState(0);
+    const [signatureVerticalPosition, setSignatureVerticalPosition] = useState(0);
+    const [signatureScale, setSignatureScale] = useState(1);
+    const [signatureUrl, setSignatureUrl] = useState(null);
 
     const [userAdjustedTitleSize, setUserAdjustedTitleSize] = useState(false);
     const [initialTitleSizeSet, setInitialTitleSizeSet] = useState(false);
@@ -889,6 +861,23 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     const [exportFormat, setExportFormat] = useState('png');
     const [exportScale, setExportScale] = useState(1.0);
+
+    useEffect(() => {
+        const loadSignatureUrl = async () => {
+            if (!spotifyArtistId && !artistsName) return;
+            if (signatureUrl) return;
+
+            try {
+                const result = await getSignatureBySpotifyId(spotifyArtistId, artistsName);
+                if (result) {
+                    setSignatureUrl(result.url);
+                }
+            } catch (error) {
+            }
+        };
+
+        loadSignatureUrl();
+    }, [spotifyArtistId, artistsName, signatureUrl]);
 
     useEffect(() => {
         if (!isLoadedFromJson) {
@@ -964,6 +953,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         coverHorizontalPosition,
         coverVerticalPosition,
         coverBlur,
+        signatureHorizontalPosition,
+        signatureVerticalPosition,
+        signatureScale,
         userAdjustedTitleSize,
         initialTitleSizeSet,
         userAdjustedTracksSize,
@@ -1104,7 +1096,6 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         try {
             const posterJsonPayload = posterData;
 
-            // If editing an existing poster
             if (posterId) {
                 const result = await apiService.updatePosterJson(posterId, posterJsonPayload, albumName, artistsName);
                 onPublishSuccess?.(result.poster._id);
@@ -1112,7 +1103,6 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 return;
             }
 
-            // If creating a new poster
             const payload = {
                 spotifyAlbumId: albumID,
                 albumName,
@@ -1205,6 +1195,26 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     
     function handleCoverEditorClose() {
         setShowCoverEditor(false);
+    }
+
+    function handleSignatureEditorClick(position) {
+        setSignatureEditorPosition(position);
+        setShowSignatureEditor(true);
+    }
+
+    function handleSignatureEditorClose() {
+        setShowSignatureEditor(false);
+    }
+
+    function handleSignatureToggle(position) {
+        if (!showArtistSignature) {
+            setShowArtistSignature(true);
+            setPreviewVisible(false);
+            setGeneratePoster(true);
+        } else {
+            setSignatureEditorPosition(position);
+            setShowSignatureEditor(true);
+        }
     }
 
     const handleRemoveParentheses = () => {
@@ -1429,26 +1439,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         return null;
                     }}
                 </Palette>
-                    {posterId && (user?.id === posterFullData?.authorId || user?.permissions?.includes('admin')) ? (
-                        <TopActionsBar>
-                            <DivBack onClick={handleClickBack}>
-                                <ArrowBack/>
-                                <TextBack>
-                                    {t('GoBack')}
-                                </TextBack>
-                            </DivBack>
-                            <SaveButton onClick={() => setSaveConfirmModal(true)} disabled={isSavingPoster}>
-                                {isSavingPoster ? '…' : t('EDITOR_SaveButton')}
-                            </SaveButton>
-                        </TopActionsBar>
-                    ) : (
-                        <DivBack onClick={handleClickBack}>
-                            <ArrowBack/>
-                            <TextBack>
-                                {t('GoBack')}
-                            </TextBack>
-                        </DivBack>
-                    )}
+                    <DivBack onClick={handleClickBack}>
+                        <ArrowBack/>
+                        <TextBack>
+                            {t('GoBack')}
+                        </TextBack>
+                    </DivBack>
                     <ContainerEditor>
 
                         <CanvasPoster
@@ -1669,14 +1665,16 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                             text={t('EDITOR_TracklistText')}
                                         />
                                     </AnimatedInput>
-                                    <AnimatedInput animationDelay={950}>
-                                        <CheckInput
-                                            title={t('EDITOR_Signature')}
-                                            value={showArtistSignature}
-                                            onChange={(newValue) => setShowArtistSignature(newValue)}
-                                            text={t('EDITOR_SignatureText')}
-                                        />
-                                    </AnimatedInput>
+                                    {signatureUrl && (
+                                        <AnimatedInput animationDelay={950}>
+                                            <ButtonInput
+                                                title={t('EDITOR_Signature')}
+                                                text={showArtistSignature ? t('EDITOR_EditSignature') : t('EDITOR_SignatureText')}
+                                                onClick={handleSignatureToggle}
+                                                icon={RiImage2Fill}
+                                            />
+                                        </AnimatedInput>
+                                    )}
                                     <AnimatedInput animationDelay={1000}>
                                         <ClickInput
                                             title={t('EDITOR_Cover')}
@@ -1869,6 +1867,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             poster={posterFullData}
                             onDeleted={handleClickBack}
                             onVisibilityChanged={() => {}}
+                            onSave={() => setSaveConfirmModal(true)}
+                            isSavingPoster={isSavingPoster}
+                            isOwnerOrAdmin={user?.id === posterFullData?.authorId || user?.permissions?.includes('admin')}
                         />
                     )}
                     
@@ -1924,6 +1925,25 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                 handleCoverEditorClose();
                             }}
                             onClose={handleCoverEditorClose}
+                        />, document.body
+                    )}
+
+                    {showSignatureEditor && signatureEditorPosition && ReactDOM.createPortal(
+                        <SignatureEditor
+                            position={signatureEditorPosition}
+                            signatureUrl={signatureUrl}
+                            initialHorizontalPosition={signatureHorizontalPosition}
+                            initialVerticalPosition={signatureVerticalPosition}
+                            initialScale={signatureScale}
+                            onDone={(values) => {
+                                setSignatureHorizontalPosition(values.horizontalPosition);
+                                setSignatureVerticalPosition(values.verticalPosition);
+                                setSignatureScale(values.scale);
+                                handleSignatureEditorClose();
+                                setPreviewVisible(false);
+                                setGeneratePoster(true);
+                            }}
+                            onClose={handleSignatureEditorClose}
                         />, document.body
                     )}
 
