@@ -56,6 +56,11 @@ class PosterController {
   }
 
   async updatePosterJson(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors.array()[0].msg })
+    }
+
     try {
       const { posterJson, albumName, artistsName } = req.body
       const isAdmin = req.user.permissions?.includes('admin') || false
@@ -63,7 +68,8 @@ class PosterController {
       if (!poster) return res.status(404).json({ error: 'Poster not found' })
       res.json({ poster })
     } catch (error) {
-      res.status(500).json({ error: 'Internal server error' })
+      console.error('Error updating poster:', error)
+      res.status(500).json({ error: error.message || 'Internal server error' })
     }
   }
 

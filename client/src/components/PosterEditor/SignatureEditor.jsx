@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
-import { RiCloseLargeLine } from "react-icons/ri";
+import { RiCloseLargeLine, RiDeleteBin6Line } from "react-icons/ri";
 import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
@@ -198,6 +198,27 @@ const Check = styled(FaCheck)`
     }
 `
 
+const Remove = styled(RiDeleteBin6Line)`
+    font-size: 1em;
+    background-color: var(--glassBackground);
+    color: var(--textColor);
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        opacity: 0.8;
+        transform: scale(1.1);
+        color: #ff4444;
+        background-color: rgba(255, 68, 68, 0.1);
+    }
+    
+    &:active {
+        transform: scale(0.95);
+    }
+`;
+
 const ErrorMessage = styled.div`
     padding: 10px;
     background-color: rgba(255, 68, 68, 0.1);
@@ -219,6 +240,12 @@ function SignatureEditor({ position, signatureUrl, initialHorizontalPosition, in
             horizontalPosition,
             verticalPosition,
             scale
+        });
+    };
+
+    const handleRemove = () => {
+        onDone({
+            disabled: true
         });
     };
 
@@ -290,6 +317,7 @@ function SignatureEditor({ position, signatureUrl, initialHorizontalPosition, in
 
                     <ButtonsContainer>
                         <Cancel onClick={onClose} />
+                        <Remove onClick={handleRemove} />
                         <Check onClick={handleConfirm} />
                     </ButtonsContainer>
                 </>

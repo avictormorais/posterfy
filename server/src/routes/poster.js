@@ -134,7 +134,7 @@ router.put('/:id/visibility', authenticateToken, updateVisibilityRules, PosterCo
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-router.patch('/:id', authenticateToken, [posterIdParam, body('posterJson').isObject()], PosterController.updatePosterJson)
+router.patch('/:id', authenticateToken, [posterIdParam, body('posterJson').notEmpty().isObject()], PosterController.updatePosterJson)
 
 /**
  * @openapi

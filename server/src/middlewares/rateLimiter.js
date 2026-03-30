@@ -1,9 +1,9 @@
-import rateLimit from 'express-rate-limit'
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit'
 
 const normalizeIp = (req) => {
   const forwarded = req.headers['x-forwarded-for']
   const raw = forwarded ? forwarded.split(',')[0].trim() : (req.ip || '')
-  return raw.replace(/^::ffff:/, '')
+  return ipKeyGenerator(raw.replace(/^::ffff:/, ''))
 }
 
 const createLimiter = (windowMs, max, message) =>

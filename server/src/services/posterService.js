@@ -21,7 +21,9 @@ const sanitizePosterJson = (json) => {
     'showTracklist', 'showArtistSignature', 'tracklist', 'color1', 'color2', 'color3',
     'coverZoom', 'coverHorizontalPosition', 'coverVerticalPosition', 'coverBlur',
     'useUncompressed', 'albumCover', 'userAdjustedTitleSize', 'initialTitleSizeSet',
-    'userAdjustedTracksSize', 'initialTracksSizeSet', 'customFont', 'spotifyArtistId'
+    'userAdjustedTracksSize', 'initialTracksSizeSet', 'customFont', 'spotifyArtistId',
+    'uncompressedAlbumCover', 'albumID',
+    'signatureHorizontalPosition', 'signatureVerticalPosition', 'signatureScale'
   ]
   const sanitized = {}
   for (const key of allowed) {
@@ -68,7 +70,13 @@ class PosterService {
     if (!poster) return null
 
     const sanitized = sanitizePosterJson(posterJson)
-    poster.posterJson = sanitized
+    const currentPosterJson = poster.posterJson && typeof poster.posterJson === 'object'
+      ? poster.posterJson
+      : {}
+    poster.posterJson = {
+      ...currentPosterJson,
+      ...sanitized
+    }
     
     // Allow editing of album and artist names (customization) while keeping originals
     if (albumName !== undefined) {

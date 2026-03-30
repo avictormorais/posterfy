@@ -232,7 +232,19 @@ const Divisor = styled.div`
     opacity: 0.1;
 `;
 
-export default function AlertModal({ title, paragraph, imageURL, postImageText, disclaimerText, canClose, confirmText, onConfirm, cancelText, onCancel, isClosing, customButton }){
+const ErrorMessage = styled.p`
+    font-size: 0.85em;
+    margin-inline: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(255, 68, 68, 0.1);
+    border-left: 3px solid #ff4444;
+    color: #ff4444;
+    font-weight: 500;
+`;
+
+export default function AlertModal({ title, paragraph, imageURL, postImageText, disclaimerText, canClose, confirmText, onConfirm, cancelText, onCancel, isClosing, customButton, errorMessage }){
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -258,6 +270,11 @@ export default function AlertModal({ title, paragraph, imageURL, postImageText, 
                     )}
                 </TitleContainer>
                 <Divisor />
+                {errorMessage && (
+                    <ErrorMessage>
+                        {errorMessage}
+                    </ErrorMessage>
+                )}
                 {paragraph && (
                     <Paragraph>
                         {paragraph}
