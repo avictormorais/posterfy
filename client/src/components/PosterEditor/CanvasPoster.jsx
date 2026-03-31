@@ -63,8 +63,8 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             };
 
             const drawWaterMark = async () => {
-                const watermarkWidth = Math.round(500 * scale);
-                const watermarkHeight = Math.round(134 * scale);
+                const watermarkWidth = Math.round(450 * scale);
+                const watermarkHeight = Math.round(85 * scale);
                 const svgString = generateLogoWatermark(posterData.textColor, watermarkWidth, watermarkHeight);
 
                 const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
@@ -76,7 +76,7 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                 return new Promise((resolve) => {
                     image.onload = () => {
                         ctx.globalAlpha = '0.5';
-                        ctx.drawImage(image, width - Math.round(70 * scale) - watermarkWidth, Math.round(50 * scale), watermarkWidth, watermarkHeight);
+                        ctx.drawImage(image, width - Math.round(105 * scale) - watermarkWidth, Math.round(37 * scale), watermarkWidth, watermarkHeight);
                         ctx.globalAlpha = '1';
                         URL.revokeObjectURL(url);
                         resolve();

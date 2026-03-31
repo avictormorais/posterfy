@@ -715,11 +715,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [marginSide, setmarginSide] = useState(160);
     const [marginCover, setMarginCover] = useState(modelParams?.marginCover ?? 0);
     const [marginBackground, setmarginBackground] = useState(modelParams?.marginBackground ?? 0);
-    const [backgroundColor, setbackgroundColor] = useState('#5900ff');
-    const [textColor, setTextColor] = useState('#ff9100');
-    const [color1, setcolor1] = useState('#ff0000');
-    const [color2, setcolor2] = useState('#00ff40');
-    const [color3, setcolor3] = useState('#2600ff');
+    const [backgroundColor, setbackgroundColor] = useState(modelParams?.backgroundColor ?? '#5900ff');
+    const [textColor, setTextColor] = useState(modelParams?.textColor ?? '#ff9100');
+    const [color1, setcolor1] = useState(modelParams?.color1 ?? '#ff0000');
+    const [color2, setcolor2] = useState(modelParams?.color2 ?? '#00ff40');
+    const [color3, setcolor3] = useState(modelParams?.color3 ?? '#2600ff');
     const [useWatermark, setUseWatermark] = useState(true);
     const [useFade, setUseFade] = useState(modelParams?.useFade ?? true);
     const [showTracklist, setShowTracklist] = useState(modelParams?.showTracklist ?? false);
@@ -862,6 +862,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     const [exportFormat, setExportFormat] = useState('png');
     const [exportScale, setExportScale] = useState(1.0);
+
+    const hasModelBackgroundColor = modelParams?.backgroundColor !== undefined;
+    const hasModelTextColor = modelParams?.textColor !== undefined;
+    const hasModelColor1 = modelParams?.color1 !== undefined;
+    const hasModelColor2 = modelParams?.color2 !== undefined;
+    const hasModelColor3 = modelParams?.color3 !== undefined;
 
     useEffect(() => {
         const loadSignatureUrl = async () => {
@@ -1456,15 +1462,43 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 <Palette src={albumCover} crossOrigin="anonymous" format="hex" colorCount={5}>
                     {({ data }) => {
                         useEffect(() => {
-                            if (data && data.length > 0 && !isLoadedFromJson) {
+                            if (!data || data.length === 0 || isLoadedFromJson) return;
+
+                            let changed = false;
+
+                            if (!hasModelBackgroundColor && data[0]) {
                                 setbackgroundColor(data[0]);
+                                changed = true;
+                            }
+                            if (!hasModelTextColor && data[1]) {
                                 setTextColor(data[1]);
+                                changed = true;
+                            }
+                            if (!hasModelColor1 && data[2]) {
                                 setcolor1(data[2]);
+                                changed = true;
+                            }
+                            if (!hasModelColor2 && data[3]) {
                                 setcolor2(data[3]);
+                                changed = true;
+                            }
+                            if (!hasModelColor3 && data[4]) {
                                 setcolor3(data[4]);
+                                changed = true;
+                            }
+
+                            if (changed) {
                                 handleApplyClick();
                             }
-                        }, [data]);
+                        }, [
+                            data,
+                            isLoadedFromJson,
+                            hasModelBackgroundColor,
+                            hasModelTextColor,
+                            hasModelColor1,
+                            hasModelColor2,
+                            hasModelColor3
+                        ]);
                         return null;
                     }}
                 </Palette>

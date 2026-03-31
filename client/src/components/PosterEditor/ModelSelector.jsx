@@ -162,7 +162,9 @@ export default function ModelSelector({ onSelectModel, onBack }) {
     const FrameParams = {
         coverZoom: -16,
         useFade: false,
-        marginTop: 20,
+        marginTop: 40,
+        backgroundColor: '#eee7d7',
+        textColor: '#1f1d1d'
     };
     const FullCoverParams = {
         coverZoom: 110,
