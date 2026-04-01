@@ -248,7 +248,11 @@ export default function AlertModal({ title, paragraph, imageURL, postImageText, 
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
-        return () => { document.body.style.overflow = ''; };
+        document.documentElement.style.overflow = 'hidden';
+        return () => { 
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
     }, []);
 
     return(

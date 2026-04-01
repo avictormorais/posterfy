@@ -2018,7 +2018,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         />, document.body
                     )}
 
-                    {posterId && saveConfirmModal && (
+                    {posterId && saveConfirmModal && ReactDOM.createPortal(
                         <AlertModal
                             title={t('EDITOR_SavePosterTitle')}
                             paragraph={t('EDITOR_SavePosterMessage')}
@@ -2032,7 +2032,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             canClose={true}
                             isClosing={false}
                             errorMessage={saveError}
-                        />
+                        />, document.body
                     )}
                 </Container>
             )}
