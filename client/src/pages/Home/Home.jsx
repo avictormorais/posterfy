@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import apiService from '../../services/apiService';
 import Hero from '../../components/Hero';
 import Anchor from '../../components/Commom/Anchor';
@@ -35,6 +35,7 @@ const FadeInSection = styled.div`
 export default function Home({ loadingComplete }) {
   const { t } = useTranslation();
   const { posterId } = useParams();
+  const navigate = useNavigate();
   const [recreatingPosterJSON, setRecreatingPosterJSON] = useState(null);
   const [recreatingPosterData, setRecreatingPosterData] = useState(null);
   const [publishModal, setPublishModal] = useState(null);
@@ -96,6 +97,7 @@ export default function Home({ loadingComplete }) {
   const handleClickBack = () => {
     setRecreatingPosterJSON(null);
     setRecreatingPosterData(null);
+    navigate('/');
   }
 
   return (
@@ -105,9 +107,15 @@ export default function Home({ loadingComplete }) {
           title={t('COMMUNITY_PublishSuccess')}
           paragraph={t('COMMUNITY_PublishedModalBody')}
           confirmText={t('GotIt')}
-          onConfirm={() => setPublishModal(null)}
+          onConfirm={() => {
+            setPublishModal(null);
+            navigate('/');
+          }}
           canClose={true}
-          onCancel={() => setPublishModal(null)}
+          onCancel={() => {
+            setPublishModal(null);
+            navigate('/');
+          }}
           isClosing={false}
         />
       )}
