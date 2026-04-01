@@ -162,19 +162,15 @@ const AdminControlsBox = styled.div`
     flex-direction: column;
     gap: 10px;
     margin-top: 16px;
-    padding: 14px 16px;
     border-radius: 12px;
-    border: 1.5px solid rgba(231, 76, 60, 0.3);
-    background: rgba(231, 76, 60, 0.05);
 `;
 
 const ControlsLabel = styled.p`
-    font-size: 0.7em;
+    font-size: 1em;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #e74c3c;
-    margin: 0 0 6px 0;
+    margin: 15px 10px 6px 0;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -186,72 +182,6 @@ const ControlsBtnRow = styled.div`
     flex-wrap: wrap;
 `;
 
-const VisibilityBtn = styled.button`
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 18px;
-    border-radius: 10px;
-    border: 1.5px solid rgba(128, 128, 128, 0.22);
-    background: rgba(128, 128, 128, 0.07);
-    color: var(--textColor);
-    font-size: 0.86em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    flex: 1;
-    min-width: 130px;
-    justify-content: center;
-
-    &:hover:not(:disabled) {
-        background: rgba(128, 128, 128, 0.14);
-        border-color: rgba(128, 128, 128, 0.45);
-        transform: translateY(-1px);
-    }
-
-    &:active:not(:disabled) {
-        transform: translateY(0);
-    }
-
-    &:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
-`;
-
-const DeleteBtn = styled.button`
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 18px;
-    border-radius: 10px;
-    border: 1.5px solid rgba(231, 76, 60, 0.35);
-    background: rgba(231, 76, 60, 0.07);
-    color: #e74c3c;
-    font-size: 0.86em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    flex: 1;
-    min-width: 100px;
-    justify-content: center;
-
-    &:hover:not(:disabled) {
-        background: rgba(231, 76, 60, 0.16);
-        border-color: rgba(231, 76, 60, 0.65);
-        transform: translateY(-1px);
-    }
-
-    &:active:not(:disabled) {
-        transform: translateY(0);
-    }
-
-    &:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
-`;
-
 const FilledHeart = styled(IoHeart)`
     fill: var(--backgroundColor);
 `;
@@ -260,15 +190,12 @@ const OutlinedHeart = styled(IoHeartOutline)`
     stroke: var(--textColor);
 `;
 
-const SaveBtn = styled.button`
+const CommomButton = styled.button`
     display: flex;
     align-items: center;
     gap: 7px;
     padding: 9px 18px;
     border-radius: 10px;
-    border: 1.5px solid rgba(76, 175, 80, 0.35);
-    background: rgba(76, 175, 80, 0.07);
-    color: #4cb050;
     font-size: 0.86em;
     font-weight: 600;
     cursor: pointer;
@@ -276,10 +203,11 @@ const SaveBtn = styled.button`
     flex: 1;
     min-width: 100px;
     justify-content: center;
+    border: none;
+    background-color: var(--textColor);
+    color: var(--backgroundColor);
 
     &:hover:not(:disabled) {
-        background: rgba(76, 175, 80, 0.16);
-        border-color: rgba(76, 175, 80, 0.65);
         transform: translateY(-1px);
     }
 
@@ -291,6 +219,18 @@ const SaveBtn = styled.button`
         opacity: 0.4;
         cursor: not-allowed;
     }
+
+    & svg {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+`;
+
+const Check = styled(IoCheckmark)`
+    font-size: 0.8em;
+    color: var(--backgroundColor) !important;
+    fill: red !important;
 `;
 
 export default function PosterInfo({ poster, onDeleted, onVisibilityChanged, onSave, isSavingPoster, isOwnerOrAdmin }) {
@@ -439,26 +379,26 @@ export default function PosterInfo({ poster, onDeleted, onVisibilityChanged, onS
                     <ControlsSection>
                         <ControlsBtnRow>
                             {isOwnerOrAdmin && onSave && (
-                                <SaveBtn
+                                <CommomButton
                                     onClick={onSave}
                                     disabled={isSavingPoster}
                                 >
-                                    <IoCheckmark /> {isSavingPoster ? '…' : t('EDITOR_SaveButton')}
-                                </SaveBtn>
+                                    {isSavingPoster ? '…' : t('EDITOR_SaveButton')}
+                                </CommomButton>
                             )}
-                            <VisibilityBtn
+                            <CommomButton
                                 onClick={handleVisibilityToggle}
                                 disabled={visLoading}
                             >
                                 {visibility === "public" ? (
-                                    <><IoLockClosedOutline /> {t("DASH_MakePrivate")}</>
+                                    <>{t("DASH_MakePrivate")}</>
                                 ) : (
-                                    <><IoEarthOutline /> {t("DASH_MakePublic")}</>
+                                    <>{t("DASH_MakePublic")}</>
                                 )}
-                            </VisibilityBtn>
-                            <DeleteBtn onClick={() => setShowDeleteModal(true)}>
-                                <IoTrashOutline /> {t("DASH_Delete")}
-                            </DeleteBtn>
+                            </CommomButton>
+                            <CommomButton onClick={() => setShowDeleteModal(true)}>
+                                {t("DASH_Delete")}
+                            </CommomButton>
                         </ControlsBtnRow>
                     </ControlsSection>
                 )}
@@ -466,30 +406,30 @@ export default function PosterInfo({ poster, onDeleted, onVisibilityChanged, onS
                 {isAdmin && !isOwner && (
                     <AdminControlsBox>
                         <ControlsLabel>
-                            <IoTrashOutline /> {t("POSTER_INFO_AdminControls")}
+                            {t("POSTER_INFO_AdminControls")}
                         </ControlsLabel>
                         <ControlsBtnRow>
                             {isOwnerOrAdmin && onSave && (
-                                <SaveBtn
+                                <CommomButton
                                     onClick={onSave}
                                     disabled={isSavingPoster}
                                 >
-                                    <IoCheckmark /> {isSavingPoster ? '…' : t('EDITOR_SaveButton')}
-                                </SaveBtn>
+                                    {isSavingPoster ? '…' : t('EDITOR_SaveButton')}
+                                </CommomButton>
                             )}
-                            <VisibilityBtn
+                            <CommomButton
                                 onClick={handleVisibilityToggle}
                                 disabled={visLoading}
                             >
                                 {visibility === "public" ? (
-                                    <><IoLockClosedOutline /> {t("DASH_MakePrivate")}</>
+                                    <> {t("DASH_MakePrivate")}</>
                                 ) : (
-                                    <><IoEarthOutline /> {t("DASH_MakePublic")}</>
+                                    <>{t("DASH_MakePublic")}</>
                                 )}
-                            </VisibilityBtn>
-                            <DeleteBtn onClick={() => setShowDeleteModal(true)}>
-                                <IoTrashOutline /> {t("DASH_Delete")}
-                            </DeleteBtn>
+                            </CommomButton>
+                            <CommomButton onClick={() => setShowDeleteModal(true)}>
+                                {t("DASH_Delete")}
+                            </CommomButton>
                         </ControlsBtnRow>
                     </AdminControlsBox>
                 )}

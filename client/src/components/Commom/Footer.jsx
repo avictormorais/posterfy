@@ -169,6 +169,12 @@ const GithubLink = styled.a`
   svg {
     font-size: 1.1em;
     transition: transform 0.2s ease;
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 6px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   
   &:hover {
@@ -199,6 +205,12 @@ const DiscordLink = styled.a`
   svg {
     font-size: 1.1em;
     transition: transform 0.2s ease;
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 6px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   
   &:hover {
@@ -258,6 +270,12 @@ const CopyrightText = styled.p`
   svg {
     color: var(--AccentColor);
     animation: ${heartbeat} 1.5s ease-in-out infinite;
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 4px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   
   a {
@@ -384,6 +402,12 @@ const ThemeButton = styled.button`
     color: ${props => props.themeId === 'light' ? '#000000' : '#ffffff'};
     opacity: 0.9;
     transition: all 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   
   &::after {
