@@ -781,6 +781,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setUncompressedAlbumCover(json.uncompressedAlbumCover || '');
         setCustomFont(json.customFont || '');
         setTracklist(json.tracklist || '');
+        setTrackDurations(json.trackDurations || []);
+        prevTracklistRef.current = json.tracklist || '';
         setTitleRelease(RELEASE_DEFAULTS.has(json.titleRelease) ? t('EDITOR_ReleaseTitle') : (json.titleRelease ?? ''));
         rawReleaseDateRef.current = json.releaseDate || '';
         setReleaseDate(localizeDate(json.releaseDate || '', i18n.language));
@@ -816,6 +818,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [useUncompressed, setUseUncompressed] = useState(false);
     const [fileName, setFileName] = useState("Original");
     const [tracklist, setTracklist] = useState('');
+    const [trackDurations, setTrackDurations] = useState([]);
+    const prevTracklistRef = useRef('');
 
     const [titleRelease, setTitleRelease] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
@@ -834,6 +838,60 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [i18n.language]);
+
+    useEffect(() => {
+        const currentTracks = tracklist.split('\n').filter(t => t.trim() !== '');
+        const prevTracks = prevTracklistRef.current.split('\n').filter(t => t.trim() !== '');
+        
+        if (prevTracks.length > currentTracks.length && trackDurations.length > 0) {
+            const removedIndices = [];
+            let prevIdx = 0;
+            
+            for (let i = 0; i < prevTracks.length; i++) {
+                if (prevIdx >= currentTracks.length || prevTracks[i] !== currentTracks[prevIdx]) {
+                    removedIndices.push(i);
+                } else {
+                    prevIdx++;
+                }
+            }
+            
+            let totalRemovedMs = 0;
+            removedIndices.forEach(idx => {
+                if (trackDurations[idx]) {
+                    totalRemovedMs += trackDurations[idx];
+                }
+            });
+            
+            if (totalRemovedMs > 0 && runtime) {
+                const runtimeMatch = runtime.match(/(\d+)h\s*(\d+)min\s*(\d+)s|(\d+)min\s*(\d+)s/);
+                if (runtimeMatch) {
+                    const hours = parseInt(runtimeMatch[1] || '0');
+                    const minutes = parseInt(runtimeMatch[2] || runtimeMatch[4] || '0');
+                    const seconds = parseInt(runtimeMatch[3] || runtimeMatch[5] || '0');
+                    
+                    let totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                    totalSeconds -= Math.floor(totalRemovedMs / 1000);
+                    
+                    if (totalSeconds < 0) totalSeconds = 0;
+                    
+                    const newHours = Math.floor(totalSeconds / 3600);
+                    const newMinutes = Math.floor((totalSeconds % 3600) / 60);
+                    const newSeconds = totalSeconds % 60;
+                    
+                    const newRuntime = newHours > 0
+                        ? `${newHours}h ${newMinutes}min ${newSeconds}s`
+                        : `${newMinutes}min ${newSeconds}s`;
+                    
+                    setRuntime(newRuntime);
+                }
+            }
+            
+            const newDurations = trackDurations.filter((_, idx) => !removedIndices.includes(idx));
+            setTrackDurations(newDurations);
+        }
+        
+        prevTracklistRef.current = tracklist;
+    }, [tracklist, trackDurations, runtime]);
 
     const [showColorSelector, setShowColorSelector] = useState(false);
     const [colorInputPosition, setColorInputPosition] = useState(null);
@@ -954,6 +1012,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         showTracklist,
         showArtistSignature,
         tracklist,
+        trackDurations,
         color1,
         color2,
         color3,
@@ -1366,7 +1425,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                     }
                     return `${index + 1}. ${track.name}`;
                 });
+                
+                const durations = albumData.tracks.items.map(track => track.duration_ms);
+                
                 setTracklist(tracklist.join("\n"));
+                setTrackDurations(durations);
+                prevTracklistRef.current = tracklist.join("\n");
                 
                 setInfosLoaded(true);          
     

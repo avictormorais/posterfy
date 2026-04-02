@@ -18,7 +18,7 @@ const sanitizePosterJson = (json) => {
     'marginTop', 'marginSide', 'marginCover', 'marginBackground',
     'titleRelease', 'releaseDate', 'titleRuntime', 'runtime',
     'backgroundColor', 'textColor', 'useWatermark', 'useFade',
-    'showTracklist', 'showArtistSignature', 'tracklist', 'color1', 'color2', 'color3',
+    'showTracklist', 'showArtistSignature', 'tracklist', 'trackDurations', 'color1', 'color2', 'color3',
     'coverZoom', 'coverHorizontalPosition', 'coverVerticalPosition', 'coverBlur',
     'useUncompressed', 'albumCover', 'userAdjustedTitleSize', 'initialTitleSizeSet',
     'userAdjustedTracksSize', 'initialTracksSizeSet', 'customFont', 'spotifyArtistId',
