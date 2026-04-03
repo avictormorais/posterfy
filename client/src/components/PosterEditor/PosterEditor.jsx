@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/prop-types */
 import styled, { css, keyframes } from "styled-components";
-import { IoArrowBack } from "react-icons/io5";
+import { IoArrowBack, IoTrashOutline } from "react-icons/io5";
 import NormalInput from "./inputs/NormalInput";
 import DoubleInput from "./inputs/DoubleInput";
 import ColorInput from "./inputs/ColorInput";
@@ -276,7 +276,7 @@ const EditorSettings = styled.div`
 `
 
 const TracklistContainer = styled.div`
-    padding: 15px 40px;
+    padding: 2px 40px;
     width: 100%;
     height: 100%;
     display: flex;
@@ -355,6 +355,222 @@ const TracklistTextarea = styled.textarea`
     @media (max-width: 530px) {
         padding: 10px;
     }
+`
+
+const TracklistListContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-height: 490px;
+    overflow-y: auto;
+    padding-right: 8px;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--borderColor);
+        border-radius: 3px;
+
+        &:hover {
+            background: var(--textSecondary);
+        }
+    }
+
+    @media (max-width: 530px) {
+        gap: 6px;
+        max-height: 400px;
+    }
+`
+
+const TracklistItem = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 2px;
+    background: var(--glassBackground);
+    border-radius: 6px;
+    transition: background 0.2s ease;
+    
+    &:hover {
+        background: var(--borderColor);
+    }
+
+    @media (max-width: 530px) {
+        gap: 8px;
+        padding: 8px 10px;
+    }
+`
+
+const TrackItemIndex = styled.div`
+    font-weight: 700;
+    font-size: 1.1em;
+    color: var(--textColor);
+    min-width: 35px;
+    text-align: right;
+    width: 15px;
+
+    @media (max-width: 530px) {
+        font-size: 0.95em;
+        min-width: 30px;
+    }
+`
+
+const TrackItemName = styled.input`
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--textColor);
+    font-size: 0.95em;
+    font-family: inherit;
+    padding: 4px 6px;
+    transition: background 0.2s ease;
+
+    &:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+    }
+
+    &::placeholder {
+        color: var(--textSecondary);
+    }
+
+    @media (max-width: 530px) {
+        font-size: 0.85em;
+    }
+`
+
+const TrackItemDuration = styled.input`
+    font-size: 0.85em;
+    color: var(--textSecondary);
+    min-width: 45px;
+    text-align: right;
+    opacity: 0.7;
+    font-weight: bolder;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    padding: 4px 6px;
+    transition: background 0.2s ease;
+
+    &:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+    }
+
+    &::placeholder {
+        color: var(--textSecondary);
+    }
+
+    @media (max-width: 530px) {
+        font-size: 0.75em;
+        min-width: 38px;
+    }
+`
+
+const TracklistItemAdd = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 2px;
+    background: var(--glassBackground);
+    border-radius: 6px;
+    opacity: 0.45;
+    transition: opacity 0.2s ease, background 0.2s ease;
+    cursor: pointer;
+    
+    &:hover {
+        opacity: 0.65;
+        background: var(--borderColor);
+    }
+
+    input {
+        cursor: pointer;
+    }
+
+    @media (max-width: 530px) {
+        gap: 8px;
+        padding: 8px 10px;
+    }
+`
+
+const TracklistItemAddBtn = styled.button`
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--textSecondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 1.5em;
+    font-weight: bold;
+
+    &:active {
+        transform: scale(0.9);
+    }
+
+    @media (max-width: 530px) {
+        width: 24px;
+        height: 24px;
+    }
+`
+
+const TrackItemDeleteBtn = styled.button`
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--textSecondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 1.2em;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        color: var(--textSecondary);
+        transition: color 0.2s ease;
+    }
+
+    &:hover svg {
+        color: #ff4444;
+    }
+
+    &:active {
+        transform: scale(0.9);
+    }
+
+    @media (max-width: 530px) {
+        width: 24px;
+        height: 24px;
+    }
+`
+
+const TrackItemDeleteIcon = styled(IoTrashOutline)`
+    font-size: 1.25em;
+    margin-right: 5px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `
 
 const DivButtons = styled.div`
@@ -788,6 +1004,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setReleaseDate(localizeDate(json.releaseDate || '', i18n.language));
         setTitleRuntime(RUNTIME_DEFAULTS.has(json.titleRuntime) ? t('EDITOR_RuntimeTitle') : (json.titleRuntime ?? ''));
         setRuntime(json.runtime || '');
+        setNewTrackName('');
+        setNewTrackDuration('');
         handleApplyClick();
     }
 
@@ -819,6 +1037,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [fileName, setFileName] = useState("Original");
     const [tracklist, setTracklist] = useState('');
     const [trackDurations, setTrackDurations] = useState([]);
+    const [newTrackName, setNewTrackName] = useState('');
+    const [newTrackDuration, setNewTrackDuration] = useState('');
     const prevTracklistRef = useRef('');
 
     const [titleRelease, setTitleRelease] = useState('');
@@ -841,57 +1061,28 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     useEffect(() => {
         const currentTracks = tracklist.split('\n').filter(t => t.trim() !== '');
-        const prevTracks = prevTracklistRef.current.split('\n').filter(t => t.trim() !== '');
         
-        if (prevTracks.length > currentTracks.length && trackDurations.length > 0) {
-            const removedIndices = [];
-            let prevIdx = 0;
+        if (currentTracks.length > 0 && trackDurations.length > 0) {
+            let totalMs = 0;
             
-            for (let i = 0; i < prevTracks.length; i++) {
-                if (prevIdx >= currentTracks.length || prevTracks[i] !== currentTracks[prevIdx]) {
-                    removedIndices.push(i);
-                } else {
-                    prevIdx++;
+            for (let i = 0; i < Math.min(currentTracks.length, trackDurations.length); i++) {
+                if (trackDurations[i]) {
+                    totalMs += trackDurations[i];
                 }
             }
             
-            let totalRemovedMs = 0;
-            removedIndices.forEach(idx => {
-                if (trackDurations[idx]) {
-                    totalRemovedMs += trackDurations[idx];
-                }
-            });
+            const totalSeconds = Math.floor(totalMs / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
             
-            if (totalRemovedMs > 0 && runtime) {
-                const runtimeMatch = runtime.match(/(\d+)h\s*(\d+)min\s*(\d+)s|(\d+)min\s*(\d+)s/);
-                if (runtimeMatch) {
-                    const hours = parseInt(runtimeMatch[1] || '0');
-                    const minutes = parseInt(runtimeMatch[2] || runtimeMatch[4] || '0');
-                    const seconds = parseInt(runtimeMatch[3] || runtimeMatch[5] || '0');
-                    
-                    let totalSeconds = hours * 3600 + minutes * 60 + seconds;
-                    totalSeconds -= Math.floor(totalRemovedMs / 1000);
-                    
-                    if (totalSeconds < 0) totalSeconds = 0;
-                    
-                    const newHours = Math.floor(totalSeconds / 3600);
-                    const newMinutes = Math.floor((totalSeconds % 3600) / 60);
-                    const newSeconds = totalSeconds % 60;
-                    
-                    const newRuntime = newHours > 0
-                        ? `${newHours}h ${newMinutes}min ${newSeconds}s`
-                        : `${newMinutes}min ${newSeconds}s`;
-                    
-                    setRuntime(newRuntime);
-                }
-            }
+            const formattedRuntime = hours > 0
+                ? `${hours}h ${minutes}min ${seconds}s`
+                : `${minutes}min ${seconds}s`;
             
-            const newDurations = trackDurations.filter((_, idx) => !removedIndices.includes(idx));
-            setTrackDurations(newDurations);
+            setRuntime(formattedRuntime);
         }
-        
-        prevTracklistRef.current = tracklist;
-    }, [tracklist, trackDurations, runtime]);
+    }, [tracklist, trackDurations]);
 
     const [showColorSelector, setShowColorSelector] = useState(false);
     const [colorInputPosition, setColorInputPosition] = useState(null);
@@ -1327,6 +1518,95 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setTracklist(cleanedLines.join('\n'));
     };
 
+    const formatDuration = (ms) => {
+        if (!ms) return '';
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes}:${String(seconds).padStart(2, '0')}`;
+    };
+
+    const parseTracklistToArray = () => {
+        const lines = tracklist.split('\n').filter(line => line.trim() !== '');
+        return lines.map((line, idx) => {
+            const match = line.match(/^(\d+\.\s*)?(.+)$/);
+            const name = match ? match[2].trim() : line.trim();
+            return {
+                index: idx + 1,
+                name: name,
+                duration: trackDurations[idx] || null,
+                originalLine: line
+            };
+        });
+    };
+
+    const updateTrackName = (idx, newName) => {
+        const lines = tracklist.split('\n');
+        lines[idx] = newName;
+        setTracklist(lines.join('\n'));
+    };
+
+    const deleteTrack = (idx) => {
+        const lines = tracklist.split('\n');
+        lines.splice(idx, 1);
+        
+        const newDurations = trackDurations.filter((_, i) => i !== idx);
+        setTrackDurations(newDurations);
+        
+        setTracklist(lines.join('\n'));
+    };
+
+    const updateTrackDuration = (idx, durationStr) => {
+        if (!durationStr.trim()) {
+            const newDurations = [...trackDurations];
+            newDurations[idx] = 0;
+            setTrackDurations(newDurations);
+            return;
+        }
+
+        const parts = durationStr.split(':');
+        if (parts.length !== 2) return;
+
+        const minutes = parseInt(parts[0], 10);
+        const seconds = parseInt(parts[1], 10);
+        
+        if (isNaN(minutes) || isNaN(seconds) || seconds > 59) return;
+
+        const totalMs = (minutes * 60 + seconds) * 1000;
+        const newDurations = [...trackDurations];
+        newDurations[idx] = totalMs;
+        setTrackDurations(newDurations);
+    };
+
+    const addNewTrack = () => {
+        if (!newTrackName.trim()) {
+            return; 
+        }
+
+        const lines = tracklist.split('\n').filter(l => l.trim() !== '');
+        const nextIndex = lines.length + 1;
+        
+        lines.push(`${nextIndex}. ${newTrackName}`);
+        
+        let durationMs = 0;
+        if (newTrackDuration.trim()) {
+            const parts = newTrackDuration.split(':');
+            if (parts.length === 2) {
+                const minutes = parseInt(parts[0], 10);
+                const seconds = parseInt(parts[1], 10);
+                if (!isNaN(minutes) && !isNaN(seconds) && seconds <= 59) {
+                    durationMs = (minutes * 60 + seconds) * 1000;
+                }
+            }
+        }
+        
+        setTracklist(lines.join('\n'));
+        setTrackDurations([...trackDurations, durationMs]);
+        
+        setNewTrackName('');
+        setNewTrackDuration('');
+    };
+
     async function getItunesUncompressedAlbumCover(searchQuery, country = "us") {
         try {
             let apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&country=${country}&entity=album&limit=1`;
@@ -1431,6 +1711,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 setTracklist(tracklist.join("\n"));
                 setTrackDurations(durations);
                 prevTracklistRef.current = tracklist.join("\n");
+                setNewTrackName('');
+                setNewTrackDuration('');
                 
                 setInfosLoaded(true);          
     
@@ -1444,6 +1726,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             setInfosLoaded(true);
         } else{
             setIsLoadedFromJson(false);
+            setNewTrackName('');
+            setNewTrackDuration('');
             fetchAlbumData();
         }
     }, [albumID]);
@@ -1826,12 +2110,48 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                 </EditorSettings>
                             ) : activeTab === 'tracklist' ? (
                                 <TracklistContainer>
-                                    <TracklistTextarea
-                                        value={tracklist}
-                                        onChange={(e) => setTracklist(e.target.value)}
-                                        placeholder={t('EDITOR_TracklistPlaceholder')}
-                                        data-lenis-prevent
-                                    />
+                                    <TracklistListContainer data-lenis-prevent>
+                                        {parseTracklistToArray().map((track, idx) => (
+                                            <TracklistItem key={idx}>
+                                                <TrackItemIndex>{track.index}.</TrackItemIndex>
+                                                <TrackItemName 
+                                                    value={track.name}
+                                                    onChange={(e) => updateTrackName(idx, e.target.value)}
+                                                    placeholder={t('EDITOR_TrackNamePlaceholder') || 'Track name'}
+                                                />
+                                                <TrackItemDuration
+                                                    type="text"
+                                                    value={track.duration ? formatDuration(track.duration) : ''}
+                                                    onChange={(e) => updateTrackDuration(idx, e.target.value)}
+                                                    placeholder="0:00"
+                                                />
+                                                <TrackItemDeleteBtn 
+                                                    onClick={() => deleteTrack(idx)}
+                                                    title={t('EDITOR_DeleteTrack') || 'Delete track'}
+                                                >
+                                                    <TrackItemDeleteIcon />
+                                                </TrackItemDeleteBtn>
+                                            </TracklistItem>
+                                        ))}
+                                        <TracklistItemAdd title={t('EDITOR_AddNewTrack') || 'Add new track'}>
+                                            <TrackItemIndex>{parseTracklistToArray().length + 1}.</TrackItemIndex>
+                                            <TrackItemName
+                                                value={newTrackName}
+                                                onChange={(e) => setNewTrackName(e.target.value)}
+                                                placeholder={t('EDITOR_TrackNamePlaceholder') || 'Track name'}
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                            <TrackItemDuration
+                                                value={newTrackDuration}
+                                                onChange={(e) => setNewTrackDuration(e.target.value)}
+                                                placeholder="0:00"
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                            <TracklistItemAddBtn type="button" onClick={addNewTrack}>
+                                                +
+                                            </TracklistItemAddBtn>
+                                        </TracklistItemAdd>
+                                    </TracklistListContainer>
                                     <TracklistButtonsContainer>
                                         <TracklistButton onClick={handleRemoveParentheses}>
                                             {t('EDITOR_RemoveParentheses')}
