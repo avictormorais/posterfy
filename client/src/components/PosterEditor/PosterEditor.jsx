@@ -2,6 +2,7 @@
 /* eslint-disable react/prop-types */
 import styled, { css, keyframes } from "styled-components";
 import { IoArrowBack, IoTrashOutline } from "react-icons/io5";
+import { BiSolidTrashAlt } from "react-icons/bi";
 import NormalInput from "./inputs/NormalInput";
 import DoubleInput from "./inputs/DoubleInput";
 import ColorInput from "./inputs/ColorInput";
@@ -314,11 +315,11 @@ const TracklistButton = styled.button`
     background: var(--glassBackground);
     color: var(--textColor);
     border: none;
-    padding: 8px 16px;
+    padding: 8px 26px;
     border-radius: 6px;
     font-size: 12px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    font-weight: bolder;
     
     &:hover {
         background: var(--borderColor);
@@ -396,11 +397,19 @@ const TracklistItem = styled.div`
     padding: 4px 2px;
     background: var(--glassBackground);
     border-radius: 6px;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+    opacity: ${props => props.isDragging ? 0.5 : 1};
+    transform: ${props => props.isDragging ? 'scale(0.95)' : 'scale(1)'};
     
     &:hover {
         background: var(--borderColor);
     }
+
+    ${props => props.isDragOver && css`
+        background: var(--AccentColor);
+        opacity: 0.7;
+        border-radius: 8px;
+    `}
 
     @media (max-width: 530px) {
         gap: 8px;
@@ -415,6 +424,17 @@ const TrackItemIndex = styled.div`
     min-width: 35px;
     text-align: right;
     width: 15px;
+    cursor: grab;
+    user-select: none;
+    transition: opacity 0.2s ease, color 0.2s ease;
+
+    &:hover {
+        opacity: 0.8;
+    }
+
+    &:active {
+        cursor: grabbing;
+    }
 
     @media (max-width: 530px) {
         font-size: 0.95em;
@@ -564,13 +584,14 @@ const TrackItemDeleteBtn = styled.button`
     }
 `
 
-const TrackItemDeleteIcon = styled(IoTrashOutline)`
-    font-size: 1.25em;
+const TrackItemDeleteIcon = styled(BiSolidTrashAlt)`
+    font-size: 5em;
     margin-right: 5px;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    fill: var(--textColor);
 `
 
 const DivButtons = styled.div`
@@ -1039,6 +1060,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [trackDurations, setTrackDurations] = useState([]);
     const [newTrackName, setNewTrackName] = useState('');
     const [newTrackDuration, setNewTrackDuration] = useState('');
+    const [draggedTrackIndex, setDraggedTrackIndex] = useState(null);
+    const [dragOverIndex, setDragOverIndex] = useState(null);
     const prevTracklistRef = useRef('');
 
     const [titleRelease, setTitleRelease] = useState('');
@@ -1607,6 +1630,56 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setNewTrackDuration('');
     };
 
+    const handleTrackDragStart = (index) => {
+        setDraggedTrackIndex(index);
+    };
+
+    const handleTrackDragOver = (e, index) => {
+        e.preventDefault();
+        setDragOverIndex(index);
+    };
+
+    const handleTrackDragLeave = () => {
+        setDragOverIndex(null);
+    };
+
+    const handleTrackDrop = (e, dropIndex) => {
+        e.preventDefault();
+        setDragOverIndex(null);
+
+        if (draggedTrackIndex === null || draggedTrackIndex === dropIndex) {
+            setDraggedTrackIndex(null);
+            return;
+        }
+
+        const lines = tracklist.split('\n').filter(l => l.trim() !== '');
+        const newDurations = [...trackDurations];
+
+        const draggedLine = lines[draggedTrackIndex];
+        const draggedDuration = newDurations[draggedTrackIndex];
+
+        lines.splice(draggedTrackIndex, 1);
+        newDurations.splice(draggedTrackIndex, 1);
+
+        lines.splice(dropIndex, 0, draggedLine);
+        newDurations.splice(dropIndex, 0, draggedDuration);
+
+        const reorderedLines = lines.map((line, idx) => {
+            const match = line.match(/^(\d+\.\s*)?(.+)$/);
+            const name = match ? match[2].trim() : line.trim();
+            return `${idx + 1}. ${name}`;
+        });
+
+        setTracklist(reorderedLines.join('\n'));
+        setTrackDurations(newDurations);
+        setDraggedTrackIndex(null);
+    };
+
+    const handleTrackDragEnd = () => {
+        setDraggedTrackIndex(null);
+        setDragOverIndex(null);
+    };
+
     async function getItunesUncompressedAlbumCover(searchQuery, country = "us") {
         try {
             let apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&country=${country}&entity=album&limit=1`;
@@ -2112,22 +2185,35 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                 <TracklistContainer>
                                     <TracklistListContainer data-lenis-prevent>
                                         {parseTracklistToArray().map((track, idx) => (
-                                            <TracklistItem key={idx}>
-                                                <TrackItemIndex>{track.index}.</TrackItemIndex>
+                                            <TracklistItem 
+                                                key={idx}
+                                                draggable={true}
+                                                onDragStart={() => handleTrackDragStart(idx)}
+                                                onDragOver={(e) => handleTrackDragOver(e, idx)}
+                                                onDragLeave={handleTrackDragLeave}
+                                                onDrop={(e) => handleTrackDrop(e, idx)}
+                                                onDragEnd={handleTrackDragEnd}
+                                                isDragging={draggedTrackIndex === idx}
+                                                isDragOver={dragOverIndex === idx}
+                                            >
+                                                <TrackItemIndex draggable={true}>{track.index}.</TrackItemIndex>
                                                 <TrackItemName 
                                                     value={track.name}
                                                     onChange={(e) => updateTrackName(idx, e.target.value)}
                                                     placeholder={t('EDITOR_TrackNamePlaceholder') || 'Track name'}
+                                                    draggable={false}
                                                 />
                                                 <TrackItemDuration
                                                     type="text"
                                                     value={track.duration ? formatDuration(track.duration) : ''}
                                                     onChange={(e) => updateTrackDuration(idx, e.target.value)}
                                                     placeholder="0:00"
+                                                    draggable={false}
                                                 />
                                                 <TrackItemDeleteBtn 
                                                     onClick={() => deleteTrack(idx)}
                                                     title={t('EDITOR_DeleteTrack') || 'Delete track'}
+                                                    draggable={false}
                                                 >
                                                     <TrackItemDeleteIcon />
                                                 </TrackItemDeleteBtn>
