@@ -16,7 +16,6 @@ const NavbarContainer = styled.header`
   transition: all 0.3s ease;
   background-color: var(--backgroundColor);
   padding: ${({ scrolled }) => (scrolled ? "13px 0" : "13px 0")};
-  box-shadow: ${({ scrolled, $isAdmin }) => (scrolled && !$isAdmin ? "0 2px 15px var(--shadowColor)" : "none")};
   transform: ${({ visible }) => (visible ? "translateY(0)" : "translateY(-100%)")};
 `
 
