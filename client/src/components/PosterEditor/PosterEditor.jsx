@@ -3,6 +3,10 @@
 import styled, { css, keyframes } from "styled-components";
 import { IoArrowBack, IoTrashOutline } from "react-icons/io5";
 import { BiSolidTrashAlt } from "react-icons/bi";
+import { BiSolidAlbum } from "react-icons/bi";
+import { RiListOrdered } from "react-icons/ri";
+import { RiDownloadCloudFill } from "react-icons/ri";
+import { BsSendFill } from "react-icons/bs";
 import NormalInput from "./inputs/NormalInput";
 import DoubleInput from "./inputs/DoubleInput";
 import ColorInput from "./inputs/ColorInput";
@@ -241,9 +245,20 @@ const TabsContainer = styled.div`
     display: flex;
     flex-direction: row;
     margin-bottom: 10px;
-    border-bottom: 1px solid var(--borderColor);
     width: 90%;
     margin-inline: auto;
+    position: relative;
+`
+
+const TabSlider = styled.div`
+    position: absolute;
+    bottom: -1px;
+    height: 2px;
+    background: var(--AccentColor);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    left: ${props => props.left || 0}px;
+    width: ${props => props.width || 0}px;
+    border-radius: 5px;
 `
 
 const Tab = styled.div`
@@ -252,8 +267,13 @@ const Tab = styled.div`
     font-weight: 500;
     color: ${({ $active }) => ($active ? 'var(--textColor)' : 'var(--textSecondary)')};
     cursor: pointer;
-    border-bottom: ${({ $active }) => ($active ? '2px solid var(--AccentColor)' : 'none')};
-    transition: color 0.3s, border-bottom 0.3s;
+    transition: color 0.3s;
+    display: flex;
+    flex-direction: row;
+    font-weight: 500;
+    position: relative;
+    flex-shrink: 0;
+    user-select: none;
 
     &:hover {
         color: var(--textColor);
@@ -593,6 +613,50 @@ const TrackItemDeleteIcon = styled(BiSolidTrashAlt)`
     justify-content: center;
     fill: var(--textColor);
 `
+
+const InfosIcon = styled(BiSolidAlbum)`
+    font-size: 1.25em;
+    margin-right: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    fill: var(--textColor);
+    margin-top: -1px;
+`;
+
+const TracksIcon = styled(RiListOrdered)`
+    font-size: 1.25em;
+    margin-right: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    fill: var(--textColor);
+    margin-top: -1px;
+`;
+
+const ExportIcon = styled(RiDownloadCloudFill)`
+    font-size: 1.25em;
+    margin-right: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    fill: var(--textColor);
+    margin-top: -1px;
+`;
+
+const PublishIcon = styled(BsSendFill)`
+    font-size: 1.05em;
+    margin-right: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    fill: var(--textColor);
+    margin-top: 1px;
+`;
 
 const DivButtons = styled.div`
     display: flex;
@@ -967,6 +1031,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [customFontFile, setCustomFontFile] = useState(null);
     const [activeTab, setActiveTab] = useState('information');
 
+    const tabRefs = useRef({});
+    const [sliderPos, setSliderPos] = useState({ left: 0, width: 0 });
+
     const [publishVisibility, setPublishVisibility] = useState('public');
     const [isPublishing, setIsPublishing] = useState(false);
     const [publishError, setPublishError] = useState('');
@@ -1069,6 +1136,30 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const rawReleaseDateRef = useRef('');
     const [titleRuntime, setTitleRuntime] = useState('');
     const [runtime, setRuntime] = useState('');
+
+    useEffect(() => {
+        const tabElement = tabRefs.current[activeTab];
+        if (tabElement) {
+            const { offsetLeft, offsetWidth } = tabElement;
+            setSliderPos({ left: offsetLeft, width: offsetWidth });
+        }
+    }, [activeTab]);
+
+    useEffect(() => {
+        const initializeSlider = () => {
+            const tabElement = tabRefs.current['information'];
+            if (tabElement) {
+                const { offsetLeft, offsetWidth } = tabElement;
+                setSliderPos({ left: offsetLeft, width: offsetWidth });
+            } else {
+                requestAnimationFrame(initializeSlider);
+            }
+        };
+        
+        requestAnimationFrame(() => {
+            setTimeout(initializeSlider, 0);
+        });
+    }, []);
 
     useEffect(() => {
         setTitleRelease(prev => RELEASE_DEFAULTS.has(prev) ? t('EDITOR_ReleaseTitle') : prev);
@@ -1970,31 +2061,48 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             <AnimatedInput animationDelay={50}>
                                 <TabsContainer>
                                     <Tab 
+                                        ref={(el) => (tabRefs.current['information'] = el)}
                                         $active={activeTab === 'information'} 
                                         onClick={() => setActiveTab('information')}
                                     >
-                                        {t('EDITOR_InformationTab')}
+                                        <>
+                                            <InfosIcon/>
+                                            {t('EDITOR_InformationTab')}
+                                        </>
                                     </Tab>
                                     <Tab 
+                                        ref={(el) => (tabRefs.current['tracklist'] = el)}
                                         $active={activeTab === 'tracklist'} 
                                         onClick={() => setActiveTab('tracklist')}
                                     >
-                                        {t('EDITOR_TracklistTab')}
+                                        <>
+                                            <TracksIcon/>
+                                            {t('EDITOR_TracklistTab')}
+                                        </>
                                     </Tab>
                                     <Tab 
+                                        ref={(el) => (tabRefs.current['export'] = el)}
                                         $active={activeTab === 'export'} 
                                         onClick={() => setActiveTab('export')}
                                     >
-                                        {t('EDITOR_ExportTab')}
+                                        <>
+                                            <ExportIcon/>
+                                            {t('EDITOR_ExportTab')}
+                                        </>
                                     </Tab>
                                     {source === 'search_creation' && (
                                         <Tab 
+                                            ref={(el) => (tabRefs.current['publish'] = el)}
                                             $active={activeTab === 'publish'} 
                                             onClick={() => setActiveTab('publish')}
                                         >
-                                            {t('EDITOR_PublishTab')}
+                                            <>
+                                                <PublishIcon/>
+                                                {t('EDITOR_PublishTab')}
+                                            </>
                                         </Tab>
                                     )}
+                                    <TabSlider left={sliderPos.left} width={sliderPos.width} />
                                 </TabsContainer>
                             </AnimatedInput>
                             {activeTab === 'information' ? (
