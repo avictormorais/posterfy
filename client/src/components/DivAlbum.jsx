@@ -1,4 +1,6 @@
 import styled from "styled-components"
+import PosterGallery from "./PosterGallery/PosterGallery"
+import { useTopPosters } from "../hooks/useTopPosters"
 import AlbumCollection from "./AlbumCollection"
 
 const AlbumContainer = styled.div`
@@ -16,9 +18,18 @@ const AlbumContainer = styled.div`
 `
 
 const DivAlbum = ({ onRecreate }) => {
+  const { posters, loading } = useTopPosters()
+
+  // Mostra galeria real quando temos pelo menos 3 posters válidos
+  const showRealGallery = posters && posters.length >= 3
+
   return (
     <AlbumContainer>
-      <AlbumCollection onRecreate={onRecreate} />
+      {showRealGallery ? (
+        <PosterGallery posters={posters} onPosterClick={null} />
+      ) : (
+        <AlbumCollection onRecreate={onRecreate} />
+      )}
     </AlbumContainer>
   )
 }

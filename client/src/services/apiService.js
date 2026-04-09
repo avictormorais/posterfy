@@ -155,6 +155,10 @@ class ApiService {
     return this.request(`/api/community/top-users?sort=${sort}&limit=${limit}`)
   }
 
+  async getTopPosters(limit = 5) {
+    return this.request(`/api/community?sort=popular&period=week&limit=${limit}`)
+  }
+
   async searchUsers({ q = '', page = 1, limit = 12 } = {}) {
     const params = new URLSearchParams({ q, page, limit })
     return this.request(`/api/community/search-users?${params}`)
