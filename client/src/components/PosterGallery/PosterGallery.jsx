@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useScrollAnimation } from "../../hooks/useScrollAnimation"
 import PosterThumbnail from "./PosterThumbnail"
+import PosterSkeleton from "../Common/PosterSkeleton"
 
 const GalleryContainer = styled.div`
   display: flex;
@@ -362,15 +363,12 @@ const PosterGallery = ({ posters = [], onPosterClick = null }) => {
   const [appearedPosters, setAppearedPosters] = useState([])
   const [posterImages, setPosterImages] = useState({})
   
-  // Reordena os posters para layout visual: [top5, top3, top1, top2, top4]
-  // Visualmente: esquerda máxima, esquerda do meio, meio, direita do meio, direita máxima
   const orderedPosters = posters.length === 5 
     ? [posters[4], posters[2], posters[0], posters[1], posters[3]]
     : posters.slice(0, 5)
   
   useEffect(() => {
     if (isVisible && appearedPosters.length === 0 && posters.length > 0) {
-      // Ordem visual: meio → lados → extremos
       const visualOrder = [2, 1, 3, 0, 4]
       visualOrder.forEach((visualIndex, orderIndex) => {
         if (visualIndex < posters.length) {
@@ -409,7 +407,6 @@ const PosterGallery = ({ posters = [], onPosterClick = null }) => {
     if (onPosterClick) {
       onPosterClick(poster)
     } else {
-      // Abre modal e permite navegar para o poster
       openModal(imageUrl, poster)
     }
   }
@@ -442,7 +439,8 @@ const PosterGallery = ({ posters = [], onPosterClick = null }) => {
 
       <GalleryContainer ref={containerRef}>
         {orderedPosters.map((poster, index) => {
-          const imageUrl = posterImages[index] || '/placeholder.svg'
+          const imageUrl = posterImages[index]
+          const isLoaded = !!imageUrl
           
           return (
             <PosterItem
@@ -457,13 +455,18 @@ const PosterGallery = ({ posters = [], onPosterClick = null }) => {
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
               onClick={() => {
-                handlePosterClick(poster, imageUrl)
+                if (isLoaded) {
+                  handlePosterClick(poster, imageUrl)
+                }
               }}
             >
-              <img 
-                src={imageUrl}
-                alt={`${poster.artistsName} - ${poster.albumName}`}
-              />
+              <PosterSkeleton isLoading={!isLoaded}>
+                <img 
+                  src={imageUrl || '/placeholder.svg'}
+                  alt={`${poster.artistsName} - ${poster.albumName}`}
+                  style={{ opacity: isLoaded ? 1 : 0 }}
+                />
+              </PosterSkeleton>
             </PosterItem>
           )
         })}

@@ -310,68 +310,93 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
 
             const drawSignature = async () => {
                 if (!posterData.spotifyArtistId && !posterData.artistsName) {
-                    return;
+                    return Promise.resolve();
                 }
 
-                try {
-                    const result = await getSignatureBySpotifyId(posterData.spotifyArtistId, posterData.artistsName);
+                return new Promise(async (resolve) => {
+                    let resolved = false;
                     
-                    if (!result) {
-                        return;
-                    }
-
-                    const { url: signatureUrl, spotifyId } = result;
-
-                    if (!posterData.spotifyArtistId && spotifyId && onArtistIdDiscovered) {
-                        onArtistIdDiscovered(spotifyId);
-                    }
-
-                    const baseSignatureWidth = 480 * scale;
-                    const signatureScaleFactor = posterData.signatureScale || 1;
-                    const signatureWidth = Math.round(baseSignatureWidth * signatureScaleFactor);
-                    
-                    const baseX = Math.round((2020 - (parseInt(posterData.marginSide) || 0)) * scale);
-                    const adjustedX = baseX + Math.round((signatureWidth / 100) * (posterData.signatureHorizontalPosition || 0));
-                    
-                    const signatureGap = Math.round(30 * scale);
-                    const baseSignatureY = Math.round(3235 * scale);
-                    
-                    const signatureColor = posterData.textColor;
-
-                    let imageUrl = signatureUrl;
-
-                    if (signatureUrl.toLowerCase().endsWith('.svg')) {
-                        try {
-                            const res = await fetch(signatureUrl, { mode: 'cors' });
-                            let svgText = await res.text();
-
-                            svgText = svgText.replace(/#000000/gi, signatureColor);
-                            svgText = svgText.replace(/<svg([^>]*)/, `<svg fill="${signatureColor}"$1`);
-
-                            const base64Svg = btoa(unescape(encodeURIComponent(svgText)));
-                            imageUrl = `data:image/svg+xml;base64,${base64Svg}`;
-                        } catch (error) {
+                    const handleResolve = () => {
+                        if (!resolved) {
+                            resolved = true;
+                            resolve();
                         }
+                    };
+
+                    const timeout = setTimeout(handleResolve, 5000);
+
+                    try {
+                        const result = await getSignatureBySpotifyId(posterData.spotifyArtistId, posterData.artistsName);
+                        
+                        if (!result) {
+                            clearTimeout(timeout);
+                            return handleResolve();
+                        }
+
+                        const { url: signatureUrl, spotifyId } = result;
+
+                        if (!posterData.spotifyArtistId && spotifyId && onArtistIdDiscovered) {
+                            onArtistIdDiscovered(spotifyId);
+                        }
+
+                        const baseSignatureWidth = 480 * scale;
+                        const signatureScaleFactor = posterData.signatureScale || 1;
+                        const signatureWidth = Math.round(baseSignatureWidth * signatureScaleFactor);
+                        
+                        const baseX = Math.round((2020 - (parseInt(posterData.marginSide) || 0)) * scale);
+                        const adjustedX = baseX + Math.round((signatureWidth / 100) * (posterData.signatureHorizontalPosition || 0));
+                        
+                        const signatureGap = Math.round(30 * scale);
+                        const baseSignatureY = Math.round(3235 * scale);
+                        
+                        const signatureColor = posterData.textColor;
+
+                        let imageUrl = signatureUrl;
+
+                        if (signatureUrl.toLowerCase().endsWith('.svg')) {
+                            try {
+                                const res = await fetch(signatureUrl, { mode: 'cors' });
+                                let svgText = await res.text();
+
+                                svgText = svgText.replace(/#000000/gi, signatureColor);
+                                svgText = svgText.replace(/<svg([^>]*)/, `<svg fill="${signatureColor}"$1`);
+
+                                const base64Svg = btoa(unescape(encodeURIComponent(svgText)));
+                                imageUrl = `data:image/svg+xml;base64,${base64Svg}`;
+                            } catch (error) {
+                            }
+                        }
+
+                        const image = new Image();
+                        image.crossOrigin = 'anonymous';
+                        
+                        image.onload = () => {
+                            clearTimeout(timeout);
+                            const aspectRatio = image.width / image.height;
+                            const signatureHeight = Math.round(signatureWidth / aspectRatio);
+                            const baseY = baseSignatureY - signatureGap - signatureHeight;
+                            const adjustedY = baseY + Math.round((signatureHeight / 100) * (posterData.signatureVerticalPosition || 0));
+
+                            ctx.drawImage(image, adjustedX, adjustedY, signatureWidth, signatureHeight);
+                            handleResolve();
+                        };
+
+                        image.onerror = () => {
+                            clearTimeout(timeout);
+                            handleResolve();
+                        };
+
+                        image.onabort = () => {
+                            clearTimeout(timeout);
+                            handleResolve();
+                        };
+                        
+                        image.src = imageUrl;
+                    } catch (error) {
+                        clearTimeout(timeout);
+                        handleResolve();
                     }
-
-                    const image = new Image();
-                    image.crossOrigin = 'anonymous';
-                    
-                    image.onload = () => {
-                        const aspectRatio = image.width / image.height;
-                        const signatureHeight = Math.round(signatureWidth / aspectRatio);
-                        const baseY = baseSignatureY - signatureGap - signatureHeight;
-                        const adjustedY = baseY + Math.round((signatureHeight / 100) * (posterData.signatureVerticalPosition || 0));
-
-                        ctx.drawImage(image, adjustedX, adjustedY, signatureWidth, signatureHeight);
-                    };
-
-                    image.onerror = () => {
-                    };
-                    
-                    image.src = imageUrl;
-                } catch (error) {
-                }
+                });
             };
 
             const drawBackground = async () => {
@@ -404,6 +429,10 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                 await drawSignature();
             }
             await scannable();
+            
+            await new Promise(resolve => requestAnimationFrame(() => {
+                requestAnimationFrame(resolve);
+            }));
         };
 
         generatePosterContent();
