@@ -7,7 +7,10 @@ i18n
     resources: {
         en: {
             translation: {
+                tagDesign: "Design & Create",
+                heroTitle: "Your vision,\nour design",
                 heroDescription: "Transform your music passion into visual art by creating custom posters for your favorite albums.",
+                startCreating: "Start Creating",
                 anchorArt: "Art.",
                 ArtTitle: "Watch the music\ntake shape",
                 ArtParagraph: "It's simple, search for your favorite album, select it and let the art flow!",
@@ -374,7 +377,10 @@ i18n
         },
         pt: {
             translation: {
+                tagDesign: "Design & Criar",
+                heroTitle: "Sua visão,\nnosso design",
                 heroDescription: "Transforme sua paixão por música em arte visual criando pôsteres personalizados dos seus álbuns favoritos.",
+                startCreating: "Começar a Criar",
                 anchorArt: "Arte.",
                 ArtTitle: "Veja a música\ntomar forma",
                 ArtParagraph: "É simples, procure seu álbum favorito, selecione-o e deixe a arte fluir!",
@@ -742,7 +748,9 @@ i18n
         },
         es: {
             translation: {
+                heroTitle: "Tu visión,\nnuestro diseño",
                 heroDescription: "Transforma tu pasión por la música en arte visual creando pósters personalizados de tus álbumes favoritos.",
+                startCreating: "Comenzar a Crear",
                 anchorArt: "Arte.",
                 ArtTitle: "Mira la música\ntomar forma",
                 ArtParagraph: "Es simple, busca tu álbum favorito, selecciónalo y deja fluir el arte.",
@@ -1013,7 +1021,9 @@ i18n
         },
         zh: {
             translation: {
+                heroTitle: "您的愿景，\n我们的设计",
                 heroDescription: "将您的音乐热情转化为视觉艺术，为您最喜爱的专辑制作定制海报。",
+                startCreating: "开始创建",
                 anchorArt: "艺术。",
                 ArtTitle: "观看音乐\n成型",
                 ArtParagraph: "很简单，搜索您最喜爱的专辑，选择它，让艺术流淌！",
