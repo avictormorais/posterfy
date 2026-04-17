@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import styled from "styled-components"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useScrollAnimation } from "../../hooks/useScrollAnimation"
 import PosterThumbnail from "./PosterThumbnail"
 import PosterSkeleton from "../Common/PosterSkeleton"
+
+const EMPTY_IMAGE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
 
 const GalleryContainer = styled.div`
   display: flex;
@@ -362,23 +364,35 @@ const PosterGallery = ({ posters = [], onPosterClick = null }) => {
   const [containerRef, isVisible] = useScrollAnimation()
   const [appearedPosters, setAppearedPosters] = useState([])
   const [posterImages, setPosterImages] = useState({})
-  
-  const orderedPosters = posters.length === 5 
-    ? [posters[4], posters[2], posters[0], posters[1], posters[3]]
-    : posters.slice(0, 5)
+
+  const orderedPosters = useMemo(
+    () => (posters.length === 5
+      ? [posters[4], posters[2], posters[0], posters[1], posters[3]]
+      : posters.slice(0, 5)),
+    [posters]
+  )
+
+  const allThumbnailsReady =
+    orderedPosters.length > 0 &&
+    orderedPosters.every((poster) => Boolean(posterImages[poster?._id]))
+
+  useEffect(() => {
+    setPosterImages({})
+    setAppearedPosters([])
+  }, [orderedPosters])
   
   useEffect(() => {
-    if (isVisible && appearedPosters.length === 0 && posters.length > 0) {
+    if (isVisible && allThumbnailsReady && appearedPosters.length === 0 && orderedPosters.length > 0) {
       const visualOrder = [2, 1, 3, 0, 4]
       visualOrder.forEach((visualIndex, orderIndex) => {
-        if (visualIndex < posters.length) {
+        if (visualIndex < orderedPosters.length) {
           setTimeout(() => {
             setAppearedPosters(prev => [...prev, visualIndex])
           }, orderIndex * 177)
         }
       })
     }
-  }, [isVisible, posters.length])
+  }, [isVisible, allThumbnailsReady, orderedPosters.length, appearedPosters.length])
 
   useEffect(() => {
     const handleResize = () => {
@@ -418,29 +432,29 @@ const PosterGallery = ({ posters = [], onPosterClick = null }) => {
     }
   }
 
-  const handleThumbnailReady = (index, imageData) => {
+  const handleThumbnailReady = useCallback((posterId, imageData) => {
+    if (!posterId || !imageData) return
+
     setPosterImages(prev => ({
       ...prev,
-      [index]: imageData
+      [posterId]: imageData
     }))
-  }
-
-  const displayPosters = posters.slice(0, 5)
+  }, [])
 
   return (
     <>
-      {orderedPosters.map((poster, idx) => (
+      {orderedPosters.map((poster) => (
         <PosterThumbnail
           key={`${poster._id}-thumbnail`}
-          posterJson={poster.posterJson}
-          onImageReady={(img) => handleThumbnailReady(idx, img)}
+          poster={poster}
+          onImageReady={(img) => handleThumbnailReady(poster._id, img)}
         />
       ))}
 
       <GalleryContainer ref={containerRef}>
         {orderedPosters.map((poster, index) => {
-          const imageUrl = posterImages[index]
-          const isLoaded = !!imageUrl
+          const imageUrl = posterImages[poster._id]
+          const isLoaded = allThumbnailsReady && !!imageUrl
           
           return (
             <PosterItem
@@ -451,18 +465,26 @@ const PosterGallery = ({ posters = [], onPosterClick = null }) => {
               otherIsHovered={hoveredIndex !== null}
               isMobile={isMobile}
               isTablet={isTablet}
-              $hasAppeared={appearedPosters.includes(index)}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
+              $hasAppeared={allThumbnailsReady && appearedPosters.includes(index)}
+              onMouseEnter={() => {
+                if (allThumbnailsReady) {
+                  setHoveredIndex(index)
+                }
+              }}
+              onMouseLeave={() => {
+                if (allThumbnailsReady) {
+                  setHoveredIndex(null)
+                }
+              }}
               onClick={() => {
-                if (isLoaded) {
+                if (allThumbnailsReady && isLoaded) {
                   handlePosterClick(poster, imageUrl)
                 }
               }}
             >
-              <PosterSkeleton isLoading={!isLoaded}>
+              <PosterSkeleton isLoading={!allThumbnailsReady}>
                 <img 
-                  src={imageUrl || '/placeholder.svg'}
+                  src={imageUrl || poster?.posterJson?.albumCover || EMPTY_IMAGE}
                   alt={`${poster.artistsName} - ${poster.albumName}`}
                   style={{ opacity: isLoaded ? 1 : 0 }}
                 />
