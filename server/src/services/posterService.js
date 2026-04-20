@@ -16,7 +16,7 @@ const sanitizePosterJson = (json) => {
   const allowed = [
     'albumName', 'artistsName', 'titleSize', 'artistsSize', 'tracksSize',
     'marginTop', 'marginSide', 'marginCover', 'marginBackground',
-    'titleRelease', 'releaseDate', 'titleRuntime', 'runtime',
+    'titleRelease', 'rawReleaseDate', 'releaseDate', 'titleRuntime', 'runtime',
     'backgroundColor', 'textColor', 'useWatermark', 'useFade',
     'showTracklist', 'showArtistSignature', 'tracklist', 'trackDurations', 'color1', 'color2', 'color3',
     'coverZoom', 'coverHorizontalPosition', 'coverVerticalPosition', 'coverBlur',

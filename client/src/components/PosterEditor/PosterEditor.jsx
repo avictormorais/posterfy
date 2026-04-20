@@ -58,14 +58,129 @@ const RUNTIME_DEFAULTS = new Set([
 
 const LOCALE_MAP = { en: 'en-US', pt: 'pt-BR', es: 'es-ES', zh: 'zh-CN' };
 const DATE_FMT   = { day: 'numeric', month: 'short', year: 'numeric' };
+const MONTH_MAP = {
+    jan: 1,
+    janeiro: 1,
+    january: 1,
+    ene: 1,
+    enero: 1,
+    feb: 2,
+    fev: 2,
+    fevereiro: 2,
+    february: 2,
+    febrero: 2,
+    mar: 3,
+    marco: 3,
+    março: 3,
+    march: 3,
+    marzo: 3,
+    apr: 4,
+    abr: 4,
+    abril: 4,
+    april: 4,
+    may: 5,
+    mai: 5,
+    maio: 5,
+    mayo: 5,
+    jun: 6,
+    junho: 6,
+    june: 6,
+    junio: 6,
+    jul: 7,
+    julho: 7,
+    july: 7,
+    julio: 7,
+    aug: 8,
+    ago: 8,
+    agosto: 8,
+    august: 8,
+    sep: 9,
+    sept: 9,
+    set: 9,
+    septiembre: 9,
+    setembro: 9,
+    september: 9,
+    oct: 10,
+    out: 10,
+    octubre: 10,
+    outubro: 10,
+    october: 10,
+    nov: 11,
+    noviembre: 11,
+    novembro: 11,
+    november: 11,
+    dec: 12,
+    dic: 12,
+    dez: 12,
+    diciembre: 12,
+    dezembro: 12,
+    december: 12
+};
+
+const normalizeMonthToken = (token = '') =>
+    token
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[.,]/g, '')
+        .trim();
+
+const createSafeDate = (year, month, day) => {
+    const y = Number(year);
+    const m = Number(month);
+    const d = Number(day);
+
+    if (!Number.isInteger(y) || !Number.isInteger(m) || !Number.isInteger(d)) return null;
+    if (y < 1900 || y > 2100 || m < 1 || m > 12 || d < 1 || d > 31) return null;
+
+    const date = new Date(y, m - 1, d);
+    if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return null;
+    return date;
+};
 
 function tryParseDate(str) {
     if (!str) return null;
-    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-        const [y, m, d] = str.split('-').map(Number);
-        return new Date(y, m - 1, d);
+
+    const input = String(str).trim();
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+        const [y, m, d] = input.split('-');
+        return createSafeDate(y, m, d);
     }
-    const d = new Date(str);
+
+    const zhDate = input.match(/^(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?$/);
+    if (zhDate) {
+        return createSafeDate(zhDate[1], zhDate[2], zhDate[3]);
+    }
+
+    const numericDate = input.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
+    if (numericDate) {
+        return createSafeDate(numericDate[3], numericDate[2], numericDate[1]);
+    }
+
+    const normalizedInput = input
+        .replace(/\s+de\s+/gi, ' ')
+        .replace(/,/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const dmy = normalizedInput.match(/^(\d{1,2})\s+([^\s]+)\s+(\d{4})$/i);
+    if (dmy) {
+        const month = MONTH_MAP[normalizeMonthToken(dmy[2])];
+        if (month) {
+            return createSafeDate(dmy[3], month, dmy[1]);
+        }
+    }
+
+    const mdy = normalizedInput.match(/^([^\s]+)\s+(\d{1,2})\s+(\d{4})$/i);
+    if (mdy) {
+        const month = MONTH_MAP[normalizeMonthToken(mdy[1])];
+        if (month) {
+            return createSafeDate(mdy[3], month, mdy[2]);
+        }
+    }
+
+    const d = new Date(input);
     if (!isNaN(d.getTime()) && d.getFullYear() >= 1900 && d.getFullYear() <= 2100) return d;
     return null;
 }
@@ -73,7 +188,8 @@ function tryParseDate(str) {
 function localizeDate(str, lang) {
     const date = tryParseDate(str);
     if (!date) return str;
-    const locale = LOCALE_MAP[lang] || 'en-US';
+    const normalizedLang = String(lang || '').toLowerCase().split('-')[0];
+    const locale = LOCALE_MAP[normalizedLang] || 'en-US';
     return new Intl.DateTimeFormat(locale, DATE_FMT).format(date);
 }
 
@@ -1088,8 +1204,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setTrackDurations(json.trackDurations || []);
         prevTracklistRef.current = json.tracklist || '';
         setTitleRelease(RELEASE_DEFAULTS.has(json.titleRelease) ? t('EDITOR_ReleaseTitle') : (json.titleRelease ?? ''));
-        rawReleaseDateRef.current = json.releaseDate || '';
-        setReleaseDate(localizeDate(json.releaseDate || '', i18n.language));
+        const sourceReleaseDate = json.rawReleaseDate || json.releaseDate || '';
+        rawReleaseDateRef.current = sourceReleaseDate;
+        setReleaseDate(localizeDate(sourceReleaseDate, i18n.language));
         setTitleRuntime(RUNTIME_DEFAULTS.has(json.titleRuntime) ? t('EDITOR_RuntimeTitle') : (json.titleRuntime ?? ''));
         setRuntime(json.runtime || '');
         setNewTrackName('');
@@ -1166,9 +1283,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setTitleRuntime(prev => RUNTIME_DEFAULTS.has(prev) ? t('EDITOR_RuntimeTitle') : prev);
         if (rawReleaseDateRef.current) {
             const localized = localizeDate(rawReleaseDateRef.current, i18n.language);
-            if (localized !== rawReleaseDateRef.current || tryParseDate(rawReleaseDateRef.current)) {
-                setReleaseDate(localized);
-            }
+            setReleaseDate(localized);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [i18n.language]);
@@ -1307,6 +1422,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         marginCover,
         marginBackground,
         titleRelease,
+        rawReleaseDate: rawReleaseDateRef.current || releaseDate,
         releaseDate,
         titleRuntime,
         runtime,
@@ -1482,7 +1598,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 albumNameOriginal: albumNameOriginal || albumName,
                 artistsName,
                 artistsNameOriginal: artistsNameOriginal || artistsName,
-                releaseDate,
+                releaseDate: rawReleaseDateRef.current || releaseDate,
                 visibility: publishVisibility,
                 posterJson: posterJsonPayload,
             };
@@ -2225,14 +2341,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         />
                                     </AnimatedInput>
             
-                                    <AnimatedInput animationDelay={750}>
+                                    {/* <AnimatedInput animationDelay={750}>
                                         <CheckInput
                                             title={t('EDITOR_Watermark')}
                                             value={useWatermark}
                                             onChange={(newValue) => setUseWatermark(newValue)}
                                             text={t('EDITOR_WatermarkText')}
                                         />
-                                    </AnimatedInput>
+                                    </AnimatedInput> */}
                                     <AnimatedInput animationDelay={800}>
                                         <CheckInput
                                             title={t('EDITOR_Fade')}
@@ -2404,6 +2520,13 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                             >
                                                 <FormatName>{t('EXPORT_SizeNormal')}</FormatName>
                                                 <FormatDescription>{t('EXPORT_SizeDescription_Normal')}</FormatDescription>
+                                            </FormatOption>
+                                            <FormatOption
+                                                $selected={exportScale === 1.5}
+                                                onClick={() => setExportScale(1.5)}
+                                            >
+                                                <FormatName>{t('EXPORT_SizeExtreme')}</FormatName>
+                                                <FormatDescription>{t('EXPORT_SizeDescription_Extreme')}</FormatDescription>
                                             </FormatOption>
                                         </FormatGrid>
                                     </ExportSection>

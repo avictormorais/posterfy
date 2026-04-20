@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
-import { generateLogoWatermark } from '../svgs/LogoName.jsx';
+import { generateLogoWatermark, WATERMARK_VIEWBOX_WIDTH, WATERMARK_VIEWBOX_HEIGHT } from '../svgs/LogoName.jsx';
 import { getSignatureBySpotifyId } from '../../services/signatureService.js';
 
 const parseNumeric = (value, fallback = 0) => {
@@ -143,9 +143,16 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             };
 
             const drawWaterMark = async () => {
-                const watermarkWidth = Math.round(450 * scale);
-                const watermarkHeight = Math.round(85 * scale);
-                const svgString = generateLogoWatermark(posterData.textColor || '#ffffff', watermarkWidth, watermarkHeight);
+                const baseWatermarkHeight = parseNumeric(posterData.watermarkHeight, 85);
+                const proportionalWatermarkWidth = Math.round((baseWatermarkHeight * WATERMARK_VIEWBOX_WIDTH) / WATERMARK_VIEWBOX_HEIGHT);
+                const baseWatermarkWidth = parseNumeric(posterData.watermarkWidth, proportionalWatermarkWidth);
+
+                const watermarkWidth = Math.round(baseWatermarkWidth * scale * 1.5);
+                const watermarkHeight = Math.round(baseWatermarkHeight * scale * 1.5);
+
+                const watermarkTextColor = posterData.watermarkTextColor || posterData.textColor || '#ffffff';
+                const watermarkIconColor = posterData.watermarkIconColor || watermarkTextColor;
+                const svgString = generateLogoWatermark(watermarkTextColor, watermarkWidth, watermarkHeight, watermarkIconColor);
 
                 const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
                 const url = URL.createObjectURL(svgBlob);
@@ -165,7 +172,7 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                     image.onload = () => {
                         if (isCurrent()) {
                             ctx.globalAlpha = 0.5;
-                            ctx.drawImage(image, width - Math.round(105 * scale) - watermarkWidth, Math.round(37 * scale), watermarkWidth, watermarkHeight);
+                            ctx.drawImage(image, width - Math.round(105 * scale) - watermarkWidth, Math.round(37 * scale * 1.5), watermarkWidth, watermarkHeight);
                             ctx.globalAlpha = 1;
                         }
                         finalize();
@@ -542,9 +549,12 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                 await drawTracklist();
             }
             if (!isCurrent()) return;
-            if (posterData.useWatermark) {
-                await drawWaterMark();
-            }
+
+            // await drawWaterMark();
+            // if (posterData.useWatermark) { deactivated for now as per design decision
+            //     await drawWaterMark();
+            // }
+
             if (!isCurrent()) return;
             if (posterData.showArtistSignature) {
                 await drawSignature();
