@@ -55,7 +55,7 @@ i18n
                 EDITOR_Tracklist: "Tracklist",
                 EDITOR_TracklistText: "Show tracklist",
                 EDITOR_Signature: "Artist Signature",
-                EDITOR_SignatureText: "Show artist signature",
+                EDITOR_SignatureText: "Show signature",
                 EDITOR_Apply: "Apply",
                 EDITOR_DownloadCover: "Cover",
                 EDITOR_Download: "Poster",

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import apiService from "../../services/apiService";
-import AlertModal from "../Commom/AlertModal";
+import AlertModal from "../Common/AlertModal";
 import {
     IoHeart,
     IoHeartOutline,
@@ -14,7 +14,7 @@ import {
     IoEarthOutline,
     IoCheckmark,
 } from "react-icons/io5";
-import TierBadge from "../Commom/TierBadge";
+import TierBadge from "../Common/TierBadge";
 
 
 const fmt = (n = 0) => {

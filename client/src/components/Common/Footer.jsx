@@ -270,7 +270,6 @@ const CopyrightText = styled.p`
   svg {
     color: var(--AccentColor);
     animation: ${heartbeat} 1.5s ease-in-out infinite;
-    background-color: rgba(0, 0, 0, 0.15);
     padding: 4px;
     border-radius: 4px;
     display: inline-flex;

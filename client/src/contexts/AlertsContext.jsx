@@ -1,6 +1,6 @@
 ﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import AlertModal from '../components/Commom/AlertModal';
+import AlertModal from '../components/Common/AlertModal';
 
 const ModalContext = createContext();
 

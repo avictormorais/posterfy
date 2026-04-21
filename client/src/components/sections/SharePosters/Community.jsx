@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { IoCloseOutline } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
-import Anchor from "../../Commom/Anchor.jsx";
+import Anchor from "../../Common/Anchor.jsx";
 import SectionExplanation from "../../SectionExplanation.jsx";
 import PosterCard from "../../Community/PosterCard.jsx";
 import PosterShare from "../../svgs/PosterShare.jsx";

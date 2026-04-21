@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Anchor from "../../Commom/Anchor";
+import Anchor from "../../Common/Anchor";
 import { useTranslation } from 'react-i18next';
 import { FaHeart } from "react-icons/fa";
 import infos from "./ThanksInfos.json";

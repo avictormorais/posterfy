@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import Album from "./Commom/Album";
-import LoadingDiv from "./Commom/LoadingDiv";
+import Album from "./Common/Album";
+import LoadingDiv from "./Common/LoadingDiv";
 import { useTranslation } from "react-i18next";
 import Empty from "./svgs/Others/Empty";
 

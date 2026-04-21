@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Loading from './components/Commom/Loading';
+import Loading from './components/Common/Loading';
 import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
 import { ThemeProvider } from './contexts/ThemeContext';
