@@ -1,13 +1,15 @@
 "use client"
 
 import styled from "styled-components"
-import Icon from "./svgs/icon"
+import Poster3D from "./3d/Poster3D"
 import { useTranslation } from "react-i18next"
 import { MdOutlineKeyboardDoubleArrowDown } from "react-icons/md"
-import { FiArrowRight } from "react-icons/fi"
+import { TbArrowBigRightFilled } from "react-icons/tb";
 import DivAlbum from "./DivAlbum"
 import { useState, useEffect } from "react"
-import { useTheme } from "../contexts/ThemeContext"
+import frameModel from "./3d/frame.glb"
+import backImage from "./3d/back_transparent.png"
+import posterImage from "./3d/Posterfy - HEROES & VILLAINS.png"
 
 const HeroSection = styled.section`
     width: 100%;
@@ -183,7 +185,7 @@ const RightSection = styled.div`
     justify-content: center;
     position: relative;
     opacity: ${props => props.visible ? 1 : 0};
-    transform: scale(${props => props.visible ? 1 : 0.92});
+  transform: translateY(${props => props.visible ? '0' : '20px'});
     transition: opacity 0.8s ease, transform 0.8s ease;
     transition-delay: 500ms;
 
@@ -193,13 +195,19 @@ const RightSection = styled.div`
 `
 
 const IconContainer = styled.div`
+  --hero-poster-size: 680px;
     position: relative;
-    width: 380px;
-    height: 420px;
+  width: var(--hero-poster-size);
+  height: var(--hero-poster-size);
+  min-width: var(--hero-poster-size);
+  min-height: var(--hero-poster-size);
+  max-width: var(--hero-poster-size);
+  max-height: var(--hero-poster-size);
+  flex: 0 0 var(--hero-poster-size);
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: gentleFloat 4s ease-in-out infinite;
+  contain: layout size paint;
 
     @keyframes gentleFloat {
         0%, 100% { transform: translateY(0); }
@@ -207,18 +215,15 @@ const IconContainer = styled.div`
     }
 
     @media (max-width: 1200px) {
-        width: 320px;
-        height: 360px;
+    --hero-poster-size: 360px;
     }
 
     @media (max-width: 900px) {
-        width: 280px;
-        height: 320px;
+    --hero-poster-size: 320px;
     }
 
     @media (max-width: 600px) {
-        width: 220px;
-        height: 250px;
+    --hero-poster-size: 240px;
     }
 `
 
@@ -226,7 +231,7 @@ const ScrollIndicator = styled(MdOutlineKeyboardDoubleArrowDown)`
     font-size: 2.5em;
     color: var(--textColor);
     position: absolute;
-    bottom: 40px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
     opacity: ${props => props.visible ? 0.35 : 0};
@@ -243,7 +248,6 @@ const ScrollIndicator = styled(MdOutlineKeyboardDoubleArrowDown)`
 
 function Hero({ showAnimation = false, onRecreate }) {
   const { t } = useTranslation()
-  const { theme } = useTheme()
   const [elementsVisible, setElementsVisible] = useState(false)
 
   useEffect(() => {
@@ -287,7 +291,7 @@ function Hero({ showAnimation = false, onRecreate }) {
               <PrimaryButton onClick={handleStartCreating}>
                 {t("startCreating") || "Start Creating"}
                 <ButtonIcon>
-                  <FiArrowRight />
+                  <TbArrowBigRightFilled />
                 </ButtonIcon>
               </PrimaryButton>
             </CTAWrapper>
@@ -310,7 +314,23 @@ function Hero({ showAnimation = false, onRecreate }) {
 
           <RightSection visible={elementsVisible}>
             <IconContainer>
-              <Icon fill={theme === 'light' ? "#2c2929" : "white"} width={"100%"} height={"100%"} />
+              <Poster3D
+                modelUrl={frameModel}
+                imageUrl={posterImage}
+                backImageUrl={backImage}
+                width="100%"
+                height="100%"
+                imageFit="contain"
+                innerFrameCoverage={1}
+                imageFrontOffset={-0.013}
+                backImageOffset={0.0035}
+                verticalFill={0.8}
+                enableDragCamera
+                enableMouseParallax
+                autoRotateSpeed={0.22}
+                showFrame={true}
+                frameColor={"#f8e2c7"}
+              />
             </IconContainer>
           </RightSection>
         </ContentWrapper>

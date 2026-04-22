@@ -550,7 +550,7 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             }
             if (!isCurrent()) return;
 
-            // await drawWaterMark();
+            await drawWaterMark();
             // if (posterData.useWatermark) { deactivated for now as per design decision
             //     await drawWaterMark();
             // }
