@@ -428,13 +428,15 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, ini
             });
 
             // Update local user state
-            updateUser({
+            const updatedUserData = {
                 ...user,
                 name: formData.name.trim(),
                 username: formData.username.trim(),
                 bio: formData.bio.trim(),
                 showSpotifyProfile: formData.showSpotifyProfile
-            });
+            };
+
+            updateUser(updatedUserData);
 
             setSuccessMessage(t('ProfileUpdatedSuccessfully'));
 
@@ -448,7 +450,7 @@ export default function EditProfileModal({ isOpen, onClose, onProfileUpdate, ini
 
             // Call parent callback
             if (onProfileUpdate) {
-                onProfileUpdate();
+                onProfileUpdate(updatedUserData);
             }
 
             setTimeout(() => {

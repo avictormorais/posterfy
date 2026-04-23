@@ -1063,6 +1063,29 @@ export default function Profile() {
 
     const handleLogout = async () => { await logout(); navigate('/login'); };
 
+    const handleProfileUpdate = useCallback(async (updatedUser) => {
+        const nextUsername = updatedUser?.username || user?.username || '';
+
+        if (updatedUser) {
+            setUserProfile((prev) => ({
+                ...(prev || {}),
+                ...updatedUser,
+            }));
+        }
+
+        if (routeUsername && nextUsername && routeUsername.toLowerCase() !== nextUsername.toLowerCase()) {
+            navigate(`/u/${encodeURIComponent(nextUsername)}`, { replace: true });
+            return;
+        }
+
+        try {
+            const d = await apiService.getUserProfile();
+            setUserProfile(d.user);
+        } catch {
+            // Keep optimistic local state when refresh fails.
+        }
+    }, [navigate, routeUsername, user?.username]);
+
     useEffect(() => {
         if (profileNotFound) navigate('/error');
     }, [profileNotFound, navigate]);
@@ -1335,7 +1358,7 @@ export default function Profile() {
                 <EditProfileModal
                     isOpen={isEditModalOpen}
                     onClose={() => setIsEditModalOpen(false)}
-                    onProfileUpdate={() => apiService.getUserProfile().then(d => setUserProfile(d.user)).catch(() => {})}
+                    onProfileUpdate={handleProfileUpdate}
                     initialBio={userProfile?.bio || ''}
                 />
             )}
