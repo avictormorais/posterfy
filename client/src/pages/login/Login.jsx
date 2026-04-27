@@ -242,16 +242,16 @@ export default function Login(){
                                 <ButtonText>{t('LOGIN_GoogleSignIn')}</ButtonText>
                             </LoginButton>
 
-                            <OrContainer>
+                            {/*<OrContainer>
                                 <Line />
                                 <OrText>{t('LOGIN_Or')}</OrText>
                                 <Line />
                             </OrContainer>
 
-                            <LoginButton onClick={loginWithSpotify}>
+                            <LoginButton* onClick={loginWithSpotify}>
                                 <SpotifyIcon />
                                 <ButtonText>{t('LOGIN_SpotifySignIn')}</ButtonText>
-                            </LoginButton>
+                            </LoginButton*/}
                         </ButtonContainer>
                     </Column>
                 </Row>
