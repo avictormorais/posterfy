@@ -156,25 +156,30 @@ const GithubLink = styled.a`
   align-items: center;
   gap: 8px;
   text-decoration: none;
-  color: var(--textColor);
+  color: var(--backgroundColor);
   font-weight: 500;
-  padding: 12px 20px;
+  padding: 6px 10px;
   border-radius: 8px;
   background: transparent;
   border: 1px solid var(--borderColor);
   transition: all 0.2s ease;
   font-size: 0.9em;
   letter-spacing: 0.01em;
+  border-radius: 100px;
+  background-color: var(--textColor);
+  font-weight: bolder;
+  padding-right: 20px;
   
   svg {
     font-size: 1.1em;
     transition: transform 0.2s ease;
-    background-color: rgba(0, 0, 0, 0.15);
     padding: 6px;
     border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin-right: 5px;
+    fill: var(--backgroundColor);
   }
   
   &:hover {
