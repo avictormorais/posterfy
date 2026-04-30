@@ -417,6 +417,40 @@ router.put('/posters/:id/visibility', [param('id').isMongoId(), body('visibility
  *       200:
  *         description: Poster updated
  */
-router.put('/posters/:id/edit', [param('id').isMongoId()], auditLog('edit_poster', 'poster'), AdminController.editPoster)
+/**
+ * @openapi
+ * /api/admin/top-posters:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Get ranked top posters with customizable limit
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 50, minimum: 5, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Top posters list
+ */
+router.get('/top-posters', AdminController.topPosters)
+
+/**
+ * @openapi
+ * /api/admin/top-users:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Get ranked top users with customizable limit
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 50, minimum: 5, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Top users list
+ */
+router.get('/top-users', AdminController.topUsers)
 
 export default router

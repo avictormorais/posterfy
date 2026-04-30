@@ -34,6 +34,9 @@ const admin = {
     const qs = new URLSearchParams(params).toString()
     return apiService.request(`/api/admin/logs?${qs}`)
   },
+
+  getTopPosters: (limit = 50) => apiService.request(`/api/admin/top-posters?limit=${limit}`),
+  getTopUsers: (limit = 50) => apiService.request(`/api/admin/top-users?limit=${limit}`),
 }
 
 export default admin

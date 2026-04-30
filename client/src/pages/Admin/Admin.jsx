@@ -3,17 +3,19 @@ import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { IoBarChart, IoPeople, IoImage, IoDocumentText, IoHeart } from 'react-icons/io5'
+import { IoBarChart, IoPeople, IoImage, IoDocumentText, IoHeart, IoTrophy } from 'react-icons/io5'
 import OverviewTab from './tabs/OverviewTab'
 import UsersTab from './tabs/UsersTab'
 import PostersTab from './tabs/PostersTab'
 import LogsTab from './tabs/LogsTab'
 import HealthTab from './tabs/HealthTab'
+import TopsTab from './tabs/TopsTab'
 
-const TABS = ['Overview', 'Users', 'Posters', 'Logs', 'Health']
+const TABS = ['Overview', 'Tops', 'Users', 'Posters', 'Logs', 'Health']
 
 const TAB_ICONS = {
   Overview: IoBarChart,
+  Tops: IoTrophy,
   Users: IoPeople,
   Posters: IoImage,
   Logs: IoDocumentText,
@@ -280,6 +282,7 @@ export default function Admin() {
       </Sidebar>
       <Main>
         {activeTab === 'Overview' && <OverviewTab />}
+        {activeTab === 'Tops' && <TopsTab />}
         {activeTab === 'Users' && <UsersTab />}
         {activeTab === 'Posters' && <PostersTab />}
         {activeTab === 'Logs' && <LogsTab />}

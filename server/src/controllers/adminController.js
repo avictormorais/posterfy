@@ -567,6 +567,41 @@ class AdminController {
       res.status(500).json({ error: 'Internal server error' })
     }
   }
+
+  async topPosters(req, res) {
+    try {
+      const { limit = 50 } = req.query
+      const safeLimit = Math.min(Math.max(parseInt(limit) || 50, 5), 100)
+
+      const topPosters = await Poster.find({ isDeleted: false, visibility: 'public' })
+        .sort({ popularityScore: -1 })
+        .limit(safeLimit)
+        .populate('authorId', 'name username avatar badge status')
+        .select('albumName artistsName popularityScore views downloads favoritesCount edits createdAt authorId')
+        .lean()
+
+      res.json({ topPosters, limit: safeLimit })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async topUsers(req, res) {
+    try {
+      const { limit = 50 } = req.query
+      const safeLimit = Math.min(Math.max(parseInt(limit) || 50, 5), 100)
+
+      const topUsers = await User.find({ status: 'active' })
+        .sort({ badgeScore: -1 })
+        .limit(safeLimit)
+        .select('name username avatar badge badgeScore posterCount totalDownloads totalFavorites totalViews bio createdAt')
+        .lean()
+
+      res.json({ topUsers, limit: safeLimit })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
 }
 
 export default new AdminController()
