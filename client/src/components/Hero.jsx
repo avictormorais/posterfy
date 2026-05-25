@@ -9,7 +9,7 @@ import DivAlbum from "./DivAlbum"
 import { useState, useEffect } from "react"
 import frameModel from "./3d/frame.glb"
 import backImage from "./3d/back_transparent.png"
-import posterImage from "./3d/Posterfy - HEROES & VILLAINS.png"
+import posterImage from "./3d/Posterfy - CHROMAKOPIA +.png"
 
 const HeroSection = styled.section`
     width: 100%;
