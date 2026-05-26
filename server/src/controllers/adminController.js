@@ -602,6 +602,70 @@ class AdminController {
       res.status(500).json({ error: 'Internal server error' })
     }
   }
+
+  async topArtists(req, res) {
+    try {
+      const { limit = 50 } = req.query
+      const safeLimit = Math.min(Math.max(parseInt(limit) || 50, 5), 100)
+
+      const topArtists = await Poster.aggregate([
+        { $match: { isDeleted: false } },
+        {
+          $group: {
+            _id: { $ifNull: ['$artistsNameOriginal', '$artistsName'] },
+            posterCount: { $sum: 1 }
+          }
+        },
+        { $sort: { posterCount: -1, _id: 1 } },
+        { $limit: safeLimit },
+        {
+          $project: {
+            _id: 0,
+            artistName: '$_id',
+            posterCount: 1
+          }
+        }
+      ])
+
+      res.json({ topArtists, limit: safeLimit })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async topAlbums(req, res) {
+    try {
+      const { limit = 50 } = req.query
+      const safeLimit = Math.min(Math.max(parseInt(limit) || 50, 5), 100)
+
+      const topAlbums = await Poster.aggregate([
+        { $match: { isDeleted: false } },
+        {
+          $group: {
+            _id: {
+              albumName: { $ifNull: ['$albumNameOriginal', '$albumName'] },
+              artistsName: { $ifNull: ['$artistsNameOriginal', '$artistsName'] }
+            },
+            posterCount: { $sum: 1 }
+          }
+        },
+        { $sort: { posterCount: -1, '_id.albumName': 1, '_id.artistsName': 1 } },
+        { $limit: safeLimit },
+        {
+          $project: {
+            _id: 0,
+            albumName: '$_id.albumName',
+            artistsName: '$_id.artistsName',
+            posterCount: 1
+          }
+        }
+      ])
+
+      res.json({ topAlbums, limit: safeLimit })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
 }
 
 export default new AdminController()

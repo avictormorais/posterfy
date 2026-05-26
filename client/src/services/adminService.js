@@ -37,6 +37,8 @@ const admin = {
 
   getTopPosters: (limit = 50) => apiService.request(`/api/admin/top-posters?limit=${limit}`),
   getTopUsers: (limit = 50) => apiService.request(`/api/admin/top-users?limit=${limit}`),
+  getTopArtists: (limit = 50) => apiService.request(`/api/admin/top-artists?limit=${limit}`),
+  getTopAlbums: (limit = 50) => apiService.request(`/api/admin/top-albums?limit=${limit}`),
 }
 
 export default admin

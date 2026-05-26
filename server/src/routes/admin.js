@@ -453,4 +453,40 @@ router.get('/top-posters', AdminController.topPosters)
  */
 router.get('/top-users', AdminController.topUsers)
 
+/**
+ * @openapi
+ * /api/admin/top-artists:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Get ranked artists by created posters with customizable limit
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 50, minimum: 5, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Top artists list
+ */
+router.get('/top-artists', AdminController.topArtists)
+
+/**
+ * @openapi
+ * /api/admin/top-albums:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Get ranked albums by created posters with customizable limit
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 50, minimum: 5, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Top albums list
+ */
+router.get('/top-albums', AdminController.topAlbums)
+
 export default router
