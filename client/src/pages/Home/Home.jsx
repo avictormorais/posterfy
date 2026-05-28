@@ -161,9 +161,9 @@ export default function Home({ loadingComplete }) {
         <Faq />
       </FadeInSection>
 
-      <FadeInSection ref={thanksRef} $isVisible={thanksVisible}>
+      {/* <FadeInSection ref={thanksRef} $isVisible={thanksVisible}>
         <Thanks />
-      </FadeInSection>
+      </FadeInSection> */}
     </>
   );
 }
