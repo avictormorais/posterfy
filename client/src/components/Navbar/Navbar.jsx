@@ -1,11 +1,22 @@
 import { useState, useEffect } from "react"
-import styled from "styled-components"
+import styled, { keyframes } from "styled-components"
 import Icon from "../svgs/icon"
 import LanguageSelector from "./Languageselector"
 import ThemeSelector from "./ThemeSelector"
 import { RiUser3Fill, RiShieldKeyholeFill } from "react-icons/ri";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom"
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+`;
 
 const NavbarContainer = styled.header`
   position: fixed;
@@ -103,6 +114,8 @@ const ProfileButton = styled.button`
   border: 2px solid var(--borderColor);
   overflow: hidden;
   
+  animation: ${fadeIn} 0.4s ease-out forwards;
+  
   &:hover {
     background-color: var(--glassBackground);
     transform: scale(1.05);
@@ -147,6 +160,8 @@ const AdminButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid var(--borderColor);
+
+  animation: ${fadeIn} 0.4s ease-out forwards;
 
   &:hover {
     background-color: var(--glassBackground);
@@ -246,7 +261,7 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
           <LanguageSelector />
           <ThemeSelector />
           {!hideAccount && (
-            <ProfileButton onClick={handleClickAccount}>
+            <ProfileButton onClick={handleClickAccount} key={user?.avatar || 'guest'}>
               <ProfileWrapper>
                 {user?.avatar ? (
                   <AvatarImage src={user.avatar} />
