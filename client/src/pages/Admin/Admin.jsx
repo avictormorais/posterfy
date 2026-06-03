@@ -11,7 +11,7 @@ import LogsTab from './tabs/LogsTab'
 import HealthTab from './tabs/HealthTab'
 import TopsTab from './tabs/TopsTab'
 
-const TABS = ['Overview', 'Tops', 'Users', 'Posters', 'Logs', 'Health']
+const TABS = ['Overview', 'Tops', 'Users', 'Posters', 'Logs'] // 'Health'
 
 const TAB_ICONS = {
   Overview: IoBarChart,
