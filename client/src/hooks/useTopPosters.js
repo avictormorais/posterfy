@@ -12,7 +12,6 @@ export const useTopPosters = () => {
         setLoading(true)
         const response = await apiService.getTopPosters(5)
         
-        // API já retorna ordenado por popularityScore, apenas pegamos os 5 primeiros
         setPosters(Array.isArray(response.posters) ? response.posters.slice(0, 5) : [])
         setError(null)
       } catch (err) {

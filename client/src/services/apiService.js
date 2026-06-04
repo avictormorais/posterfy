@@ -156,7 +156,7 @@ class ApiService {
   }
 
   async getTopPosters(limit = 5) {
-    return this.request(`/api/community?sort=popular&period=week&limit=${limit}`)
+    return this.request(`/api/community?sort=popular&period=month&limit=${limit}`)
   }
 
   async searchUsers({ q = '', page = 1, limit = 12 } = {}) {
