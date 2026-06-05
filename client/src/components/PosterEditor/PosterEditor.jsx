@@ -1023,14 +1023,14 @@ const PublishErrorBox = styled.div`
 
 const VisibilityOptions = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
     width: 100%;
 `;
 
 const VisibilityCard = styled.button`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     gap: 12px;
     width: 100%;
@@ -1063,23 +1063,28 @@ const VCardBody = styled.div`
 `;
 
 const VCardTitle = styled.span`
-    font-size: 1.4em;
+    font-size: 2em;
     font-weight: 700;
     color: var(--textColor);
+    text-align: center;
+    margin-block: 20px;
 `;
 
 const VCardDesc = styled.span`
     font-size: 1.1em;
     opacity: 0.65;
     color: var(--textColor);
+    margin-bottom: 10px;
 `;
 
 const IconPublic = styled(MdPublic)`
-    font-size: 2em;
+    font-size: 4em;
+    margin-top: 15px;
 `;
 
 const IconPrivate = styled(MdLockOutline)`
-    font-size: 2em;
+    font-size: 4em;
+    margin-top: 15px;
 `;
 
 const EmptyStateContainer = styled.div`
