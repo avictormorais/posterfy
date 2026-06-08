@@ -408,7 +408,7 @@ function Profiles() {
         if (pageNum === 1) setLoading(true); else setLoadingMore(true);
         setFetchError(false);
         try {
-            const result = await apiService.searchUsers({ q: query, page: pageNum, limit: 8 });
+            const result = await apiService.searchUsers({ q: query, page: pageNum, limit: 9 });
             setUsers(prev => append ? [...prev, ...result.users] : result.users);
             setPage(pageNum);
             setHasMore(result.hasMore);

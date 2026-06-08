@@ -17,6 +17,7 @@ const GalleryContainer = styled.div`
   perspective: 1000px;
   padding: 80px 0;
   overflow: hidden;
+  padding-top: 40px;
 
   @media (max-width: 800px) {
     display: none;

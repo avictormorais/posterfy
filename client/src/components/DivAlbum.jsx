@@ -11,6 +11,7 @@ const AlbumContainer = styled.div`
   margin: 0px auto;
   overflow: hidden;
   padding: 20px 0;
+  padding-top: 0;
   
   @media (max-width: 768px) {
     padding: 10px 0;
@@ -20,7 +21,6 @@ const AlbumContainer = styled.div`
 const DivAlbum = ({ onRecreate }) => {
   const { posters, loading } = useTopPosters()
 
-  // Mostra galeria real quando temos pelo menos 3 posters válidos
   const showRealGallery = posters && posters.length >= 3
 
   return (

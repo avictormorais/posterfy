@@ -10,6 +10,8 @@ import { useState, useEffect } from "react"
 import frameModel from "./3d/frame.glb"
 import backImage from "./3d/back_transparent.png"
 import posterImage from "./3d/Posterfy - CHROMAKOPIA +.png"
+import Anchor from "./Common/Anchor"
+import SectionExplanation from "./SectionExplanation"
 
 const HeroSection = styled.section`
     width: 100%;
