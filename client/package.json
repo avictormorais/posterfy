@@ -27,6 +27,8 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@react-three/drei": "^9.102.6",
+    "@react-three/fiber": "^8.17.7",
     "color-thief-react": "^1.0.2",
     "i18next": "^23.16.4",
     "jspdf": "^3.0.3",
@@ -38,7 +40,8 @@
     "react-i18next": "^15.1.0",
     "react-icons": "^5.3.0",
     "react-router-dom": "^7.8.2",
-    "styled-components": "^6.1.13"
+    "styled-components": "^6.1.13",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

@@ -90,7 +90,7 @@ export default defineConfig({
     include: ['react', 'react-dom', 'styled-components']
   },
   server: {
-    port: 3000,
+    port: 5173,
     host: true
   },
   preview: {
