@@ -46,8 +46,8 @@ export default defineConfig({
         name: 'Posterfy - Album Poster Generator',
         short_name: 'Posterfy',
         description: 'Create stunning album posters for free with Posterfy. Design custom music posters from Spotify albums.',
-        theme_color: '#01b755',
-        background_color: '#070815',
+        theme_color: '#df6d40',
+        background_color: '#f0efeb',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
@@ -90,7 +90,7 @@ export default defineConfig({
     include: ['react', 'react-dom', 'styled-components']
   },
   server: {
-    port: 5173,
+    port: 5173, // previously 3000, changed to avoid conflicts with backend
     host: true
   },
   preview: {
