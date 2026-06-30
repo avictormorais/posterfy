@@ -480,9 +480,9 @@ function Footer() {
         <div>
           <h4>Album Poster Generator Links</h4>
           <nav>
-            <a href="https://posterfy.space">Free Album Poster Maker</a>
-            <a href="https://posterfy.space#poster-generator">Create Music Posters</a>
-            <a href="https://posterfy.space#faq">Album Poster FAQ</a>
+            <a href="https://posterfy.pics">Free Album Poster Maker</a>
+            <a href="https://posterfy.pics#poster-generator">Create Music Posters</a>
+            <a href="https://posterfy.pics#faq">Album Poster FAQ</a>
           </nav>
           <p>
             Posterfy is the best free album poster generator online. Create custom music posters 
@@ -490,7 +490,7 @@ function Footer() {
           </p>
           <address>
             Contact: Posterfy Album Poster Generator
-            Website: https://posterfy.space
+            Website: https://posterfy.pics
             Keywords: album poster generator, music poster maker, spotify poster, free poster creator
           </address>
         </div>

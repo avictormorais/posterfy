@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://posterfy.space/sitemap.xml
+Sitemap: https://posterfy.pics/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1

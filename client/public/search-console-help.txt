@@ -6,10 +6,10 @@ User-agent: *
 Allow: /
 
 # Canonical URL structure
-Canonical: https://posterfy.space/
+Canonical: https://posterfy.pics/
 
 # Hreflang (if you have multiple languages)
-# hreflang: en-US https://posterfy.space/
+# hreflang: en-US https://posterfy.pics/
 
 # Structured data validation
 # JSON-LD structured data is included in the HTML head

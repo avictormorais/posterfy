@@ -30,9 +30,9 @@ app.use(cors({
       process.env.CLIENT_URL,
       'http://localhost:3000',
       'http://localhost:5173',
-      'https://posterfy.space',
-      'https://api.posterfy.space',
-      'http://api.posterfy.space',
+      'https://posterfy.pics',
+      'https://api.posterfy.pics',
+      'http://api.posterfy.pics',
     ].filter(Boolean)
 
     if (allowedOrigins.includes(origin)) {

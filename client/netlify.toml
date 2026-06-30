@@ -3,17 +3,17 @@
   command = "npm run build"
 
 [build.environment]
-  VITE_DOMAIN = ".space"
+  VITE_DOMAIN = ".pics"
 
 [[redirects]]
-  from = "http://posterfy.space/*"
-  to = "https://posterfy.space/:splat"
+  from = "http://posterfy.pics/*"
+  to = "https://posterfy.pics/:splat"
   status = 301
   force = true
 
 [[redirects]]
-  from = "https://www.posterfy.space/*"
-  to = "https://posterfy.space/:splat"
+  from = "https://www.posterfy.pics/*"
+  to = "https://posterfy.pics/:splat"
   status = 301
   force = true
 

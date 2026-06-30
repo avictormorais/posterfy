@@ -15,7 +15,7 @@ export const normalizeUrl = (url) => {
 };
 
 export const getCanonicalUrl = () => {
-  const domain = import.meta.env.VITE_DOMAIN || '.space';
+  const domain = import.meta.env.VITE_DOMAIN || '.pics';
   const baseUrl = `https://posterfy${domain}`;
   
   // For SPA, always return the root URL as canonical

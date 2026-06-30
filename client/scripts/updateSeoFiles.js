@@ -5,7 +5,7 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const domain = process.env.VITE_DOMAIN || '.space';
+const domain = process.env.VITE_DOMAIN || '.pics';
 const baseUrl = `https://posterfy${domain}`;
 
 console.log(`🌐 Building SEO files for domain: ${baseUrl}`);

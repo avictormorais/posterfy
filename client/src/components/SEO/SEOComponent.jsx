@@ -8,7 +8,7 @@ const SEOComponent = ({
 }) => {
   
   useEffect(() => {
-    const domain = import.meta.env.VITE_DOMAIN || '.space';
+    const domain = import.meta.env.VITE_DOMAIN || '.pics';
     const baseUrl = `https://posterfy${domain}`;
     
     // Use the utility function for consistent canonical URLs

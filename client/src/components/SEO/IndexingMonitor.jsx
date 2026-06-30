@@ -45,7 +45,7 @@ const IndexingMonitor = () => {
     
     const checkRedirects = () => {
       const currentUrl = window.location.href;
-      const expectedUrl = 'https://posterfy.space/';
+      const expectedUrl = 'https://posterfy.pics/';
       
       if (currentUrl.includes('www.') || currentUrl.startsWith('http://')) {
         if (import.meta.env.DEV) {

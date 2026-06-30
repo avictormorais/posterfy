@@ -14,13 +14,13 @@ const colors = {
 const log = (color, message) => console.log(`${color}${message}${colors.reset}`);
 
 const testUrls = [
-  'https://posterfy.space/',
-  'https://www.posterfy.space/',
-  'http://posterfy.space/',
-  'http://www.posterfy.space/',
-  'https://posterfy.space/sitemap.xml',
-  'https://posterfy.space/robots.txt',
-  'https://posterfy.space/manifest.json'
+  'https://posterfy.pics/',
+  'https://www.posterfy.pics/',
+  'http://posterfy.pics/',
+  'http://www.posterfy.pics/',
+  'https://posterfy.pics/sitemap.xml',
+  'https://posterfy.pics/robots.txt',
+  'https://posterfy.pics/manifest.json'
 ];
 
 const checkUrl = (url) => {
@@ -83,7 +83,7 @@ const checkSeoFiles = () => {
     
     // Check sitemap
     const sitemap = readFileSync(sitemapPath, 'utf8');
-    if (sitemap.includes('https://posterfy.space/')) {
+    if (sitemap.includes('https://posterfy.pics/')) {
       log(colors.green, '✅ sitemap.xml - Contains correct URLs');
     } else {
       log(colors.red, '❌ sitemap.xml - Missing or incorrect URLs');
@@ -91,7 +91,7 @@ const checkSeoFiles = () => {
     
     // Check robots.txt
     const robots = readFileSync(robotsPath, 'utf8');
-    if (robots.includes('Sitemap: https://posterfy.space/sitemap.xml')) {
+    if (robots.includes('Sitemap: https://posterfy.pics/sitemap.xml')) {
       log(colors.green, '✅ robots.txt - Contains correct sitemap URL');
     } else {
       log(colors.red, '❌ robots.txt - Missing or incorrect sitemap URL');
@@ -99,7 +99,7 @@ const checkSeoFiles = () => {
     
     // Check redirects
     const redirects = readFileSync(redirectsPath, 'utf8');
-    if (redirects.includes('https://posterfy.space/')) {
+    if (redirects.includes('https://posterfy.pics/')) {
       log(colors.green, '✅ _redirects - Contains correct redirect rules');
     } else {
       log(colors.red, '❌ _redirects - Missing or incorrect redirect rules');

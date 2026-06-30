@@ -1,6 +1,6 @@
 const WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql";
 const COMMONS_ENDPOINT = "https://commons.wikimedia.org/w/api.php";
-const USER_AGENT = 'Posterfy/1.0 (posterfy.space)';
+const USER_AGENT = 'Posterfy/1.0 (posterfy.pics)';
 
 async function getRealDirectUrl(fileNameOrUrl) {
   let fileName = fileNameOrUrl;
