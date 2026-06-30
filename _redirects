@@ -1,7 +1,7 @@
 # Redirect all traffic to HTTPS and canonical domain
-http://posterfy.space/* https://posterfy.space/:splat 301!
-http://www.posterfy.space/* https://posterfy.space/:splat 301!
-https://www.posterfy.space/* https://posterfy.space/:splat 301!
+http://posterfy.pics/* https://posterfy.pics/:splat 301!
+http://www.posterfy.pics/* https://posterfy.pics/:splat 301!
+https://www.posterfy.pics/* https://posterfy.pics/:splat 301!
 
 # Static files - serve directly without redirects
 /sitemap.xml  /sitemap.xml  200
