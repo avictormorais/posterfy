@@ -55,6 +55,40 @@ export const ModalProvider = ({ children }) => {
         };
     };
 
+    const getDomainChangeAlert = () => {
+        const translations = {
+            en: {
+                title: 'Important Update',
+                paragraph: 'Our website address has changed from posterfy.space to posterfy.pics. Please save the new address now, as the old one will stop working in the next 10 days.'
+            },
+            pt: {
+                title: 'Atualização importante',
+                paragraph: 'O endereço do site mudou de posterfy.space para posterfy.pics. Por favor, salve o novo endereço agora, já que o antigo vai parar de funcionar nos próximos 10 dias.'
+            },
+            es: {
+                title: 'Actualización importante',
+                paragraph: 'La dirección de nuestro sitio ha cambiado de posterfy.space a posterfy.pics. Guarda la nueva dirección ahora, ya que la anterior dejará de funcionar en los próximos 10 días.'
+            },
+            zh: {
+                title: '重要更新',
+                paragraph: '我们网站的地址已从 posterfy.space 更改为 posterfy.pics。请立即保存新地址，因为旧地址将在未来 10 天内停止使用。'
+            }
+        };
+
+        const currentLang = i18n.language || 'en';
+        const langData = translations[currentLang] || translations.en;
+
+        return {
+            id: 'domain-change-alert',
+            persistentId: 'domain-change-announcement',
+            title: langData.title,
+            paragraph: langData.paragraph,
+            canClose: true,
+            type: 'alert',
+            limitDate: '2026-07-15T23:59:59.999Z'
+        };
+    };
+
     const hasAlertBeenShown = (persistentId) => {
         return shownAlerts[persistentId] === true;
     };
@@ -71,8 +105,12 @@ export const ModalProvider = ({ children }) => {
         if (modal) return;
 
         const topAlbumsAlert = getTopAlbumsAlert();
+        const domainChangeAlert = getDomainChangeAlert();
+
         if (!hasAlertBeenShown(topAlbumsAlert.persistentId) && isAlertValid(topAlbumsAlert)) {
             setModal(topAlbumsAlert);
+        } else if (!hasAlertBeenShown(domainChangeAlert.persistentId) && isAlertValid(domainChangeAlert)) {
+            setModal(domainChangeAlert);
         }
     }, [i18n.language, shownAlerts]);
 
