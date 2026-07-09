@@ -8,7 +8,7 @@ import Faq from '../../components/sections/Faq/Faq';
 import Share from '../../components/sections/SharePosters/Share';
 import Publish from '../../components/sections/SharePosters/Community';
 import Profiles from '../../components/sections/Profiles/Profiles';
-import Thanks from '../../components/sections/Thanks/Thanks';
+import Support from '../../components/sections/Support/Support';
 import PosterBySearch from '../../components/PosterEditor/Models/PosterBySearch';
 import PosterEditor from '../../components/PosterEditor/PosterEditor';
 import AlertModal from '../../components/Common/AlertModal';
@@ -75,7 +75,7 @@ export default function Home({ loadingComplete }) {
   const [profilesRef, profilesVisible] = useScrollAnimation();
   const [shareRef, shareVisible] = useScrollAnimation();
   const [faqRef, faqVisible] = useScrollAnimation();
-  const [thanksRef, thanksVisible] = useScrollAnimation();
+  const [supportRef, supportVisible] = useScrollAnimation();
 
   const recreatePoster = (imageJSON) => {
     trackPosterRecreation(
@@ -120,10 +120,15 @@ export default function Home({ loadingComplete }) {
         />
       )}
       <Hero showAnimation={loadingComplete} onRecreate={recreatePoster} />
+
+      <FadeInSection ref={supportRef} $isVisible={supportVisible}>
+        <Support />
+      </FadeInSection>
       
       <FadeInSection ref={anchorRef} $isVisible={anchorVisible}>
         <Anchor text={t('anchorArt')} type={1} />
       </FadeInSection>
+
 
       <FadeInSection ref={explanationRef} $isVisible={explanationVisible}>
         <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
@@ -160,10 +165,6 @@ export default function Home({ loadingComplete }) {
       <FadeInSection ref={faqRef} $isVisible={faqVisible}>
         <Faq />
       </FadeInSection>
-
-      {/* <FadeInSection ref={thanksRef} $isVisible={thanksVisible}>
-        <Thanks />
-      </FadeInSection> */}
     </>
   );
 }
