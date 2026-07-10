@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { FaHeart } from 'react-icons/fa';
 import Anchor from '../../Common/Anchor';
 import { SiKofi } from "react-icons/si";
 
@@ -41,28 +40,75 @@ const Title = styled.h2`
 `;
 
 const Paragraph = styled.p`
+  width: min(100%, 700px);
   margin: 0;
   color: var(--textColor);
   font-size: 1.08rem;
   line-height: 1.7;
   opacity: 0.72;
-  max-width: 58ch;
+  max-width: none;
   text-align: justify;
 `;
 
 const Actions = styled.div`
+  width: min(100%, 700px);
   display: flex;
   flex-direction: column;
   gap: 14px;
-  align-items: flex-start;
+  align-items: stretch;
   margin-top: 8px;
 `;
 
-const GoalFrame = styled.iframe`
+const GoalCard = styled.div`
   width: 100%;
-  height: 62px;
-  border: 0;
-  background: transparent;
+  border-radius: 18px;
+  background: var(--PosterfyWhite);
+  margin-bottom: 12px;
+`;
+
+const GoalTop = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+`;
+
+const GoalLabel = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--textColor);
+  font-weight: 800;
+  font-size: 1rem;
+`;
+
+const GoalText = styled.span`
+  color: var(--textColor);
+  font-weight: 800;
+  font-size: 1rem;
+  text-align: right;
+`;
+
+const GoalBar = styled.div`
+  width: calc(100% - 6px);
+  height: 18px;
+  border: 3px solid var(--textColor);
+  border-radius: 999px;
+  background: var(--textColor);
+  overflow: hidden;
+`;
+
+const GoalFill = styled.div`
+  width: ${props => props.$progress}%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--AccentColor);
+  transition: width 0.3s ease;
+`;
+
+const GoalTitle = styled.span`
+  white-space: nowrap;
 `;
 
 const KoFiButton = styled.a`
@@ -80,7 +126,7 @@ const KoFiButton = styled.a`
   letter-spacing: -0.01em;
   transition: all 1s;
   width: 100%;
-  font-size: 1.108rem;
+  font-size: 0.92rem;
 
   &:hover {
     transform: translateY(-1px);
@@ -89,8 +135,8 @@ const KoFiButton = styled.a`
 `;
 
 const ButtonIcon = styled(SiKofi)`
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
 `;
 
 const Note = styled.p`
@@ -124,6 +170,7 @@ const SupportImage = styled.img`
 
 function Support() {
   const { t } = useTranslation();
+  const goalProgress =  0;
 
   return (
     <Container id="support">
@@ -134,11 +181,20 @@ function Support() {
           <Paragraph>{t('SupportDescription')}</Paragraph>
 
           <Actions>
-            <GoalFrame
-              title={t('SupportGoalTitle')}
-              src="https://ko-fi.com/streamalerts/goaloverlay/sa_902f0026-9fe8-4f95-87a6-7c72cbe4351d"
-              loading="lazy"
-            />
+            <iframe src="https://ko-fi.com/streamalerts/goaloverlay/sa_902f0026-9fe8-4f95-87a6-7c72cbe4351d" frameBorder="0" style={{ border: 0, overflow: 'hidden', width: "100%", height: "60px" }} />
+            
+            {/* <GoalCard>
+              <GoalTop>
+                <GoalLabel>
+                  <GoalTitle>{t('SupportGoalLabel')}</GoalTitle>
+                </GoalLabel>
+                <GoalText>{t('SupportGoalProgress')}</GoalText>
+              </GoalTop>
+              <GoalBar aria-hidden="true">
+                <GoalFill $progress={goalProgress} />
+              </GoalBar>
+            </GoalCard> */}
+
             <KoFiButton href="https://ko-fi.com/V2F621CAVZ" target="_blank" rel="noopener noreferrer">
               <ButtonIcon />
               {t('SupportButton')}

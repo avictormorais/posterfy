@@ -120,7 +120,8 @@ i18n
                 SupportTitle: "Help keep Posterfy free.",
                 SupportDescription: "Posterfy is free, open source and has no ads. If it has helped you create something meaningful, consider supporting the project. Every contribution helps cover the domain, hosting and future development.",
                 SupportButton: "Support on Ko-fi",
-                SupportGoalTitle: "Ko-fi support goal progress",
+                SupportGoalLabel: "Current campaign",
+                SupportGoalProgress: "0% of $35 Goal",
                 SupportImageAlt: "Illustration of Posterfy support",
                 SupportNote: "❤️ Every donation helps keep Posterfy online.",
 
@@ -510,7 +511,8 @@ i18n
                 SupportTitle: "Ajude a manter o Posterfy grátis.",
                 SupportDescription: "O Posterfy é grátis, open source e não tem anúncios. Se ele ajudou você a criar algo significativo, considere apoiar o projeto. Toda contribuição ajuda a cobrir o domínio, a hospedagem e o desenvolvimento futuro.",
                 SupportButton: "Apoiar no Ko-fi",
-                SupportGoalTitle: "Progresso da meta de apoio do Ko-fi",
+                SupportGoalLabel: "Campanha atual",
+                SupportGoalProgress: "0% de US$35 da meta",
                 SupportImageAlt: "Ilustração de apoio ao Posterfy",
                 SupportNote: "❤️ Toda doação ajuda o Posterfy a permanecer online.",
 
@@ -900,7 +902,8 @@ i18n
                 SupportTitle: "Ayuda a mantener Posterfy gratis.",
                 SupportDescription: "Posterfy es gratis, de código abierto y sin anuncios. Si te ayudó a crear algo significativo, considera apoyar el proyecto. Cada contribución ayuda a cubrir el dominio, el alojamiento y el desarrollo futuro.",
                 SupportButton: "Apoyar en Ko-fi",
-                SupportGoalTitle: "Progreso de la meta de apoyo en Ko-fi",
+                SupportGoalLabel: "Campaña actual",
+                SupportGoalProgress: "0% de US$35 de la meta",
                 SupportImageAlt: "Ilustración de apoyo a Posterfy",
                 SupportNote: "❤️ Cada donación ayuda a mantener Posterfy en línea.",
 
@@ -1180,7 +1183,8 @@ i18n
                 SupportTitle: "帮助 Posterfy 保持免费。",
                 SupportDescription: "Posterfy 是免费开源的，并且没有广告。如果它帮助你创作了有意义的内容，请考虑支持这个项目。每一份贡献都能帮助支付域名、托管和未来开发。",
                 SupportButton: "在 Ko-fi 上支持",
-                SupportGoalTitle: "Ko-fi 支持目标进度",
+                SupportGoalLabel: "当前活动",
+                SupportGoalProgress: "目标金额 $35，进度 0%",
                 SupportImageAlt: "Posterfy 支持插图",
                 SupportNote: "❤️ 每一笔捐助都能帮助 Posterfy 保持在线。",
 
