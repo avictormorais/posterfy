@@ -21,23 +21,27 @@ export const ModalProvider = ({ children }) => {
         return stored ? JSON.parse(stored) : {};
     });
 
-    const getTopAlbumsAlert = () => {
+    const getKofiDonationAlert = () => {
         const translations = {
             en: {
-                title: 'Top Albums This Week',
-                paragraph: 'Discover what\'s trending! The most popular albums of the week will be highlighted at the top of the site. Don\'t miss what everyone is creating posters for!'
+                title: 'Support Posterfy! ☕',
+                paragraph: 'If you love creating posters here, consider supporting us with a coffee! Your donation helps keep the servers running and the site completely free of intrusive ads.',
+                confirmText: 'Support on Ko-fi'
             },
             pt: {
-                title: 'Top Álbuns da Semana',
-                paragraph: 'Descubra as tendências! Os álbuns mais populares da semana aparecerão em destaque no topo do site. Não perca o que todos estão criando posters!'
+                title: 'Apoie o Posterfy! ☕',
+                paragraph: 'Se você gosta de criar seus posters aqui, considere nos apoiar com um cafezinho! Sua doação ajuda a manter os servidores ativos e o site totalmente livre de anúncios intrusivos.',
+                confirmText: 'Apoiadores no Ko-fi'
             },
             es: {
-                title: 'Álbumes Destacados de la Semana',
-                paragraph: 'Descubre las tendencias. Los álbumes más populares de la semana se destacarán en la parte superior del sitio. No te pierdas lo que todos están creando!'
+                title: '¡Apoya a Posterfy! ☕',
+                paragraph: 'Si te encanta crear pósters aquí, ¡considera apoyarnos con un café! Tu donación ayuda a mantener los servidores activos y el sitio totalmente libre de anuncios molestos.',
+                confirmText: 'Apoyar en Ko-fi'
             },
             zh: {
-                title: '本周热门专辑',
-                paragraph: '发现趋势！本周最受欢迎的专辑将在网站顶部突出显示。不要错过每个人都在为之创建海报的内容！'
+                title: '支持 Posterfy！☕',
+                paragraph: '如果您喜欢在这里制作海报，请考虑请我们喝杯咖啡！您的捐赠将帮我们维持服务器运行，并保持网站完全没有打扰性广告。',
+                confirmText: '在 Ko-fi 上支持'
             }
         };
 
@@ -45,47 +49,16 @@ export const ModalProvider = ({ children }) => {
         const langData = translations[currentLang] || translations.en;
 
         return {
-            id: 'top-albums-feature',
-            persistentId: 'top-albums-announcement',
+            id: 'kofi-donation-alert',
+            persistentId: 'kofi-donation-announcement',
             title: langData.title,
             paragraph: langData.paragraph,
+            confirmText: langData.confirmText,
             canClose: true,
             type: 'alert',
-            limitDate: '2026-04-20T23:59:59.999Z'
-        };
-    };
-
-    const getDomainChangeAlert = () => {
-        const translations = {
-            en: {
-                title: 'Important Update',
-                paragraph: 'Our website address has changed from posterfy.space to posterfy.pics. Please save the new address now, as the old one will stop working in the next 10 days.'
-            },
-            pt: {
-                title: 'Atualização importante',
-                paragraph: 'O endereço do site mudou de posterfy.space para posterfy.pics. Por favor, salve o novo endereço agora, já que o antigo vai parar de funcionar nos próximos 10 dias.'
-            },
-            es: {
-                title: 'Actualización importante',
-                paragraph: 'La dirección de nuestro sitio ha cambiado de posterfy.space a posterfy.pics. Guarda la nueva dirección ahora, ya que la anterior dejará de funcionar en los próximos 10 días.'
-            },
-            zh: {
-                title: '重要更新',
-                paragraph: '我们网站的地址已从 posterfy.space 更改为 posterfy.pics。请立即保存新地址，因为旧地址将在未来 10 天内停止使用。'
+            onConfirm: () => {
+                window.open('https://ko-fi.com/posterfy', '_blank', 'noopener,noreferrer');
             }
-        };
-
-        const currentLang = i18n.language || 'en';
-        const langData = translations[currentLang] || translations.en;
-
-        return {
-            id: 'domain-change-alert',
-            persistentId: 'domain-change-announcement',
-            title: langData.title,
-            paragraph: langData.paragraph,
-            canClose: true,
-            type: 'alert',
-            limitDate: '2026-07-15T23:59:59.999Z'
         };
     };
 
@@ -104,13 +77,10 @@ export const ModalProvider = ({ children }) => {
     useEffect(() => {
         if (modal) return;
 
-        const topAlbumsAlert = getTopAlbumsAlert();
-        const domainChangeAlert = getDomainChangeAlert();
+        const kofiAlert = getKofiDonationAlert();
 
-        if (!hasAlertBeenShown(topAlbumsAlert.persistentId) && isAlertValid(topAlbumsAlert)) {
-            setModal(topAlbumsAlert);
-        } else if (!hasAlertBeenShown(domainChangeAlert.persistentId) && isAlertValid(domainChangeAlert)) {
-            setModal(domainChangeAlert);
+        if (!hasAlertBeenShown(kofiAlert.persistentId) && isAlertValid(kofiAlert)) {
+            setModal(kofiAlert);
         }
     }, [i18n.language, shownAlerts]);
 
