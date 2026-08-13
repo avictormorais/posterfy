@@ -3,7 +3,6 @@ import Loading from './components/Common/Loading';
 import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { ModalProvider } from './contexts/AlertsContext';
 import { AuthProvider } from './contexts/AuthContext';
 import Layout from './components/Layout/Layout';
 import Home from './pages/Home/Home';
@@ -120,7 +119,6 @@ function App() {
 
   return (
     <ThemeProvider>
-      <ModalProvider>
         <AuthProvider>
           <SEOComponent />
           <IndexingMonitor />
@@ -160,7 +158,6 @@ function App() {
           </Router>
           <Loading isVisible={loading} />
         </AuthProvider>
-      </ModalProvider>
     </ThemeProvider>
   );
 }
