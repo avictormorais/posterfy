@@ -1,7 +1,9 @@
 import Poster from '../models/poster.js'
 import Favorite from '../models/favorite.js'
 import User from '../models/user.js'
+import mongoose from 'mongoose'
 import BadgeService from './badgeService.js'
+import { escapeSearchRegex, getUniquePosterPage, hasTextSearchTerm } from '../utils/communityPagination.js'
 
 const DEFAULT_LIMIT = 20
 const MAX_LIMIT = 50
@@ -150,7 +152,7 @@ class PosterService {
       : buildPublicFilter({ authorId })
 
     const [posters, total] = await Promise.all([
-      Poster.find(filter).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).lean(),
+      Poster.find(filter).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(safeLimit).lean(),
       Poster.countDocuments(filter)
     ])
 
@@ -182,10 +184,10 @@ class PosterService {
     }
 
     const sortMap = {
-      popular: { popularityScore: -1 },
-      recent: { createdAt: -1 },
-      favorites: { favoritesCount: -1 },
-      downloads: { downloads: -1 }
+      popular: { popularityScore: -1, _id: -1 },
+      recent: { createdAt: -1, _id: -1 },
+      favorites: { favoritesCount: -1, _id: -1 },
+      downloads: { downloads: -1, _id: -1 }
     }
 
     const sortQuery = sortMap[sort] || sortMap.popular
@@ -214,22 +216,23 @@ class PosterService {
     if (!q || !q.trim()) return this.findPublic({ sort: 'popular', page, limit, userId })
 
     const safeLimit = Math.min(limit, MAX_LIMIT)
-    const skip = (page - 1) * safeLimit
     const trimmed = q.trim()
+    const escaped = escapeSearchRegex(trimmed)
 
     // Find users whose username matches the query (case-insensitive)
     const User = (await import('../models/user.js')).default
     const matchedUsers = await User.find(
-      { username: { $regex: trimmed, $options: 'i' } },
+      { username: { $regex: escaped, $options: 'i' } },
       { _id: 1 }
     ).lean()
     const matchedUserIds = matchedUsers.map(u => u._id)
 
     // Text search filter for album/artist names
-    const textFilter   = { $text: { $search: trimmed }, ...buildPublicFilter() }
+    const textFilter = hasTextSearchTerm(trimmed)
+      ? { $text: { $search: trimmed }, ...buildPublicFilter() }
+      : null
     
     // Regex filter for name search (searches current and original names)
-    const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const regexFilter = {
       $or: [
         { albumName: { $regex: escaped, $options: 'i' } },
@@ -244,49 +247,46 @@ class PosterService {
       ? { authorId: { $in: matchedUserIds }, ...buildPublicFilter() }
       : null
 
-    // Run all searches in parallel
-    const [textPosters, regexPosters, authorPosters, textCount, regexCount, authorCount] = await Promise.all([
-      Poster.find(textFilter, { score: { $meta: 'textScore' } })
-        .sort({ score: { $meta: 'textScore' }, popularityScore: -1 })
-        .limit(safeLimit + skip)
-        .populate('authorId', 'name username avatar badge')
-        .lean(),
+    // Fetch all matching IDs so total and pagination describe the exact union.
+    const [textPosters, regexPosters, authorPosters] = await Promise.all([
+      textFilter
+        ? Poster.find(textFilter, { _id: 1, score: { $meta: 'textScore' } })
+            .sort({ score: { $meta: 'textScore' }, popularityScore: -1, _id: -1 })
+            .lean()
+        : Promise.resolve([]),
       Poster.find(regexFilter)
-        .sort({ popularityScore: -1 })
-        .limit(safeLimit + skip)
-        .populate('authorId', 'name username avatar badge')
+        .sort({ popularityScore: -1, _id: -1 })
+        .select('_id')
         .lean(),
       authorFilter
         ? Poster.find(authorFilter)
-            .sort({ popularityScore: -1 })
-            .limit(safeLimit + skip)
-            .populate('authorId', 'name username avatar badge')
+            .sort({ popularityScore: -1, _id: -1 })
+            .select('_id')
             .lean()
-        : Promise.resolve([]),
-      Poster.countDocuments(textFilter),
-      Poster.countDocuments(regexFilter),
-      authorFilter ? Poster.countDocuments(authorFilter) : Promise.resolve(0),
+        : Promise.resolve([])
     ])
 
-    // Merge & deduplicate: text results first, then regex, then authors
-    const seen = new Set()
-    const merged = []
-    for (const p of [...textPosters, ...regexPosters, ...authorPosters]) {
-      const id = p._id.toString()
-      if (!seen.has(id)) { seen.add(id); merged.push(p) }
-    }
+    const { ids, total, hasMore } = getUniquePosterPage(
+      [textPosters, regexPosters, authorPosters],
+      page,
+      safeLimit
+    )
+    const pagePosters = ids.length
+      ? await Poster.find({ _id: { $in: ids } })
+          .populate('authorId', 'name username avatar badge')
+          .lean()
+      : []
+    const postersById = new Map(pagePosters.map(p => [p._id.toString(), p]))
+    const sliced = ids.map(id => postersById.get(id.toString())).filter(Boolean)
 
-    const total  = Math.max(textCount, regexCount, authorCount, merged.length)
-    const sliced = merged.slice(skip, skip + safeLimit)
-
-    if (!userId) return { posters: sliced, total, page, hasMore: skip + sliced.length < total }
+    if (!userId) return { posters: sliced, total, page, hasMore }
 
     const posterIds = sliced.map(p => p._id)
     const favs = await Favorite.find({ userId, posterId: { $in: posterIds } }).lean()
     const favSet = new Set(favs.map(f => f.posterId.toString()))
     const postersWithFav = sliced.map(p => ({ ...p, favorited: favSet.has(p._id.toString()) }))
 
-    return { posters: postersWithFav, total, page, hasMore: skip + sliced.length < total }
+    return { posters: postersWithFav, total, page, hasMore }
   }
 
   async trendingAlbums(limit = 10) {
@@ -309,23 +309,37 @@ class PosterService {
     const safeLimit = Math.min(limit, MAX_LIMIT)
     const skip = (page - 1) * safeLimit
 
-    const [favorites, total] = await Promise.all([
-      Favorite.find({ userId })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(safeLimit)
-        .populate({
-          path: 'posterId',
-          match: { isDeleted: false },
-          populate: { path: 'authorId', select: 'name username avatar badge' }
-        })
-        .lean(),
-      Favorite.countDocuments({ userId })
+    const [result = { favorites: [], total: [] }] = await Favorite.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+      { $sort: { createdAt: -1, _id: -1 } },
+      {
+        $lookup: {
+          from: Poster.collection.name,
+          localField: 'posterId',
+          foreignField: '_id',
+          as: 'poster'
+        }
+      },
+      { $unwind: '$poster' },
+      { $match: { 'poster.isDeleted': false } },
+      {
+        $facet: {
+          favorites: [
+            { $skip: skip },
+            { $limit: safeLimit },
+            { $replaceRoot: { newRoot: '$poster' } }
+          ],
+          total: [{ $count: 'count' }]
+        }
+      }
     ])
 
-    const posters = favorites
-      .filter(f => f.posterId)
-      .map(f => ({ ...f.posterId, favorited: true }))
+    const populatedPosters = await Poster.populate(result.favorites, {
+      path: 'authorId',
+      select: 'name username avatar badge'
+    })
+    const posters = populatedPosters.map(poster => ({ ...poster, favorited: true }))
+    const total = result.total[0]?.count || 0
 
     return { posters, total, page, hasMore: skip + posters.length < total }
   }

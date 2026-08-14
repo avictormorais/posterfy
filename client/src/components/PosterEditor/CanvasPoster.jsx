@@ -471,7 +471,7 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                         const signatureGap = Math.round(30 * scale);
                         const baseSignatureY = Math.round(3235 * scale);
                         
-                        const signatureColor = posterData.textColor;
+                        const signatureColor = posterData.textColor || '#ffffff';
 
                         let imageUrl = signatureUrl;
 
@@ -500,7 +500,24 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
                             const adjustedY = baseY + Math.round((signatureHeight / 100) * (posterData.signatureVerticalPosition || 0));
 
                             if (isCurrent()) {
-                                ctx.drawImage(image, adjustedX, adjustedY, signatureWidth, signatureHeight);
+                                // Wikimedia signatures are not consistent: some SVGs use CSS or
+                                // named colors and PNGs cannot be rewritten at all. Apply the
+                                // poster text color through the image alpha channel so every
+                                // signature format follows the selected text color.
+                                const tintedSignature = document.createElement('canvas');
+                                tintedSignature.width = signatureWidth;
+                                tintedSignature.height = signatureHeight;
+                                const tintContext = tintedSignature.getContext('2d');
+
+                                if (tintContext) {
+                                    tintContext.drawImage(image, 0, 0, signatureWidth, signatureHeight);
+                                    tintContext.globalCompositeOperation = 'source-in';
+                                    tintContext.fillStyle = signatureColor;
+                                    tintContext.fillRect(0, 0, signatureWidth, signatureHeight);
+                                    ctx.drawImage(tintedSignature, adjustedX, adjustedY);
+                                } else {
+                                    ctx.drawImage(image, adjustedX, adjustedY, signatureWidth, signatureHeight);
+                                }
                             }
                             handleResolve();
                         };

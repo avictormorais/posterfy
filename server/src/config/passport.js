@@ -24,7 +24,8 @@ passport.deserializeUser(async (id, done) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: `${SERVER_URL}/auth/google/callback`
+  callbackURL: `${SERVER_URL}/auth/google/callback`,
+  state: true
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const user = await UserService.handleGoogleLogin(profile)
@@ -37,7 +38,8 @@ passport.use(new GoogleStrategy({
 passport.use(new SpotifyStrategy({
   clientID: process.env.SPOTIFY_CLIENT_ID,
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  callbackURL: `${SERVER_URL}/auth/spotify/callback`
+  callbackURL: `${SERVER_URL}/auth/spotify/callback`,
+  state: true
 }, async (accessToken, refreshToken, expires_in, profile, done) => {
   try {
     const user = await UserService.handleSpotifyLogin(profile)

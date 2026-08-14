@@ -1,39 +1,28 @@
 import { generateToken } from '../utils/jwt.js'
 import UserService from '../services/userService.js'
 import BadgeService from '../services/badgeService.js'
+import { addOAuthResult, getOAuthFallbackUrl, getSafeOAuthRedirect } from '../utils/oauthRedirect.js'
 
-const decodeState = (state) => {
-  try {
-    return JSON.parse(Buffer.from(state, 'base64url').toString())
-  } catch {
-    return {}
+const consumeOAuthRedirect = (req, provider) => {
+  const fallback = getOAuthFallbackUrl()
+  const redirect = req.session?.oauthRedirects?.[provider]
+  if (req.session?.oauthRedirects) {
+    delete req.session.oauthRedirects[provider]
   }
-}
-
-const safeRedirect = (raw, fallback) => {
-  try {
-    const url = new URL(raw)
-    // Only allow http/https schemes
-    if (url.protocol === 'http:' || url.protocol === 'https:') return raw
-  } catch { /* ignore */ }
-  return fallback
+  return getSafeOAuthRedirect(redirect, fallback)
 }
 
 class AuthController {
   googleCallback(req, res) {
     const token = generateToken(req.user)
-    const fallback = `${process.env.CLIENT_URL}/login`
-    const { redirect } = decodeState(req.query.state || '')
-    const dest = safeRedirect(redirect, fallback)
-    res.redirect(`${dest}?token=${token}&login=success`)
+    const destination = consumeOAuthRedirect(req, 'google')
+    res.redirect(addOAuthResult(destination, token))
   }
 
   spotifyCallback(req, res) {
     const token = generateToken(req.user)
-    const fallback = `${process.env.CLIENT_URL}/login`
-    const { redirect } = decodeState(req.query.state || '')
-    const dest = safeRedirect(redirect, fallback)
-    res.redirect(`${dest}?token=${token}&login=success`)
+    const destination = consumeOAuthRedirect(req, 'spotify')
+    res.redirect(addOAuthResult(destination, token))
   }
 
   async logout(req, res) {

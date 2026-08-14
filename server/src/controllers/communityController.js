@@ -218,7 +218,7 @@ class CommunityController {
 
       const [posters, total] = await Promise.all([
         Poster.find(filter)
-          .sort({ popularityScore: -1 })
+          .sort({ popularityScore: -1, _id: -1 })
           .skip(skip)
           .limit(safeLimit)
           .populate('authorId', 'name username avatar badge')

@@ -32,7 +32,11 @@ export const optionalAuth = async (req, res, next) => {
 
   try {
     const user = await UserService.findById(decoded.id)
-    if (user && user.status === 'active') {
+    if (
+      user &&
+      user.status === 'active' &&
+      (decoded.tokenVersion ?? 0) === (user.tokenVersion ?? 0)
+    ) {
       req.user = {
         id: user._id.toString(),
         username: user.username,

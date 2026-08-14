@@ -2,38 +2,40 @@ import express from 'express'
 import passport from 'passport'
 import AuthController from '../controllers/authController.js'
 import { authenticateToken } from '../utils/jwt.js'
+import { getOAuthFallbackUrl, getSafeOAuthRedirect } from '../utils/oauthRedirect.js'
 
 const router = express.Router()
 
-const encodeState = (redirect) =>
-  Buffer.from(JSON.stringify({ redirect })).toString('base64url')
+const rememberOAuthRedirect = (provider) => (req, res, next) => {
+  const fallback = getOAuthFallbackUrl()
+  const redirect = getSafeOAuthRedirect(req.query.redirect, fallback)
+  req.session.oauthRedirects = req.session.oauthRedirects || {}
+  req.session.oauthRedirects[provider] = redirect
+  next()
+}
 
-router.get('/google', (req, res, next) => {
-  const redirect = req.query.redirect || `${process.env.CLIENT_URL}/login`
+router.get('/google', rememberOAuthRedirect('google'), (req, res, next) => {
   passport.authenticate('google', {
-    scope: ['profile', 'email'],
-    state: encodeState(redirect)
+    scope: ['profile', 'email']
   })(req, res, next)
 })
 
 router.get('/google/callback',
   passport.authenticate('google', {
-    failureRedirect: `${process.env.CLIENT_URL}/login?error=google_failed`
+    failureRedirect: getOAuthFallbackUrl('/login?error=google_failed')
   }),
   AuthController.googleCallback
 )
 
-router.get('/spotify', (req, res, next) => {
-  const redirect = req.query.redirect || `${process.env.CLIENT_URL}/login`
+router.get('/spotify', rememberOAuthRedirect('spotify'), (req, res, next) => {
   passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private'],
-    state: encodeState(redirect)
+    scope: ['user-read-email', 'user-read-private']
   })(req, res, next)
 })
 
 router.get('/spotify/callback',
   passport.authenticate('spotify', {
-    failureRedirect: `${process.env.CLIENT_URL}/login?error=spotify_failed`
+    failureRedirect: getOAuthFallbackUrl('/login?error=spotify_failed')
   }),
   AuthController.spotifyCallback
 )

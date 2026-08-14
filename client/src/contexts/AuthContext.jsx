@@ -18,13 +18,26 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const urlParams = new URLSearchParams(window.location.search)
-      const token = urlParams.get('token')
+      const currentUrl = new URL(window.location.href)
+      const fragmentParams = new URLSearchParams(currentUrl.hash.slice(1))
+      const fragmentToken = fragmentParams.get('token')
+      const token = fragmentToken || currentUrl.searchParams.get('token')
 
       if (token) {
         localStorage.setItem('authToken', token)
         apiService.setAuthToken(token)
-        window.history.replaceState({}, document.title, window.location.pathname)
+        currentUrl.searchParams.delete('token')
+        currentUrl.searchParams.delete('login')
+        if (fragmentToken) {
+          fragmentParams.delete('token')
+          fragmentParams.delete('login')
+          currentUrl.hash = fragmentParams.toString()
+        }
+        window.history.replaceState(
+          window.history.state,
+          document.title,
+          `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`
+        )
       }
 
       await checkAuthStatus()

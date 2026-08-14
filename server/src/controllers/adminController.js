@@ -16,6 +16,54 @@ try { apiVersion = JSON.parse(readFileSync(join(__dirname, '../../package.json')
 const OVERVIEW_TTL = 5 * 60 * 1000
 const HEALTH_TTL = 60 * 1000
 
+const recalculateFavoriteMetrics = async (posterIds) => {
+  if (!posterIds.length) return
+
+  const posters = await Poster.find({ _id: { $in: posterIds } })
+    .select('_id authorId views downloads edits')
+    .lean()
+  if (!posters.length) return
+
+  const counts = await Favorite.aggregate([
+    { $match: { posterId: { $in: posters.map(p => p._id) } } },
+    { $group: { _id: '$posterId', count: { $sum: 1 } } }
+  ])
+  const countByPoster = new Map(counts.map(item => [item._id.toString(), item.count]))
+
+  await Poster.bulkWrite(posters.map(poster => {
+    const favoritesCount = countByPoster.get(poster._id.toString()) || 0
+    const popularityScore = (
+      (poster.views || 0) +
+      (poster.edits || 0) * 3 +
+      (poster.downloads || 0) * 5 +
+      favoritesCount * 10
+    )
+    return {
+      updateOne: {
+        filter: { _id: poster._id },
+        update: { $set: { favoritesCount, popularityScore } }
+      }
+    }
+  }))
+
+  const authorIds = [...new Map(
+    posters.map(poster => [poster.authorId.toString(), poster.authorId])
+  ).values()]
+  const totals = await Poster.aggregate([
+    { $match: { authorId: { $in: authorIds } } },
+    { $group: { _id: '$authorId', totalFavorites: { $sum: '$favoritesCount' } } }
+  ])
+  const totalByAuthor = new Map(totals.map(item => [item._id.toString(), item.totalFavorites]))
+
+  await User.bulkWrite(authorIds.map(authorId => ({
+    updateOne: {
+      filter: { _id: authorId },
+      update: { $set: { totalFavorites: totalByAuthor.get(authorId.toString()) || 0 } }
+    }
+  })))
+  await Promise.all(authorIds.map(authorId => BadgeService.recalculate(authorId)))
+}
+
 class AdminController {
   async overview(req, res) {
     try {
@@ -252,10 +300,12 @@ class AdminController {
       await Promise.all([
         Poster.deleteOne({ _id: poster._id }),
         Favorite.deleteMany({ posterId: poster._id }),
+        User.updateMany({ pinnedPosterId: poster._id }, { $set: { pinnedPosterId: null } }),
       ])
 
       res.json({ message: 'Poster permanently deleted' })
     } catch (error) {
+      console.error(`Failed to purge poster ${req.params.id}:`, error)
       res.status(500).json({ error: 'Internal server error' })
     }
   }
@@ -446,15 +496,32 @@ class AdminController {
 
       const posters = await Poster.find({ authorId: user._id }).select('_id').lean()
       const posterIds = posters.map(p => p._id)
+      const outgoingFavoritePosterIds = await Favorite.distinct('posterId', {
+        userId: user._id,
+        ...(posterIds.length ? { posterId: { $nin: posterIds } } : {})
+      })
 
-      await Promise.all([
-        Poster.deleteMany({ authorId: user._id }),
-        Favorite.deleteMany({ posterId: { $in: posterIds } }),
-        User.deleteOne({ _id: user._id }),
-      ])
+      await Favorite.deleteMany({
+        $or: [
+          { userId: user._id },
+          { posterId: { $in: posterIds } }
+        ]
+      })
+      await recalculateFavoriteMetrics(outgoingFavoritePosterIds)
+
+      if (posterIds.length) {
+        await User.updateMany(
+          { pinnedPosterId: { $in: posterIds } },
+          { $set: { pinnedPosterId: null } }
+        )
+      }
+
+      await Poster.deleteMany({ authorId: user._id })
+      await User.deleteOne({ _id: user._id })
 
       res.json({ message: 'User permanently deleted', deletedPosters: posterIds.length })
     } catch (error) {
+      console.error(`Failed to purge user ${req.params.id}:`, error)
       res.status(500).json({ error: 'Internal server error' })
     }
   }

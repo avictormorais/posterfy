@@ -57,13 +57,16 @@ const ArtistSignature = ({ spotifyId, artistName, width = 100, color = '#000000'
   }
 
   return (
-    <img 
-      src={content}
-      alt="Artist signature"
+    <span
+      role="img"
+      aria-label="Artist signature"
       style={{
         width: '100%',
-        height: 'auto',
-        filter: `drop-shadow(0 0 1px ${color})`
+        aspectRatio: '4 / 1',
+        display: 'block',
+        backgroundColor: color,
+        WebkitMask: `url("${content}") center / contain no-repeat`,
+        mask: `url("${content}") center / contain no-repeat`
       }}
     />
   );

@@ -14,7 +14,7 @@ const AdminLogSchema = new mongoose.Schema({
       'ban_user', 'unban_user',
       'delete_poster', 'restore_poster', 'change_visibility', 'edit_poster',
       'promote_admin', 'demote_admin', 'force_logout',
-      'edit_user'
+      'edit_user', 'purge_user', 'purge_poster'
     ],
     index: true
   },
