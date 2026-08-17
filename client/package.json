@@ -27,7 +27,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@react-three/drei": "^9.102.6",
+    "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.17.7",
     "color-thief-react": "^1.0.2",
     "i18next": "^23.16.4",
