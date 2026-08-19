@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/prop-types */
 import styled, { css, keyframes } from "styled-components";
-import { IoArrowBack, IoTrashOutline } from "react-icons/io5";
+import { IoArrowBack, IoCheckmark, IoImageOutline, IoLockClosedOutline, IoTrashOutline } from "react-icons/io5";
 import { BiSolidTrashAlt } from "react-icons/bi";
 import { BiSolidAlbum } from "react-icons/bi";
 import { RiListOrdered } from "react-icons/ri";
@@ -27,7 +27,6 @@ import { IoMdDownload } from "react-icons/io";
 import { MdOutlineRefresh, MdPublic, MdLockOutline } from "react-icons/md";
 import { RiImage2Fill } from "react-icons/ri";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { HiInformationCircle } from "react-icons/hi";
 import LoadingDiv from "../Common/LoadingDiv.jsx";
 import AlertModal from "../Common/AlertModal.jsx";
 import { Palette } from "color-thief-react";
@@ -58,6 +57,42 @@ const RUNTIME_DEFAULTS = new Set([
 
 const LOCALE_MAP = { en: 'en-US', pt: 'pt-BR', es: 'es-ES', zh: 'zh-CN' };
 const DATE_FMT   = { day: 'numeric', month: 'short', year: 'numeric' };
+
+const HAS_EXPORT_PREMIUM_ACCESS = true;
+const EXPORT_FORMATS = [
+    { value: 'png', labelKey: 'EXPORT_FormatPNG', requiresPremium: true },
+    { value: 'pdf', labelKey: 'EXPORT_FormatPDF', requiresPremium: true },
+    { value: 'jpg', labelKey: 'EXPORT_FormatJPG' },
+];
+const EXPORT_SIZES = [
+    {
+        scale: 0.3,
+        nameKey: 'EXPORT_SizeThumbnail',
+        descriptionKey: 'EXPORT_SizeDescription_Thumbnail',
+        summaryKey: 'EXPORT_SizeSummary_Thumbnail',
+    },
+    {
+        scale: 0.6,
+        nameKey: 'EXPORT_SizeMedium',
+        descriptionKey: 'EXPORT_SizeDescription_Medium',
+        summaryKey: 'EXPORT_SizeSummary_Medium',
+    },
+    {
+        scale: 1.0,
+        nameKey: 'EXPORT_SizeNormal',
+        descriptionKey: 'EXPORT_SizeDescription_Normal',
+        summaryKey: 'EXPORT_SizeSummary_Normal',
+        recommended: true,
+        requiresPremium: true,
+    },
+    {
+        scale: 1.5,
+        nameKey: 'EXPORT_SizeExtreme',
+        descriptionKey: 'EXPORT_SizeDescription_Extreme',
+        summaryKey: 'EXPORT_SizeSummary_Extreme',
+        requiresPremium: true,
+    },
+];
 const MONTH_MAP = {
     jan: 1,
     janeiro: 1,
@@ -371,6 +406,8 @@ const TabSlider = styled.div`
     bottom: -1px;
     height: 2px;
     background: var(--AccentColor);
+    z-index: 1;
+    pointer-events: none;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     left: ${props => props.left || 0}px;
     width: ${props => props.width || 0}px;
@@ -393,6 +430,18 @@ const Tab = styled.div`
 
     &:hover {
         color: var(--textColor);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        bottom: -1px;
+        left: 0;
+        height: 2px;
+        background: var(--textSecondary);
+        opacity: 0.5;
+        pointer-events: none;
     }
 `
 
@@ -899,12 +948,12 @@ const IconImage = styled(RiImage2Fill)`
 `;
 
 const ExportContainer = styled.div`
-    padding: 40px;
-    padding-top: 10px;
+    box-sizing: border-box;
+    padding: ${props => props.$export ? '12px 40px 0' : '10px 40px 40px'};
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: ${props => props.$export ? '22px' : '30px'};
 
     @media (max-width: 1300px) {
         width: 90%;
@@ -928,65 +977,220 @@ const ExportLabel = styled.h3`
     margin: 0;
 `;
 
-const FormatGrid = styled.div`
+const FormatTabs = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-bottom: 1px solid var(--borderColor);
 `;
 
-const FormatOption = styled.div`
-    padding: 10px;
-    border-radius: 12px;
-    background: var(--glassBackground);
-    border: 2px solid ${props => props.$selected ? 'var(--AccentColor)' : 'var(--borderColor)'};
-    cursor: pointer;
-    transition: all 0.2s ease;
+const FormatTabButton = styled.button`
+    box-sizing: border-box;
+    position: relative;
+    padding: 10px 12px 13px;
+    border: 0;
+    background: transparent;
+    color: ${props => props.$locked ? 'var(--textSecondary)' : props.$selected ? 'var(--textColor)' : 'var(--textSecondary)'};
+    font: inherit;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: ${props => props.$locked ? 'not-allowed' : 'pointer'};
     text-align: center;
+    transition: color 0.2s ease;
     display: flex;
-    flex-direction: column;
-    gap: 5px;
-    
-    &:hover {
-        border-color: var(--AccentColor);
-        transform: translateY(-2px);
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        bottom: -1px;
+        left: 0;
+        height: 2px;
+        border-radius: 999px 999px 0 0;
+        background: ${props => props.$selected && !props.$locked ? 'var(--AccentColor)' : 'transparent'};
+        transform: ${props => props.$selected && !props.$locked ? 'scaleX(1)' : 'scaleX(0.65)'};
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    &:not(:disabled):hover {
+        color: var(--textColor);
+    }
+
+    &:disabled {
+        opacity: 0.62;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--AccentColor);
+        outline-offset: 3px;
+        border-radius: 4px;
     }
 `;
 
-const FormatName = styled.div`
-    font-size: 1em;
+const SizeOptions = styled.div`
+    overflow: hidden;
+    border: 1px solid var(--borderColor);
+    border-radius: 10px;
+`;
+
+const SizeOption = styled.button`
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 76px;
+    padding: 14px 20px;
+    border: 0;
+    border-bottom: 1px solid var(--borderColor);
+    background: ${props => props.$locked ? 'var(--glassBackground)' : props.$selected ? 'rgba(223, 109, 64, 0.08)' : 'transparent'};
+    color: var(--textColor);
+    font: inherit;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: ${props => props.$locked ? 'not-allowed' : 'pointer'};
+    transition: background-color 0.2s ease;
+
+    &:last-child {
+        border-bottom: 0;
+    }
+
+    &:not(:disabled):hover {
+        background: ${props => props.$selected ? 'rgba(223, 109, 64, 0.11)' : 'var(--glassBackground)'};
+    }
+
+    &:disabled {
+        opacity: 0.62;
+    }
+
+    &:focus-visible {
+        position: relative;
+        z-index: 1;
+        outline: 2px solid var(--AccentColor);
+        outline-offset: -2px;
+    }
+
+    @media (max-width: 620px) {
+        min-height: 72px;
+        padding: 12px 14px;
+        gap: 12px;
+    }
+`;
+
+const SizeIcon = styled(IoImageOutline)`
+    width: 27px;
+    height: 27px;
+    flex-shrink: 0;
+    color: ${props => props.$locked ? 'var(--textSecondary)' : props.$selected ? 'var(--textColor)' : 'var(--textSecondary)'};
+`;
+
+const LockedIcon = styled(IoLockClosedOutline)`
+    width: 15px;
+    height: 15px;
+    color: currentColor;
+    flex-shrink: 0;
+`;
+
+const SizeOptionContent = styled.span`
+    min-width: 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+`;
+
+const SizeName = styled.span`
+    font-size: 0.95em;
     font-weight: 600;
     color: var(--textColor);
 `;
 
-const FormatDescription = styled.div`
-    font-size: 0.75em;
+const SizeDescription = styled.span`
+    font-size: 0.8em;
     color: var(--textSecondary);
 `;
 
-const TipBox = styled.div`
-    padding: 10px 10px;
-    border-radius: 10px;
-    background: var(--glassBackground);
-    border: 1px solid var(--borderColor);
-    display: flex;
-    align-items: center;
-    gap: 12px;
+const RecommendedBadge = styled.span`
+    margin-left: auto;
+    padding-inline: 12px;
+    color: var(--AccentColor);
+    font-size: 0.76em;
+    font-weight: 600;
+    white-space: nowrap;
+
+    @media (max-width: 720px) {
+        display: none;
+    }
 `;
 
-const TipText = styled.p`
-    font-size: 0.9em;
-    color: var(--textColor);
+const SelectionIndicator = styled.span`
+    width: 24px;
+    height: 24px;
+    border: 1px solid ${props => props.$selected ? 'var(--AccentColor)' : 'var(--borderColor)'};
+    border-radius: 50%;
+    background: ${props => props.$selected ? 'var(--AccentColor)' : 'transparent'};
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        color: #fff;
+    }
+`;
+
+const LockIndicator = styled.span`
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--borderColor);
+    border-radius: 50%;
+    background: var(--glassBackground);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+
+    svg {
+        width: 13px;
+        height: 13px;
+        color: var(--textSecondary);
+    }
+`;
+
+const ExportFooter = styled.div`
+    margin-top: 14px;
+    padding-top: 20px;
+    border-top: 1px solid var(--borderColor);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    @media (max-width: 620px) {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 14px;
+    }
+`;
+
+const ExportSummary = styled.p`
     margin: 0;
+    color: var(--textSecondary);
+    font-size: 0.86em;
     line-height: 1.5;
 `;
 
-const DownloadButton = styled.button`
-    padding: 10px 15px;
-    border-radius: 12px;
+const ExportDownloadButton = styled.button`
+    box-sizing: border-box;
+    min-width: 190px;
+    padding: 13px 22px;
+    border-radius: 999px;
     background: var(--AccentColor);
-    color: var(--backgroundColor);
+    color: #fff;
     border: none;
-    font-size: 1em;
+    font: inherit;
+    font-size: 0.9em;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -994,20 +1198,30 @@ const DownloadButton = styled.button`
     align-items: center;
     justify-content: center;
     gap: 10px;
-    
+
     &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 20px var(--borderColor);
+        box-shadow: 0 8px 22px rgba(223, 109, 64, 0.24);
     }
-    
+
     &:active {
         transform: translateY(0);
     }
-    
+
     &:disabled {
-        opacity: 0.5;
         cursor: not-allowed;
+        opacity: 0.55;
         transform: none;
+        box-shadow: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--textColor);
+        outline-offset: 3px;
+    }
+
+    @media (max-width: 620px) {
+        width: 100%;
     }
 `;
 
@@ -1022,69 +1236,90 @@ const PublishErrorBox = styled.div`
 `;
 
 const VisibilityOptions = styled.div`
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--borderColor);
+    border-radius: 10px;
 `;
 
 const VisibilityCard = styled.button`
+    box-sizing: border-box;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     width: 100%;
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 2px solid ${({ $selected }) => $selected ? 'var(--AccentColor)' : 'var(--borderColor)'};
-    background: ${({ $selected }) => $selected ? 'var(--AccentColor)20' : 'transparent'};
+    min-height: 76px;
+    padding: 14px 20px;
+    border: 0;
+    border-bottom: 1px solid var(--borderColor);
+    background: ${({ $selected }) => $selected ? 'rgba(223, 109, 64, 0.08)' : 'transparent'};
+    color: var(--textColor);
     cursor: pointer;
-    transition: all 0.18s;
+    font: inherit;
     text-align: left;
+    transition: background-color 0.2s ease;
+
+    &:last-child {
+        border-bottom: 0;
+    }
 
     &:hover {
-        border-color: var(--AccentColor);
-        background: var(--AccentColor)14;
+        background: ${({ $selected }) => $selected ? 'rgba(223, 109, 64, 0.11)' : 'var(--glassBackground)'};
+    }
+
+    &:focus-visible {
+        position: relative;
+        z-index: 1;
+        outline: 2px solid var(--AccentColor);
+        outline-offset: -2px;
+    }
+
+    @media (max-width: 620px) {
+        min-height: 72px;
+        padding: 12px 14px;
+        gap: 12px;
     }
 `;
 
-const VCardIconWrap = styled.div`
-    font-size: 1.5em;
-    color: ${({ $selected }) => $selected ? 'var(--AccentColor)' : 'var(--textColor)'};
-    display: flex;
-    align-items: center;
+const VCardIconWrap = styled.span`
+    width: 27px;
+    height: 27px;
+    color: ${({ $selected }) => $selected ? 'var(--textColor)' : 'var(--textSecondary)'};
+    display: grid;
+    place-items: center;
     flex-shrink: 0;
 `;
 
-const VCardBody = styled.div`
+const VCardBody = styled.span`
+    min-width: 0;
     display: flex;
+    flex: 1;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
 `;
 
 const VCardTitle = styled.span`
-    font-size: 2em;
-    font-weight: 700;
     color: var(--textColor);
-    text-align: center;
-    margin-block: 20px;
+    font-size: 0.95em;
+    font-weight: 600;
 `;
 
 const VCardDesc = styled.span`
-    font-size: 1.1em;
-    opacity: 0.65;
-    color: var(--textColor);
-    margin-bottom: 10px;
+    color: var(--textSecondary);
+    font-size: 0.8em;
 `;
 
 const IconPublic = styled(MdPublic)`
-    font-size: 4em;
-    margin-top: 15px;
+    width: 27px;
+    height: 27px;
 `;
 
 const IconPrivate = styled(MdLockOutline)`
-    font-size: 4em;
-    margin-top: 15px;
+    width: 27px;
+    height: 27px;
+`;
+
+const PublishSelectionIndicator = styled(SelectionIndicator)`
+    margin-left: auto;
 `;
 
 const EmptyStateContainer = styled.div`
@@ -1107,9 +1342,9 @@ const TextLogin = styled.p`
 const LoginButton = styled.button`
     margin-top: 20px;
     padding: 10px 20px;
-    border-radius: 20px;
+    border-radius: 999px;
     background: var(--AccentColor);
-    color: var(--backgroundColor);
+    color: #fff;
     border: none;
     font-size: 1em;
     font-weight: 600;
@@ -2477,77 +2712,99 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                     </TracklistButtonsContainer>
                                 </TracklistContainer>
                             ) : activeTab === 'export' ? (
-                                <ExportContainer>
+                                <ExportContainer $export>
                                     <ExportSection>
                                         <ExportLabel>{t('EXPORT_Format')}</ExportLabel>
-                                        <FormatGrid>
-                                            <FormatOption 
-                                                $selected={exportFormat === 'png'}
-                                                onClick={() => setExportFormat('png')}
-                                            >
-                                                <FormatName>PNG</FormatName>
-                                            </FormatOption>
-                                            <FormatOption 
-                                                $selected={exportFormat === 'pdf'}
-                                                onClick={() => setExportFormat('pdf')}
-                                            >
-                                                <FormatName>PDF</FormatName>
-                                            </FormatOption>
-                                            <FormatOption 
-                                                $selected={exportFormat === 'jpg'}
-                                                onClick={() => setExportFormat('jpg')}
-                                            >
-                                                <FormatName>JPG</FormatName>
-                                            </FormatOption>
-                                        </FormatGrid>
+                                        <FormatTabs role="radiogroup" aria-label={t('EXPORT_Format')}>
+                                            {EXPORT_FORMATS.map((format) => {
+                                                const isLocked = format.requiresPremium && !HAS_EXPORT_PREMIUM_ACCESS;
+
+                                                return (
+                                                    <FormatTabButton
+                                                        key={format.value}
+                                                        type="button"
+                                                        role="radio"
+                                                        aria-checked={!isLocked && exportFormat === format.value}
+                                                        aria-label={isLocked
+                                                            ? t('EXPORT_LockedOption', { option: t(format.labelKey) })
+                                                            : t('EXPORT_SelectFormat', { format: t(format.labelKey) })}
+                                                        title={isLocked ? t('EXPORT_Locked') : undefined}
+                                                        disabled={isLocked}
+                                                        $locked={isLocked}
+                                                        $selected={!isLocked && exportFormat === format.value}
+                                                        onClick={() => setExportFormat(format.value)}
+                                                    >
+                                                        {t(format.labelKey)}
+                                                        {isLocked && <LockedIcon aria-hidden="true" />}
+                                                    </FormatTabButton>
+                                                );
+                                            })}
+                                        </FormatTabs>
                                     </ExportSection>
 
                                     <ExportSection>
                                         <ExportLabel>{t('EXPORT_Size')}</ExportLabel>
-                                        <FormatGrid>
-                                            <FormatOption 
-                                                $selected={exportScale === 0.3}
-                                                onClick={() => setExportScale(0.3)}
-                                            >
-                                                <FormatName>{t('EXPORT_SizeThumbnail')}</FormatName>
-                                                <FormatDescription>{t('EXPORT_SizeDescription_Thumbnail')}</FormatDescription>
-                                            </FormatOption>
-                                            <FormatOption 
-                                                $selected={exportScale === 0.6}
-                                                onClick={() => setExportScale(0.6)}
-                                            >
-                                                <FormatName>{t('EXPORT_SizeMedium')}</FormatName>
-                                                <FormatDescription>{t('EXPORT_SizeDescription_Medium')}</FormatDescription>
-                                            </FormatOption>
-                                            <FormatOption 
-                                                $selected={exportScale === 1.0}
-                                                onClick={() => setExportScale(1.0)}
-                                            >
-                                                <FormatName>{t('EXPORT_SizeNormal')}</FormatName>
-                                                <FormatDescription>{t('EXPORT_SizeDescription_Normal')}</FormatDescription>
-                                            </FormatOption>
-                                            <FormatOption
-                                                $selected={exportScale === 1.5}
-                                                onClick={() => setExportScale(1.5)}
-                                            >
-                                                <FormatName>{t('EXPORT_SizeExtreme')}</FormatName>
-                                                <FormatDescription>{t('EXPORT_SizeDescription_Extreme')}</FormatDescription>
-                                            </FormatOption>
-                                        </FormatGrid>
+                                        <SizeOptions role="radiogroup" aria-label={t('EXPORT_Size')}>
+                                            {EXPORT_SIZES.map((size) => {
+                                                const isLocked = size.requiresPremium && !HAS_EXPORT_PREMIUM_ACCESS;
+                                                const isSelected = !isLocked && exportScale === size.scale;
+
+                                                return (
+                                                    <SizeOption
+                                                        key={size.scale}
+                                                        type="button"
+                                                        role="radio"
+                                                        aria-checked={isSelected}
+                                                        aria-label={isLocked
+                                                            ? t('EXPORT_LockedOption', { option: t(size.nameKey) })
+                                                            : t('EXPORT_SelectSize', { size: t(size.nameKey) })}
+                                                        title={isLocked ? t('EXPORT_Locked') : undefined}
+                                                        disabled={isLocked}
+                                                        $locked={isLocked}
+                                                        $selected={isSelected}
+                                                        onClick={() => setExportScale(size.scale)}
+                                                    >
+                                                        <SizeIcon $locked={isLocked} $selected={isSelected} aria-hidden="true" />
+                                                        <SizeOptionContent>
+                                                            <SizeName>{t(size.nameKey)}</SizeName>
+                                                            <SizeDescription>{t(size.descriptionKey)}</SizeDescription>
+                                                        </SizeOptionContent>
+                                                        {size.recommended && (
+                                                            <RecommendedBadge>{t('EXPORT_Recommended')}</RecommendedBadge>
+                                                        )}
+                                                        {isLocked ? (
+                                                            <LockIndicator aria-hidden="true">
+                                                                <LockedIcon />
+                                                            </LockIndicator>
+                                                        ) : (
+                                                            <SelectionIndicator $selected={isSelected} aria-hidden="true">
+                                                                {isSelected && <IoCheckmark />}
+                                                            </SelectionIndicator>
+                                                        )}
+                                                    </SizeOption>
+                                                );
+                                            })}
+                                        </SizeOptions>
                                     </ExportSection>
 
-                                    <TipBox>
-                                        <HiInformationCircle size={24} style={{ color: 'var(--AccentColor)', flexShrink: 0 }} />
-                                        <TipText>{t('EXPORT_PrintTip')}</TipText>
-                                    </TipBox>
-
-                                    <DownloadButton onClick={() => {
-                                        if (exportFormat === 'png') handleDownloadClick();
-                                        else if (exportFormat === 'pdf') handleDownloadPDFClick();
-                                        else if (exportFormat === 'jpg') handleDownloadJPGClick();
-                                    }}>
-                                        {t('EXPORT_DownloadButton')}
-                                    </DownloadButton>
+                                    <ExportFooter>
+                                        <ExportSummary>
+                                            {t('EXPORT_Summary', {
+                                                format: t(EXPORT_FORMATS.find((format) => format.value === exportFormat)?.labelKey),
+                                                details: t(EXPORT_SIZES.find((size) => size.scale === exportScale)?.summaryKey),
+                                            })}
+                                        </ExportSummary>
+                                        <ExportDownloadButton
+                                            type="button"
+                                            onClick={() => {
+                                                if (exportFormat === 'png') handleDownloadClick();
+                                                else if (exportFormat === 'pdf') handleDownloadPDFClick();
+                                                else if (exportFormat === 'jpg') handleDownloadJPGClick();
+                                            }}
+                                        >
+                                            {t('EXPORT_DownloadButton')}
+                                        </ExportDownloadButton>
+                                    </ExportFooter>
                                 </ExportContainer>
                             ) : activeTab === 'publish' && source === 'search_creation' ? (
                                 <ExportContainer>
@@ -2561,8 +2818,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <>
                                             <ExportSection>
                                                 <ExportLabel>{t('COMMUNITY_VisibilityLabel')}</ExportLabel>
-                                                <VisibilityOptions>
+                                                <VisibilityOptions role="radiogroup" aria-label={t('COMMUNITY_VisibilityLabel')}>
                                                     <VisibilityCard
+                                                        type="button"
+                                                        role="radio"
+                                                        aria-checked={publishVisibility === 'public'}
                                                         $selected={publishVisibility === 'public'}
                                                         onClick={() => setPublishVisibility('public')}
                                                     >
@@ -2573,8 +2833,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                                             <VCardTitle>{t('COMMUNITY_Public')}</VCardTitle>
                                                             <VCardDesc>{t('COMMUNITY_PublicDesc')}</VCardDesc>
                                                         </VCardBody>
+                                                        <PublishSelectionIndicator $selected={publishVisibility === 'public'} aria-hidden="true">
+                                                            {publishVisibility === 'public' && <IoCheckmark />}
+                                                        </PublishSelectionIndicator>
                                                     </VisibilityCard>
                                                     <VisibilityCard
+                                                        type="button"
+                                                        role="radio"
+                                                        aria-checked={publishVisibility === 'private'}
                                                         $selected={publishVisibility === 'private'}
                                                         onClick={() => setPublishVisibility('private')}
                                                     >
@@ -2585,18 +2851,29 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                                             <VCardTitle>{t('COMMUNITY_Private')}</VCardTitle>
                                                             <VCardDesc>{t('COMMUNITY_PrivateDesc')}</VCardDesc>
                                                         </VCardBody>
+                                                        <PublishSelectionIndicator $selected={publishVisibility === 'private'} aria-hidden="true">
+                                                            {publishVisibility === 'private' && <IoCheckmark />}
+                                                        </PublishSelectionIndicator>
                                                     </VisibilityCard>
                                                 </VisibilityOptions>
                                             </ExportSection>
                                             {publishError && (
                                                 <PublishErrorBox>{publishError}</PublishErrorBox>
                                             )}
-                                            <DownloadButton
-                                                onClick={handlePublish}
-                                                disabled={isPublishing}
-                                            >
-                                                {isPublishing ? t('COMMUNITY_Publishing') : t('COMMUNITY_Publish')}
-                                            </DownloadButton>
+                                            <ExportFooter>
+                                                <ExportSummary>
+                                                    {t('COMMUNITY_VisibilitySummary', {
+                                                        visibility: t(publishVisibility === 'public' ? 'COMMUNITY_Public' : 'COMMUNITY_Private'),
+                                                    })}
+                                                </ExportSummary>
+                                                <ExportDownloadButton
+                                                    type="button"
+                                                    onClick={handlePublish}
+                                                    disabled={isPublishing}
+                                                >
+                                                    {isPublishing ? t('COMMUNITY_Publishing') : t('COMMUNITY_Publish')}
+                                                </ExportDownloadButton>
+                                            </ExportFooter>
                                         </>
                                     )}
                                 </ExportContainer>
