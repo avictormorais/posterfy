@@ -10,7 +10,7 @@ class PosterController {
     }
 
     try {
-      const { spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility, albumNameOriginal, artistsNameOriginal } = req.body
+      const { spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility, albumNameOriginal, artistsNameOriginal, albumMetadata } = req.body
       const poster = await PosterService.create({
         authorId: req.user.id,
         spotifyAlbumId,
@@ -20,7 +20,8 @@ class PosterController {
         posterJson,
         visibility,
         albumNameOriginal,
-        artistsNameOriginal
+        artistsNameOriginal,
+        albumMetadata
       })
 
       res.status(201).json({ poster })

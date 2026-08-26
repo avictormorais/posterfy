@@ -14,14 +14,15 @@ const AdminLogSchema = new mongoose.Schema({
       'ban_user', 'unban_user',
       'delete_poster', 'restore_poster', 'change_visibility', 'edit_poster',
       'promote_admin', 'demote_admin', 'force_logout',
-      'edit_user', 'purge_user', 'purge_poster'
+      'edit_user', 'purge_user', 'purge_poster',
+      'grant_print_unlock', 'revoke_print_unlock'
     ],
     index: true
   },
   targetType: {
     type: String,
     required: true,
-    enum: ['user', 'poster']
+    enum: ['user', 'poster', 'print_unlock']
   },
   targetId: {
     type: mongoose.Schema.Types.ObjectId,

@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import apiService from '../../services/apiService';
 import Hero from '../../components/Hero';
 import Anchor from '../../components/Common/Anchor';
@@ -15,6 +16,8 @@ import { useEffect, useState, useRef } from 'react';
 import { trackPosterRecreation, trackCommunityPosterView } from '../../services/analytics';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import styled from 'styled-components';
+import { useAuth } from '../../contexts/AuthContext';
+import { readPendingFlow } from '../../utils/pendingFlow';
 
 const FadeInSection = styled.div`
   opacity: ${props => props.$isVisible ? 1 : 0};
@@ -35,14 +38,41 @@ export default function Home({ loadingComplete }) {
   const { t } = useTranslation();
   const { posterId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const { loading: authLoading } = useAuth();
   const [recreatingPosterJSON, setRecreatingPosterJSON] = useState(null);
   const [recreatingPosterData, setRecreatingPosterData] = useState(null);
+  const [resumeFlow, setResumeFlow] = useState(null);
   const [publishModal, setPublishModal] = useState(null);
   const posterEditorRef = useRef(null);
 
-  // When the route is /p/:posterId, fetch the poster and open the editor
   useEffect(() => {
-    if (!posterId) return;
+    const flowId = searchParams.get('resume') || searchParams.get('flow');
+    if (!flowId) return;
+
+    const flow = readPendingFlow();
+    if (flow?.flowId === flowId && flow.returnTo === location.pathname) {
+      setResumeFlow(flow);
+    }
+  }, [location.pathname, searchParams]);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!posterId) {
+      if (resumeFlow) {
+        setRecreatingPosterJSON({
+          ...resumeFlow.editor.posterJson,
+          albumID: resumeFlow.editor.albumId,
+          albumNameOriginal: resumeFlow.editor.albumNameOriginal,
+          artistsNameOriginal: resumeFlow.editor.artistsNameOriginal,
+        });
+        setRecreatingPosterData(null);
+      }
+      return;
+    }
+
     let cancelled = false;
     const load = async () => {
       try {
@@ -50,7 +80,16 @@ export default function Home({ loadingComplete }) {
         if (cancelled) return;
         apiService.registerView(posterId).catch(() => {});
         trackCommunityPosterView(posterId, data.poster.albumName, data.poster.artistsName);
-        const json = { ...(data.poster.posterJson || {}), albumID: data.poster.spotifyAlbumId };
+        const restoredJson = resumeFlow?.editor.posterId === posterId
+          ? resumeFlow.editor.posterJson
+          : {};
+        const json = {
+          ...(data.poster.posterJson || {}),
+          ...restoredJson,
+          albumID: data.poster.spotifyAlbumId,
+          albumNameOriginal: resumeFlow?.editor.albumNameOriginal || data.poster.albumNameOriginal,
+          artistsNameOriginal: resumeFlow?.editor.artistsNameOriginal || data.poster.artistsNameOriginal,
+        };
         setRecreatingPosterJSON(json);
         setRecreatingPosterData(data.poster);
         setTimeout(() => {
@@ -65,7 +104,7 @@ export default function Home({ loadingComplete }) {
     };
     load();
     return () => { cancelled = true; };
-  }, [posterId]);
+  }, [posterId, authLoading, resumeFlow]);
 
   const [anchorRef, anchorVisible] = useScrollAnimation();
   const [explanationRef, explanationVisible] = useScrollAnimation();
@@ -97,6 +136,11 @@ export default function Home({ loadingComplete }) {
     setRecreatingPosterData(null);
     navigate('/');
   }
+
+  const handlePendingFlowComplete = () => {
+    setResumeFlow(null);
+    navigate(location.pathname, { replace: true });
+  };
 
   return (
     <>
@@ -137,6 +181,11 @@ export default function Home({ loadingComplete }) {
             handleClickBack={handleClickBack}
             posterId={posterId || null}
             posterFullData={recreatingPosterData}
+            source={resumeFlow?.editor.source}
+            resumeFlow={resumeFlow}
+            checkoutResult={searchParams.get('print_ready')}
+            checkoutSessionId={searchParams.get('session_id')}
+            onPendingFlowComplete={handlePendingFlowComplete}
             onPublishSuccess={(id) => setPublishModal({ posterId: id })}
           />
         ) : (

@@ -16,6 +16,7 @@ import AnalyticsInitializer from './components/SEO/AnalyticsInitializer';
 import IndexingMonitor from './components/SEO/IndexingMonitor';
 import SEOComponent from './components/SEO/SEOComponent';
 import Lenis from 'lenis';
+import LegalPage from './pages/Legal/LegalPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -84,9 +85,16 @@ function App() {
       requestAnimationFrame(raf);
     }
 
+    const handleScrollLock = (event) => {
+      if (event.detail?.locked) lenis.stop();
+      else lenis.start();
+    };
+
+    window.addEventListener('posterfy:scroll-lock', handleScrollLock);
     requestAnimationFrame(raf);
 
     return () => {
+      window.removeEventListener('posterfy:scroll-lock', handleScrollLock);
       lenis.destroy();
     };
   }, []);
@@ -149,6 +157,19 @@ function App() {
                 </AdminRoute>
               }>
                 <Route index element={<Admin />} />
+              </Route>
+
+              <Route path="/terms" element={<Layout showNavbar={true} showFooter={true} />}>
+                <Route index element={<LegalPage type="terms" />} />
+              </Route>
+              <Route path="/privacy" element={<Layout showNavbar={true} showFooter={true} />}>
+                <Route index element={<LegalPage type="privacy" />} />
+              </Route>
+              <Route path="/refund" element={<Layout showNavbar={true} showFooter={true} />}>
+                <Route index element={<LegalPage type="refund" />} />
+              </Route>
+              <Route path="/support" element={<Layout showNavbar={true} showFooter={true} />}>
+                <Route index element={<LegalPage type="support" />} />
               </Route>
 
               <Route path="/error" element={<Error />} />

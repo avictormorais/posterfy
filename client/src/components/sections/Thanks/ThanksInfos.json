@@ -1,4 +1,3 @@
-
 [
   {
     "key": "storyset",
@@ -9,49 +8,11 @@
       "zh": "Storyset"
     },
     "text": {
-      "en": "Illustrations on share and community sections.",
-      "pt": "Ilustrações nas seções de compartilhamento e comunidade.",
-      "es": "Ilustraciones en las secciones de compartir y comunidad.",
-      "zh": "分享和社区部分的插图。"
+      "en": "Illustrations used in sharing and community sections.",
+      "pt": "Ilustrações usadas nas seções de compartilhamento e comunidade.",
+      "es": "Ilustraciones usadas en las secciones de compartir y comunidad.",
+      "zh": "分享和社区区域中使用的插图。"
     },
     "url": "https://storyset.com/"
-  },
-  {
-    "key": "github_issues",
-    "title": {
-      "en": "Github issues",
-      "pt": "Github issues",
-      "es": "Github issues",
-      "zh": "Github issues"
-    },
-    "text": {
-      "en": "Ideas and bug fixes recommendations.",
-      "pt": "Ideias e recomendações de correções de bugs.",
-      "es": "Ideas y recomendaciones de corrección de errores.",
-      "zh": "建议和修复 bug 的想法。"
-    },
-    "url": "https://github.com/avictormorais/posterfy/issues"
-  },
-  {
-    "key": "contribute_area",
-    "title": {
-      "en": "Help improve the project!",
-      "pt": "Ajude a melhorar o projeto!",
-      "es": "¡Ayuda a mejorar el proyecto!",
-      "zh": "帮助改进项目！"
-    },
-    "text": {
-      "en": "This project is open source and evolves with the community! Contribute with code, suggestions, or reporting bugs.",
-      "pt": "Esse projeto é open source e evolui com a comunidade! Contribua com código, sugestões ou reportando bugs.",
-      "es": "¡Este proyecto es open source y evoluciona con la comunidad! Contribuye con código, sugerencias o reportando errores.",
-      "zh": "这个项目是开源的，随着社区的发展而发展！贡献代码、建议或报告错误。"
-    },
-    "url": "https://github.com/avictormorais/posterfy",
-    "button": {
-      "en": "Contribute on Github",
-      "pt": "Contribua no Github",
-      "es": "Contribuye en Github",
-      "zh": "在 Github 上贡献"
-    }
   }
 ]

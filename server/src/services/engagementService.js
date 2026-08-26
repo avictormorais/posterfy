@@ -86,10 +86,17 @@ class EngagementService {
       return { favorited: false }
     }
 
+    const accessiblePoster = await Poster.findOne({
+      _id: posterId,
+      isDeleted: false,
+      $or: [{ visibility: 'public' }, { authorId: userId }]
+    }).select('_id')
+    if (!accessiblePoster) return { favorited: false }
+
     await Favorite.create({ userId, posterId })
 
     const poster = await Poster.findOneAndUpdate(
-      { _id: posterId, isDeleted: false },
+      { _id: posterId, isDeleted: false, $or: [{ visibility: 'public' }, { authorId: userId }] },
       { $inc: { favoritesCount: 1 } },
       { new: true }
     )

@@ -72,12 +72,12 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const loginWithGoogle = () => {
-    window.location.href = apiService.getGoogleAuthUrl()
+  const loginWithGoogle = (redirectUrl) => {
+    window.location.href = apiService.getGoogleAuthUrl(redirectUrl)
   }
 
-  const loginWithSpotify = () => {
-    window.location.href = apiService.getSpotifyAuthUrl()
+  const loginWithSpotify = (redirectUrl) => {
+    window.location.href = apiService.getSpotifyAuthUrl(redirectUrl)
   }
 
   const logout = async () => {

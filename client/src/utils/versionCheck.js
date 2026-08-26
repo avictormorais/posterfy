@@ -15,7 +15,7 @@ export const checkVersion = async () => {
     const currentVersion = localStorage.getItem(VERSION_KEY);
     
     if (currentVersion !== serverVersion) {
-      const keysToPreserve = ['authToken', 'theme', 'language'];
+        const keysToPreserve = ['authToken', 'theme', 'language', 'posterfy_pending_flow'];
       const preserved = {};
       
       keysToPreserve.forEach(key => {

@@ -2,12 +2,16 @@ import User from '../models/user.js'
 import Poster from '../models/poster.js'
 import Favorite from '../models/favorite.js'
 import AdminLog from '../models/adminLog.js'
+import Payment from '../models/payment.js'
+import PrintUnlock from '../models/printUnlock.js'
 import BadgeService from '../services/badgeService.js'
+import PrintReadyService from '../services/printReadyService.js'
 import { cacheGet, cacheSet } from '../utils/cache.js'
 import mongoose from 'mongoose'
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
+import { validationResult } from 'express-validator'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 let apiVersion = '2.0.0'
@@ -15,6 +19,20 @@ try { apiVersion = JSON.parse(readFileSync(join(__dirname, '../../package.json')
 
 const OVERVIEW_TTL = 5 * 60 * 1000
 const HEALTH_TTL = 60 * 1000
+
+const escapedRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const commerceUserIds = async (search) => {
+  const escaped = escapedRegex(search)
+  const users = await User.find({
+    $or: [
+      { name: { $regex: escaped, $options: 'i' } },
+      { username: { $regex: escaped, $options: 'i' } },
+      { email: { $regex: escaped, $options: 'i' } }
+    ]
+  }).select('_id').limit(100).lean()
+  return users.map(user => user._id)
+}
 
 const recalculateFavoriteMetrics = async (posterIds) => {
   if (!posterIds.length) return
@@ -65,6 +83,162 @@ const recalculateFavoriteMetrics = async (posterIds) => {
 }
 
 class AdminController {
+  async listPayments(req, res) {
+    try {
+      const { page = 1, limit = 30, search = '', status = '' } = req.query
+      const safeLimit = Math.min(Math.max(parseInt(limit) || 30, 1), 100)
+      const safePage = Math.max(parseInt(page) || 1, 1)
+      const filter = {}
+      if (status) filter.paymentStatus = status
+
+      if (search.trim()) {
+        const term = search.trim()
+        const userIds = await commerceUserIds(term)
+        const escaped = escapedRegex(term)
+        filter.$or = [
+          { userId: { $in: userIds } },
+          { 'album.providerAlbumId': term },
+          { 'album.albumName': { $regex: escaped, $options: 'i' } },
+          { 'album.artistNames': { $regex: escaped, $options: 'i' } },
+          { stripeCheckoutSessionId: term },
+          { stripePaymentIntentId: term },
+          { stripeChargeId: term }
+        ]
+        if (mongoose.Types.ObjectId.isValid(term)) filter.$or.push({ _id: term })
+      }
+
+      const [payments, total] = await Promise.all([
+        Payment.find(filter)
+          .sort({ createdAt: -1 })
+          .skip((safePage - 1) * safeLimit)
+          .limit(safeLimit)
+          .populate('userId', 'name username email')
+          .lean(),
+        Payment.countDocuments(filter)
+      ])
+      res.json({ payments, total, page: safePage, hasMore: safePage * safeLimit < total })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async listPrintUnlocks(req, res) {
+    try {
+      const { page = 1, limit = 30, search = '', state = '' } = req.query
+      const safeLimit = Math.min(Math.max(parseInt(limit) || 30, 1), 100)
+      const safePage = Math.max(parseInt(page) || 1, 1)
+      const filter = {}
+      if (state === 'active') filter.active = true
+      if (state === 'revoked') filter.active = false
+
+      if (search.trim()) {
+        const term = search.trim()
+        const userIds = await commerceUserIds(term)
+        const escaped = escapedRegex(term)
+        filter.$or = [
+          { userId: { $in: userIds } },
+          { 'album.providerAlbumId': term },
+          { 'album.albumName': { $regex: escaped, $options: 'i' } },
+          { 'album.artistNames': { $regex: escaped, $options: 'i' } }
+        ]
+        if (mongoose.Types.ObjectId.isValid(term)) filter.$or.push({ _id: term })
+      }
+
+      const [unlocks, total] = await Promise.all([
+        PrintUnlock.find(filter)
+          .sort({ createdAt: -1 })
+          .skip((safePage - 1) * safeLimit)
+          .limit(safeLimit)
+          .populate('userId', 'name username email')
+          .populate('grantedBy revokedBy', 'name username')
+          .lean(),
+        PrintUnlock.countDocuments(filter)
+      ])
+      res.json({ unlocks, total, page: safePage, hasMore: safePage * safeLimit < total })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async grantPrintUnlock(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      const { userId, albumId, reason } = req.body
+      const targetUser = await User.findOne({ _id: userId, status: 'active' }).select('_id')
+      if (!targetUser) return res.status(404).json({ error: 'User not found' })
+
+      const album = await PrintReadyService.resolveAlbum({ albumId, userId: req.user.id, isAdmin: true })
+      const unlock = await PrintUnlock.findOneAndUpdate(
+        { userId, 'album.provider': 'spotify', 'album.providerAlbumId': albumId },
+        {
+          $set: {
+            album,
+            active: true,
+            source: 'admin',
+            grantedAt: new Date(),
+            grantedBy: req.user.id,
+            revokedAt: null,
+            revokedBy: null,
+            revocationReason: ''
+          },
+          $setOnInsert: { userId }
+        },
+        { upsert: true, new: true }
+      )
+
+      await AdminLog.create({
+        adminId: req.user.id,
+        action: 'grant_print_unlock',
+        targetType: 'print_unlock',
+        targetId: unlock._id,
+        details: { userId, albumId, reason: reason.trim() },
+        ip: req.ip || ''
+      })
+      res.json({ unlock })
+    } catch (error) {
+      console.error('Failed to grant Print-Ready unlock:', error)
+      res.status(error.status || 500).json({ error: error.message || 'Internal server error', code: error.code })
+    }
+  }
+
+  async revokePrintUnlock(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      const unlock = await PrintUnlock.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            active: false,
+            revokedAt: new Date(),
+            revokedBy: req.user.id,
+            revocationReason: req.body.reason.trim()
+          }
+        },
+        { new: true }
+      )
+      if (!unlock) return res.status(404).json({ error: 'Print-Ready unlock not found' })
+
+      await AdminLog.create({
+        adminId: req.user.id,
+        action: 'revoke_print_unlock',
+        targetType: 'print_unlock',
+        targetId: unlock._id,
+        details: {
+          userId: unlock.userId,
+          albumId: unlock.album.providerAlbumId,
+          reason: req.body.reason.trim()
+        },
+        ip: req.ip || ''
+      })
+      res.json({ unlock })
+    } catch (error) {
+      console.error('Failed to revoke Print-Ready unlock:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
   async overview(req, res) {
     try {
       const cached = cacheGet('admin:overview')
@@ -517,6 +691,11 @@ class AdminController {
       }
 
       await Poster.deleteMany({ authorId: user._id })
+      await PrintUnlock.deleteMany({ userId: user._id })
+      await Payment.updateMany(
+        { userId: user._id },
+        { $set: { userId: null, checkoutOpen: false, accountDeletedAt: new Date() } }
+      )
       await User.deleteOne({ _id: user._id })
 
       res.json({ message: 'User permanently deleted', deletedPosters: posterIds.length })

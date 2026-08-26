@@ -59,21 +59,40 @@ class ApiService {
     })
   }
 
-  getGoogleAuthUrl() {
-    const redirect = encodeURIComponent(`${window.location.origin}/login`)
+  getGoogleAuthUrl(redirectUrl = `${window.location.origin}/login`) {
+    const redirect = encodeURIComponent(redirectUrl)
     return `${this.baseURL}/auth/google?redirect=${redirect}`
   }
 
-  getSpotifyAuthUrl() {
-    const redirect = encodeURIComponent(`${window.location.origin}/login`)
+  getSpotifyAuthUrl(redirectUrl = `${window.location.origin}/login`) {
+    const redirect = encodeURIComponent(redirectUrl)
     return `${this.baseURL}/auth/spotify?redirect=${redirect}`
   }
 
-  async publishPoster({ spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility = 'public', albumNameOriginal, artistsNameOriginal }) {
+  async publishPoster({ spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility = 'public', albumNameOriginal, artistsNameOriginal, albumMetadata }) {
     return this.request('/api/posters', {
       method: 'POST',
-      body: JSON.stringify({ spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility, albumNameOriginal, artistsNameOriginal })
+      body: JSON.stringify({ spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility, albumNameOriginal, artistsNameOriginal, albumMetadata })
     })
+  }
+
+  async getPrintReadyOffer() {
+    return this.request('/api/print-ready/offer')
+  }
+
+  async getPrintUnlock(albumId) {
+    return this.request(`/api/print-ready/albums/${encodeURIComponent(albumId)}`)
+  }
+
+  async createPrintReadyCheckout(data) {
+    return this.request('/api/print-ready/checkout', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  }
+
+  async getPrintReadyCheckout(sessionId) {
+    return this.request(`/api/print-ready/checkouts/${encodeURIComponent(sessionId)}`)
   }
 
   async getPoster(id) {

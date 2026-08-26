@@ -60,3 +60,12 @@ export const authLimiter = createLimiter(
   20,
   'Too many auth attempts. Try again later.'
 )
+
+export const checkoutLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many checkout attempts. Try again later.' },
+  keyGenerator: (req) => `${req.user?.id || 'anonymous'}:${normalizeIp(req)}`
+})

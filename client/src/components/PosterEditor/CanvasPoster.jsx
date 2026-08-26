@@ -8,12 +8,13 @@ const parseNumeric = (value, fallback = 0) => {
     return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont, scale = 1.0, isThumbnail = false, onArtistIdDiscovered }, ref) => {
+const CanvasPoster = forwardRef(({ onImageReady, onError, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont, scale = 1.0, isThumbnail = false, includeWatermark = true, onArtistIdDiscovered }, ref) => {
     const canvasRef = useRef(null);
     const onImageReadyRef = useRef(onImageReady);
     const onTitleSizeAdjustRef = useRef(onTitleSizeAdjust);
     const onTracksSizeAdjustRef = useRef(onTracksSizeAdjust);
     const onArtistIdDiscoveredRef = useRef(onArtistIdDiscovered);
+    const onErrorRef = useRef(onError);
     const renderVersionRef = useRef(0);
 
     useEffect(() => {
@@ -31,6 +32,10 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
     useEffect(() => {
         onArtistIdDiscoveredRef.current = onArtistIdDiscovered;
     }, [onArtistIdDiscovered]);
+
+    useEffect(() => {
+        onErrorRef.current = onError;
+    }, [onError]);
 
     useImperativeHandle(ref, () => ({
         getCanvas: () => canvasRef.current
@@ -52,8 +57,8 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             try {
                 const imageUrl = sourceCanvas.toDataURL(imageFormat, imageQuality);
                 onImageReadyRef.current(imageUrl);
-            } catch {
-                // Ignore export errors for malformed canvases.
+            } catch (error) {
+                onErrorRef.current?.(error);
             }
         };
 
@@ -567,10 +572,7 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             }
             if (!isCurrent()) return;
 
-            await drawWaterMark();
-            // if (posterData.useWatermark) {
-            //     await drawWaterMark();
-            // }
+            if (includeWatermark) await drawWaterMark();
 
             if (!isCurrent()) return;
             if (posterData.showArtistSignature) {
@@ -595,15 +597,15 @@ const CanvasPoster = forwardRef(({ onImageReady, posterData, generatePoster, onT
             emitImageReady(outputCanvas);
         };
 
-        generatePosterContent().catch(() => {
+        generatePosterContent().catch((error) => {
             if (!isCurrent()) return;
-            emitImageReady(canvasRef.current);
+            onErrorRef.current?.(error);
         });
 
         return () => {
             disposed = true;
         };
-    }, [generatePoster, posterData, customFont, scale, isThumbnail]);
+    }, [generatePoster, posterData, customFont, scale, isThumbnail, includeWatermark]);
 
     const canvasWidth = Math.round(2480 * scale);
     const canvasHeight = Math.round(3508 * scale);

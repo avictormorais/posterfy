@@ -68,6 +68,18 @@ router.get('/health', AdminController.health)
  */
 router.get('/logs', AdminController.listLogs)
 
+router.get('/payments', AdminController.listPayments)
+router.get('/unlocks', AdminController.listPrintUnlocks)
+router.post('/unlocks', [
+  body('userId').isMongoId().withMessage('Invalid user ID'),
+  body('albumId').matches(/^[A-Za-z0-9]{22}$/).withMessage('Invalid album ID'),
+  body('reason').isString().trim().isLength({ min: 3, max: 500 }).withMessage('Reason is required')
+], AdminController.grantPrintUnlock)
+router.patch('/unlocks/:id/revoke', [
+  param('id').isMongoId().withMessage('Invalid unlock ID'),
+  body('reason').isString().trim().isLength({ min: 3, max: 500 }).withMessage('Reason is required')
+], AdminController.revokePrintUnlock)
+
 /**
  * @openapi
  * /api/admin/users:

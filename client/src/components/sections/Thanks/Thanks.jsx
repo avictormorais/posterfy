@@ -67,60 +67,16 @@ const Text = styled.p`
     margin-left: 25px;
 `;
 
-const ContributeArea = styled.div`
-    width: 79%;
-    margin: 40px auto 0 auto;
-    padding: 18px 20px;
-    border-radius: 12px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 100px;
-`;
-
-const ContributeTitle = styled.h2`
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: var(--AccentColor);
-`;
-
-const ContributeText = styled.p`
-    font-size: 1rem;
-    margin-bottom: 10px;
-    opacity: 0.8;
-`;
-
-const GithubLink = styled.a`
-    color: var(--textColor);
-    background: var(--AccentColor);
-    padding: 7px 18px;
-    border-radius: 6px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background 0.2s, color 0.2s;
-    display: inline-block;
-    margin-top: 5px;
-    &:hover {
-        background: #1a1a1a;
-        color: #fff;
-    }
-`;
-
 function Thanks() {
     const { i18n } = useTranslation();
     const { t } = useTranslation();
     const lang = i18n.language?.split("-")[0] || "en";
 
-    const thanksInfos = infos.filter(i => i.key !== "contribute_area");
-    const contributeInfo = infos.find(i => i.key === "contribute_area");
-
     return (
         <Container id="thanks">
             <Anchor text={t('Thanks')} type={1} />
 
-            {thanksInfos.map((info, idx) => (
+            {infos.map((info) => (
                 <DivThanks key={info.key}>
                     <TopInfos>
                         <Circle className="circle" />
@@ -150,15 +106,6 @@ function Thanks() {
                 </DivThanks>
             ))}
 
-            {contributeInfo && (
-                <ContributeArea>
-                    <ContributeTitle>{contributeInfo.title[lang] || contributeInfo.title.en}</ContributeTitle>
-                    <ContributeText>{contributeInfo.text[lang] || contributeInfo.text.en}</ContributeText>
-                    <GithubLink href={contributeInfo.url} target="_blank" rel="noopener noreferrer">
-                        {contributeInfo.button?.[lang] || contributeInfo.button?.en || 'Github'}
-                    </GithubLink>
-                </ContributeArea>
-            )}
         </Container>
     );
 }

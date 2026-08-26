@@ -20,6 +20,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/updateSeoFiles.js && node scripts/updateVersion.js",
     "build:seo": "node scripts/updateSeoFiles.js",
+    "test": "node --test",
     "test:redirects": "node scripts/testRedirects.js",
     "lint": "eslint .",
     "preview": "vite preview",

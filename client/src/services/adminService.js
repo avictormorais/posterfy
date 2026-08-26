@@ -35,6 +35,23 @@ const admin = {
     return apiService.request(`/api/admin/logs?${qs}`)
   },
 
+  getPayments: (params = {}) => {
+    const qs = new URLSearchParams(params).toString()
+    return apiService.request(`/api/admin/payments?${qs}`)
+  },
+  getPrintUnlocks: (params = {}) => {
+    const qs = new URLSearchParams(params).toString()
+    return apiService.request(`/api/admin/unlocks?${qs}`)
+  },
+  grantPrintUnlock: (data) => apiService.request('/api/admin/unlocks', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  revokePrintUnlock: (id, reason) => apiService.request(`/api/admin/unlocks/${id}/revoke`, {
+    method: 'PATCH',
+    body: JSON.stringify({ reason })
+  }),
+
   getTopPosters: (limit = 50) => apiService.request(`/api/admin/top-posters?limit=${limit}`),
   getTopUsers: (limit = 50) => apiService.request(`/api/admin/top-users?limit=${limit}`),
   getTopArtists: (limit = 50) => apiService.request(`/api/admin/top-artists?limit=${limit}`),

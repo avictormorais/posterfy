@@ -15,6 +15,8 @@ import userRoutes from './routes/user.js'
 import posterRoutes from './routes/poster.js'
 import communityRoutes from './routes/community.js'
 import adminRoutes from './routes/admin.js'
+import printReadyRoutes from './routes/printReady.js'
+import stripeWebhookRoutes from './routes/stripeWebhook.js'
 import { swaggerSpec } from './config/swagger.js'
 import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js'
 
@@ -46,6 +48,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
+app.use('/webhooks/stripe', stripeWebhookRoutes)
 app.use(express.json({ limit: '2mb' }))
 app.use(express.urlencoded({ extended: true }))
 
@@ -94,6 +97,7 @@ app.use('/auth', authLimiter, authRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/posters', posterRoutes)
 app.use('/api/community', communityRoutes)
+app.use('/api/print-ready', printReadyRoutes)
 app.use('/api/admin', adminRoutes)
 
 app.get('/', (req, res) => {

@@ -14,6 +14,7 @@ const createPosterRules = [
   body('albumName').isString().trim().notEmpty().withMessage('albumName is required').isLength({ max: 200 }),
   body('artistsName').isString().trim().notEmpty().withMessage('artistsName is required').isLength({ max: 200 }),
   body('releaseDate').optional().isString().isLength({ max: 50 }),
+  body('albumMetadata').optional().isObject().withMessage('albumMetadata must be an object'),
   body('posterJson').isObject().withMessage('posterJson must be an object'),
   body('visibility').optional().isIn(['public', 'private']).withMessage('Invalid visibility value')
 ]

@@ -17,6 +17,16 @@ const PosterSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  albumProvider: {
+    type: String,
+    enum: ['spotify'],
+    default: 'spotify'
+  },
+  providerAlbumId: {
+    type: String,
+    default: null,
+    index: true
+  },
   albumName: {
     type: String,
     required: true
@@ -36,6 +46,20 @@ const PosterSchema = new mongoose.Schema({
   releaseDate: {
     type: String,
     default: ''
+  },
+  artistNames: {
+    type: [String],
+    default: []
+  },
+  trackCount: {
+    type: Number,
+    default: null,
+    min: 0
+  },
+  externalIds: {
+    type: Map,
+    of: String,
+    default: {}
   },
   posterJson: {
     type: mongoose.Schema.Types.Mixed,

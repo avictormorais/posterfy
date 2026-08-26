@@ -42,7 +42,7 @@ export const trackPageView = (page_title, page_location) => {
   }
 };
 
-export const trackPosterDownload = (albumName, format = 'image', artistName = '') => {
+export const trackPosterDownload = (albumName, format = 'image', artistName = '', details = {}) => {
   const albumInfo = artistName ? `${artistName} - ${albumName}` : albumName;
   if (typeof window.gtag !== 'undefined') {
     window.gtag('event', 'download_poster', {
@@ -50,9 +50,68 @@ export const trackPosterDownload = (albumName, format = 'image', artistName = ''
       event_label: albumInfo,
       file_type: format,
       album_name: albumName,
-      artist_name: artistName
+      artist_name: artistName,
+      ...details
     });
   }
+};
+
+const trackPrintReady = (eventName, details = {}) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', eventName, {
+      event_category: 'Print Ready',
+      ...details
+    });
+  }
+};
+
+export const trackPrintReadyView = (albumId, source = 'editor') => {
+  trackPrintReady('print_ready_view', { album_id: albumId, source });
+};
+
+export const trackPrintReadyAttempt = (albumId, format, resolution, source = 'editor') => {
+  trackPrintReady('print_ready_attempt', { album_id: albumId, format, resolution, source });
+};
+
+export const trackPrintReadyLoginRequired = (albumId) => {
+  trackPrintReady('print_ready_login_required', { album_id: albumId });
+};
+
+export const trackPrintReadyLoginComplete = (albumId) => {
+  trackPrintReady('print_ready_login_complete', { album_id: albumId });
+};
+
+export const trackPrintReadyOfferView = (albumId) => {
+  trackPrintReady('print_ready_offer_view', { album_id: albumId });
+};
+
+export const trackPrintReadyBeginCheckout = (albumId, value, currency) => {
+  trackPrintReady('begin_checkout', { album_id: albumId, value, currency });
+};
+
+export const trackPrintReadyCheckoutCancel = (albumId) => {
+  trackPrintReady('print_ready_checkout_cancel', { album_id: albumId });
+};
+
+export const trackPrintReadyConfirmationTimeout = (albumId) => {
+  trackPrintReady('print_ready_confirmation_timeout', { album_id: albumId });
+};
+
+export const trackPrintReadyPurchase = ({ paymentId, albumId, value, currency, purchaseNumber }) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', 'purchase', {
+      transaction_id: paymentId,
+      value,
+      currency: currency?.toUpperCase(),
+      album_id: albumId,
+      purchase_number: purchaseNumber,
+      repeat_buyer: purchaseNumber > 1
+    });
+  }
+};
+
+export const trackPrintReadyEntitlementConfirmed = (albumId) => {
+  trackPrintReady('print_ready_entitlement_confirmed', { album_id: albumId });
 };
 
 export const trackPosterPreview = (albumName, artistName = '') => {

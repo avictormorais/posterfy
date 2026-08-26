@@ -6,7 +6,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { Strategy as SpotifyStrategy } from 'passport-spotify'
 import UserService from '../services/userService.js'
 
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:5000'
+const SERVER_URL = (process.env.SERVER_URL || 'http://localhost:5000').replace(/\/+$/, '')
 
 passport.serializeUser((user, done) => {
   done(null, user._id)

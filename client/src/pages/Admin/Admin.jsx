@@ -3,21 +3,23 @@ import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { IoBarChart, IoPeople, IoImage, IoDocumentText, IoHeart, IoTrophy } from 'react-icons/io5'
+import { IoBarChart, IoPeople, IoImage, IoDocumentText, IoHeart, IoTrophy, IoCard } from 'react-icons/io5'
 import OverviewTab from './tabs/OverviewTab'
 import UsersTab from './tabs/UsersTab'
 import PostersTab from './tabs/PostersTab'
 import LogsTab from './tabs/LogsTab'
 import HealthTab from './tabs/HealthTab'
 import TopsTab from './tabs/TopsTab'
+import CommerceTab from './tabs/CommerceTab'
 
-const TABS = ['Overview', 'Tops', 'Users', 'Posters', 'Logs'] // 'Health'
+const TABS = ['Overview', 'Tops', 'Users', 'Posters', 'Commerce', 'Logs'] // 'Health'
 
 const TAB_ICONS = {
   Overview: IoBarChart,
   Tops: IoTrophy,
   Users: IoPeople,
   Posters: IoImage,
+  Commerce: IoCard,
   Logs: IoDocumentText,
   Health: IoHeart,
 }
@@ -285,6 +287,7 @@ export default function Admin() {
         {activeTab === 'Tops' && <TopsTab />}
         {activeTab === 'Users' && <UsersTab />}
         {activeTab === 'Posters' && <PostersTab />}
+        {activeTab === 'Commerce' && <CommerceTab />}
         {activeTab === 'Logs' && <LogsTab />}
         {activeTab === 'Health' && <HealthTab />}
       </Main>

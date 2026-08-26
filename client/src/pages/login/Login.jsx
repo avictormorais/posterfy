@@ -1,12 +1,18 @@
-import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "../../components/svgs/icon"
 import { FaGoogle } from "react-icons/fa";
-import { SiSpotify } from "react-icons/si";
 import Navbar from "../../components/Navbar/Navbar";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../contexts/AuthContext";
+import {
+    clearPendingOAuthFlow,
+    getPendingFlowReturnUrl,
+    readPendingFlow,
+    readPendingOAuthFlow,
+    rememberPendingOAuthFlow
+} from "../../utils/pendingFlow";
 
 const Container = styled.div`
     display: flex;
@@ -90,52 +96,23 @@ const ButtonText = styled.p`
     min-width: 200px;
 `;
 
-const GoogleIcon = styled(FaGoogle)`
-    width: 20px;
-    height: 20px;
-`;
-
-const SpotifyIcon = styled(SiSpotify)`
-    width: 20px;
-    height: 20px;
-`;
-
-const OrContainer = styled.div`
-    display: flex;
-    gap: 15px;
-    width: 100%;
-    margin-block: 2px;
-    justify-content: center;
-    align-items: center;
-    min-width: 450px;
+const LegalNotice = styled.p`
     max-width: 450px;
+    margin: 2px 0 0;
+    color: var(--textSecondary);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    text-align: center;
 
-    @media (max-width: 500px) {
-        min-width: 0px;
-        width: 90%;
+    a {
+        color: var(--textColor);
+        text-underline-offset: 3px;
     }
 `;
 
-const Line = styled.div`
-    height: 1px;
-    background-color: var(--textColor);
-    opacity: 0.25;
-    flex-grow: 1;
-`;
-
-const OrText = styled.p`
-    color: var(--textColor);
-`;
-
-const NoPersonalDataText = styled.p`
-    color: var(--textColor);
-    font-size: 0.9em;
-    text-align: center;
-    opacity: 0.7;
-    max-width: 500px;
-    font-weight: bolder;
-    font-style: italic;
-    opacity: 0.35;
+const GoogleIcon = styled(FaGoogle)`
+    width: 20px;
+    height: 20px;
 `;
 
 const Row = styled.div`
@@ -189,12 +166,27 @@ export default function Login(){
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const { user, loading, loginWithGoogle, loginWithSpotify } = useAuth();
+    const { user, loading, loginWithGoogle } = useAuth();
+    const pendingFlow = useMemo(() => {
+        const storedFlow = readPendingFlow();
+        const oauthFlow = readPendingOAuthFlow();
+        return storedFlow && (
+            storedFlow.flowId === searchParams.get('resume') ||
+            storedFlow.flowId === oauthFlow?.flowId ||
+            Boolean(user) ||
+            searchParams.has('error')
+        ) ? storedFlow : null;
+    }, [searchParams, user]);
+    const pendingReturnUrl = getPendingFlowReturnUrl(pendingFlow);
 
     useEffect(() => {
         if (!loading) {
             if (user) {
-                navigate(`/u/${user.username}`);
+                const resumePath = pendingFlow
+                    ? `${pendingFlow.returnTo}?resume=${encodeURIComponent(pendingFlow.flowId)}`
+                    : `/u/${user.username}`;
+                if (pendingFlow) clearPendingOAuthFlow(pendingFlow.flowId);
+                navigate(resumePath);
                 return;
             }
 
@@ -203,7 +195,7 @@ export default function Login(){
                 navigate(`/u/${user.username}`);
             }
         }
-    }, [user, loading, navigate, searchParams]);
+    }, [user, loading, navigate, searchParams, pendingFlow]);
 
     if (loading) {
         return (
@@ -221,6 +213,11 @@ export default function Login(){
         navigate('/');
     }
 
+    const handleGoogleLogin = () => {
+        if (pendingFlow) rememberPendingOAuthFlow(pendingFlow.flowId);
+        loginWithGoogle(pendingReturnUrl || undefined);
+    }
+
     return(
         <Container>
             <Navbar hideAccount hideLogo iconColor="var(--AccentColor)" />
@@ -235,23 +232,17 @@ export default function Login(){
                         </MobileIconContainer>
                         <TextWelcome>{t('LOGIN_Welcome')}</TextWelcome>
                         <Paragraph>{t('LOGIN_JoinCommunity')}</Paragraph>
+                        {searchParams.has('error') && <Paragraph role="alert">{t('LOGIN_OAuthFailed')}</Paragraph>}
                         
                         <ButtonContainer>
-                            <LoginButton onClick={loginWithGoogle}>
+                            <LoginButton onClick={handleGoogleLogin}>
                                 <GoogleIcon />
                                 <ButtonText>{t('LOGIN_GoogleSignIn')}</ButtonText>
                             </LoginButton>
-
-                            {/*<OrContainer>
-                                <Line />
-                                <OrText>{t('LOGIN_Or')}</OrText>
-                                <Line />
-                            </OrContainer>
-
-                            <LoginButton* onClick={loginWithSpotify}>
-                                <SpotifyIcon />
-                                <ButtonText>{t('LOGIN_SpotifySignIn')}</ButtonText>
-                            </LoginButton*/}
+                            <LegalNotice>
+                                {t('LOGIN_LegalPrefix')} <Link to="/terms">{t('FooterTerms')}</Link>{' '}
+                                {t('LOGIN_LegalAnd')} <Link to="/privacy">{t('FooterPrivacy')}</Link>.
+                            </LegalNotice>
                         </ButtonContainer>
                     </Column>
                 </Row>

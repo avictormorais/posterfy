@@ -41,6 +41,21 @@ import { TbFileTypePdf } from "react-icons/tb";
 import { TbFileTypePng } from "react-icons/tb";
 import SetPasswordSVG from "../svgs/Login/SetPasswordSVG"
 import PosterInfo from "./PosterInfo";
+import PrintReadyModal from "./PrintReadyModal";
+import { clearPendingFlow, rememberPendingOAuthFlow, savePendingFlow, updatePendingFlow } from "../../utils/pendingFlow";
+import { getExportPolicy } from "../../utils/exportPolicy";
+import {
+    trackPrintReadyAttempt,
+    trackPrintReadyBeginCheckout,
+    trackPrintReadyCheckoutCancel,
+    trackPrintReadyConfirmationTimeout,
+    trackPrintReadyEntitlementConfirmed,
+    trackPrintReadyLoginComplete,
+    trackPrintReadyLoginRequired,
+    trackPrintReadyOfferView,
+    trackPrintReadyPurchase,
+    trackPrintReadyView,
+} from "../../services/analytics";
 
 const RELEASE_DEFAULTS = new Set([
     'Release date',
@@ -58,19 +73,12 @@ const RUNTIME_DEFAULTS = new Set([
 const LOCALE_MAP = { en: 'en-US', pt: 'pt-BR', es: 'es-ES', zh: 'zh-CN' };
 const DATE_FMT   = { day: 'numeric', month: 'short', year: 'numeric' };
 
-const HAS_EXPORT_PREMIUM_ACCESS = true;
 const EXPORT_FORMATS = [
+    { value: 'jpg', labelKey: 'EXPORT_FormatJPG' },
     { value: 'png', labelKey: 'EXPORT_FormatPNG', requiresPremium: true },
     { value: 'pdf', labelKey: 'EXPORT_FormatPDF', requiresPremium: true },
-    { value: 'jpg', labelKey: 'EXPORT_FormatJPG' },
 ];
 const EXPORT_SIZES = [
-    {
-        scale: 0.3,
-        nameKey: 'EXPORT_SizeThumbnail',
-        descriptionKey: 'EXPORT_SizeDescription_Thumbnail',
-        summaryKey: 'EXPORT_SizeSummary_Thumbnail',
-    },
     {
         scale: 0.6,
         nameKey: 'EXPORT_SizeMedium',
@@ -1352,7 +1360,7 @@ const LoginButton = styled.button`
     transition: all 0.2s ease;
 `;
 
-const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson, source, posterId, posterFullData, onPublishSuccess }, ref) => {
+const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson, source, posterId, posterFullData, onPublishSuccess, resumeFlow, checkoutResult, checkoutSessionId, onPendingFlowComplete }, ref) => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
@@ -1397,26 +1405,27 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [saveConfirmModal, setSaveConfirmModal] = useState(false);
     const [isSavingPoster, setIsSavingPoster] = useState(false);
     const [saveError, setSaveError] = useState('');
+    const [albumMetadata, setAlbumMetadata] = useState(null);
 
     function applyPosterJson(json) {
         setIsLoadedFromJson(true);
-        setAlbumName(json.albumName || '');
-        setAlbumNameOriginal(json.albumNameOriginal || json.albumName || '');
-        setArtistsName(json.artistsName || '');
-        setArtistsNameOriginal(json.artistsNameOriginal || json.artistsName || '');
-        setSpotifyArtistId(json.spotifyArtistId || '');
-        setTitleSize(json.titleSize || '200');
-        setArtistsSize(json.artistsSize || '110');
-        setTracksSize(json.tracksSize || '50');
-        setMarginTop(json.marginTop || '');
-        setmarginSide(json.marginSide || 160);
-        setMarginCover(json.marginCover || 0);
-        setmarginBackground(json.marginBackground || 0);
-        setbackgroundColor(json.backgroundColor || '#5900ff');
-        setTextColor(json.textColor || '#ff9100');
-        setcolor1(json.color1 || '#ff0000');
-        setcolor2(json.color2 || '#00ff40');
-        setcolor3(json.color3 || '#2600ff');
+        setAlbumName(json.albumName ?? '');
+        setAlbumNameOriginal(json.albumNameOriginal ?? json.albumName ?? '');
+        setArtistsName(json.artistsName ?? '');
+        setArtistsNameOriginal(json.artistsNameOriginal ?? json.artistsName ?? '');
+        setSpotifyArtistId(json.spotifyArtistId ?? '');
+        setTitleSize(json.titleSize ?? '200');
+        setArtistsSize(json.artistsSize ?? '110');
+        setTracksSize(json.tracksSize ?? '50');
+        setMarginTop(json.marginTop ?? '');
+        setmarginSide(json.marginSide ?? 160);
+        setMarginCover(json.marginCover ?? 0);
+        setmarginBackground(json.marginBackground ?? 0);
+        setbackgroundColor(json.backgroundColor ?? '#5900ff');
+        setTextColor(json.textColor ?? '#ff9100');
+        setcolor1(json.color1 ?? '#ff0000');
+        setcolor2(json.color2 ?? '#00ff40');
+        setcolor3(json.color3 ?? '#2600ff');
         
         if (json.coverZoom !== undefined) {
             setCoverZoom(json.coverZoom);
@@ -1426,29 +1435,29 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             setCoverZoom(0);
         }
         
-        setCoverHorizontalPosition(json.coverHorizontalPosition || 0);
-        setCoverVerticalPosition(json.coverVerticalPosition || 0);
-        setCoverBlur(json.coverBlur || 0);
-        setSignatureHorizontalPosition(json.signatureHorizontalPosition || 0);
-        setSignatureVerticalPosition(json.signatureVerticalPosition || 0);
-        setSignatureScale(json.signatureScale || 1);
+        setCoverHorizontalPosition(json.coverHorizontalPosition ?? 0);
+        setCoverVerticalPosition(json.coverVerticalPosition ?? 0);
+        setCoverBlur(json.coverBlur ?? 0);
+        setSignatureHorizontalPosition(json.signatureHorizontalPosition ?? 0);
+        setSignatureVerticalPosition(json.signatureVerticalPosition ?? 0);
+        setSignatureScale(json.signatureScale ?? 1);
         setUseWatermark(json.useWatermark !== undefined ? json.useWatermark : true);
         setUseFade(json.useFade !== undefined ? json.useFade : true);
         setShowTracklist(json.showTracklist !== undefined ? json.showTracklist : false);
         setShowArtistSignature(json.showArtistSignature !== undefined ? json.showArtistSignature : false);
         setUseUncompressed(json.useUncompressed !== undefined ? json.useUncompressed : false);
-        setAlbumCover(json.albumCover || '');
-        setUncompressedAlbumCover(json.uncompressedAlbumCover || '');
-        setCustomFont(json.customFont || '');
-        setTracklist(json.tracklist || '');
-        setTrackDurations(json.trackDurations || []);
-        prevTracklistRef.current = json.tracklist || '';
+        setAlbumCover(json.albumCover ?? '');
+        setUncompressedAlbumCover(json.uncompressedAlbumCover ?? '');
+        setCustomFont(json.customFont ?? '');
+        setTracklist(json.tracklist ?? '');
+        setTrackDurations(json.trackDurations ?? []);
+        prevTracklistRef.current = json.tracklist ?? '';
         setTitleRelease(RELEASE_DEFAULTS.has(json.titleRelease) ? t('EDITOR_ReleaseTitle') : (json.titleRelease ?? ''));
         const sourceReleaseDate = json.rawReleaseDate || json.releaseDate || '';
         rawReleaseDateRef.current = sourceReleaseDate;
         setReleaseDate(localizeDate(sourceReleaseDate, i18n.language));
         setTitleRuntime(RUNTIME_DEFAULTS.has(json.titleRuntime) ? t('EDITOR_RuntimeTitle') : (json.titleRuntime ?? ''));
-        setRuntime(json.runtime || '');
+        setRuntime(json.runtime ?? '');
         setNewTrackName('');
         setNewTrackDuration('');
         handleApplyClick();
@@ -1471,12 +1480,6 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             reader.readAsArrayBuffer(customFontFile);
         }
     }, [customFontFile]);
-
-    useEffect(() => {
-        if (initialPosterJson) {
-            applyPosterJson(initialPosterJson);
-        }
-    }, [initialPosterJson]);
 
     const [useUncompressed, setUseUncompressed] = useState(false);
     const [fileName, setFileName] = useState("Original");
@@ -1578,8 +1581,88 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [initialTracksSizeSet, setInitialTracksSizeSet] = useState(false);
     const [isLoadedFromJson, setIsLoadedFromJson] = useState(false);
 
-    const [exportFormat, setExportFormat] = useState('png');
-    const [exportScale, setExportScale] = useState(1.0);
+    const [exportFormat, setExportFormat] = useState('jpg');
+    const [exportScale, setExportScale] = useState(0.6);
+    const [exportIncludesWatermark, setExportIncludesWatermark] = useState(true);
+    const [exportError, setExportError] = useState('');
+    const [isPrintReadyUnlocked, setIsPrintReadyUnlocked] = useState(false);
+    const [unlockChecked, setUnlockChecked] = useState(false);
+    const [printReadyOffer, setPrintReadyOffer] = useState(null);
+    const [showPrintReadyModal, setShowPrintReadyModal] = useState(false);
+    const [checkoutLoading, setCheckoutLoading] = useState(false);
+    const [checkoutError, setCheckoutError] = useState('');
+    const [checkoutNotice, setCheckoutNotice] = useState('');
+    const resumeStartedRef = useRef(false);
+    const printReadyViewTrackedRef = useRef(false);
+    const activeFlowIdRef = useRef(null);
+
+    useEffect(() => {
+        if (resumeFlow) {
+            setActiveTab(resumeFlow.editor.activeTab || (resumeFlow.action.type === 'publish' ? 'publish' : 'export'));
+            setPublishVisibility(resumeFlow.editor.publishVisibility || resumeFlow.action.visibility || 'public');
+            setAlbumMetadata(resumeFlow.editor.albumMetadata || null);
+            if (resumeFlow.action.type === 'print_ready_export') {
+                setExportFormat(resumeFlow.action.format);
+                setExportScale(resumeFlow.action.scale);
+            }
+            return;
+        }
+
+        if (posterFullData) {
+            setAlbumMetadata({
+                provider: posterFullData.albumProvider || 'spotify',
+                providerAlbumId: posterFullData.providerAlbumId || posterFullData.spotifyAlbumId,
+                albumName: posterFullData.albumNameOriginal || posterFullData.albumName,
+                artistNames: posterFullData.artistNames?.length
+                    ? posterFullData.artistNames
+                    : [posterFullData.artistsNameOriginal || posterFullData.artistsName],
+                releaseDate: posterFullData.releaseDate || '',
+                trackCount: posterFullData.trackCount ?? null,
+                externalIds: posterFullData.externalIds || {},
+            });
+        }
+    }, [posterFullData, resumeFlow]);
+
+    useEffect(() => {
+        let cancelled = false;
+        if (!isAuthenticated || !albumID) {
+            setIsPrintReadyUnlocked(false);
+            setUnlockChecked(true);
+            return;
+        }
+
+        setUnlockChecked(false);
+        apiService.getPrintUnlock(albumID)
+            .then((result) => {
+                if (cancelled) return;
+                setIsPrintReadyUnlocked(result.unlocked);
+                setUnlockChecked(true);
+            })
+            .catch(() => {
+                if (!cancelled) setUnlockChecked(false);
+            });
+        return () => { cancelled = true; };
+    }, [albumID, isAuthenticated]);
+
+    useEffect(() => {
+        if (activeTab === 'export' && !printReadyViewTrackedRef.current) {
+            printReadyViewTrackedRef.current = true;
+            trackPrintReadyView(albumID, source || (posterId ? 'community' : 'editor'));
+        }
+    }, [activeTab, albumID, posterId, source]);
+
+    useEffect(() => {
+        if (!showPrintReadyModal || printReadyOffer) return;
+        let cancelled = false;
+        apiService.getPrintReadyOffer()
+            .then(({ offer }) => {
+                if (!cancelled) setPrintReadyOffer(offer);
+            })
+            .catch((error) => {
+                if (!cancelled) setCheckoutError(error.message || t('PRINT_READY_Unavailable'));
+            });
+        return () => { cancelled = true; };
+    }, [showPrintReadyModal, printReadyOffer, t]);
 
     const hasModelBackgroundColor = modelParams?.backgroundColor !== undefined;
     const hasModelTextColor = modelParams?.textColor !== undefined;
@@ -1652,7 +1735,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         uncompressedAlbumCover,
         useUncompressed,
         albumName,
+        albumNameOriginal,
         artistsName,
+        artistsNameOriginal,
         spotifyArtistId,
         titleSize,
         artistsSize,
@@ -1735,35 +1820,66 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setGenerateExport(false);
     };
 
+    const handleExportError = () => {
+        setGenerateExport(false);
+        setExportImage(null);
+        setExportMode(null);
+        setExportError(t('PRINT_READY_ExportFailed'));
+    };
+
+    const completePendingAction = () => {
+        const flowId = resumeFlow?.flowId || activeFlowIdRef.current;
+        if (!flowId) return;
+        clearPendingFlow(flowId);
+        activeFlowIdRef.current = null;
+        onPendingFlowComplete?.();
+    };
+
+    const trackCompletedDownload = (format) => {
+        const premium = format === 'png' || format === 'pdf';
+        trackPosterDownload(albumName, premium ? `poster_${format}` : 'poster_jpg', artistsName, {
+            album_id: albumID,
+            export_tier: premium ? 'print_ready' : 'free',
+            format,
+            resolution: premium ? (exportScale === 1.5 ? 'extreme' : 'normal') : 'medium',
+        });
+        if (posterId) {
+            apiService.registerDownload(posterId).catch(() => {});
+            trackCommunityPosterDownload(posterId, albumName, artistsName, format);
+        }
+        if (premium) completePendingAction();
+    };
+
     useEffect(() => {
         if (exportImage && exportMode) {
             if (exportMode === 'png') {
-                const link = document.createElement('a');
-                link.href = exportImage;
-                link.download = `Posterfy - ${albumName}.png`;
-                link.click();
-                trackPosterDownload(albumName, 'poster', artistsName);
-                if (posterId) {
-                    apiService.registerDownload(posterId).catch(() => {});
-                    trackCommunityPosterDownload(posterId, albumName, artistsName, 'png');
+                try {
+                    const link = document.createElement('a');
+                    link.href = exportImage;
+                    link.download = `Posterfy - ${albumName}.png`;
+                    link.click();
+                    trackCompletedDownload('png');
+                } catch {
+                    setExportError(t('PRINT_READY_ExportFailed'));
                 }
             } else if (exportMode === 'pdf') {
                 const img = new Image();
                 img.onload = () => {
-                    const pdf = new jsPDF({
-                        orientation: 'portrait',
-                        unit: 'mm',
-                        format: 'a4',
-                        compress: false
-                    });
-                    pdf.addImage(exportImage, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
-                    pdf.save(`Posterfy - ${albumName}.pdf`);
-                    trackPosterDownload(albumName, 'poster_pdf', artistsName);
-                    if (posterId) {
-                        apiService.registerDownload(posterId).catch(() => {});
-                        trackCommunityPosterDownload(posterId, albumName, artistsName, 'pdf');
+                    try {
+                        const pdf = new jsPDF({
+                            orientation: 'portrait',
+                            unit: 'mm',
+                            format: 'a4',
+                            compress: true
+                        });
+                        pdf.addImage(exportImage, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
+                        pdf.save(`Posterfy - ${albumName}.pdf`);
+                        trackCompletedDownload('pdf');
+                    } catch {
+                        setExportError(t('PRINT_READY_ExportFailed'));
                     }
                 };
+                img.onerror = () => setExportError(t('PRINT_READY_ExportFailed'));
                 img.src = exportImage;
             } else if (exportMode === 'jpg') {
                 const img = new Image();
@@ -1776,21 +1892,25 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(img, 0, 0);
                     canvas.toBlob((blob) => {
+                        if (!blob) {
+                            setExportError(t('PRINT_READY_ExportFailed'));
+                            return;
+                        }
                         const link = document.createElement('a');
                         link.href = URL.createObjectURL(blob);
                         link.download = `Posterfy - ${albumName}.jpg`;
                         link.click();
-                        URL.revokeObjectURL(link.href);
-                        trackPosterDownload(albumName, 'poster_jpg', artistsName);
-                        if (posterId) apiService.registerDownload(posterId).catch(() => {});
+                        setTimeout(() => URL.revokeObjectURL(link.href), 0);
+                        trackCompletedDownload('jpg');
                     }, 'image/jpeg', 0.95);
                 };
+                img.onerror = () => setExportError(t('PRINT_READY_ExportFailed'));
                 img.src = exportImage;
             }
             setExportImage(null);
             setExportMode(null);
         }
-    }, [exportImage, exportMode, albumName, artistsName]);
+    }, [exportImage, exportMode, albumName, artistsName, albumID, exportScale, posterId, t]);
 
     useEffect(() => {
         setExportImage(null);
@@ -1814,9 +1934,118 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setIsLoadedFromJson(false); 
     };
 
-    const handleDownloadClick = () => {
-        setExportMode('png');
+    const getEditorSnapshot = () => ({
+        albumId: albumID,
+        posterId: posterId || null,
+        source: source || null,
+        posterJson: posterData,
+        albumNameOriginal,
+        artistsNameOriginal,
+        albumMetadata,
+        activeTab,
+        publishVisibility,
+    });
+
+    const preserveFlow = (reason, action) => {
+        const flow = savePendingFlow({
+            reason,
+            returnTo: posterId ? `/p/${posterId}` : '/',
+            editor: getEditorSnapshot(),
+            action,
+        });
+        activeFlowIdRef.current = flow.flowId;
+        return flow;
+    };
+
+    const startExport = (format, scale, includeWatermark) => {
+        setExportError('');
+        setExportFormat(format);
+        setExportScale(scale);
+        setExportIncludesWatermark(includeWatermark);
+        setExportMode(format);
         setGenerateExport(true);
+    };
+
+    const openLoginForAction = (action) => {
+        try {
+            const flow = preserveFlow('login', action);
+            rememberPendingOAuthFlow(flow.flowId);
+            if (action.type === 'print_ready_export') trackPrintReadyLoginRequired(albumID);
+            navigate(`/login?resume=${encodeURIComponent(flow.flowId)}`);
+        } catch (error) {
+            setExportError(error.message || t('PRINT_READY_PreserveFailed'));
+        }
+    };
+
+    const handlePublishLogin = () => {
+        try {
+            const flow = preserveFlow('login', { type: 'publish', visibility: publishVisibility });
+            rememberPendingOAuthFlow(flow.flowId);
+            navigate(`/login?resume=${encodeURIComponent(flow.flowId)}`);
+        } catch (error) {
+            setPublishError(error.message || t('PRINT_READY_PreserveFailed'));
+        }
+    };
+
+    const ensurePremiumAccess = async (action, exportWhenUnlocked) => {
+        trackPrintReadyAttempt(
+            albumID,
+            action.format,
+            action.scale === 1.5 ? 'extreme' : 'normal',
+            source || (posterId ? 'community' : 'editor')
+        );
+
+        if (!isAuthenticated) {
+            openLoginForAction(action);
+            return false;
+        }
+
+        let unlocked = isPrintReadyUnlocked;
+        if (!unlockChecked) {
+            try {
+                const result = await apiService.getPrintUnlock(albumID);
+                unlocked = result.unlocked;
+                setIsPrintReadyUnlocked(result.unlocked);
+                setUnlockChecked(true);
+            } catch (error) {
+                setExportError(error.message || t('PRINT_READY_StatusFailed'));
+                return false;
+            }
+        }
+
+        if (unlocked) {
+            if (exportWhenUnlocked) startExport(action.format, action.scale, false);
+            return true;
+        }
+
+        setCheckoutError('');
+        setShowPrintReadyModal(true);
+        trackPrintReadyOfferView(albumID);
+        return false;
+    };
+
+    const requestExport = async (format = exportFormat, scale = exportScale) => {
+        const policy = getExportPolicy(format, scale);
+        if (!policy) {
+            setExportError(t('PRINT_READY_InvalidCombination'));
+            return;
+        }
+
+        if (policy.tier === 'free') {
+            startExport(format, scale, policy.includeWatermark);
+            return;
+        }
+        await ensurePremiumAccess({ type: 'print_ready_export', format, scale }, true);
+    };
+
+    const handlePremiumSelection = async (format, scale) => {
+        setExportFormat(format);
+        setExportScale(scale);
+        await ensurePremiumAccess({ type: 'print_ready_export', format, scale }, false);
+    };
+
+    const handleDownloadClick = () => {
+        requestExport('png', [1, 1.5].includes(exportScale) ? exportScale : 1);
     };
 
     const handlePublish = async () => {
@@ -1827,6 +2056,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
             if (posterId) {
                 const result = await apiService.updatePosterJson(posterId, posterJsonPayload, albumName, artistsName);
+                if (resumeFlow?.action.type === 'publish') completePendingAction();
                 onPublishSuccess?.(result.poster._id);
                 handleClickBack();
                 return;
@@ -1839,11 +2069,13 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 artistsName,
                 artistsNameOriginal: artistsNameOriginal || artistsName,
                 releaseDate: rawReleaseDateRef.current || releaseDate,
+                albumMetadata,
                 visibility: publishVisibility,
                 posterJson: posterJsonPayload,
             };
             const result = await apiService.publishPoster(payload);
             trackCommunityPosterPublish(albumName, artistsName, publishVisibility);
+            if (resumeFlow?.action.type === 'publish') completePendingAction();
             onPublishSuccess?.(result.poster._id);
             handleClickBack();
         } catch (err) {
@@ -1878,14 +2110,152 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     };
 
     const handleDownloadPDFClick = () => {
-        setExportMode('pdf');
-        setGenerateExport(true);
+        requestExport('pdf', [1, 1.5].includes(exportScale) ? exportScale : 1);
     };
 
     const handleDownloadJPGClick = () => {
-        setExportMode('jpg');
-        setGenerateExport(true);
+        requestExport('jpg', 0.6);
     };
+
+    const handleStartCheckout = async () => {
+        setCheckoutLoading(true);
+        setCheckoutError('');
+        const action = {
+            type: 'print_ready_export',
+            format: ['png', 'pdf'].includes(exportFormat) ? exportFormat : 'png',
+            scale: [1, 1.5].includes(exportScale) ? exportScale : 1,
+        };
+
+        try {
+            const flow = preserveFlow('checkout', action);
+            const result = await apiService.createPrintReadyCheckout({
+                albumId: albumID,
+                posterId: posterId || null,
+                flowId: flow.flowId,
+                returnPath: flow.returnTo,
+            });
+
+            if (result.status === 'unlocked') {
+                setIsPrintReadyUnlocked(true);
+                setUnlockChecked(true);
+                setShowPrintReadyModal(false);
+                startExport(action.format, action.scale, false);
+                return;
+            }
+
+            updatePendingFlow(flow.flowId, { checkout: { sessionId: result.sessionId } });
+            trackPrintReadyBeginCheckout(
+                albumID,
+                (printReadyOffer?.unitAmount || 199) / 100,
+                (printReadyOffer?.currency || 'usd').toUpperCase()
+            );
+            window.location.assign(result.url);
+        } catch (error) {
+            setCheckoutError(error.message || t('PRINT_READY_CheckoutFailed'));
+        } finally {
+            setCheckoutLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!resumeFlow || resumeStartedRef.current || !infosLoaded || !image || !isAuthenticated) return;
+        const editorNode = ref && typeof ref === 'object' ? ref.current : null;
+        if (editorNode) {
+            const editorTop = editorNode.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({ top: editorTop, behavior: 'auto' });
+        }
+        activeFlowIdRef.current = resumeFlow.flowId;
+
+        if (resumeFlow.action.type === 'publish') {
+            resumeStartedRef.current = true;
+            handlePublish();
+            return;
+        }
+
+        if (checkoutResult === 'cancel') {
+            resumeStartedRef.current = true;
+            setCheckoutNotice(t('PRINT_READY_CheckoutCancelled'));
+            trackPrintReadyCheckoutCancel(albumID);
+            clearPendingFlow(resumeFlow.flowId);
+            onPendingFlowComplete?.();
+            return;
+        }
+
+        if (checkoutResult !== 'success') {
+            if (!unlockChecked) return;
+            resumeStartedRef.current = true;
+            trackPrintReadyLoginComplete(albumID);
+            if (isPrintReadyUnlocked) {
+                startExport(resumeFlow.action.format, resumeFlow.action.scale, false);
+            } else {
+                setShowPrintReadyModal(true);
+                trackPrintReadyOfferView(albumID);
+            }
+            return;
+        }
+
+        const sessionId = checkoutSessionId || resumeFlow.checkout?.sessionId;
+        if (!sessionId || (resumeFlow.checkout?.sessionId && resumeFlow.checkout.sessionId !== sessionId)) {
+            resumeStartedRef.current = true;
+            setCheckoutNotice(t('PRINT_READY_ConfirmationFailed'));
+            return;
+        }
+
+        resumeStartedRef.current = true;
+        let cancelled = false;
+        const poll = async () => {
+            const delays = [0, 1000, 1500, 2500, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
+            setCheckoutNotice(t('PRINT_READY_Confirming'));
+
+            for (const delay of delays) {
+                if (delay) await new Promise(resolve => setTimeout(resolve, delay));
+                if (cancelled) return;
+                try {
+                    const result = await apiService.getPrintReadyCheckout(sessionId);
+                    if (result.status === 'unlocked') {
+                        setIsPrintReadyUnlocked(true);
+                        setUnlockChecked(true);
+                        setCheckoutNotice('');
+                        if (result.paymentConfirmed && !resumeFlow.checkout?.purchaseTracked) {
+                            trackPrintReadyPurchase({
+                                paymentId: result.paymentId,
+                                albumId: albumID,
+                                value: result.amount / 100,
+                                currency: result.currency,
+                                purchaseNumber: result.purchaseNumber,
+                            });
+                        }
+                        if (!resumeFlow.checkout?.entitlementTracked) {
+                            trackPrintReadyEntitlementConfirmed(albumID);
+                        }
+                        updatePendingFlow(resumeFlow.flowId, {
+                            checkout: {
+                                purchaseTracked: Boolean(
+                                    resumeFlow.checkout?.purchaseTracked || result.paymentConfirmed
+                                ),
+                                entitlementTracked: true,
+                            }
+                        });
+                        startExport(resumeFlow.action.format, resumeFlow.action.scale, false);
+                        return;
+                    }
+                    if (['failed', 'expired', 'revoked'].includes(result.status)) {
+                        setCheckoutNotice(t(`PRINT_READY_Status_${result.status}`));
+                        return;
+                    }
+                } catch {
+                    // A later poll may succeed while the webhook is still being processed.
+                }
+            }
+
+            if (!cancelled) {
+                setCheckoutNotice(t('PRINT_READY_ConfirmationTimeout'));
+                trackPrintReadyConfirmationTimeout(albumID);
+            }
+        };
+        poll();
+        return () => { cancelled = true; };
+    }, [albumID, checkoutResult, checkoutSessionId, image, infosLoaded, isAuthenticated, isPrintReadyUnlocked, ref, resumeFlow, unlockChecked]);
     
     const handleCoverDownloadClick = async () => {
         if (useUncompressed) {
@@ -2192,6 +2562,15 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 setAlbumNameOriginal(albumData.name);
                 setArtistsName(formattedArtistsName);
                 setArtistsNameOriginal(formattedArtistsName);
+                setAlbumMetadata({
+                    provider: 'spotify',
+                    providerAlbumId: albumData.id,
+                    albumName: albumData.name,
+                    artistNames: albumData.artists.map((artist) => artist.name),
+                    releaseDate: albumData.release_date || '',
+                    trackCount: albumData.total_tracks ?? albumData.tracks?.total ?? null,
+                    externalIds: albumData.external_ids || {},
+                });
                 if (albumData.artists.length > 0) {
                     console.debug("Setting Spotify artist ID:", albumData.artists[0].id);
                     setSpotifyArtistId(albumData.artists[0].id);
@@ -2323,6 +2702,18 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     return(
         <>
+            {showPrintReadyModal && (
+                <PrintReadyModal
+                    albumName={albumName}
+                    offer={printReadyOffer}
+                    loading={checkoutLoading}
+                    error={checkoutError || (printReadyOffer?.enabled === false ? t('PRINT_READY_Unavailable') : '')}
+                    locale={i18n.resolvedLanguage || i18n.language}
+                    onClose={() => !checkoutLoading && setShowPrintReadyModal(false)}
+                    onConfirm={handleStartCheckout}
+                    t={t}
+                />
+            )}
             {!infosLoaded ? (
                 <LoadingDiv/>
             ) : (
@@ -2388,6 +2779,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             onArtistIdDiscovered={handleArtistIdDiscovered}
                             customFont={customFont}
                             scale={0.3}
+                            includeWatermark={true}
                         />
 
                         {generateExport && (
@@ -2400,6 +2792,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                     onArtistIdDiscovered={handleArtistIdDiscovered}
                                     customFont={customFont}
                                     scale={exportScale}
+                                    includeWatermark={exportIncludesWatermark}
+                                    onError={handleExportError}
                                 />
                             </div>
                         )}
@@ -2717,22 +3111,28 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <ExportLabel>{t('EXPORT_Format')}</ExportLabel>
                                         <FormatTabs role="radiogroup" aria-label={t('EXPORT_Format')}>
                                             {EXPORT_FORMATS.map((format) => {
-                                                const isLocked = format.requiresPremium && !HAS_EXPORT_PREMIUM_ACCESS;
+                                                const isLocked = format.requiresPremium && !isPrintReadyUnlocked;
+                                                const selectedScale = [1, 1.5].includes(exportScale) ? exportScale : 1;
 
                                                 return (
                                                     <FormatTabButton
                                                         key={format.value}
                                                         type="button"
                                                         role="radio"
-                                                        aria-checked={!isLocked && exportFormat === format.value}
+                                                        aria-checked={exportFormat === format.value}
                                                         aria-label={isLocked
                                                             ? t('EXPORT_LockedOption', { option: t(format.labelKey) })
                                                             : t('EXPORT_SelectFormat', { format: t(format.labelKey) })}
                                                         title={isLocked ? t('EXPORT_Locked') : undefined}
-                                                        disabled={isLocked}
                                                         $locked={isLocked}
-                                                        $selected={!isLocked && exportFormat === format.value}
-                                                        onClick={() => setExportFormat(format.value)}
+                                                        $selected={exportFormat === format.value}
+                                                        onClick={() => {
+                                                            if (format.requiresPremium) handlePremiumSelection(format.value, selectedScale);
+                                                            else {
+                                                                setExportFormat('jpg');
+                                                                setExportScale(0.6);
+                                                            }
+                                                        }}
                                                     >
                                                         {t(format.labelKey)}
                                                         {isLocked && <LockedIcon aria-hidden="true" />}
@@ -2746,8 +3146,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <ExportLabel>{t('EXPORT_Size')}</ExportLabel>
                                         <SizeOptions role="radiogroup" aria-label={t('EXPORT_Size')}>
                                             {EXPORT_SIZES.map((size) => {
-                                                const isLocked = size.requiresPremium && !HAS_EXPORT_PREMIUM_ACCESS;
-                                                const isSelected = !isLocked && exportScale === size.scale;
+                                                const isLocked = size.requiresPremium && !isPrintReadyUnlocked;
+                                                const isSelected = exportScale === size.scale;
 
                                                 return (
                                                     <SizeOption
@@ -2759,10 +3159,15 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                                             ? t('EXPORT_LockedOption', { option: t(size.nameKey) })
                                                             : t('EXPORT_SelectSize', { size: t(size.nameKey) })}
                                                         title={isLocked ? t('EXPORT_Locked') : undefined}
-                                                        disabled={isLocked}
                                                         $locked={isLocked}
                                                         $selected={isSelected}
-                                                        onClick={() => setExportScale(size.scale)}
+                                                        onClick={() => {
+                                                            if (size.requiresPremium) handlePremiumSelection(
+                                                                ['png', 'pdf'].includes(exportFormat) ? exportFormat : 'png',
+                                                                size.scale
+                                                            );
+                                                            else setExportScale(0.6);
+                                                        }}
                                                     >
                                                         <SizeIcon $locked={isLocked} $selected={isSelected} aria-hidden="true" />
                                                         <SizeOptionContent>
@@ -2787,6 +3192,10 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         </SizeOptions>
                                     </ExportSection>
 
+                                    {(exportError || checkoutNotice) && (
+                                        <PublishErrorBox role="status">{exportError || checkoutNotice}</PublishErrorBox>
+                                    )}
+
                                     <ExportFooter>
                                         <ExportSummary>
                                             {t('EXPORT_Summary', {
@@ -2796,11 +3205,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         </ExportSummary>
                                         <ExportDownloadButton
                                             type="button"
-                                            onClick={() => {
-                                                if (exportFormat === 'png') handleDownloadClick();
-                                                else if (exportFormat === 'pdf') handleDownloadPDFClick();
-                                                else if (exportFormat === 'jpg') handleDownloadJPGClick();
-                                            }}
+                                            onClick={() => requestExport(exportFormat, exportScale)}
+                                            disabled={generateExport || checkoutLoading}
                                         >
                                             {t('EXPORT_DownloadButton')}
                                         </ExportDownloadButton>
@@ -2812,7 +3218,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <EmptyStateContainer>
                                             <SetPasswordSVG width={'62%'} height={120} />
                                             <TextLogin>{t('COMMUNITY_LoginToPublish')}</TextLogin>
-                                            <LoginButton onClick={() => navigate('/login')}>{t('Login')}</LoginButton>
+                                            <LoginButton onClick={handlePublishLogin}>{t('Login')}</LoginButton>
                                         </EmptyStateContainer>
                                     ) : (
                                         <>

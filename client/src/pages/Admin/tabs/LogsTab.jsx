@@ -9,7 +9,8 @@ import {
 
 const ACTION_TYPES = [
   '', 'ban_user', 'unban_user', 'delete_poster', 'restore_poster',
-  'change_visibility', 'edit_poster', 'promote_admin', 'demote_admin', 'force_logout', 'edit_user'
+  'change_visibility', 'edit_poster', 'promote_admin', 'demote_admin', 'force_logout',
+  'edit_user', 'grant_print_unlock', 'revoke_print_unlock'
 ]
 
 export default function LogsTab() {
@@ -64,6 +65,7 @@ export default function LogsTab() {
                 <Th>{t('ADMIN_Action')}</Th>
                 <Th>{t('ADMIN_Admin')}</Th>
                 <Th>{t('ADMIN_Target')}</Th>
+                <Th>{t('ADMIN_Details')}</Th>
                 <Th>IP</Th>
               </Tr>
             </thead>
@@ -74,6 +76,7 @@ export default function LogsTab() {
                   <Td><Badge>{l.action}</Badge></Td>
                   <Td>{l.adminId?.username || l.adminId?._id || '—'}</Td>
                   <Td style={{ fontSize: '0.8em', opacity: 0.7 }}>{l.targetId}</Td>
+                  <Td style={{ fontSize: '0.8em', opacity: 0.7 }}>{l.details ? JSON.stringify(l.details) : '—'}</Td>
                   <Td style={{ fontSize: '0.8em', opacity: 0.7 }}>{l.ip || '—'}</Td>
                 </Tr>
               ))}

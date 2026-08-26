@@ -4,6 +4,7 @@ import User from '../models/user.js'
 import mongoose from 'mongoose'
 import BadgeService from './badgeService.js'
 import { escapeSearchRegex, getUniquePosterPage, hasTextSearchTerm } from '../utils/communityPagination.js'
+import { normalizeAlbumMetadata } from '../utils/albumMetadata.js'
 
 const DEFAULT_LIMIT = 20
 const MAX_LIMIT = 50
@@ -35,17 +36,28 @@ const sanitizePosterJson = (json) => {
 }
 
 class PosterService {
-  async create({ authorId, spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility, albumNameOriginal, artistsNameOriginal }) {
+  async create({ authorId, spotifyAlbumId, albumName, artistsName, releaseDate, posterJson, visibility, albumNameOriginal, artistsNameOriginal, albumMetadata }) {
     const sanitized = sanitizePosterJson(posterJson)
+    const metadata = normalizeAlbumMetadata(albumMetadata, {
+      providerAlbumId: spotifyAlbumId,
+      albumName: albumNameOriginal || albumName,
+      artistNames: [artistsNameOriginal || artistsName],
+      releaseDate
+    })
 
     const poster = await Poster.create({
       authorId,
       spotifyAlbumId,
+      albumProvider: 'spotify',
+      providerAlbumId: spotifyAlbumId,
       albumName: albumName.trim(),
       albumNameOriginal: albumNameOriginal ? albumNameOriginal.trim() : albumName.trim(),
       artistsName: artistsName.trim(),
       artistsNameOriginal: artistsNameOriginal ? artistsNameOriginal.trim() : artistsName.trim(),
       releaseDate: releaseDate || '',
+      artistNames: metadata.artistNames,
+      trackCount: metadata.trackCount,
+      externalIds: metadata.externalIds,
       posterJson: sanitized,
       visibility: visibility || 'public'
     })
@@ -321,7 +333,15 @@ class PosterService {
         }
       },
       { $unwind: '$poster' },
-      { $match: { 'poster.isDeleted': false } },
+      {
+        $match: {
+          'poster.isDeleted': false,
+          $or: [
+            { 'poster.visibility': 'public' },
+            { 'poster.authorId': new mongoose.Types.ObjectId(userId) }
+          ]
+        }
+      },
       {
         $facet: {
           favorites: [
