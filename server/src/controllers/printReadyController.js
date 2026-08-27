@@ -14,6 +14,7 @@ class PrintReadyController {
   async offer(req, res) {
     try {
       const offer = await PrintReadyService.getOffer()
+      res.set('Cache-Control', 'no-store')
       res.json({
         offer: {
           enabled: offer.enabled,
@@ -22,6 +23,23 @@ class PrintReadyController {
           policies: offer.policies
         }
       })
+    } catch (error) {
+      sendError(res, error)
+    }
+  }
+
+  async exportAccess(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      const access = await PrintReadyService.authorizeExport({
+        userId: req.user?.id || null,
+        albumId: req.body.albumId,
+        format: req.body.format,
+        scale: req.body.scale
+      })
+      res.set('Cache-Control', 'no-store')
+      res.json(access)
     } catch (error) {
       sendError(res, error)
     }

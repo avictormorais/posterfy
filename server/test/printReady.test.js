@@ -10,6 +10,8 @@ import {
   POLICY_VERSIONS
 } from '../src/config/policyVersions.js'
 import {
+  buildExportAccessDecision,
+  getExportTier,
   getRefundState,
   isConfirmedPaymentStatus,
   isSpotifyAlbumId,
@@ -30,6 +32,66 @@ test('accepts only Spotify album IDs and local return paths', () => {
   assert.equal(sanitizeReturnPath('/p/507f1f77bcf86cd799439011'), '/p/507f1f77bcf86cd799439011')
   assert.equal(sanitizeReturnPath('https://attacker.example'), '/')
   assert.equal(sanitizeReturnPath('//attacker.example'), '/')
+})
+
+test('classifies only supported free and Print-Ready export combinations', () => {
+  assert.equal(getExportTier('jpg', 0.6), 'free')
+  assert.equal(getExportTier('png', 1), 'print_ready')
+  assert.equal(getExportTier('png', 1.5), 'print_ready')
+  assert.equal(getExportTier('pdf', 1), 'print_ready')
+  assert.equal(getExportTier('pdf', 1.5), 'print_ready')
+  assert.equal(getExportTier('jpg', 1), null)
+  assert.equal(getExportTier('png', 0.6), null)
+})
+
+test('authorizes exports with the correct paywall and watermark policy', () => {
+  const enabledOffer = { enabled: true, unitAmount: 199, currency: 'usd', policies: {} }
+  const disabledOffer = { ...enabledOffer, enabled: false }
+
+  assert.deepEqual(
+    buildExportAccessDecision({ offer: enabledOffer, tier: 'free' }),
+    {
+      authorized: true,
+      paywallEnabled: true,
+      tier: 'free',
+      reason: 'free_export',
+      watermarks: { top: true, pattern: true },
+      offer: enabledOffer
+    }
+  )
+  assert.deepEqual(
+    buildExportAccessDecision({ offer: disabledOffer, tier: 'print_ready' }),
+    {
+      authorized: true,
+      paywallEnabled: false,
+      tier: 'print_ready',
+      reason: 'print_ready_disabled',
+      watermarks: { top: true, pattern: false },
+      offer: disabledOffer
+    }
+  )
+  assert.equal(
+    buildExportAccessDecision({ offer: enabledOffer, tier: 'print_ready' }).reason,
+    'authentication_required'
+  )
+  assert.deepEqual(
+    buildExportAccessDecision({
+      offer: enabledOffer,
+      tier: 'print_ready',
+      userId: 'user-id',
+      unlock: { active: true }
+    }).watermarks,
+    { top: false, pattern: false }
+  )
+  assert.equal(
+    buildExportAccessDecision({
+      offer: enabledOffer,
+      tier: 'print_ready',
+      userId: 'user-id',
+      unlock: { active: false }
+    }).reason,
+    'revoked'
+  )
 })
 
 test('maps Stripe refund totals without coupling them to unlock state', () => {

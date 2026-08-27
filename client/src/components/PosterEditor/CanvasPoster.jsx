@@ -8,7 +8,7 @@ const parseNumeric = (value, fallback = 0) => {
     return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-const CanvasPoster = forwardRef(({ onImageReady, onError, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont, scale = 1.0, isThumbnail = false, includeWatermark = true, onArtistIdDiscovered }, ref) => {
+const CanvasPoster = forwardRef(({ onImageReady, onError, posterData, generatePoster, onTitleSizeAdjust, onTracksSizeAdjust, customFont, scale = 1.0, isThumbnail = false, includeWatermark = true, includePatternWatermark = includeWatermark, onArtistIdDiscovered }, ref) => {
     const canvasRef = useRef(null);
     const onImageReadyRef = useRef(onImageReady);
     const onTitleSizeAdjustRef = useRef(onTitleSizeAdjust);
@@ -155,37 +155,85 @@ const CanvasPoster = forwardRef(({ onImageReady, onError, posterData, generatePo
                 const watermarkWidth = Math.round(baseWatermarkWidth * scale * 1.5);
                 const watermarkHeight = Math.round(baseWatermarkHeight * scale * 1.5);
 
+                const patternMarkWidth = Math.round(430 * scale);
+                const patternMarkHeight = Math.round((patternMarkWidth * WATERMARK_VIEWBOX_HEIGHT) / WATERMARK_VIEWBOX_WIDTH);
+                const patternTileWidth = Math.round(650 * scale);
+                const patternTileHeight = Math.round(320 * scale);
+
                 const watermarkTextColor = posterData.watermarkTextColor || posterData.textColor || '#ffffff';
                 const watermarkIconColor = posterData.watermarkIconColor || watermarkTextColor;
-                const svgString = generateLogoWatermark(watermarkTextColor, watermarkWidth, watermarkHeight, watermarkIconColor);
+                const visibleSvg = includeWatermark
+                    ? generateLogoWatermark(watermarkTextColor, watermarkWidth, watermarkHeight, watermarkIconColor)
+                    : null;
+                const patternSvg = includePatternWatermark
+                    ? generateLogoWatermark('#ffffff', patternMarkWidth, patternMarkHeight, '#ffffff')
+                    : null;
 
-                const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-                const url = URL.createObjectURL(svgBlob);
+                const loadSvgImage = (svgString) => new Promise((resolve) => {
+                    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                    const url = URL.createObjectURL(svgBlob);
+                    const image = new Image();
 
-                const image = new Image();
-                image.src = url;
-
-                return new Promise((resolve) => {
-                    const finalize = () => {
+                    const finalize = (loadedImage = null) => {
                         image.onload = null;
                         image.onerror = null;
                         image.onabort = null;
                         URL.revokeObjectURL(url);
-                        resolve();
+                        resolve(loadedImage);
                     };
 
-                    image.onload = () => {
-                        if (isCurrent()) {
-                            ctx.globalAlpha = 0.5;
-                            ctx.drawImage(image, width - Math.round(105 * scale) - watermarkWidth, Math.round(37 * scale * 1.5), watermarkWidth, watermarkHeight);
-                            ctx.globalAlpha = 1;
-                        }
-                        finalize();
-                    };
-
-                    image.onerror = finalize;
-                    image.onabort = finalize;
+                    image.onload = () => finalize(image);
+                    image.onerror = () => finalize();
+                    image.onabort = () => finalize();
+                    image.src = url;
                 });
+
+                const [visibleImage, patternImage] = await Promise.all([
+                    visibleSvg ? loadSvgImage(visibleSvg) : Promise.resolve(null),
+                    patternSvg ? loadSvgImage(patternSvg) : Promise.resolve(null),
+                ]);
+
+                if (!isCurrent()) return;
+
+                if (patternImage) {
+                    const patternCanvas = document.createElement('canvas');
+                    patternCanvas.width = patternTileWidth;
+                    patternCanvas.height = patternTileHeight;
+
+                    const patternContext = patternCanvas.getContext('2d');
+                    patternContext?.drawImage(
+                        patternImage,
+                        Math.round((patternTileWidth - patternMarkWidth) / 2),
+                        Math.round((patternTileHeight - patternMarkHeight) / 2),
+                        patternMarkWidth,
+                        patternMarkHeight
+                    );
+
+                    const repeatedPattern = ctx.createPattern(patternCanvas, 'repeat');
+                    if (repeatedPattern) {
+                        const coverSize = Math.ceil(Math.hypot(width, height));
+                        ctx.save();
+                        ctx.globalAlpha = 0.065;
+                        ctx.translate(width / 2, height / 2);
+                        ctx.rotate(-Math.PI / 9);
+                        ctx.translate(-width / 2, -height / 2);
+                        ctx.fillStyle = repeatedPattern;
+                        ctx.fillRect(
+                            (width - coverSize) / 2,
+                            (height - coverSize) / 2,
+                            coverSize,
+                            coverSize
+                        );
+                        ctx.restore();
+                    }
+                }
+
+                if (visibleImage) {
+                    ctx.save();
+                    ctx.globalAlpha = 0.5;
+                    ctx.drawImage(visibleImage, width - Math.round(105 * scale) - watermarkWidth, Math.round(37 * scale * 1.5), watermarkWidth, watermarkHeight);
+                    ctx.restore();
+                }
             };
 
             const drawAlbumInfos = async () => {
@@ -572,7 +620,7 @@ const CanvasPoster = forwardRef(({ onImageReady, onError, posterData, generatePo
             }
             if (!isCurrent()) return;
 
-            if (includeWatermark) await drawWaterMark();
+            if (includeWatermark || includePatternWatermark) await drawWaterMark();
 
             if (!isCurrent()) return;
             if (posterData.showArtistSignature) {
@@ -605,7 +653,7 @@ const CanvasPoster = forwardRef(({ onImageReady, onError, posterData, generatePo
         return () => {
             disposed = true;
         };
-    }, [generatePoster, posterData, customFont, scale, isThumbnail, includeWatermark]);
+    }, [generatePoster, posterData, customFont, scale, isThumbnail, includeWatermark, includePatternWatermark]);
 
     const canvasWidth = Math.round(2480 * scale);
     const canvasHeight = Math.round(3508 * scale);

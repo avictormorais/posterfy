@@ -77,7 +77,15 @@ class ApiService {
   }
 
   async getPrintReadyOffer() {
-    return this.request('/api/print-ready/offer')
+    return this.request('/api/print-ready/offer', { cache: 'no-store' })
+  }
+
+  async authorizePrintReadyExport({ albumId, format, scale }) {
+    return this.request('/api/print-ready/export-access', {
+      method: 'POST',
+      cache: 'no-store',
+      body: JSON.stringify({ albumId, format, scale })
+    })
   }
 
   async getPrintUnlock(albumId) {

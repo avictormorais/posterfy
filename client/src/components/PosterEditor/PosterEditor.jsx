@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/prop-types */
 import styled, { css, keyframes } from "styled-components";
-import { IoArrowBack, IoCheckmark, IoImageOutline, IoLockClosedOutline, IoTrashOutline } from "react-icons/io5";
+import { IoArrowBack, IoCheckmark, IoImageOutline, IoSparklesOutline, IoTrashOutline } from "react-icons/io5";
 import { BiSolidTrashAlt } from "react-icons/bi";
 import { BiSolidAlbum } from "react-icons/bi";
 import { RiListOrdered } from "react-icons/ri";
@@ -13,6 +13,7 @@ import ColorInput from "./inputs/ColorInput";
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { usePrintReady } from "../../contexts/PrintReadyContext";
 import apiService from "../../services/apiService";
 import { useTranslation } from 'react-i18next';
 import ColorSelector from "./ColorSelector";
@@ -996,14 +997,14 @@ const FormatTabButton = styled.button`
     position: relative;
     padding: 10px 12px 13px;
     border: 0;
-    background: transparent;
-    color: ${props => props.$locked ? 'var(--textSecondary)' : props.$selected ? 'var(--textColor)' : 'var(--textSecondary)'};
+    background: ${props => props.$premium ? 'color-mix(in srgb, var(--AccentColor) 3%, transparent)' : 'transparent'};
+    color: ${props => props.$premium ? 'var(--AccentColor)' : props.$selected ? 'var(--textColor)' : 'var(--textSecondary)'};
     font: inherit;
     font-size: 0.95em;
     font-weight: 600;
-    cursor: ${props => props.$locked ? 'not-allowed' : 'pointer'};
+    cursor: pointer;
     text-align: center;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, background-color 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1017,17 +1018,19 @@ const FormatTabButton = styled.button`
         left: 0;
         height: 2px;
         border-radius: 999px 999px 0 0;
-        background: ${props => props.$selected && !props.$locked ? 'var(--AccentColor)' : 'transparent'};
-        transform: ${props => props.$selected && !props.$locked ? 'scaleX(1)' : 'scaleX(0.65)'};
+        background: ${props => props.$selected ? 'var(--AccentColor)' : 'transparent'};
+        transform: ${props => props.$selected ? 'scaleX(1)' : 'scaleX(0.65)'};
         transition: background-color 0.2s ease, transform 0.2s ease;
     }
 
     &:not(:disabled):hover {
-        color: var(--textColor);
+        color: ${props => props.$premium ? 'var(--AccentColor)' : 'var(--textColor)'};
+        background: ${props => props.$premium ? 'color-mix(in srgb, var(--AccentColor) 8%, transparent)' : 'transparent'};
     }
 
     &:disabled {
         opacity: 0.62;
+        cursor: not-allowed;
     }
 
     &:focus-visible {
@@ -1050,14 +1053,14 @@ const SizeOption = styled.button`
     padding: 14px 20px;
     border: 0;
     border-bottom: 1px solid var(--borderColor);
-    background: ${props => props.$locked ? 'var(--glassBackground)' : props.$selected ? 'rgba(223, 109, 64, 0.08)' : 'transparent'};
+    background: ${props => props.$premium ? 'color-mix(in srgb, var(--AccentColor) 3%, transparent)' : props.$selected ? 'rgba(223, 109, 64, 0.08)' : 'transparent'};
     color: var(--textColor);
     font: inherit;
     text-align: left;
     display: flex;
     align-items: center;
     gap: 16px;
-    cursor: ${props => props.$locked ? 'not-allowed' : 'pointer'};
+    cursor: pointer;
     transition: background-color 0.2s ease;
 
     &:last-child {
@@ -1065,11 +1068,12 @@ const SizeOption = styled.button`
     }
 
     &:not(:disabled):hover {
-        background: ${props => props.$selected ? 'rgba(223, 109, 64, 0.11)' : 'var(--glassBackground)'};
+        background: ${props => props.$premium ? 'color-mix(in srgb, var(--AccentColor) 8%, transparent)' : props.$selected ? 'rgba(223, 109, 64, 0.11)' : 'var(--glassBackground)'};
     }
 
     &:disabled {
         opacity: 0.62;
+        cursor: not-allowed;
     }
 
     &:focus-visible {
@@ -1090,10 +1094,10 @@ const SizeIcon = styled(IoImageOutline)`
     width: 27px;
     height: 27px;
     flex-shrink: 0;
-    color: ${props => props.$locked ? 'var(--textSecondary)' : props.$selected ? 'var(--textColor)' : 'var(--textSecondary)'};
+    color: ${props => props.$premium ? 'var(--AccentColor)' : props.$selected ? 'var(--textColor)' : 'var(--textSecondary)'};
 `;
 
-const LockedIcon = styled(IoLockClosedOutline)`
+const PremiumIcon = styled(IoSparklesOutline)`
     width: 15px;
     height: 15px;
     color: currentColor;
@@ -1149,20 +1153,21 @@ const SelectionIndicator = styled.span`
     }
 `;
 
-const LockIndicator = styled.span`
-    width: 24px;
-    height: 24px;
-    border: 1px solid var(--borderColor);
+const PrintReadyIndicator = styled.span`
+    width: 26px;
+    height: 26px;
+    border: 1px solid color-mix(in srgb, var(--AccentColor) 24%, var(--borderColor));
     border-radius: 50%;
-    background: var(--glassBackground);
+    background: color-mix(in srgb, var(--AccentColor) 7%, transparent);
+    color: var(--AccentColor);
     display: grid;
     place-items: center;
     flex-shrink: 0;
 
     svg {
-        width: 13px;
-        height: 13px;
-        color: var(--textSecondary);
+        width: 14px;
+        height: 14px;
+        color: currentColor;
     }
 `;
 
@@ -1364,6 +1369,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
+    const {
+        enabled: isPrintReadyEnabled,
+        offer: printReadyOffer,
+        status: printReadyStatus,
+        error: printReadyAvailabilityError,
+        refresh: refreshPrintReadyAvailability,
+        syncOffer: syncPrintReadyOffer,
+    } = usePrintReady();
     const previewRef = useRef(null);
     const canvasRef = useRef(null);
     const exportCanvasRef = useRef(null);
@@ -1584,10 +1597,10 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [exportFormat, setExportFormat] = useState('jpg');
     const [exportScale, setExportScale] = useState(0.6);
     const [exportIncludesWatermark, setExportIncludesWatermark] = useState(true);
+    const [exportIncludesPatternWatermark, setExportIncludesPatternWatermark] = useState(true);
     const [exportError, setExportError] = useState('');
     const [isPrintReadyUnlocked, setIsPrintReadyUnlocked] = useState(false);
     const [unlockChecked, setUnlockChecked] = useState(false);
-    const [printReadyOffer, setPrintReadyOffer] = useState(null);
     const [showPrintReadyModal, setShowPrintReadyModal] = useState(false);
     const [checkoutLoading, setCheckoutLoading] = useState(false);
     const [checkoutError, setCheckoutError] = useState('');
@@ -1625,7 +1638,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     useEffect(() => {
         let cancelled = false;
-        if (!isAuthenticated || !albumID) {
+        if (!isPrintReadyEnabled || !isAuthenticated || !albumID) {
             setIsPrintReadyUnlocked(false);
             setUnlockChecked(true);
             return;
@@ -1642,7 +1655,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 if (!cancelled) setUnlockChecked(false);
             });
         return () => { cancelled = true; };
-    }, [albumID, isAuthenticated]);
+    }, [albumID, isAuthenticated, isPrintReadyEnabled]);
 
     useEffect(() => {
         if (activeTab === 'export' && !printReadyViewTrackedRef.current) {
@@ -1652,17 +1665,10 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     }, [activeTab, albumID, posterId, source]);
 
     useEffect(() => {
-        if (!showPrintReadyModal || printReadyOffer) return;
-        let cancelled = false;
-        apiService.getPrintReadyOffer()
-            .then(({ offer }) => {
-                if (!cancelled) setPrintReadyOffer(offer);
-            })
-            .catch((error) => {
-                if (!cancelled) setCheckoutError(error.message || t('PRINT_READY_Unavailable'));
-            });
-        return () => { cancelled = true; };
-    }, [showPrintReadyModal, printReadyOffer, t]);
+        if (isPrintReadyEnabled) return;
+        setShowPrintReadyModal(false);
+        setCheckoutError('');
+    }, [isPrintReadyEnabled]);
 
     const hasModelBackgroundColor = modelParams?.backgroundColor !== undefined;
     const hasModelTextColor = modelParams?.textColor !== undefined;
@@ -1957,11 +1963,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         return flow;
     };
 
-    const startExport = (format, scale, includeWatermark) => {
+    const startExport = (format, scale, includeWatermark, includePatternWatermark = includeWatermark) => {
         setExportError('');
         setExportFormat(format);
         setExportScale(scale);
         setExportIncludesWatermark(includeWatermark);
+        setExportIncludesPatternWatermark(includePatternWatermark);
         setExportMode(format);
         setGenerateExport(true);
     };
@@ -1987,7 +1994,19 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
     };
 
-    const ensurePremiumAccess = async (action, exportWhenUnlocked) => {
+    const ensurePremiumAccess = async (action) => {
+        let paywallEnabled = isPrintReadyEnabled;
+        if (printReadyStatus !== 'ready') {
+            try {
+                const latestOffer = await refreshPrintReadyAvailability();
+                paywallEnabled = latestOffer.enabled;
+            } catch (error) {
+                setExportError(error.message || printReadyAvailabilityError?.message || t('PRINT_READY_Unavailable'));
+                return false;
+            }
+        }
+        if (!paywallEnabled) return true;
+
         trackPrintReadyAttempt(
             albumID,
             action.format,
@@ -2014,7 +2033,6 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
 
         if (unlocked) {
-            if (exportWhenUnlocked) startExport(action.format, action.scale, false);
             return true;
         }
 
@@ -2031,17 +2049,61 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             return;
         }
 
-        if (policy.tier === 'free') {
-            startExport(format, scale, policy.includeWatermark);
-            return;
+        if (policy.tier === 'print_ready') {
+            trackPrintReadyAttempt(
+                albumID,
+                format,
+                scale === 1.5 ? 'extreme' : 'normal',
+                source || (posterId ? 'community' : 'editor')
+            );
         }
-        await ensurePremiumAccess({ type: 'print_ready_export', format, scale }, true);
+
+        setExportError('');
+        try {
+            const access = await apiService.authorizePrintReadyExport({ albumId: albumID, format, scale });
+            syncPrintReadyOffer(access.offer);
+
+            if (access.authorized) {
+                if (policy.tier === 'print_ready' && access.reason === 'unlocked') {
+                    setIsPrintReadyUnlocked(true);
+                    setUnlockChecked(true);
+                }
+                startExport(
+                    format,
+                    scale,
+                    access.watermarks?.top === true,
+                    access.watermarks?.pattern === true
+                );
+                return;
+            }
+
+            if (access.reason === 'authentication_required') {
+                openLoginForAction({ type: 'print_ready_export', format, scale });
+                return;
+            }
+
+            setIsPrintReadyUnlocked(false);
+            setUnlockChecked(true);
+            if (access.reason === 'purchase_required') {
+                setCheckoutError('');
+                setShowPrintReadyModal(true);
+                trackPrintReadyOfferView(albumID);
+                return;
+            }
+
+            setExportError(access.reason === 'revoked'
+                ? t('PRINT_READY_Status_revoked')
+                : t('PRINT_READY_StatusFailed'));
+        } catch (error) {
+            setExportError(error.message || t('PRINT_READY_StatusFailed'));
+        }
     };
 
     const handlePremiumSelection = async (format, scale) => {
         setExportFormat(format);
         setExportScale(scale);
-        await ensurePremiumAccess({ type: 'print_ready_export', format, scale }, false);
+        if (!isPrintReadyEnabled) return;
+        await ensurePremiumAccess({ type: 'print_ready_export', format, scale });
     };
 
     const handleDownloadClick = () => {
@@ -2139,7 +2201,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 setIsPrintReadyUnlocked(true);
                 setUnlockChecked(true);
                 setShowPrintReadyModal(false);
-                startExport(action.format, action.scale, false);
+                await requestExport(action.format, action.scale);
                 return;
             }
 
@@ -2182,15 +2244,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
 
         if (checkoutResult !== 'success') {
-            if (!unlockChecked) return;
             resumeStartedRef.current = true;
             trackPrintReadyLoginComplete(albumID);
-            if (isPrintReadyUnlocked) {
-                startExport(resumeFlow.action.format, resumeFlow.action.scale, false);
-            } else {
-                setShowPrintReadyModal(true);
-                trackPrintReadyOfferView(albumID);
-            }
+            requestExport(resumeFlow.action.format, resumeFlow.action.scale);
             return;
         }
 
@@ -2236,7 +2292,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                 entitlementTracked: true,
                             }
                         });
-                        startExport(resumeFlow.action.format, resumeFlow.action.scale, false);
+                        await requestExport(resumeFlow.action.format, resumeFlow.action.scale);
                         return;
                     }
                     if (['failed', 'expired', 'revoked'].includes(result.status)) {
@@ -2702,12 +2758,14 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
 
     return(
         <>
-            {showPrintReadyModal && (
+            {showPrintReadyModal && isPrintReadyEnabled && (
                 <PrintReadyModal
                     albumName={albumName}
                     offer={printReadyOffer}
                     loading={checkoutLoading}
-                    error={checkoutError || (printReadyOffer?.enabled === false ? t('PRINT_READY_Unavailable') : '')}
+                    error={checkoutError
+                        || (printReadyStatus === 'error' ? (printReadyAvailabilityError?.message || t('PRINT_READY_Unavailable')) : '')
+                        || (printReadyOffer?.enabled === false ? t('PRINT_READY_Unavailable') : '')}
                     locale={i18n.resolvedLanguage || i18n.language}
                     onClose={() => !checkoutLoading && setShowPrintReadyModal(false)}
                     onConfirm={handleStartCheckout}
@@ -2780,6 +2838,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             customFont={customFont}
                             scale={0.3}
                             includeWatermark={true}
+                            includePatternWatermark={isPrintReadyEnabled}
                         />
 
                         {generateExport && (
@@ -2793,6 +2852,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                     customFont={customFont}
                                     scale={exportScale}
                                     includeWatermark={exportIncludesWatermark}
+                                    includePatternWatermark={exportIncludesPatternWatermark}
                                     onError={handleExportError}
                                 />
                             </div>
@@ -3111,7 +3171,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <ExportLabel>{t('EXPORT_Format')}</ExportLabel>
                                         <FormatTabs role="radiogroup" aria-label={t('EXPORT_Format')}>
                                             {EXPORT_FORMATS.map((format) => {
-                                                const isLocked = format.requiresPremium && !isPrintReadyUnlocked;
+                                                const showsPrintReady = isPrintReadyEnabled && format.requiresPremium && !isPrintReadyUnlocked;
                                                 const selectedScale = [1, 1.5].includes(exportScale) ? exportScale : 1;
 
                                                 return (
@@ -3120,11 +3180,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                                         type="button"
                                                         role="radio"
                                                         aria-checked={exportFormat === format.value}
-                                                        aria-label={isLocked
-                                                            ? t('EXPORT_LockedOption', { option: t(format.labelKey) })
+                                                        aria-label={showsPrintReady
+                                                            ? t('EXPORT_ExplorePrintReady', { option: t(format.labelKey) })
                                                             : t('EXPORT_SelectFormat', { format: t(format.labelKey) })}
-                                                        title={isLocked ? t('EXPORT_Locked') : undefined}
-                                                        $locked={isLocked}
+                                                        title={showsPrintReady ? t('EXPORT_ExplorePrintReady', { option: t(format.labelKey) }) : undefined}
+                                                        $premium={showsPrintReady}
                                                         $selected={exportFormat === format.value}
                                                         onClick={() => {
                                                             if (format.requiresPremium) handlePremiumSelection(format.value, selectedScale);
@@ -3135,7 +3195,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                                         }}
                                                     >
                                                         {t(format.labelKey)}
-                                                        {isLocked && <LockedIcon aria-hidden="true" />}
+                                                        {showsPrintReady && <PremiumIcon aria-hidden="true" />}
                                                     </FormatTabButton>
                                                 );
                                             })}
@@ -3146,7 +3206,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <ExportLabel>{t('EXPORT_Size')}</ExportLabel>
                                         <SizeOptions role="radiogroup" aria-label={t('EXPORT_Size')}>
                                             {EXPORT_SIZES.map((size) => {
-                                                const isLocked = size.requiresPremium && !isPrintReadyUnlocked;
+                                                const showsPrintReady = isPrintReadyEnabled && size.requiresPremium && !isPrintReadyUnlocked;
                                                 const isSelected = exportScale === size.scale;
 
                                                 return (
@@ -3155,21 +3215,24 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                                         type="button"
                                                         role="radio"
                                                         aria-checked={isSelected}
-                                                        aria-label={isLocked
-                                                            ? t('EXPORT_LockedOption', { option: t(size.nameKey) })
+                                                        aria-label={showsPrintReady
+                                                            ? t('EXPORT_ExplorePrintReady', { option: t(size.nameKey) })
                                                             : t('EXPORT_SelectSize', { size: t(size.nameKey) })}
-                                                        title={isLocked ? t('EXPORT_Locked') : undefined}
-                                                        $locked={isLocked}
+                                                        title={showsPrintReady ? t('EXPORT_ExplorePrintReady', { option: t(size.nameKey) }) : undefined}
+                                                        $premium={showsPrintReady}
                                                         $selected={isSelected}
                                                         onClick={() => {
                                                             if (size.requiresPremium) handlePremiumSelection(
                                                                 ['png', 'pdf'].includes(exportFormat) ? exportFormat : 'png',
                                                                 size.scale
                                                             );
-                                                            else setExportScale(0.6);
+                                                            else {
+                                                                setExportFormat('jpg');
+                                                                setExportScale(0.6);
+                                                            }
                                                         }}
                                                     >
-                                                        <SizeIcon $locked={isLocked} $selected={isSelected} aria-hidden="true" />
+                                                        <SizeIcon $premium={showsPrintReady} $selected={isSelected} aria-hidden="true" />
                                                         <SizeOptionContent>
                                                             <SizeName>{t(size.nameKey)}</SizeName>
                                                             <SizeDescription>{t(size.descriptionKey)}</SizeDescription>
@@ -3177,10 +3240,10 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                                         {size.recommended && (
                                                             <RecommendedBadge>{t('EXPORT_Recommended')}</RecommendedBadge>
                                                         )}
-                                                        {isLocked ? (
-                                                            <LockIndicator aria-hidden="true">
-                                                                <LockedIcon />
-                                                            </LockIndicator>
+                                                        {showsPrintReady ? (
+                                                            <PrintReadyIndicator aria-hidden="true">
+                                                                <PremiumIcon />
+                                                            </PrintReadyIndicator>
                                                         ) : (
                                                             <SelectionIndicator $selected={isSelected} aria-hidden="true">
                                                                 {isSelected && <IoCheckmark />}

@@ -14,6 +14,8 @@ const PRICE_CENTS = 199
 const OFFER_CACHE_MS = 5 * 60 * 1000
 const ALBUM_ID_PATTERN = /^[A-Za-z0-9]{22}$/
 const FLOW_ID_PATTERN = /^[A-Za-z0-9-]{8,100}$/
+const PRINT_READY_FORMATS = new Set(['png', 'pdf'])
+const PRINT_READY_SCALES = new Set([1, 1.5])
 
 let stripeClient
 let cachedOffer
@@ -37,6 +39,65 @@ const getStripe = () => {
 const isLiveKey = () => process.env.STRIPE_SECRET_KEY?.startsWith('sk_live_') || false
 
 export const isSpotifyAlbumId = (value) => typeof value === 'string' && ALBUM_ID_PATTERN.test(value)
+
+export const getExportTier = (format, scale) => {
+  const normalizedScale = Number(scale)
+  if (format === 'jpg' && normalizedScale === 0.6) return 'free'
+  if (PRINT_READY_FORMATS.has(format) && PRINT_READY_SCALES.has(normalizedScale)) return 'print_ready'
+  return null
+}
+
+export const buildExportAccessDecision = ({ offer, tier, userId = null, unlock = null }) => {
+  const publicOffer = {
+    enabled: offer.enabled,
+    unitAmount: offer.unitAmount,
+    currency: offer.currency,
+    policies: offer.policies
+  }
+
+  if (!offer.enabled) {
+    return {
+      authorized: true,
+      paywallEnabled: false,
+      tier,
+      reason: 'print_ready_disabled',
+      watermarks: { top: true, pattern: false },
+      offer: publicOffer
+    }
+  }
+
+  if (tier === 'free') {
+    return {
+      authorized: true,
+      paywallEnabled: true,
+      tier,
+      reason: 'free_export',
+      watermarks: { top: true, pattern: true },
+      offer: publicOffer
+    }
+  }
+
+  if (!userId) {
+    return {
+      authorized: false,
+      paywallEnabled: true,
+      tier,
+      reason: 'authentication_required',
+      watermarks: null,
+      offer: publicOffer
+    }
+  }
+
+  const authorized = Boolean(unlock?.active)
+  return {
+    authorized,
+    paywallEnabled: true,
+    tier,
+    reason: authorized ? 'unlocked' : (unlock ? 'revoked' : 'purchase_required'),
+    watermarks: authorized ? { top: false, pattern: false } : null,
+    offer: publicOffer
+  }
+}
 
 export const sanitizeReturnPath = (value) => {
   if (value === '/') return '/'
@@ -349,6 +410,21 @@ class PrintReadyService {
       revoked: Boolean(unlock && !unlock.active),
       unlock: unlock || null
     }
+  }
+
+  async authorizeExport({ userId, albumId, format, scale }) {
+    if (!isSpotifyAlbumId(albumId)) throw serviceError('Invalid album ID', 400, 'INVALID_ALBUM_ID')
+
+    const tier = getExportTier(format, scale)
+    if (!tier) throw serviceError('Invalid export combination', 400, 'INVALID_EXPORT_COMBINATION')
+
+    const offer = await getOffer()
+    if (!offer.enabled || tier === 'free' || !userId) {
+      return buildExportAccessDecision({ offer, tier, userId })
+    }
+
+    const unlock = await getUnlock(userId, albumId).lean()
+    return buildExportAccessDecision({ offer, tier, userId, unlock })
   }
 
   async createCheckout({ userId, albumId, posterId, flowId, returnPath, isAdmin = false }) {
