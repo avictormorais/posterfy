@@ -180,9 +180,9 @@ function ThemeSelector() {
   const themes = [
     { id: "light", name: "Light", color: "#f0efeb", icon: <FaSun />, isLight: true },
     { id: "dark", name: "Dark", color: "#070815", icon: <FaMoon />, isLight: false },
-    { id: "rose", name: "Rose", color: "#232136", icon: <FaFire />, isLight: false },
-    { id: "carmesin", name: "Crimson", color: "#1f0c19", icon: <FaGem />, isLight: false },
-    { id: "brown", name: "Earth", color: "#1e1516", icon: <FaMountain />, isLight: false },
+    // { id: "rose", name: "Rose", color: "#232136", icon: <FaFire />, isLight: false },
+    // { id: "carmesin", name: "Crimson", color: "#1f0c19", icon: <FaGem />, isLight: false },
+    // { id: "brown", name: "Earth", color: "#1e1516", icon: <FaMountain />, isLight: false },
   ]
 
   const currentTheme = themes.find(t => t.id === theme) || themes[0]
