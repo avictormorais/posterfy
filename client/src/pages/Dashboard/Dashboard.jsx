@@ -906,25 +906,6 @@ export default function Dashboard() {
 
             <BioSection>
                 {userProfile?.bio && <BioText>{userProfile.bio}</BioText>}
-                {userProfile !== null && isOwner && (
-                    <ProfileLinks>
-                        {userProfile?.hasSpotify ? (
-                            <SpotifyLinkBtn
-                                href={`https://open.spotify.com/user/${userProfile.spotifyId}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <SpotifyIconWhite size={13} />
-                                {t('DASH_OpenSpotify')}
-                            </SpotifyLinkBtn>
-                        ) : (
-                            <ConnectSpotifyBtn onClick={() => { window.location.href = apiService.getSpotifyAuthUrl(); }}>
-                                <SiSpotify size={13} />
-                                {t('DASH_ConnectSpotify')}
-                            </ConnectSpotifyBtn>
-                        )}
-                    </ProfileLinks>
-                )}
                 {userProfile !== null && !isOwner && userProfile?.hasSpotify && (
                     <ProfileLinks>
                         <SpotifyLinkBtn

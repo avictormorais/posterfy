@@ -1169,14 +1169,6 @@ export default function Profile() {
 
             <BioSection>
                 {userProfile?.bio && <BioText>{userProfile.bio}</BioText>}
-                {userProfile !== null && isOwner && !userProfile?.hasSpotify && (
-                    <ProfileLinks>
-                        <ConnectSpotifyBtn onClick={() => { trackProfileSpotifyConnect(routeUsername); window.location.href = apiService.getSpotifyAuthUrl(); }}>
-                            <SiSpotify size={13} />
-                            {t('DASH_ConnectSpotify')}
-                        </ConnectSpotifyBtn>
-                    </ProfileLinks>
-                )}
                 {userProfile !== null && userProfile?.hasSpotify && (isOwner ? userProfile?.showSpotifyProfile : true) && (
                     <ProfileLinks>
                         <SpotifyLinkBtn
