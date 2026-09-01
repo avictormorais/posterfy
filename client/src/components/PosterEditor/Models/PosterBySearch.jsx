@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+/* eslint-disable react/prop-types */
+import { useState, useEffect, useRef } from "react";
 import PosterEditor from "../PosterEditor";
 import ModelSelector from "../ModelSelector";
 import Searchbar from "../../Searchbar";
@@ -30,12 +31,18 @@ const PosterBySearch = ({ onBack, onPublishSuccess }) => {
         setModelParams(null);
     }
 
-    function handleClickBack() {
+    function handleModelSelectorBack() {
         setAlbumId(null);
         setShowModelSelector(false);
         setSelectedModel(null);
         setModelParams(null);
         if (onBack) onBack();
+    }
+
+    function handleEditorBack() {
+        setShowModelSelector(true);
+        setSelectedModel(null);
+        setModelParams(null);
     }
 
 
@@ -47,7 +54,7 @@ const PosterBySearch = ({ onBack, onPublishSuccess }) => {
         return (
             <PosterEditor 
                 albumID={albumId} 
-                handleClickBack={handleClickBack} 
+                handleClickBack={handleEditorBack} 
                 model={selectedModel} 
                 modelParams={modelParams}
                 source="search_creation"
@@ -64,7 +71,7 @@ const PosterBySearch = ({ onBack, onPublishSuccess }) => {
                         setModelParams(params);
                         setShowModelSelector(false);
                     }}
-                    onBack={handleClickBack}
+                    onBack={handleModelSelectorBack}
                 />
             </div>
         );
