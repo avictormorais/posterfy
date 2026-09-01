@@ -163,12 +163,14 @@ function Grid({ query, onclick }) {
                 
                 const data = await response.json();
                 const albumsData = (data.albums?.items || []).filter(album => album !== null && album !== undefined);
-                
+
                 const newAlbums = albumsData.map(album => ({
                     id: album.id,
                     title: album.name,
                     artist: album.artists?.map(artist => artist.name).join(', '),
-                    cover: album.images[0]?.url
+                    cover: album.images[0]?.url,
+                    year: album.release_date ? album.release_date.split('-')[0] : 'N/A',
+                    tracksNum: album.total_tracks || 'N/A'
                 }));
 
                 if (isLoadMore) {
@@ -242,7 +244,9 @@ function Grid({ query, onclick }) {
                 id: album.id,
                 title: album.name,
                 artist: album.artists?.map(artist => artist.name).join(', '),
-                cover: album.images[0]?.url
+                cover: album.images[0]?.url,
+                year: album.release_date ? album.release_date.split('-')[0] : 'N/A',
+                tracksNum: album.total_tracks || 'N/A'
             }));
 
             setShowButton(false);
@@ -289,6 +293,8 @@ function Grid({ query, onclick }) {
                                     cover={album.cover} 
                                     title={album.title} 
                                     artist={album.artist} 
+                                    tracksNum={album.tracksNum}
+                                    year={album.year}
                                     id={album.id}
                                     animationDelay={relativeIndex * 80}
                                 />

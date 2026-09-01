@@ -1,21 +1,24 @@
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const Container = styled.div`
     width: min-content;
-    padding: 10px;
+    padding: 0px;
     border-radius: 10px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    min-width: 200px;
+    min-width: 230px;
     max-width: 220px;
     opacity: ${props => props.$visible ? 1 : 0};
     transform: translateY(${props => props.$visible ? '0' : '20px'});
     transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
                 transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity, transform;
+    background-color: var(--albumColor);
+    border: 1px solid var(--borderColor);
 
     &:hover{
         transform: translateY(0) scale(1.03);
@@ -32,7 +35,6 @@ const Container = styled.div`
         border-radius: 10px;
         background-color: transparent;
         transition: all 0.3s;
-        background-color: var(--glassBackground);
         z-index: 1;
         border: 1px solid transparent;
     }
@@ -62,10 +64,9 @@ const Container = styled.div`
 
 const Cover = styled.img`
     width: 100%;
-    min-height: 200px;
-    background-color: var(--glassBackground);
+    min-height: 230px;
     height: auto;
-    border-radius: 10px;
+    border-radius: 10px 10px 0 0;
     z-index: 10;
     opacity: ${props => props.$loaded ? 1 : 0};
     transition: opacity 0.3s ease;
@@ -80,7 +81,7 @@ const Cover = styled.img`
 const Title = styled.h3`
     font-weight: 600;
     color: var(--textColor);
-    font-size: 0.8em;
+    font-size: 0.85em;
     margin-top: 10px;
     padding-right: 20px;
     text-overflow: ellipsis;
@@ -88,7 +89,7 @@ const Title = styled.h3`
     width: 90%;
     max-width: 180px;
     white-space: nowrap;
-    margin-left: 5px;
+    margin-left: 8px;
     z-index: 10;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -101,17 +102,17 @@ const Title = styled.h3`
 `
 
 const Artist = styled.p`
-    font-weight: 500;
+    font-weight: bold;
     color: var(--textColor);
-    font-size: 0.8em;
+    font-size: 0.7em;
     margin-top: 5px;
-    opacity: 0.5;
+    opacity: 0.35;
     text-overflow: ellipsis;
     overflow: hidden;
     width: 90%;
     max-width: 180px;
     white-space: nowrap;
-    margin-left: 5px;
+    margin-left: 8px;
     z-index: 10;
 
     @media (max-width: 650px) {
@@ -134,7 +135,47 @@ const AlbumInfos = styled.div`
     }
 `;
 
-function Album({ title, artist, cover, id, onClick, animationDelay = 0 }) {
+const HorizontalDiv = styled.div`
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    margin-block: 5px;
+    margin-left: 8px;
+    margin-bottom: 8px;
+`;
+
+const SubText = styled.p`
+    font-weight: bold;
+    color: var(--textColor);
+    font-size: 0.65em;
+    margin-top: 5px;
+    opacity: 0.5;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 180px;
+    white-space: nowrap;
+    z-index: 10;
+
+    @media (max-width: 650px) {
+        max-width: unset;
+        font-size: 0.9em;
+    }
+`;
+
+const Dot = styled.p`
+    display: flex;
+    width: 5px;
+    text-align: center;
+    margin-inline: 8px;
+    margin-block: auto;
+    font-size: 0.3em;
+    margin-top: 8px;
+    opacity: 0.5;
+`;
+
+function Album({ title, artist, cover, tracksNum, year, id, onClick, animationDelay = 0 }) {
+    const {t} = useTranslation();
+
     const [visible, setVisible] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [hasAnimated, setHasAnimated] = useState(false);
@@ -168,6 +209,11 @@ function Album({ title, artist, cover, id, onClick, animationDelay = 0 }) {
                 <Title>{title}</Title>
                 <Artist>{artist}</Artist>
             </AlbumInfos>
+            <HorizontalDiv>
+                <SubText>{year}</SubText>
+                <Dot>𒊹</Dot>
+                <SubText>{tracksNum} {t('Tracks')}</SubText>
+            </HorizontalDiv>
         </Container>
     );
 }

@@ -21,6 +21,7 @@ i18n
                 Loading: "Loading",
                 LoadingText: "We are fetching the information.",
                 Theme: "Theme",
+                Tracks: "Tracks",
                 
                 FAQ_HowItWorks_Question: "How does Posterfy work?",
                 FAQ_HowItWorks_Answer: "To obtain data and images, Posterfy uses Spotify's free API. Once the user selects an album, Posterfy gathers all the data, organizes it visually on a canvas element via JavaScript, and generates a rendered image of the canvas.",
@@ -498,6 +499,7 @@ i18n
                 Loading: "Carregando",
                 LoadingText: "Estamos buscando as informações.",
                 Theme: "Tema",
+                Tracks: "Músicas",
                 
                 FAQ_HowItWorks_Question: "Como o Posterfy funciona?",
                 FAQ_HowItWorks_Answer: "Para obter dados e imagens, o Posterfy usa a API gratuita do Spotify. Assim que o usuário seleciona um álbum, o Posterfy coleta todos os dados, organiza visualmente em um elemento canvas via JavaScript e gera uma imagem renderizada do canvas.",
@@ -975,6 +977,7 @@ i18n
                 Loading: "Cargando",
                 LoadingText: "Estamos buscando la información.",
                 Theme: "Tema",
+                Tracks: "Canciones",
                 
                 FAQ_HowItWorks_Question: "¿Cómo funciona Posterfy?",
                 FAQ_HowItWorks_Answer: "Para obtener datos e imágenes, Posterfy usa la API gratuita de Spotify. Una vez que el usuario selecciona un álbum, Posterfy recopila todos los datos, los organiza visualmente en un elemento canvas mediante JavaScript y genera una imagen renderizada del canvas.",
@@ -1312,6 +1315,7 @@ i18n
                 Loading: "加载中",
                 LoadingText: "我们正在获取信息。",
                 Theme: "主题",
+                Tracks: "曲目",
                 
                 FAQ_HowItWorks_Question: "Posterfy是如何工作的？",
                 FAQ_HowItWorks_Answer: "为了获取数据和图像，Posterfy使用Spotify的免费API。一旦用户选择了专辑，Posterfy收集所有数据，通过JavaScript在画布元素上视觉化组织，并生成画布的渲染图像。",
