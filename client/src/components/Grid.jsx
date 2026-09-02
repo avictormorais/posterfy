@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Album from "./Common/Album";
 import LoadingDiv from "./Common/LoadingDiv";
@@ -96,6 +96,8 @@ function Grid({ query, onclick }) {
     const [loadingMore, setLoadingMore] = useState(false);
     const [previousAlbumsCount, setPreviousAlbumsCount] = useState(0);
     const [showButton, setShowButton] = useState(false);
+    const [hasRequestedOnce, setHasRequestedOnce] = useState(false);
+    const requestIdRef = useRef(0);
     const limit = 10;
 
     useEffect(() => {
@@ -120,17 +122,25 @@ function Grid({ query, onclick }) {
     }, []);
 
     useEffect(() => {
+        requestIdRef.current += 1;
         setAlbums([]);
         setOffset(0);
         setHasMore(true);
         setPreviousAlbumsCount(0);
         setShowButton(false);
-    }, [query]);
+        setHasRequestedOnce(false);
+
+        if (token) {
+            setLoading(true);
+        }
+    }, [query, token]);
 
     useEffect(() => {
         const fetchAlbums = async (isLoadMore = false) => {
             if (!token) return;
-            
+
+            const currentRequestId = ++requestIdRef.current;
+
             if (!isLoadMore) {
                 setLoading(true);
             } else {
@@ -162,6 +172,11 @@ function Grid({ query, onclick }) {
                 }
                 
                 const data = await response.json();
+
+                if (currentRequestId !== requestIdRef.current) return;
+
+                setHasRequestedOnce(true);
+
                 const albumsData = (data.albums?.items || []).filter(album => album !== null && album !== undefined);
 
                 const newAlbums = albumsData.map(album => ({
@@ -183,9 +198,8 @@ function Grid({ query, onclick }) {
                     setAlbums(newAlbums);
                 }
 
-                // Show button after last album animation completes
                 const lastAlbumDelay = (newAlbums.length - 1) * 80;
-                const animationDuration = 800; // 0.8s from transition
+                const animationDuration = 800;
                 setTimeout(() => {
                     setShowButton(true);
                 }, lastAlbumDelay + animationDuration);
@@ -195,28 +209,33 @@ function Grid({ query, onclick }) {
                 setHasMore(currentTotal < totalResults && newAlbums.length === limit);
                 
             } catch (err) {
-                console.error(err);
+                if (currentRequestId === requestIdRef.current) {
+                    console.error(err);
+                }
             } finally {
-                setLoading(false);
-                setLoadingMore(false);
+                if (currentRequestId === requestIdRef.current) {
+                    setLoading(false);
+                    setLoadingMore(false);
+                }
             }
         };
     
         if (token && (albums.length === 0 || offset === 0)) {
             fetchAlbums(false);
         }
-    }, [query, token]);
+    }, [query, token, offset]);
 
     const loadMoreAlbums = async () => {
         if (!token || !hasMore || loadingMore) return;
-        
+
         const newOffset = offset + limit;
+        const currentRequestId = ++requestIdRef.current;
         setOffset(newOffset);
-        
+
         try {
             setLoadingMore(true);
             let response;
-            
+
             if (query) {
                 response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=album&limit=${limit}&offset=${newOffset}`, {
                     headers: {
@@ -236,10 +255,13 @@ function Grid({ query, onclick }) {
                 const errorMessage = await response.text();
                 throw new Error(`Erro na API: ${errorMessage}`);
             }
-            
+
             const data = await response.json();
+
+            if (currentRequestId !== requestIdRef.current) return;
+
             const albumsData = (data.albums?.items || []).filter(album => album !== null && album !== undefined);
-            
+
             const newAlbums = albumsData.map(album => ({
                 id: album.id,
                 title: album.name,
@@ -253,7 +275,6 @@ function Grid({ query, onclick }) {
             setPreviousAlbumsCount(albums.length);
             setAlbums(prevAlbums => [...prevAlbums, ...newAlbums]);
 
-            // Show button after last album animation completes
             const lastAlbumDelay = (newAlbums.length - 1) * 80;
             const animationDuration = 800;
             setTimeout(() => {
@@ -263,11 +284,15 @@ function Grid({ query, onclick }) {
             const totalResults = data.albums?.total || 0;
             const currentTotal = albums.length + newAlbums.length;
             setHasMore(currentTotal < totalResults && newAlbums.length === limit);
-            
+
         } catch (err) {
-            console.error(err);
+            if (currentRequestId === requestIdRef.current) {
+                console.error(err);
+            }
         } finally {
-            setLoadingMore(false);
+            if (currentRequestId === requestIdRef.current) {
+                setLoadingMore(false);
+            }
         }
     };
     
@@ -276,7 +301,7 @@ function Grid({ query, onclick }) {
         <>
             {loading && albums.length === 0 ? (
                 <LoadingDiv/>
-            ) : !loading && albums.length === 0 ? (
+            ) : !loading && albums.length === 0 && hasRequestedOnce ? (
                 <EmptyContainer>
                     <Empty width={220}/>
                     <EmptyText>{t('NoResults')}</EmptyText>
