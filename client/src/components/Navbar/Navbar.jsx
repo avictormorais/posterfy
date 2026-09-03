@@ -6,6 +6,7 @@ import ThemeSelector from "./ThemeSelector"
 import { RiUser3Fill, RiShieldKeyholeFill } from "react-icons/ri";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom"
+import { FaCode } from "react-icons/fa6";
 
 const fadeIn = keyframes`
   from {
@@ -49,7 +50,7 @@ const LogoContainer = styled.div`
 
 const BrandName = styled.h1`
   font-weight: bolder;
-  margin-left: 20px;
+  margin-left: 10px;
   font-size: 1.3em;
   color: var(--AccentColor);
 
@@ -60,8 +61,8 @@ const BrandName = styled.h1`
 
 const DomainText = styled.span`
   font-weight: normal;
-  font-size: 0.65em;
-  opacity: 0.4;
+  font-size: 0.625em;
+  opacity: 0.35;
   font-weight: 600;
 
   @media (max-width: 465px) {
@@ -131,8 +132,8 @@ const ProfileWrapper = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 50%;
-  width: 2.5em;
-  height: 2.5em;
+  width: 2.6em;
+  height: 2.6em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -185,8 +186,8 @@ const AdminWrapper = styled.div`
   justify-content: center;
 `;
 
-const AdminIcon = styled(RiShieldKeyholeFill)`
-  font-size: 1.2em;
+const AdminIcon = styled(FaCode)`
+  font-size: 1.4em;
   color: var(--AccentColor);
 `;
 

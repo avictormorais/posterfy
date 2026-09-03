@@ -62,16 +62,17 @@ const Description = styled.p`
   margin: 18px 0 0;
   color: var(--textSecondary);
   line-height: 1.7;
+  font-weight: bold;
+  opacity: 0.7;
 `
 
 const LinkGroup = styled.nav`
   h2 {
     margin: 0 0 16px;
     color: var(--textColor);
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
+    font-size: 0.9rem;
     text-transform: uppercase;
+    font-weight: bold;
   }
 
   div {
@@ -85,12 +86,14 @@ const LinkGroup = styled.nav`
     line-height: 1.4;
     text-decoration: none;
     text-underline-offset: 4px;
+    font-weight: bolder;
+    opacity: 0.85;
   }
 
   a:hover,
   a:focus-visible {
     color: var(--AccentColor);
-    text-decoration: underline;
+    opacity: 1;
   }
 `
 
@@ -103,6 +106,8 @@ const Bottom = styled.div`
   border-top: 1px solid var(--borderColor);
   color: var(--textSecondary);
   font-size: 0.84rem;
+  font-weight: bold;
+  opacity: 0.5;
 
   p { margin: 0; }
 
