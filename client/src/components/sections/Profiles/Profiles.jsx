@@ -338,6 +338,7 @@ const RankNumber = styled.span`
 
 
 const colorThief = new ColorThief();
+const PROFILE_PAGE_SIZE = 9;
 
 function ProfileCard({ user, index, showRank }) {
     const navigate = useNavigate();
@@ -408,7 +409,7 @@ function Profiles() {
         if (pageNum === 1) setLoading(true); else setLoadingMore(true);
         setFetchError(false);
         try {
-            const result = await apiService.searchUsers({ q: query, page: pageNum, limit: 9 });
+            const result = await apiService.searchUsers({ q: query, page: pageNum, limit: PROFILE_PAGE_SIZE });
             setUsers(prev => append ? [...prev, ...result.users] : result.users);
             setPage(pageNum);
             setHasMore(result.hasMore);
@@ -496,7 +497,7 @@ function Profiles() {
             ) : (
                 <Grid>
                     {users.map((u, i) => (
-                        <ProfileCard key={u._id || u.username} user={u} index={i} showRank={isRanking} />
+                        <ProfileCard key={u._id || u.username} user={u} index={i % PROFILE_PAGE_SIZE} showRank={isRanking} />
                     ))}
                 </Grid>
             )}
