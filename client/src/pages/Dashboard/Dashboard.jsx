@@ -987,10 +987,11 @@ export default function Dashboard() {
                                 </EmptyContainer>
                             ) : (
                                 <PosterGrid>
-                                    {filteredMyPosters.map(p => (
+                                    {filteredMyPosters.map((p, index) => (
                                         <PosterCard
                                             key={p._id}
                                             poster={p}
+                                            index={index % 9}
                                             variant={isOwner ? 'myposters' : 'community'}
                                             isOwner={isOwner}
                                             onDelete={isOwner ? handleDeleteRequest : undefined}
@@ -1033,10 +1034,11 @@ export default function Dashboard() {
                                 </EmptyContainer>
                             ) : (
                                 <PosterGrid>
-                                    {filteredFavorites.map(p => (
+                                    {filteredFavorites.map((p, index) => (
                                         <PosterCard
                                             key={p._id}
                                             poster={p}
+                                            index={index % 9}
                                             variant="favorites"
                                             isOwner={isOwner}
                                             onUnfavorite={handleUnfavorite}

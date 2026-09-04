@@ -19,6 +19,7 @@ const spin = keyframes`
     to   { transform: rotate(360deg); }
 `;
 
+const COMMUNITY_PAGE_SIZE = 8;
 
 const Container = styled.div`
     width: 100%;
@@ -389,8 +390,8 @@ function Community() {
                 </EmptyContainer>
             ) : (
                 <Grid>
-                    {posters.map(poster => (
-                        <PosterCard key={poster._id} poster={poster} />
+                    {posters.map((poster, index) => (
+                        <PosterCard key={poster._id} poster={poster} index={index % COMMUNITY_PAGE_SIZE} />
                     ))}
                 </Grid>
             )}
