@@ -4,6 +4,7 @@ import Favorite from '../models/favorite.js'
 import AdminLog from '../models/adminLog.js'
 import Payment from '../models/payment.js'
 import PrintUnlock from '../models/printUnlock.js'
+import PrintReadyAccountGrant from '../models/printReadyAccountGrant.js'
 import BadgeService from '../services/badgeService.js'
 import PrintReadyService from '../services/printReadyService.js'
 import { cacheGet, cacheSet } from '../utils/cache.js'
@@ -32,6 +33,22 @@ const commerceUserIds = async (search) => {
     ]
   }).select('_id').limit(100).lean()
   return users.map(user => user._id)
+}
+
+const findCommerceUser = async (identifier) => {
+  const value = String(identifier || '').trim()
+  if (!value) return null
+
+  const filter = mongoose.Types.ObjectId.isValid(value)
+    ? { _id: value }
+    : {
+        $or: [
+          { email: value.toLowerCase() },
+          { username: value.toLowerCase() }
+        ]
+      }
+
+  return User.findOne({ ...filter, status: 'active' }).select('_id name username email')
 }
 
 const recalculateFavoriteMetrics = async (posterIds) => {
@@ -235,6 +252,173 @@ class AdminController {
       res.json({ unlock })
     } catch (error) {
       console.error('Failed to revoke Print-Ready unlock:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async listPrintReadyAccountGrants(req, res) {
+    try {
+      const { page = 1, limit = 30, search = '', state = '' } = req.query
+      const safeLimit = Math.min(Math.max(parseInt(limit) || 30, 1), 100)
+      const safePage = Math.max(parseInt(page) || 1, 1)
+      const filter = {}
+      if (state === 'active') filter.active = true
+      if (state === 'revoked') filter.active = false
+
+      if (search.trim()) {
+        const term = search.trim()
+        const userIds = await commerceUserIds(term)
+        const escaped = escapedRegex(term)
+        filter.$or = [
+          { userId: { $in: userIds } },
+          { grantReason: { $regex: escaped, $options: 'i' } },
+          { revocationReason: { $regex: escaped, $options: 'i' } }
+        ]
+        if (mongoose.Types.ObjectId.isValid(term)) filter.$or.push({ _id: term })
+      }
+
+      const [grants, total] = await Promise.all([
+        PrintReadyAccountGrant.find(filter)
+          .sort({ active: -1, updatedAt: -1 })
+          .skip((safePage - 1) * safeLimit)
+          .limit(safeLimit)
+          .populate('userId', 'name username email')
+          .populate('grantedBy revokedBy', 'name username')
+          .lean(),
+        PrintReadyAccountGrant.countDocuments(filter)
+      ])
+      res.json({ grants, total, page: safePage, hasMore: safePage * safeLimit < total })
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async grantPrintReadyAccountAccess(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      const reason = req.body.reason.trim()
+      const targetUser = await findCommerceUser(req.body.user || req.body.userId)
+      if (!targetUser) return res.status(404).json({ error: 'User not found' })
+
+      const grant = await PrintReadyAccountGrant.findOneAndUpdate(
+        { userId: targetUser._id },
+        {
+          $set: {
+            scope: 'all_albums',
+            active: true,
+            grantedAt: new Date(),
+            grantedBy: req.user.id,
+            grantReason: reason,
+            revokedAt: null,
+            revokedBy: null,
+            revocationReason: ''
+          },
+          $setOnInsert: {
+            userId: targetUser._id,
+            useCount: 0
+          }
+        },
+        { upsert: true, new: true }
+      ).populate('userId', 'name username email')
+
+      await AdminLog.create({
+        adminId: req.user.id,
+        action: 'grant_print_ready_account_access',
+        targetType: 'print_ready_account_grant',
+        targetId: grant._id,
+        details: {
+          userId: targetUser._id,
+          username: targetUser.username,
+          email: targetUser.email,
+          reason
+        },
+        ip: req.ip || ''
+      })
+      res.json({ grant })
+    } catch (error) {
+      console.error('Failed to grant Print-Ready account access:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async revokePrintReadyAccountAccess(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      const reason = req.body.reason.trim()
+      const grant = await PrintReadyAccountGrant.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            active: false,
+            revokedAt: new Date(),
+            revokedBy: req.user.id,
+            revocationReason: reason
+          }
+        },
+        { new: true }
+      ).populate('userId', 'name username email')
+      if (!grant) return res.status(404).json({ error: 'Print-Ready account access not found' })
+
+      await AdminLog.create({
+        adminId: req.user.id,
+        action: 'revoke_print_ready_account_access',
+        targetType: 'print_ready_account_grant',
+        targetId: grant._id,
+        details: {
+          userId: grant.userId?._id || grant.userId,
+          username: grant.userId?.username,
+          email: grant.userId?.email,
+          reason
+        },
+        ip: req.ip || ''
+      })
+      res.json({ grant })
+    } catch (error) {
+      console.error('Failed to revoke Print-Ready account access:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
+  async restorePrintReadyAccountAccess(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      const reason = req.body.reason.trim()
+      const grant = await PrintReadyAccountGrant.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            active: true,
+            grantedAt: new Date(),
+            grantedBy: req.user.id,
+            grantReason: reason,
+            revokedAt: null,
+            revokedBy: null,
+            revocationReason: ''
+          }
+        },
+        { new: true }
+      ).populate('userId', 'name username email')
+      if (!grant) return res.status(404).json({ error: 'Print-Ready account access not found' })
+
+      await AdminLog.create({
+        adminId: req.user.id,
+        action: 'restore_print_ready_account_access',
+        targetType: 'print_ready_account_grant',
+        targetId: grant._id,
+        details: {
+          userId: grant.userId?._id || grant.userId,
+          username: grant.userId?.username,
+          email: grant.userId?.email,
+          reason
+        },
+        ip: req.ip || ''
+      })
+      res.json({ grant })
+    } catch (error) {
+      console.error('Failed to restore Print-Ready account access:', error)
       res.status(500).json({ error: 'Internal server error' })
     }
   }
@@ -692,6 +876,7 @@ class AdminController {
 
       await Poster.deleteMany({ authorId: user._id })
       await PrintUnlock.deleteMany({ userId: user._id })
+      await PrintReadyAccountGrant.deleteMany({ userId: user._id })
       await Payment.updateMany(
         { userId: user._id },
         { $set: { userId: null, checkoutOpen: false, accountDeletedAt: new Date() } }

@@ -6,6 +6,7 @@ import {
   POLICY_VERSIONS
 } from '../config/policyVersions.js'
 import PrintUnlock from '../models/printUnlock.js'
+import PrintReadyAccountGrant from '../models/printReadyAccountGrant.js'
 import PosterService from './posterService.js'
 import User from '../models/user.js'
 import { normalizeAlbumMetadata } from '../utils/albumMetadata.js'
@@ -47,7 +48,7 @@ export const getExportTier = (format, scale) => {
   return null
 }
 
-export const buildExportAccessDecision = ({ offer, tier, userId = null, unlock = null }) => {
+export const buildExportAccessDecision = ({ offer, tier, userId = null, unlock = null, accountGrant = null }) => {
   const publicOffer = {
     enabled: offer.enabled,
     unitAmount: offer.unitAmount,
@@ -84,6 +85,17 @@ export const buildExportAccessDecision = ({ offer, tier, userId = null, unlock =
       tier,
       reason: 'authentication_required',
       watermarks: null,
+      offer: publicOffer
+    }
+  }
+
+  if (accountGrant?.active) {
+    return {
+      authorized: true,
+      paywallEnabled: true,
+      tier,
+      reason: 'account_grant',
+      watermarks: { top: false, pattern: false },
       offer: publicOffer
     }
   }
@@ -232,6 +244,8 @@ const getUnlock = (userId, albumId) => PrintUnlock.findOne({
   'album.provider': 'spotify',
   'album.providerAlbumId': albumId
 })
+
+const getAccountGrant = (userId) => PrintReadyAccountGrant.findOne({ userId, active: true })
 
 const checkoutUrls = ({ returnPath, flowId }) => {
   const clientUrl = process.env.CLIENT_URL
@@ -404,10 +418,14 @@ class PrintReadyService {
 
   async getAlbumStatus(userId, albumId) {
     if (!isSpotifyAlbumId(albumId)) throw serviceError('Invalid album ID', 400, 'INVALID_ALBUM_ID')
-    const unlock = await getUnlock(userId, albumId).lean()
+    const [unlock, accountGrant] = await Promise.all([
+      getUnlock(userId, albumId).lean(),
+      getAccountGrant(userId).lean()
+    ])
     return {
-      unlocked: Boolean(unlock?.active),
-      revoked: Boolean(unlock && !unlock.active),
+      unlocked: Boolean(accountGrant?.active || unlock?.active),
+      revoked: Boolean(!accountGrant?.active && unlock && !unlock.active),
+      accessSource: accountGrant?.active ? 'account_grant' : (unlock?.active ? unlock.source : null),
       unlock: unlock || null
     }
   }
@@ -423,11 +441,25 @@ class PrintReadyService {
       return buildExportAccessDecision({ offer, tier, userId })
     }
 
-    const unlock = await getUnlock(userId, albumId).lean()
-    return buildExportAccessDecision({ offer, tier, userId, unlock })
+    const [unlock, accountGrant] = await Promise.all([
+      getUnlock(userId, albumId).lean(),
+      getAccountGrant(userId).lean()
+    ])
+
+    if (accountGrant?.active) {
+      await PrintReadyAccountGrant.updateOne(
+        { _id: accountGrant._id },
+        { $set: { lastUsedAt: new Date() }, $inc: { useCount: 1 } }
+      )
+    }
+
+    return buildExportAccessDecision({ offer, tier, userId, unlock, accountGrant })
   }
 
   async createCheckout({ userId, albumId, posterId, flowId, returnPath, isAdmin = false }) {
+    const accountGrant = await getAccountGrant(userId)
+    if (accountGrant?.active) return { status: 'unlocked', accountGrant }
+
     const existingUnlock = await getUnlock(userId, albumId)
     if (existingUnlock?.active) return { status: 'unlocked', unlock: existingUnlock }
     if (existingUnlock && !existingUnlock.active) {

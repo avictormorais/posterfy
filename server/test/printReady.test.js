@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 
 import Payment from '../src/models/payment.js'
 import PrintUnlock from '../src/models/printUnlock.js'
+import PrintReadyAccountGrant from '../src/models/printReadyAccountGrant.js'
 import {
   createPolicyAcceptance,
   getPublicPolicyInfo,
@@ -92,6 +93,22 @@ test('authorizes exports with the correct paywall and watermark policy', () => {
     }).reason,
     'revoked'
   )
+  assert.deepEqual(
+    buildExportAccessDecision({
+      offer: enabledOffer,
+      tier: 'print_ready',
+      userId: 'user-id',
+      accountGrant: { active: true }
+    }),
+    {
+      authorized: true,
+      paywallEnabled: true,
+      tier: 'print_ready',
+      reason: 'account_grant',
+      watermarks: { top: false, pattern: false },
+      offer: enabledOffer
+    }
+  )
 })
 
 test('maps Stripe refund totals without coupling them to unlock state', () => {
@@ -133,10 +150,18 @@ test('payment and unlock documents validate the portable album identity', () => 
     policyAcceptance: createPolicyAcceptance(new Date('2026-08-26T12:00:00.000Z'))
   })
   const unlock = new PrintUnlock({ userId, album, source: 'payment', paymentId: payment._id })
+  const accountGrant = new PrintReadyAccountGrant({
+    userId,
+    grantedBy: new mongoose.Types.ObjectId(),
+    grantReason: 'Internal QA account'
+  })
 
   assert.equal(payment.validateSync(), undefined)
   assert.equal(unlock.validateSync(), undefined)
+  assert.equal(accountGrant.validateSync(), undefined)
   assert.equal(unlock.active, true)
+  assert.equal(accountGrant.active, true)
+  assert.equal(accountGrant.scope, 'all_albums')
   assert.equal(payment.currency, 'usd')
   assert.deepEqual(payment.policyAcceptance.toObject(), {
     ...POLICY_VERSIONS,
@@ -158,6 +183,7 @@ test('publishes and records the same immutable policy versions', () => {
 test('schemas enforce the database uniqueness used for duplicate protection', () => {
   const paymentIndexes = Payment.schema.indexes()
   const unlockIndexes = PrintUnlock.schema.indexes()
+  const accountGrantIndexes = PrintReadyAccountGrant.schema.indexes()
 
   assert.ok(paymentIndexes.some(([keys, options]) => (
     keys.userId === 1 && keys['album.providerAlbumId'] === 1 && options.unique === true
@@ -167,5 +193,8 @@ test('schemas enforce the database uniqueness used for duplicate protection', ()
   )))
   assert.ok(unlockIndexes.some(([keys, options]) => (
     keys.userId === 1 && keys['album.providerAlbumId'] === 1 && options.unique === true
+  )))
+  assert.ok(accountGrantIndexes.some(([keys, options]) => (
+    keys.userId === 1 && options.unique === true
   )))
 })

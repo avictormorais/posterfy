@@ -1,12 +1,16 @@
 import apiService from './apiService'
 
 const admin = {
+  buildAdminPath: (path, params = {}) => {
+    const qs = new URLSearchParams(params).toString()
+    return qs ? `${path}?${qs}` : path
+  },
+
   getOverview: () => apiService.request('/api/admin/overview'),
   getHealth: () => apiService.request('/api/admin/health'),
 
   getUsers: (params = {}) => {
-    const qs = new URLSearchParams(params).toString()
-    return apiService.request(`/api/admin/users?${qs}`)
+    return apiService.request(admin.buildAdminPath('/api/admin/users', params))
   },
   getUser: (id) => apiService.request(`/api/admin/users/${id}`),
   editUser: (id, data) => apiService.request(`/api/admin/users/${id}/edit`, { method: 'PUT', body: JSON.stringify(data) }),
@@ -20,8 +24,7 @@ const admin = {
   bulkUsers: (data) => apiService.request('/api/admin/users/bulk', { method: 'PUT', body: JSON.stringify(data) }),
 
   getPosters: (params = {}) => {
-    const qs = new URLSearchParams(params).toString()
-    return apiService.request(`/api/admin/posters?${qs}`)
+    return apiService.request(admin.buildAdminPath('/api/admin/posters', params))
   },
   getPoster: (id) => apiService.request(`/api/admin/posters/${id}`),
   deletePoster: (id) => apiService.request(`/api/admin/posters/${id}`, { method: 'DELETE' }),
@@ -31,23 +34,35 @@ const admin = {
   editPoster: (id, data) => apiService.request(`/api/admin/posters/${id}/edit`, { method: 'PUT', body: JSON.stringify(data) }),
 
   getLogs: (params = {}) => {
-    const qs = new URLSearchParams(params).toString()
-    return apiService.request(`/api/admin/logs?${qs}`)
+    return apiService.request(admin.buildAdminPath('/api/admin/logs', params))
   },
 
   getPayments: (params = {}) => {
-    const qs = new URLSearchParams(params).toString()
-    return apiService.request(`/api/admin/payments?${qs}`)
+    return apiService.request(admin.buildAdminPath('/api/admin/payments', params))
   },
   getPrintUnlocks: (params = {}) => {
-    const qs = new URLSearchParams(params).toString()
-    return apiService.request(`/api/admin/unlocks?${qs}`)
+    return apiService.request(admin.buildAdminPath('/api/admin/unlocks', params))
+  },
+  getPrintReadyAccountAccess: (params = {}) => {
+    return apiService.request(admin.buildAdminPath('/api/admin/print-ready-account-access', params))
   },
   grantPrintUnlock: (data) => apiService.request('/api/admin/unlocks', {
     method: 'POST',
     body: JSON.stringify(data)
   }),
   revokePrintUnlock: (id, reason) => apiService.request(`/api/admin/unlocks/${id}/revoke`, {
+    method: 'PATCH',
+    body: JSON.stringify({ reason })
+  }),
+  grantPrintReadyAccountAccess: (data) => apiService.request('/api/admin/print-ready-account-access', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  revokePrintReadyAccountAccess: (id, reason) => apiService.request(`/api/admin/print-ready-account-access/${id}/revoke`, {
+    method: 'PATCH',
+    body: JSON.stringify({ reason })
+  }),
+  restorePrintReadyAccountAccess: (id, reason) => apiService.request(`/api/admin/print-ready-account-access/${id}/restore`, {
     method: 'PATCH',
     body: JSON.stringify({ reason })
   }),
