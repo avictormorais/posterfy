@@ -2,7 +2,6 @@ import { useState, useEffect } from "react"
 import styled, { keyframes } from "styled-components"
 import Icon from "../svgs/icon"
 import LanguageSelector from "./Languageselector"
-import ThemeSelector from "./ThemeSelector"
 import { RiUser3Fill, RiShieldKeyholeFill } from "react-icons/ri";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom"
@@ -260,7 +259,6 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
             </AdminButton>
           )}
           <LanguageSelector />
-          <ThemeSelector />
           {!hideAccount && (
             <ProfileButton onClick={handleClickAccount} key={user?.avatar || 'guest'}>
               <ProfileWrapper>

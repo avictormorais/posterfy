@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { trackThemeChange } from '../services/enhancedAnalytics';
 
 const ThemeContext = createContext();
 
@@ -21,8 +20,6 @@ export const ThemeProvider = ({ children }) => {
     document.body.className = `theme-${theme}`;
     
     localStorage.setItem('theme', theme);
-    
-    trackThemeChange(theme);
   }, [theme]);
 
   const toggleTheme = () => {

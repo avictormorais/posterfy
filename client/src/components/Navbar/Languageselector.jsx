@@ -6,23 +6,31 @@ import { trackLanguageChange } from "../../services/analytics"
 
 const LanguageSelectorContainer = styled.div`
   position: relative;
+  width: 70px;
 `
 
 const FlagButton = styled.button`
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
+  gap: 8px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 10px 0 6px;
+  border-radius: 999px;
+  background: var(--glassBackground);
+  border: 2px solid var(--borderColor);
+  color: var(--textColor);
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid var(--borderColor);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   
   &:hover {
-    background-color: var(--glassBackground);
-    transform: scale(1.05);
-    border-color: var(--textColor);
+    background-color: var(--backgroundColor);
+    border-color: var(--AccentColor);
+    color: var(--AccentColor);
   }
   
   &:active {
@@ -34,8 +42,8 @@ const FlagWrapper = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 50%;
-  width: 2.5em;
-  height: 2.5em;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,14 +61,15 @@ const FlagWrapper = styled.div`
 const DropdownMenu = styled.div`
   position: absolute;
   right: 0;
-  margin-top: 8px;
-  background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(220, 220, 220, 0.05);
+  margin-top: 10px;
+  min-width: 194px;
+  padding: 6px;
+  background-color: var(--backgroundColor);
+  border-radius: 14px;
+  box-shadow: 0 16px 34px var(--shadowColor);
   z-index: 50;
   border: 1px solid var(--borderColor);
-  top: 60px;
+  top: 52px;
   
   animation: dropdownSlideIn 0.2s ease-out forwards;
   opacity: 0;
@@ -93,45 +102,34 @@ const DropdownMenu = styled.div`
   }
 `
 
-const Triangle = styled.div`
-  position: absolute;
-  top: -16px;
-  right: 10px;
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 15px solid rgba(0, 0, 0, 0.3);
-  z-index: 60;
-`
-
 const DropdownContent = styled.div`
-  padding: 8px 4px;
-  padding-inline: 10px;
+  display: grid;
+  gap: 2px;
 `
 
 const LanguageOption = styled.button`
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 12px 10px;
+  gap: 10px;
+  padding: 9px 10px;
   background: transparent;
   border: none;
   color: var(--textColor);
   font-size: 14px;
   text-align: left;
-  border-radius: 8px;
+  border-radius: 9px;
   cursor: pointer;
   transition: all 0.3s ease;
   transform: translateX(0);
 
   &:hover {
     background-color: var(--glassBackground);
-    transform: translateX(4px);
+    color: var(--AccentColor);
   }
 
   &:hover svg {
-    transform: scale(1.2);
+    transform: scale(1.08);
   }
   
   animation: slideInFromLeft 0.3s ease-out forwards;
@@ -152,13 +150,22 @@ const LanguageOption = styled.button`
 `
 
 const LanguageName = styled.span`
-  margin-left: 8px;
+  flex: 1;
+  margin-left: 0;
+  font-weight: 700;
 `
 
 const FlagIcon = styled(ReactCountryFlag)`
-  margin-right: 8px;
-  transform: scale(1.2);
+  flex: 0 0 auto;
+  transform: scale(1.05);
   border-radius: 100%;
+`
+
+const LanguageCode = styled.span`
+  color: var(--textSecondary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
 `
 
 function LanguageSelector() {
@@ -219,9 +226,11 @@ function LanguageSelector() {
     }
   }
 
+  const getCurrentLanguageCode = () => (i18n.language || 'en').slice(0, 2).toUpperCase()
+
   return (
     <LanguageSelectorContainer className="language-selector">
-      <FlagButton onClick={toggleDropdown} aria-label="Select language">
+      <FlagButton onClick={toggleDropdown} aria-label="Select language" aria-expanded={isOpen}>
         <FlagWrapper>
           <ReactCountryFlag 
             countryCode={getCurrentFlag()} 
@@ -234,11 +243,11 @@ function LanguageSelector() {
             }}
           />
         </FlagWrapper>
+        <LanguageCode>{getCurrentLanguageCode()}</LanguageCode>
       </FlagButton>
 
       {isOpen && (
         <DropdownMenu className={isClosing ? 'closing' : ''}>
-          <Triangle />
           <DropdownContent>
             <LanguageOption onClick={() => changeLanguage("pt")}>
               <FlagIcon countryCode="BR" svg 
@@ -249,6 +258,7 @@ function LanguageSelector() {
                   objectFit: 'cover'
                 }} />
                 <LanguageName>Português</LanguageName>
+                <LanguageCode>PT</LanguageCode>
             </LanguageOption>
             <LanguageOption onClick={() => changeLanguage("en")}>
               <FlagIcon countryCode="US" svg
@@ -259,6 +269,7 @@ function LanguageSelector() {
                   objectFit: 'cover'
                 }} />
               <LanguageName>English</LanguageName>
+              <LanguageCode>EN</LanguageCode>
             </LanguageOption>
             <LanguageOption onClick={() => changeLanguage("es")}>
               <FlagIcon countryCode="ES" svg
@@ -269,6 +280,7 @@ function LanguageSelector() {
                   objectFit: 'cover'
                 }} />
               <LanguageName>Español</LanguageName>
+              <LanguageCode>ES</LanguageCode>
             </LanguageOption>
             <LanguageOption onClick={() => changeLanguage("zh")}>
               <FlagIcon countryCode="CN" svg
@@ -280,6 +292,7 @@ function LanguageSelector() {
                   marginRight: '8px'
                 }} />
                 <LanguageName>中文</LanguageName>
+                <LanguageCode>ZH</LanguageCode>
             </LanguageOption>
           </DropdownContent>
         </DropdownMenu>

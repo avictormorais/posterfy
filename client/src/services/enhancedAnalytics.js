@@ -77,25 +77,6 @@ export const trackFAQInteraction = (question) => {
   }
 };
 
-export const trackThemeChange = (themeName) => {
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'theme_change', {
-      event_category: 'customization',
-      event_label: themeName,
-      custom_parameter: 'theme_selection'
-    });
-  }
-  
-  if (typeof window !== 'undefined' && window.dataLayer) {
-    window.dataLayer.push({
-      event: 'theme_change',
-      theme_name: themeName,
-      page_title: document.title,
-      page_location: window.location.href
-    });
-  }
-};
-
 export const trackLanguageChange = (language) => {
   if (typeof gtag !== 'undefined') {
     gtag('event', 'language_change', {

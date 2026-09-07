@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import styled from "styled-components"
 import { useTheme } from "../../contexts/ThemeContext"
-import { FaSun, FaMoon, FaLeaf, FaFire, FaWater, FaPalette, FaGem, FaMountain } from "react-icons/fa"
+import { FaSun, FaMoon, FaChevronUp } from "react-icons/fa"
 
 const ThemeSelectorContainer = styled.div`
   position: relative;
@@ -10,18 +10,24 @@ const ThemeSelectorContainer = styled.div`
 const ThemeButton = styled.button`
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 11px 0 8px;
+  border-radius: 999px;
+  background: var(--glassBackground);
+  border: 1px solid var(--borderColor);
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 2px solid var(--borderColor);
+  color: var(--textColor);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   
   &:hover {
-    background-color: var(--glassBackground);
-    transform: scale(1.05);
-    border-color: var(--textColor);
+    background-color: var(--backgroundColor);
+    border-color: var(--AccentColor);
+    color: var(--AccentColor);
   }
   
   &:active {
@@ -33,14 +39,15 @@ const ThemeWrapper = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 50%;
-  width: 2.5em;
-  height: 2.5em;
+  width: 28px;
+  height: 28px;
+  background: ${props => props.themeColor};
   display: flex;
   align-items: center;
   justify-content: center;
   
   svg {
-    font-size: 1.2em;
+    font-size: 0.85rem;
     fill: ${props => props.isLight ? '#000000' : '#ffffff'};
   }
 `
@@ -48,15 +55,15 @@ const ThemeWrapper = styled.div`
 const DropdownMenu = styled.div`
   position: absolute;
   right: 0;
-  margin-top: 8px;
-  background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(220, 220, 220, 0.05);
+  margin-bottom: 10px;
+  min-width: 194px;
+  padding: 6px;
+  background-color: var(--backgroundColor);
+  border-radius: 14px;
+  box-shadow: 0 16px 34px var(--shadowColor);
   z-index: 50;
   border: 1px solid var(--borderColor);
-  top: 60px;
-  min-width: 180px;
+  bottom: 52px;
   
   animation: dropdownSlideIn 0.2s ease-out forwards;
   opacity: 0;
@@ -89,28 +96,17 @@ const DropdownMenu = styled.div`
   }
 `
 
-const Triangle = styled.div`
-  position: absolute;
-  top: -16px;
-  right: 10px;
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 15px solid rgba(0, 0, 0, 0.3);
-  z-index: 60;
-`
-
 const DropdownContent = styled.div`
-  padding: 8px 4px;
-  padding-inline: 10px;
+  display: grid;
+  gap: 2px;
 `
 
 const ThemeOption = styled.button`
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 6px 5px;
+  gap: 10px;
+  padding: 9px 10px;
   background: transparent;
   border: none;
   color: var(--textColor);
@@ -123,7 +119,7 @@ const ThemeOption = styled.button`
 
   &:hover {
     background-color: var(--glassBackground);
-    transform: translateX(4px);
+    color: var(--AccentColor);
   }
 
   &:hover .theme-preview {
@@ -150,11 +146,10 @@ const ThemeOption = styled.button`
 `
 
 const ThemePreview = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background-color: ${props => props.color};
-  margin-right: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,8 +163,18 @@ const ThemePreview = styled.div`
 `
 
 const ThemeName = styled.span`
-  margin-left: 4px;
+  flex: 1;
+  margin-left: 0;
   font-weight: 500;
+`
+
+const ThemeLabel = styled.span`
+  flex: 1;
+`
+
+const ThemeChevron = styled(FaChevronUp)`
+  font-size: 0.65rem;
+  opacity: 0.65;
 `
 
 function ThemeSelector() {
@@ -222,15 +227,16 @@ function ThemeSelector() {
 
   return (
     <ThemeSelectorContainer className="theme-selector">
-      <ThemeButton onClick={toggleDropdown} aria-label="Select theme">
+      <ThemeButton onClick={toggleDropdown} aria-label="Select theme" aria-expanded={isOpen}>
         <ThemeWrapper themeColor={currentTheme.color} isLight={currentTheme.isLight}>
           {currentTheme.icon}
         </ThemeWrapper>
+        <ThemeLabel>{currentTheme.name}</ThemeLabel>
+        <ThemeChevron aria-hidden="true" />
       </ThemeButton>
 
       {isOpen && (
         <DropdownMenu className={isClosing ? 'closing' : ''}>
-          <Triangle />
           <DropdownContent>
             {themes.map((themeOption) => (
               <ThemeOption 

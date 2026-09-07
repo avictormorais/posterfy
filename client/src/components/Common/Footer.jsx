@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import Icon from '../svgs/icon'
 import { useTheme } from '../../contexts/ThemeContext'
+import ThemeSelector from '../Navbar/ThemeSelector'
 
 const Container = styled.footer`
   width: 100%;
@@ -107,13 +108,30 @@ const Bottom = styled.div`
   color: var(--textSecondary);
   font-size: 0.84rem;
   font-weight: bold;
-  opacity: 0.5;
 
-  p { margin: 0; }
+  p {
+    margin: 0;
+    opacity: 0.5;
+  }
 
   @media (max-width: 640px) {
     align-items: flex-start;
     flex-direction: column;
+  }
+`
+
+const FooterControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  p {
+    opacity: 0.5;
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+    justify-content: space-between;
   }
 `
 
@@ -159,7 +177,10 @@ function Footer() {
 
         <Bottom>
           <p>© {currentYear} Posterfy. {t('AllRights', 'All rights reserved.')}</p>
-          <p>{t('FooterIndependent')}</p>
+          <FooterControls>
+            <p>{t('FooterIndependent')}</p>
+            <ThemeSelector />
+          </FooterControls>
         </Bottom>
       </Content>
     </Container>
