@@ -68,6 +68,7 @@ router.get('/health', AdminController.health)
  */
 router.get('/logs', AdminController.listLogs)
 
+router.get('/commerce/overview', AdminController.commerceOverview)
 router.get('/payments', AdminController.listPayments)
 router.get('/unlocks', AdminController.listPrintUnlocks)
 router.get('/print-ready-account-access', AdminController.listPrintReadyAccountGrants)

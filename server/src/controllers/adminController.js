@@ -20,6 +20,9 @@ try { apiVersion = JSON.parse(readFileSync(join(__dirname, '../../package.json')
 
 const OVERVIEW_TTL = 5 * 60 * 1000
 const HEALTH_TTL = 60 * 1000
+const COMMERCE_OVERVIEW_TTL = 60 * 1000
+const CONFIRMED_PAYMENT_STATUSES = ['paid', 'partially_refunded', 'refunded']
+const COMMERCE_PERIODS = new Set(['7', '30', '90', 'all'])
 
 const escapedRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
@@ -100,6 +103,300 @@ const recalculateFavoriteMetrics = async (posterIds) => {
 }
 
 class AdminController {
+  async commerceOverview(req, res) {
+    try {
+      const requestedPeriod = String(req.query.period || '30').toLowerCase()
+      const period = COMMERCE_PERIODS.has(requestedPeriod) ? requestedPeriod : '30'
+      const periodDays = period === 'all' ? null : parseInt(period)
+      const cacheKey = `admin:commerce:overview:${period}`
+      const cached = cacheGet(cacheKey)
+      if (cached) return res.json(cached)
+
+      const now = new Date()
+      const d7 = new Date(now - 7 * 24 * 60 * 60 * 1000)
+      const d30 = new Date(now - 30 * 24 * 60 * 60 * 1000)
+      const fallbackPeriodStart = new Date(now - (periodDays || 30) * 24 * 60 * 60 * 1000)
+      const confirmedFilter = { paymentStatus: { $in: CONFIRMED_PAYMENT_STATUSES } }
+      const firstPayment = period === 'all'
+        ? await Payment.findOne(confirmedFilter)
+          .sort({ fulfilledAt: 1, createdAt: 1 })
+          .select('fulfilledAt createdAt')
+          .lean()
+        : null
+      const periodStart = firstPayment?.fulfilledAt || firstPayment?.createdAt || fallbackPeriodStart
+
+      const [
+        totalAgg,
+        todayAgg,
+        last7Agg,
+        last30Agg,
+        dailySales,
+        customers,
+        activeUnlocks,
+        revokedUnlocks,
+        activeAccountGrants,
+        revokedAccountGrants,
+        openCheckouts,
+        failedCheckouts,
+        recentPayments,
+        topAlbums,
+        topCustomers
+      ] = await Promise.all([
+        Payment.aggregate([
+          { $match: { ...confirmedFilter, fulfilledAt: { $gte: periodStart } } },
+          {
+            $group: {
+              _id: '$currency',
+              sales: { $sum: 1 },
+              grossRevenue: { $sum: '$amountTotal' },
+              refundedAmount: { $sum: '$amountRefunded' },
+              refundedSales: {
+                $sum: { $cond: [{ $in: ['$paymentStatus', ['partially_refunded', 'refunded']] }, 1, 0] }
+              }
+            }
+          },
+          { $sort: { grossRevenue: -1 } }
+        ]),
+        Payment.aggregate([
+          {
+            $match: {
+              ...confirmedFilter,
+              fulfilledAt: { $gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()) }
+            }
+          },
+          {
+            $group: {
+              _id: '$currency',
+              sales: { $sum: 1 },
+              grossRevenue: { $sum: '$amountTotal' },
+              refundedAmount: { $sum: '$amountRefunded' }
+            }
+          }
+        ]),
+        Payment.aggregate([
+          { $match: { ...confirmedFilter, fulfilledAt: { $gte: d7 } } },
+          {
+            $group: {
+              _id: '$currency',
+              sales: { $sum: 1 },
+              grossRevenue: { $sum: '$amountTotal' },
+              refundedAmount: { $sum: '$amountRefunded' }
+            }
+          }
+        ]),
+        Payment.aggregate([
+          { $match: { ...confirmedFilter, fulfilledAt: { $gte: periodStart } } },
+          {
+            $group: {
+              _id: '$currency',
+              sales: { $sum: 1 },
+              grossRevenue: { $sum: '$amountTotal' },
+              refundedAmount: { $sum: '$amountRefunded' }
+            }
+          }
+        ]),
+        Payment.aggregate([
+          { $match: { ...confirmedFilter, fulfilledAt: { $gte: d30 } } },
+          {
+            $group: {
+              _id: {
+                day: { $dateToString: { format: '%Y-%m-%d', date: '$fulfilledAt' } },
+                currency: '$currency'
+              },
+              sales: { $sum: 1 },
+              grossRevenue: { $sum: '$amountTotal' },
+              refundedAmount: { $sum: '$amountRefunded' },
+              customers: { $addToSet: '$userId' }
+            }
+          },
+          { $sort: { '_id.day': 1 } }
+        ]),
+        Payment.distinct('userId', { ...confirmedFilter, userId: { $ne: null } }),
+        PrintUnlock.countDocuments({ active: true }),
+        PrintUnlock.countDocuments({ active: false }),
+        PrintReadyAccountGrant.countDocuments({ active: true }),
+        PrintReadyAccountGrant.countDocuments({ active: false }),
+        Payment.countDocuments({ checkoutOpen: true, checkoutStatus: { $in: ['creating', 'open'] } }),
+        Payment.countDocuments({
+          $or: [
+            { checkoutStatus: 'failed' },
+            { paymentStatus: 'failed' }
+          ]
+        }),
+        Payment.find(confirmedFilter)
+          .sort({ fulfilledAt: -1, createdAt: -1 })
+          .limit(8)
+          .populate('userId', 'name username email')
+          .select('userId album amountTotal amountRefunded currency paymentStatus fulfilledAt createdAt')
+          .lean(),
+        Payment.aggregate([
+          { $match: confirmedFilter },
+          {
+            $group: {
+              _id: {
+                providerAlbumId: '$album.providerAlbumId',
+                albumName: '$album.albumName',
+                artistNames: '$album.artistNames',
+                currency: '$currency'
+              },
+              sales: { $sum: 1 },
+              grossRevenue: { $sum: '$amountTotal' },
+              refundedAmount: { $sum: '$amountRefunded' }
+            }
+          },
+          { $sort: { grossRevenue: -1, sales: -1 } },
+          { $limit: 6 }
+        ]),
+        Payment.aggregate([
+          { $match: { ...confirmedFilter, userId: { $ne: null }, fulfilledAt: { $gte: periodStart } } },
+          {
+            $group: {
+              _id: {
+                userId: '$userId',
+                currency: '$currency'
+              },
+              sales: { $sum: 1 },
+              grossRevenue: { $sum: '$amountTotal' },
+              refundedAmount: { $sum: '$amountRefunded' },
+              lastPurchaseAt: { $max: '$fulfilledAt' }
+            }
+          },
+          { $sort: { grossRevenue: -1, sales: -1 } },
+          { $limit: 6 },
+          {
+            $lookup: {
+              from: 'users',
+              localField: '_id.userId',
+              foreignField: '_id',
+              as: 'user'
+            }
+          },
+          { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } }
+        ])
+      ])
+
+      const primaryCurrency = totalAgg[0]?._id || 'usd'
+      const mapTotals = (rows) => {
+        const row = rows.find(item => item._id === primaryCurrency) || rows[0]
+        if (!row) return { sales: 0, grossRevenue: 0, refundedAmount: 0, netRevenue: 0 }
+        return {
+          currency: row._id || primaryCurrency,
+          sales: row.sales || 0,
+          grossRevenue: row.grossRevenue || 0,
+          refundedAmount: row.refundedAmount || 0,
+          refundedSales: row.refundedSales || 0,
+          netRevenue: Math.max(0, (row.grossRevenue || 0) - (row.refundedAmount || 0))
+        }
+      }
+
+      const totals = mapTotals(totalAgg)
+      const buildDailyRange = () => {
+        const byDay = new Map(dailySales
+          .filter(item => item._id.currency === primaryCurrency)
+          .map(item => [item._id.day, item]))
+        const chartStart = new Date(periodStart)
+        chartStart.setHours(0, 0, 0, 0)
+        const todayStart = new Date(now)
+        todayStart.setHours(0, 0, 0, 0)
+        const dayCount = Math.max(1, Math.floor((todayStart - chartStart) / (24 * 60 * 60 * 1000)) + 1)
+        return Array.from({ length: dayCount }, (_, index) => {
+          const day = new Date(chartStart)
+          day.setDate(chartStart.getDate() + index)
+          const key = day.toISOString().slice(0, 10)
+          const item = byDay.get(key)
+          const customersForDay = item?.customers?.filter(Boolean)?.length || 0
+          return {
+            day: key,
+            sales: item?.sales || 0,
+            grossRevenue: item?.grossRevenue || 0,
+            refundedAmount: item?.refundedAmount || 0,
+            netRevenue: Math.max(0, (item?.grossRevenue || 0) - (item?.refundedAmount || 0)),
+            customers: customersForDay
+          }
+        })
+      }
+
+      const dailyRange = buildDailyRange()
+      const periodTotals = dailyRange.reduce((acc, item) => ({
+        sales: acc.sales + item.sales,
+        grossRevenue: acc.grossRevenue + item.grossRevenue,
+        refundedAmount: acc.refundedAmount + item.refundedAmount,
+        netRevenue: acc.netRevenue + item.netRevenue,
+        customers: acc.customers + item.customers
+      }), { sales: 0, grossRevenue: 0, refundedAmount: 0, netRevenue: 0, customers: 0 })
+
+      const data = {
+        currency: primaryCurrency,
+        period,
+        periodDays,
+        periodStart: periodStart.toISOString(),
+        cachedAt: now.toISOString(),
+        totals: {
+          ...totals,
+          uniqueCustomers: customers.length,
+          averageOrderValue: totals.sales ? Math.round(totals.grossRevenue / totals.sales) : 0,
+          revenuePerCustomer: customers.length ? Math.round(totals.netRevenue / customers.length) : 0,
+          refundRate: totals.grossRevenue ? Math.round((totals.refundedAmount / totals.grossRevenue) * 1000) / 10 : 0
+        },
+        periods: {
+          today: mapTotals(todayAgg),
+          last7d: mapTotals(last7Agg),
+          last30d: mapTotals(last30Agg),
+          selected: {
+            currency: primaryCurrency,
+            ...periodTotals
+          }
+        },
+        checkouts: {
+          open: openCheckouts,
+          failed: failedCheckouts
+        },
+        entitlements: {
+          activeUnlocks,
+          revokedUnlocks,
+          activeAccountGrants,
+          revokedAccountGrants
+        },
+        dailySales: dailyRange,
+        totalsByCurrency: totalAgg.map(row => ({
+          currency: row._id || primaryCurrency,
+          sales: row.sales || 0,
+          grossRevenue: row.grossRevenue || 0,
+          refundedAmount: row.refundedAmount || 0,
+          netRevenue: Math.max(0, (row.grossRevenue || 0) - (row.refundedAmount || 0))
+        })),
+        recentPayments,
+        topAlbums: topAlbums.map(item => ({
+          providerAlbumId: item._id.providerAlbumId,
+          albumName: item._id.albumName,
+          artistNames: item._id.artistNames || [],
+          currency: item._id.currency || primaryCurrency,
+          sales: item.sales || 0,
+          grossRevenue: item.grossRevenue || 0,
+          refundedAmount: item.refundedAmount || 0,
+          netRevenue: Math.max(0, (item.grossRevenue || 0) - (item.refundedAmount || 0))
+        })),
+        topCustomers: topCustomers.map(item => ({
+          userId: item._id.userId,
+          username: item.user?.username || '',
+          email: item.user?.email || '',
+          currency: item._id.currency || primaryCurrency,
+          sales: item.sales || 0,
+          grossRevenue: item.grossRevenue || 0,
+          refundedAmount: item.refundedAmount || 0,
+          netRevenue: Math.max(0, (item.grossRevenue || 0) - (item.refundedAmount || 0)),
+          lastPurchaseAt: item.lastPurchaseAt || null
+        }))
+      }
+
+      cacheSet(cacheKey, data, COMMERCE_OVERVIEW_TTL)
+      res.json(data)
+    } catch (error) {
+      console.error('Failed to load commerce overview:', error)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+
   async listPayments(req, res) {
     try {
       const { page = 1, limit = 30, search = '', status = '' } = req.query

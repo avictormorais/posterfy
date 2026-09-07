@@ -37,6 +37,7 @@ const admin = {
     return apiService.request(admin.buildAdminPath('/api/admin/logs', params))
   },
 
+  getCommerceOverview: (params = {}) => apiService.request(admin.buildAdminPath('/api/admin/commerce/overview', params)),
   getPayments: (params = {}) => {
     return apiService.request(admin.buildAdminPath('/api/admin/payments', params))
   },
