@@ -1,64 +1,42 @@
-// URL Normalization utilities
-export const normalizeUrl = (url) => {
-  if (!url) return '';
-  
-  // Remove trailing slash except for root
-  const normalized = url.replace(/\/$/, '') || '/';
-  
-  // Ensure lowercase for domain part
-  const urlParts = normalized.split('/');
-  if (urlParts.length > 2) {
-    urlParts[2] = urlParts[2].toLowerCase();
-  }
-  
-  return urlParts.join('/');
-};
+import { SITE_URL, normalizePathname } from '../seo/metadata'
 
-export const getCanonicalUrl = () => {
-  const domain = import.meta.env.VITE_DOMAIN || '.pics';
-  const baseUrl = `https://posterfy${domain}`;
-  
-  // For SPA, always return the root URL as canonical
-  return baseUrl + '/';
-};
+export const normalizeUrl = (value) => {
+  if (!value) return ''
+  try {
+    const url = new URL(value, SITE_URL)
+    const pathname = normalizePathname(url.pathname)
+    return `${url.protocol}//${url.hostname.toLowerCase()}${url.port ? `:${url.port}` : ''}${pathname}`
+  } catch {
+    return normalizePathname(value)
+  }
+}
+
+export const getCanonicalUrl = (pathname = window.location.pathname) => {
+  const normalized = normalizePathname(pathname)
+  return `${SITE_URL}${normalized === '/' ? '/' : normalized}`
+}
 
 export const shouldRedirect = (currentUrl) => {
-  const canonicalUrl = getCanonicalUrl();
-  const normalizedCurrent = normalizeUrl(currentUrl);
-  const normalizedCanonical = normalizeUrl(canonicalUrl);
-  
-  // Check for www subdomain
-  const hasWww = currentUrl.includes('://www.');
-  
-  // Check for http protocol
-  const isHttp = currentUrl.startsWith('http://');
-  
-  // Should redirect if:
-  // 1. Has www subdomain
-  // 2. Uses http protocol
-  // 3. Different from canonical (after normalization)
-  return hasWww || isHttp || (normalizedCurrent !== normalizedCanonical);
-};
+  try {
+    const current = new URL(currentUrl)
+    const canonicalOrigin = new URL(SITE_URL)
+    return current.protocol !== canonicalOrigin.protocol || current.hostname.toLowerCase() !== canonicalOrigin.hostname
+  } catch {
+    return false
+  }
+}
 
 export const validateCurrentUrl = () => {
-  const currentUrl = window.location.href;
-  const canonicalUrl = getCanonicalUrl();
-  
-  const issues = [];
-  
-  if (shouldRedirect(currentUrl)) {
-    issues.push({
-      type: 'redirect_needed',
-      current: currentUrl,
-      canonical: canonicalUrl,
-      message: 'Current URL should redirect to canonical URL'
-    });
-  }
-  
+  const currentUrl = window.location.href
+  const canonicalUrl = getCanonicalUrl()
+  const redirectNeeded = shouldRedirect(currentUrl)
   return {
-    isValid: issues.length === 0,
-    issues,
+    isValid: !redirectNeeded,
+    issues: redirectNeeded ? [{
+      type: 'redirect_needed', current: currentUrl, canonical: canonicalUrl,
+      message: 'Current URL should use the canonical protocol and hostname',
+    }] : [],
     currentUrl,
-    canonicalUrl
-  };
-};
+    canonicalUrl,
+  }
+}

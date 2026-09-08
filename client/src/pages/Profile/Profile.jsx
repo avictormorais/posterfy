@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
@@ -24,6 +24,7 @@ import {
     trackProfilePosterVisibility
 } from "../../services/analytics";
 import Empty from "../../components/svgs/Others/Empty";
+import { useRouteSeoData } from "../../components/SEO/SEOComponent";
 
 const fadeIn = keyframes`
     from { opacity: 0; transform: translateY(10px); }
@@ -121,7 +122,7 @@ const UserInfo = styled.div`
     }
 `;
 
-const UserName = styled.h2`
+const UserName = styled.h1`
     color: var(--textColor);
     font-size: 1.5em;
     font-weight: 800;
@@ -795,7 +796,7 @@ function StatsTab({ stats, isOwner }) {
                             <TopCard key={c.label} onClick={() => navigate(`/p/${c.poster._id}`)}>
                                 <TopCardCover>
                                     {c.poster.posterJson?.albumCover
-                                        ? <img src={c.poster.posterJson.albumCover} alt="" />
+                                        ? <img src={c.poster.posterJson.albumCover} alt={`${c.poster.albumName} album artwork`} loading="lazy" decoding="async" />
                                         : null
                                     }
                                 </TopCardCover>
@@ -826,6 +827,8 @@ export default function Profile() {
     const isOwner = isAuthenticated && user?.username?.toLowerCase() === routeUsername?.toLowerCase();
 
     const [userProfile, setUserProfile]     = useState(null);
+    const profileSeoData = useMemo(() => userProfile ? { profile: userProfile } : null, [userProfile]);
+    useRouteSeoData(profileSeoData);
     const [profileNotFound, setProfileNotFound] = useState(false);
     const [profileError, setProfileError]       = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -1126,7 +1129,7 @@ export default function Profile() {
             <ProfileSection>
                 <ProfileTop>
                     {userProfile?.avatar
-                        ? <Avatar src={userProfile.avatar} alt={displayName} />
+                        ? <Avatar src={userProfile.avatar} alt={`${displayName}'s profile avatar`} decoding="async" />
                         : <AvatarPlaceholder>{displayName.charAt(0).toUpperCase()}</AvatarPlaceholder>
                     }
                     <UserInfo>
@@ -1196,7 +1199,7 @@ export default function Profile() {
                         >
                             <FeaturedCoverWrap $bg={accentColor}>
                                 {cover
-                                    ? <FeaturedCover src={cover} alt={featuredPoster.albumName} />
+                                    ? <FeaturedCover src={cover} alt={`${featuredPoster.albumName} poster by ${featuredPoster.artistsName}`} loading="lazy" decoding="async" />
                                     : <FeaturedCoverFallback $bg={accentColor} />
                                 }
                             </FeaturedCoverWrap>

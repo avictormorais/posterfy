@@ -129,8 +129,7 @@ export default function LegalPage({ type }) {
 
   useEffect(() => {
     document.documentElement.lang = LOCALES[language] || language
-    document.title = `${page.title} | Posterfy`
-  }, [language, page.title])
+  }, [language])
 
   return (
     <Page>

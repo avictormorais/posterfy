@@ -12,12 +12,13 @@ import Profiles from '../../components/sections/Profiles/Profiles';
 import PosterBySearch from '../../components/PosterEditor/Models/PosterBySearch';
 import PosterEditor from '../../components/PosterEditor/PosterEditor';
 import AlertModal from '../../components/Common/AlertModal';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { trackPosterRecreation, trackCommunityPosterView } from '../../services/analytics';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import styled from 'styled-components';
 import { useAuth } from '../../contexts/AuthContext';
 import { readPendingFlow } from '../../utils/pendingFlow';
+import { useRouteSeoData } from '../../components/SEO/SEOComponent';
 
 const FadeInSection = styled.div`
   opacity: ${props => props.$isVisible ? 1 : 0};
@@ -46,6 +47,11 @@ export default function Home({ loadingComplete }) {
   const [resumeFlow, setResumeFlow] = useState(null);
   const [publishModal, setPublishModal] = useState(null);
   const posterEditorRef = useRef(null);
+  const posterSeoData = useMemo(
+    () => posterId && recreatingPosterData ? { poster: recreatingPosterData } : null,
+    [posterId, recreatingPosterData]
+  );
+  useRouteSeoData(posterSeoData);
 
   useEffect(() => {
     const flowId = searchParams.get('resume') || searchParams.get('flow');

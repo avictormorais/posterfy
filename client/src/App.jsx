@@ -15,7 +15,7 @@ import AdminRoute from './components/AdminRoute';
 import { useEffect, useState } from 'react';
 import AnalyticsInitializer from './components/SEO/AnalyticsInitializer';
 import IndexingMonitor from './components/SEO/IndexingMonitor';
-import SEOComponent from './components/SEO/SEOComponent';
+import { SEOProvider } from './components/SEO/SEOComponent';
 import Lenis from 'lenis';
 import LegalPage from './pages/Legal/LegalPage';
 
@@ -130,13 +130,13 @@ function App() {
     <ThemeProvider>
       <PrintReadyProvider>
         <AuthProvider>
-          <SEOComponent />
           <IndexingMonitor />
           <AnalyticsInitializer />
           
           <Router>
-            <ScrollToTop />
-            <Routes>              
+            <SEOProvider>
+              <ScrollToTop />
+              <Routes>
               <Route path="/" element={<Layout showNavbar={true} showFooter={true} />}>
                 <Route index element={<Home loadingComplete={loadingComplete} />} />
               </Route>
@@ -177,7 +177,8 @@ function App() {
               <Route path="/error" element={<Error />} />
               <Route path="*" element={<Error />} />
 
-            </Routes>
+              </Routes>
+            </SEOProvider>
           </Router>
           <Loading isVisible={loading} />
         </AuthProvider>

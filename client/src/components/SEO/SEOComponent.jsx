@@ -1,119 +1,68 @@
-import { useEffect } from 'react';
-import { getCanonicalUrl } from '../../utils/urlNormalization';
+/* eslint-disable react/prop-types, react-refresh/only-export-components */
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { routeMetadata } from '../../seo/metadata'
 
-const SEOComponent = ({ 
-  title = "Posterfy",
-  description = "Create stunning album posters for free with Posterfy. Design custom music posters from Spotify albums with professional templates. Best album poster generator online - no signup required!",
-  keywords = "album poster generator, music poster maker, spotify poster, album cover poster, custom music posters, free poster generator, album art poster, music poster design, posterfy"
-}) => {
-  
+const SeoDataContext = createContext(() => {})
+
+const setMeta = (selector, attributes) => {
+  let element = document.head.querySelector(selector)
+  if (!element) {
+    element = document.createElement(attributes.rel ? 'link' : 'meta')
+    document.head.appendChild(element)
+  }
+  Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value))
+}
+
+const applyMetadata = (metadata) => {
+  document.title = metadata.title
+  setMeta('meta[name="description"]', { name: 'description', content: metadata.description })
+  setMeta('meta[name="robots"]', { name: 'robots', content: metadata.robots })
+  setMeta('link[rel="canonical"]', { rel: 'canonical', href: metadata.canonical })
+  setMeta('meta[property="og:title"]', { property: 'og:title', content: metadata.openGraph.title })
+  setMeta('meta[property="og:description"]', { property: 'og:description', content: metadata.openGraph.description })
+  setMeta('meta[property="og:url"]', { property: 'og:url', content: metadata.openGraph.url })
+  setMeta('meta[property="og:image"]', { property: 'og:image', content: metadata.openGraph.image })
+  setMeta('meta[property="og:type"]', { property: 'og:type', content: metadata.openGraph.type })
+  setMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: metadata.twitter.card })
+  setMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: metadata.twitter.title })
+  setMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: metadata.twitter.description })
+  setMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: metadata.twitter.image })
+
+  document.head.querySelectorAll('script[data-posterfy-seo], #dynamic-structured-data').forEach(node => node.remove())
+  if (metadata.jsonLd) {
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.dataset.posterfySeo = 'true'
+    script.textContent = JSON.stringify(metadata.jsonLd)
+    document.head.appendChild(script)
+  }
+}
+
+function SEOComponent({ routeData }) {
+  const { pathname } = useLocation()
+  const metadata = useMemo(() => routeMetadata({ pathname, ...routeData }), [pathname, routeData])
+  useEffect(() => applyMetadata(metadata), [metadata])
+  return null
+}
+
+export function SEOProvider({ children }) {
+  const [routeData, setRouteData] = useState({})
+  const updateRouteData = useCallback((value) => setRouteData(value || {}), [])
+  return (
+    <SeoDataContext.Provider value={updateRouteData}>
+      <SEOComponent routeData={routeData} />
+      {children}
+    </SeoDataContext.Provider>
+  )
+}
+
+export const useRouteSeoData = (data) => {
+  const setRouteData = useContext(SeoDataContext)
   useEffect(() => {
-    const domain = import.meta.env.VITE_DOMAIN || '.pics';
-    const baseUrl = `https://posterfy${domain}`;
-    
-    // Use the utility function for consistent canonical URLs
-    const canonical = getCanonicalUrl();
-    const ogImage = baseUrl + '/albuns.png';
-    
-    // Update page title
-    document.title = title;
-    
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', description);
-    }
-    
-    // Update meta keywords
-    const metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (metaKeywords) {
-      metaKeywords.setAttribute('content', keywords);
-    }
-    
-    // Update canonical URL
-    let canonical_link = document.querySelector('link[rel="canonical"]');
-    if (canonical_link) {
-      canonical_link.setAttribute('href', canonical);
-    } else {
-      canonical_link = document.createElement('link');
-      canonical_link.setAttribute('rel', 'canonical');
-      canonical_link.setAttribute('href', canonical);
-      document.head.appendChild(canonical_link);
-    }
-    
-    // Update Open Graph meta tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', title);
-    }
-    
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute('content', description);
-    }
-    
-    const ogImageMeta = document.querySelector('meta[property="og:image"]');
-    if (ogImageMeta) {
-      ogImageMeta.setAttribute('content', ogImage);
-    }
-    
-    const ogUrl = document.querySelector('meta[property="og:url"]');
-    if (ogUrl) {
-      ogUrl.setAttribute('content', canonical);
-    }
-    
-    // Update Twitter Card meta tags
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) {
-      twitterTitle.setAttribute('content', title);
-    }
-    
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDescription) {
-      twitterDescription.setAttribute('content', description);
-    }
-    
-    const twitterImage = document.querySelector('meta[name="twitter:image"]');
-    if (twitterImage) {
-      twitterImage.setAttribute('content', ogImage);
-    }
-    
-    // Add structured data for current page
-    const structuredData = {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": title,
-      "description": description,
-      "url": canonical,
-      "mainEntity": {
-        "@type": "WebApplication",
-        "name": "Posterfy",
-        "applicationCategory": "DesignApplication",
-        "operatingSystem": "Web Browser",
-        "url": baseUrl + '/',
-        "description": description,
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        }
-      }
-    };
-    
-    const existingScript = document.querySelector('script[type="application/ld+json"]#dynamic-structured-data');
-    if (existingScript) {
-      existingScript.remove();
-    }
-    
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = 'dynamic-structured-data';
-    script.innerHTML = JSON.stringify(structuredData);
-    document.head.appendChild(script);
-    
-  }, [title, description, keywords]);
+    setRouteData(data || {})
+    return () => setRouteData({})
+  }, [data, setRouteData])
+}
 
-  return null;
-};
-
-export default SEOComponent;
+export default SEOComponent

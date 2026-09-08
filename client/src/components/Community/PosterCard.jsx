@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import styled, { keyframes } from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import { trackCommunityPosterOpenInEditor } from "../../services/analytics";
@@ -220,7 +220,7 @@ const Info = styled.div`
     min-width: 0;
 `;
 
-const AlbumName = styled.p`
+const AlbumName = styled(Link)`
     font-size: 1em;
     font-weight: 700;
     margin: 0;
@@ -228,6 +228,7 @@ const AlbumName = styled.p`
     overflow: hidden;
     text-overflow: ellipsis;
     color: ${({ $color }) => $color || 'var(--textColor)'};
+    text-decoration: none;
 `;
 
 const ArtistName = styled.p`
@@ -251,6 +252,15 @@ const AuthorRow = styled.div`
     align-items: center;
     gap: 8px;
     min-width: 0;
+`;
+
+const AuthorLink = styled(Link)`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
 `;
 
 const AvatarWrap = styled.div`
@@ -591,7 +601,7 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                 )}
 
                 {thumbnailUrl ? (
-                    <ThumbnailImg src={thumbnailUrl} alt={poster.albumName} />
+                    <ThumbnailImg src={thumbnailUrl} alt={`${poster.albumName} poster by ${poster.artistsName}`} loading="lazy" decoding="async" />
                 ) : (
                     /* Placeholder while canvas generates (or if no cover stored) */
                     <ColorPlaceholder $bg={bgColor}>
@@ -631,20 +641,17 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
             </ThumbnailWrapper>
 
             <Info>
-                <AlbumName $color={txtColor}>{poster.albumName}</AlbumName>
+                <AlbumName to={`/p/${poster._id}`} onClick={(event) => event.stopPropagation()} $color={txtColor}>{poster.albumName}</AlbumName>
                 <ArtistName $color={txtColor}>{poster.artistsName}</ArtistName>
 
                 {/* Community: author info */}
                 {variant === 'community' && author?.username && (
                     <>
                         <Divider $color={txtColor} />
-                        <AuthorRow
-                            style={{ cursor: 'pointer' }}
-                            onClick={(e) => { e.stopPropagation(); navigate(`/u/${author.username}`); }}
-                        >
+                        <AuthorLink to={`/u/${author.username}`} onClick={(event) => event.stopPropagation()}>
                             <AvatarWrap $color={txtColor}>
                                 {author?.avatar
-                                    ? <AvatarImg src={author.avatar} alt={author.name} />
+                                    ? <AvatarImg src={author.avatar} alt={`${author.name || author.username}'s avatar`} loading="lazy" decoding="async" />
                                     : (author?.name || '?').charAt(0).toUpperCase()
                                 }
                             </AvatarWrap>
@@ -658,7 +665,7 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                                     </BadgeLabel>
                                 )}
                             </AuthorMeta>
-                        </AuthorRow>
+                        </AuthorLink>
                     </>
                 )}
 
@@ -685,7 +692,7 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                         >
                             <AvatarWrap>
                                 {author?.avatar
-                                    ? <AvatarImg src={author.avatar} alt={author.name} />
+                                    ? <AvatarImg src={author.avatar} alt={`${author.name || author.username}'s avatar`} loading="lazy" decoding="async" />
                                     : (author?.name || '?').charAt(0).toUpperCase()
                                 }
                             </AvatarWrap>

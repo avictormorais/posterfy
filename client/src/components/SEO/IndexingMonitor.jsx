@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { validateCurrentUrl, getCanonicalUrl } from '../../utils/urlNormalization';
+import { validateCurrentUrl } from '../../utils/urlNormalization';
 
 const IndexingMonitor = () => {
   useEffect(() => {
