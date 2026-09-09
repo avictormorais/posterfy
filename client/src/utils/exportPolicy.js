@@ -1,5 +1,6 @@
 const PRINT_READY_FORMATS = new Set(['png', 'pdf'])
 const PRINT_READY_SCALES = new Set([1, 1.5])
+const CLEAN_ACCESS_REASONS = new Set(['unlocked', 'account_grant'])
 
 export const getExportPolicy = (format, scale) => {
   if (format === 'jpg' && scale === 0.6) {
@@ -12,3 +13,18 @@ export const getExportPolicy = (format, scale) => {
 
   return null
 }
+
+export const getPreviewWatermarkPolicy = (isPrintReadyEnabled, isPrintReadyUnlocked) => {
+  const hasCleanPreviewAccess = isPrintReadyUnlocked === true
+
+  return {
+    includeWatermark: !hasCleanPreviewAccess,
+    includePatternWatermark: isPrintReadyEnabled === true && !hasCleanPreviewAccess
+  }
+}
+
+export const hasCleanPrintReadyAccess = (access) => (
+  access?.authorized === true
+  && access?.tier === 'print_ready'
+  && CLEAN_ACCESS_REASONS.has(access.reason)
+)

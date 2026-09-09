@@ -44,7 +44,7 @@ import SetPasswordSVG from "../svgs/Login/SetPasswordSVG"
 import PosterInfo from "./PosterInfo";
 import PrintReadyModal from "./PrintReadyModal";
 import { clearPendingFlow, rememberPendingOAuthFlow, savePendingFlow, updatePendingFlow } from "../../utils/pendingFlow";
-import { getExportPolicy } from "../../utils/exportPolicy";
+import { getExportPolicy, getPreviewWatermarkPolicy, hasCleanPrintReadyAccess } from "../../utils/exportPolicy";
 import {
     trackPrintReadyAttempt,
     trackPrintReadyBeginCheckout,
@@ -1601,6 +1601,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [exportError, setExportError] = useState('');
     const [isPrintReadyUnlocked, setIsPrintReadyUnlocked] = useState(false);
     const [unlockChecked, setUnlockChecked] = useState(false);
+    const previewWatermarkPolicy = getPreviewWatermarkPolicy(isPrintReadyEnabled, isPrintReadyUnlocked);
     const [showPrintReadyModal, setShowPrintReadyModal] = useState(false);
     const [checkoutLoading, setCheckoutLoading] = useState(false);
     const [checkoutError, setCheckoutError] = useState('');
@@ -2064,7 +2065,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             syncPrintReadyOffer(access.offer);
 
             if (access.authorized) {
-                if (policy.tier === 'print_ready' && access.reason === 'unlocked') {
+                if (hasCleanPrintReadyAccess(access)) {
                     setIsPrintReadyUnlocked(true);
                     setUnlockChecked(true);
                 }
@@ -2753,7 +2754,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         coverVerticalPosition,
         coverBlur,
         customFont,
-        infosLoaded
+        infosLoaded,
+        isPrintReadyUnlocked
     ]);
 
     return(
@@ -2837,8 +2839,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                             onArtistIdDiscovered={handleArtistIdDiscovered}
                             customFont={customFont}
                             scale={0.3}
-                            includeWatermark={true}
-                            includePatternWatermark={isPrintReadyEnabled}
+                            includeWatermark={previewWatermarkPolicy.includeWatermark}
+                            includePatternWatermark={previewWatermarkPolicy.includePatternWatermark}
                         />
 
                         {generateExport && (
