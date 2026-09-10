@@ -1,20 +1,20 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react"
 import styled, { keyframes } from "styled-components"
 import Icon from "../svgs/icon"
 import LanguageSelector from "./Languageselector"
-import { RiUser3Fill, RiShieldKeyholeFill } from "react-icons/ri";
+import { RiUser3Fill } from "react-icons/ri";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
+import { useTranslation } from 'react-i18next';
 import { FaCode } from "react-icons/fa6";
 
 const fadeIn = keyframes`
   from {
     opacity: 0;
-    transform: scale(0.9);
   }
   to {
     opacity: 1;
-    transform: scale(1);
   }
 `;
 
@@ -24,10 +24,19 @@ const NavbarContainer = styled.header`
   left: 0;
   width: 100%;
   z-index: 50;
-  transition: all 0.3s ease;
+  transition: transform 280ms cubic-bezier(.2,.7,.3,1), box-shadow 280ms ease;
   background-color: var(--backgroundColor);
-  padding: ${({ scrolled }) => (scrolled ? "13px 0" : "13px 0")};
-  transform: ${({ visible }) => (visible ? "translateY(0)" : "translateY(-100%)")};
+  padding: 14px 0;
+  box-shadow: ${({ $scrolled }) => $scrolled ? '0 8px 24px -16px var(--shadowColor)' : 'none'};
+  transform: ${({ $visible }) => ($visible ? "translateY(0)" : "translateY(-110%)")};
+  &:focus-within { transform: translateY(0); }
+  button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--AccentColor);
+    outline-offset: 4px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &, *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
 `
 
 const NavbarContent = styled.div`
@@ -35,23 +44,33 @@ const NavbarContent = styled.div`
   align-items: center;
   justify-content: space-between;
   padding-inline: 10%;
+  max-width: 1600px;
+  margin-inline: auto;
+  box-sizing: border-box;
   
   @media (max-width: 768px) {
-    padding-inline: 40px;
+    padding-inline: 24px;
   }
+  @media (max-width: 400px) { padding-inline: 18px; }
 `
 
-const LogoContainer = styled.div`
+const LogoContainer = styled(Link)`
   display: flex;
   align-items: center;
   cursor: pointer;
+  text-decoration: none;
+  border-radius: 8px;
+  flex-shrink: 0;
+  svg { transition: transform 220ms ease; }
+  &:hover svg { transform: translateY(-2px) rotate(-4deg); }
 `
 
-const BrandName = styled.h1`
+const BrandName = styled.span`
   font-weight: bolder;
   margin-left: 10px;
   font-size: 1.3em;
   color: var(--AccentColor);
+  letter-spacing: -.055em;
 
   @media (max-width: 400px) {
     display: none;
@@ -59,10 +78,10 @@ const BrandName = styled.h1`
 `
 
 const DomainText = styled.span`
-  font-weight: normal;
-  font-size: 0.625em;
-  opacity: 0.35;
-  font-weight: 600;
+  font-size: .8em;
+  color: var(--textSecondary);
+  font-weight: 400;
+  letter-spacing: -.025em;
 
   @media (max-width: 465px) {
     display: none;
@@ -75,31 +94,22 @@ const Divider = styled.div`
   left: 0;
   width: 100%;
   height: 1px;
-  background-color: rgba(1, 183, 85, 0.05);
-  opacity: ${({ scrolled }) => (scrolled ? "1" : "0")};
+  background: linear-gradient(90deg, transparent, var(--borderColor) 15%, var(--borderColor) 85%, transparent);
+  opacity: ${({ $scrolled }) => ($scrolled ? "1" : ".6")};
   transition: opacity 0.3s ease;
 `
 
 const IconContainer = styled.div`
-  /* animation: spin 10s linear infinite; */
   width: 40px;
   height: 44.05px;
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
 `;
 
 const SelectorContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   margin-left: auto;
+  padding-left: 20px;
 `;
 
 const ProfileButton = styled.button`
@@ -110,16 +120,18 @@ const ProfileButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid var(--borderColor);
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+  border: 1px solid var(--borderColor);
+  width: 42px;
+  height: 42px;
   overflow: hidden;
   
   animation: ${fadeIn} 0.4s ease-out forwards;
   
   &:hover {
     background-color: var(--glassBackground);
-    transform: scale(1.05);
-    border-color: var(--textColor);
+    transform: translateY(-2px);
+    border-color: var(--AccentColor);
   }
   
   &:active {
@@ -136,7 +148,7 @@ const ProfileWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.themeColor};
+  background: var(--glassBackground);
 `
 
 const UserIcon = styled(RiUser3Fill)`
@@ -158,15 +170,17 @@ const AdminButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid var(--borderColor);
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+  border: 1px solid var(--borderColor);
+  width: 42px;
+  height: 42px;
 
   animation: ${fadeIn} 0.4s ease-out forwards;
 
   &:hover {
     background-color: var(--glassBackground);
-    transform: scale(1.05);
-    border-color: var(--textColor);
+    transform: translateY(-2px);
+    border-color: var(--AccentColor);
   }
 
   &:active {
@@ -193,8 +207,7 @@ const AdminIcon = styled(FaCode)`
 function Navbar({ hideLogo = false, hideAccount = false }) {
   const [scrolled, setScrolled] = useState(false)
   const [visible, setVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [soon, setSoon] = useState(false)
+  const { t } = useTranslation();
   const domain = import.meta.env.VITE_DOMAIN
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -202,9 +215,12 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
   const isAdminPage = location.pathname.startsWith('/admin');
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let frame = 0;
     const handleScroll = () => {
+      frame = 0;
       const currentScrollY = window.scrollY
-      const isScrolled = currentScrollY > 10
+      if (currentScrollY > 10 && Math.abs(currentScrollY - lastScrollY) < 8) return;
       
       if (currentScrollY <= 10) {
         setVisible(true)
@@ -221,12 +237,17 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
         setScrolled(true)
       }
       
-      setLastScrollY(currentScrollY)
+      lastScrollY = currentScrollY;
     }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [lastScrollY, isAdminPage])
+    const scheduleScroll = () => {
+      if (!frame) frame = requestAnimationFrame(handleScroll);
+    };
+    window.addEventListener("scroll", scheduleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", scheduleScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, [isAdminPage])
 
   const handleClickAccount = () => {
     if(isAuthenticated && user){
@@ -237,10 +258,10 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
   }
 
   return (
-    <NavbarContainer scrolled={scrolled} visible={visible} $isAdmin={isAdminPage}>
+    <NavbarContainer $scrolled={scrolled} $visible={visible}>
       <NavbarContent>
         {!hideLogo && (
-          <LogoContainer onClick={() => navigate('/')}>
+          <LogoContainer to="/" aria-label="Posterfy">
             <IconContainer>
               <Icon fill={"var(--AccentColor)"} width={"40px"} height={"44.05px"} />
             </IconContainer>
@@ -260,10 +281,10 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
           )}
           <LanguageSelector />
           {!hideAccount && (
-            <ProfileButton onClick={handleClickAccount} key={user?.avatar || 'guest'}>
+            <ProfileButton onClick={handleClickAccount} key={user?.avatar || 'guest'} aria-label={user?.username || t('Login')} title={user?.username || t('Login')}>
               <ProfileWrapper>
                 {user?.avatar ? (
-                  <AvatarImage src={user.avatar} />
+                  <AvatarImage src={user.avatar} alt="" />
                 ) : (
                   <UserIcon />
                 )}
@@ -272,7 +293,7 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
           )}
         </SelectorContainer>
       </NavbarContent>
-      <Divider scrolled={scrolled} />
+      <Divider $scrolled={scrolled} />
     </NavbarContainer>
   )
 }

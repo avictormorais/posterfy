@@ -13,12 +13,12 @@ const FlagButton = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 42px;
   box-sizing: border-box;
   padding: 0 10px 0 6px;
   border-radius: 999px;
   background: var(--glassBackground);
-  border: 2px solid var(--borderColor);
+  border: 1px solid var(--borderColor);
   color: var(--textColor);
   cursor: pointer;
   transition: all 0.3s ease;
