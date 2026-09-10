@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Loading from './components/Common/Loading';
+import { dismissBootLoading } from './bootLoading';
+import { RouteTransitionProvider } from './contexts/RouteTransitionContext';
 import { usePageTracking } from './hooks/usePageTracking';
 import { initScrollTracking } from './services/enhancedAnalytics';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -21,49 +22,14 @@ import LegalPage from './pages/Legal/LegalPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-  const [routeLoading, setRouteLoading] = useState(false);
-  const [showLoading, setShowLoading] = useState(false);
-
   useEffect(() => {
-    setRouteLoading(true);
-    setShowLoading(true);
     window.scrollTo(0, 0);
-    
-    const timer = setTimeout(() => {
-      setRouteLoading(false);
-      setTimeout(() => {
-        setShowLoading(false);
-      }, 300);
-    }, 2000);
-
-    return () => clearTimeout(timer);
   }, [pathname]);
 
-  if (!showLoading) {
-    return null;
-  }
-
-  return (
-    <div 
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 9999,
-        opacity: routeLoading ? 1 : 0,
-        transition: 'opacity 0.3s ease-out',
-        pointerEvents: routeLoading ? 'auto' : 'none'
-      }}
-    >
-      <Loading isVisible={true} />
-    </div>
-  );
+  return null;
 }
 
 function App() {
-  const [loading, setLoading] = useState(true);
   const [loadingComplete, setLoadingComplete] = useState(false);
 
   usePageTracking();
@@ -81,9 +47,10 @@ function App() {
       infinite: false,
     });
 
+    let animationFrame;
     function raf(time) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      animationFrame = requestAnimationFrame(raf);
     }
 
     const handleScrollLock = (event) => {
@@ -92,9 +59,10 @@ function App() {
     };
 
     window.addEventListener('posterfy:scroll-lock', handleScrollLock);
-    requestAnimationFrame(raf);
+    animationFrame = requestAnimationFrame(raf);
 
     return () => {
+      cancelAnimationFrame(animationFrame);
       window.removeEventListener('posterfy:scroll-lock', handleScrollLock);
       lenis.destroy();
     };
@@ -106,25 +74,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-      setTimeout(() => {
-        setLoadingComplete(true);
-      }, 1000);
-    }, 2000);
-    return () => clearTimeout(timer);
+    let active = true;
+    dismissBootLoading().then(() => {
+      if (active) setLoadingComplete(true);
+    });
+    return () => { active = false; };
   }, []);
-
-  useEffect(() => {
-    if (loading) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [loading]);
 
   return (
     <ThemeProvider>
@@ -136,6 +91,7 @@ function App() {
           <Router>
             <SEOProvider>
               <ScrollToTop />
+              <RouteTransitionProvider>
               <Routes>
               <Route path="/" element={<Layout showNavbar={true} showFooter={true} />}>
                 <Route index element={<Home loadingComplete={loadingComplete} />} />
@@ -178,9 +134,9 @@ function App() {
               <Route path="*" element={<Error />} />
 
               </Routes>
+              </RouteTransitionProvider>
             </SEOProvider>
           </Router>
-          <Loading isVisible={loading} />
         </AuthProvider>
       </PrintReadyProvider>
     </ThemeProvider>

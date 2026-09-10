@@ -1365,7 +1365,7 @@ const LoginButton = styled.button`
     transition: all 0.2s ease;
 `;
 
-const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson, source, posterId, posterFullData, onPublishSuccess, resumeFlow, checkoutResult, checkoutSessionId, onPendingFlowComplete }, ref) => {
+const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams, initialPosterJson, source, posterId, posterFullData, onPublishSuccess, resumeFlow, checkoutResult, checkoutSessionId, onPendingFlowComplete, onPreviewReady, onPreviewError }, ref) => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
@@ -1821,6 +1821,25 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             }, 50);
         }, 300);
     };
+
+    useEffect(() => {
+        if (!image || !previewVisible || !onPreviewReady) return;
+        const preview = previewRef.current;
+        if (!preview) return;
+        let cancelled = false;
+        const finishPreview = async () => {
+            try {
+                await preview.decode();
+                // No animations in reduced-motion mode: this resolves immediately.
+                await Promise.all(preview.getAnimations().map(animation => animation.finished.catch(() => {})));
+                if (!cancelled) onPreviewReady();
+            } catch {
+                if (!cancelled) onPreviewError?.();
+            }
+        };
+        finishPreview();
+        return () => { cancelled = true; };
+    }, [image, previewVisible, onPreviewReady, onPreviewError]);
 
     const handleExportReady = (imageUrl) => {
         setExportImage(imageUrl);
@@ -2832,6 +2851,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         <CanvasPoster
                             ref={canvasRef}
                             onImageReady={handlePreviewReady}
+                            onError={onPreviewError}
                             posterData={posterData}
                             generatePoster={generatePoster}
                             onTitleSizeAdjust={handleTitleSizeAdjust}
@@ -2863,7 +2883,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         <PreviewContainer>
                             <FlashOverlay visible={previewVisible} />
                             {image ? (
-                                <PosterPreview src={image} ref={previewRef} visible={previewVisible} />
+                                <PosterPreview src={image} ref={previewRef} visible={previewVisible}
+                                    onError={onPreviewError}
+                                />
                             ) : (
                                 <FakePoster ref={previewRef} />
                             )}

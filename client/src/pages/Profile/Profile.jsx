@@ -6,7 +6,7 @@ import apiService from "../../services/apiService";
 import { FaGoogle } from "react-icons/fa";
 import { SiSpotify } from "react-icons/si";
 import { useTranslation } from 'react-i18next';
-import Loading from "../../components/Common/Loading.jsx";
+import { useRouteTransition } from '../../contexts/RouteTransitionContext';
 import PosterWall from "../../components/svgs/PosterWall.jsx";
 import EditProfileModal from "../../components/EditProfileModal";
 import Hint from "../../components/Common/Hint.jsx";
@@ -818,6 +818,7 @@ function StatsTab({ stats, isOwner }) {
 }
 
 export default function Profile() {
+    const { ready: routeReady, fail: routeFailed } = useRouteTransition();
     const navigate = useNavigate();
     const { username: routeUsername } = useParams();
     const { user, loading, logout, isAuthenticated } = useAuth();
@@ -872,7 +873,7 @@ export default function Profile() {
     }, [loading]);
 
     useEffect(() => {
-        if (!routeUsername) return;
+        if (!routeUsername || loading) return;
 
         setProfileError(false);
 
@@ -937,6 +938,12 @@ export default function Profile() {
     }, [isAuthenticated, loading, user, routeUsername]);
 
     useEffect(() => {
+        if (loading || profileNotFound) return;
+        if (profileError) routeFailed();
+        else if (userProfile && myFetched) routeReady();
+    }, [loading, profileNotFound, profileError, userProfile, myFetched, isOwner, routeReady, routeFailed]);
+
+    useEffect(() => {
         // For public view, featured poster is already set from the initial fetch
         if (!isOwner) return;
         if (!isAuthenticated || !pinnedPosterId) return;
@@ -971,8 +978,8 @@ export default function Profile() {
             setMyPage(page);
             setMyHasMore(res.hasMore ?? false);
             setMyFetched(true);
-        } catch { /* noop */ } finally { setMyLoading(false); }
-    }, []);
+        } catch { routeFailed(); } finally { setMyLoading(false); }
+    }, [routeFailed]);
 
     const fetchPublicPosters = useCallback(async (page, append) => {
         if (!routeUsername) return;
@@ -1093,7 +1100,7 @@ export default function Profile() {
         if (profileNotFound) navigate('/error');
     }, [profileNotFound, navigate]);
 
-    if (loading || profileNotFound) return <Loading isVisible={true} initialFade={true} />;
+    if (loading || profileNotFound) return null;
 
     // Backend offline and no user data to fall back on (visitor)
     if (profileError && !userProfile) {

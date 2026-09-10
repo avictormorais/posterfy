@@ -19,6 +19,7 @@ import styled from 'styled-components';
 import { useAuth } from '../../contexts/AuthContext';
 import { readPendingFlow } from '../../utils/pendingFlow';
 import { useRouteSeoData } from '../../components/SEO/SEOComponent';
+import { useRouteTransition } from '../../contexts/RouteTransitionContext';
 
 const FadeInSection = styled.div`
   opacity: ${props => props.$isVisible ? 1 : 0};
@@ -42,6 +43,8 @@ export default function Home({ loadingComplete }) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { loading: authLoading } = useAuth();
+  const { ready: routeReady, fail: routeFailed, revealed } = useRouteTransition();
+  const firstPreviewReady = useRef(false);
   const [recreatingPosterJSON, setRecreatingPosterJSON] = useState(null);
   const [recreatingPosterData, setRecreatingPosterData] = useState(null);
   const [resumeFlow, setResumeFlow] = useState(null);
@@ -98,19 +101,25 @@ export default function Home({ loadingComplete }) {
         };
         setRecreatingPosterJSON(json);
         setRecreatingPosterData(data.poster);
-        setTimeout(() => {
-          if (posterEditorRef.current) {
-            const y = posterEditorRef.current.getBoundingClientRect().top + window.pageYOffset - 80;
-            window.scrollTo({ top: y, behavior: 'smooth' });
-          }
-        }, 200);
       } catch (e) {
+        if (cancelled) return;
         console.error('Failed to load community poster:', e);
+        routeFailed();
       }
     };
     load();
     return () => { cancelled = true; };
-  }, [posterId, authLoading, resumeFlow]);
+  }, [posterId, authLoading, resumeFlow, routeFailed]);
+
+  const handleFirstPreviewReady = () => {
+    if (!posterId || firstPreviewReady.current) return;
+    firstPreviewReady.current = true;
+    if (posterEditorRef.current) {
+      const y = posterEditorRef.current.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: 'instant' });
+    }
+    routeReady();
+  };
 
   const [anchorRef, anchorVisible] = useScrollAnimation();
   const [explanationRef, explanationVisible] = useScrollAnimation();
@@ -167,7 +176,7 @@ export default function Home({ loadingComplete }) {
           isClosing={false}
         />
       )}
-      <Hero showAnimation={loadingComplete} onRecreate={recreatePoster} />
+      <Hero showAnimation={loadingComplete && revealed} onRecreate={recreatePoster} />
       
       <FadeInSection ref={anchorRef} $isVisible={anchorVisible}>
         <Anchor text={t('anchorArt')} type={1} />
@@ -178,9 +187,10 @@ export default function Home({ loadingComplete }) {
         <SectionExplanation title={t('ArtTitle')} paragraph={t('ArtParagraph')} />
       </FadeInSection>
 
-      <FadeInSection ref={posterSectionRef} $isVisible={posterSectionVisible}>
+      <FadeInSection ref={posterSectionRef} $isVisible={Boolean(posterId) || posterSectionVisible}>
         {recreatingPosterJSON ? (
           <PosterEditor 
+            key={posterId || recreatingPosterJSON.albumID}
             ref={posterEditorRef}
             albumID={recreatingPosterJSON.albumID} 
             initialPosterJson={recreatingPosterJSON} 
@@ -192,6 +202,8 @@ export default function Home({ loadingComplete }) {
             checkoutResult={searchParams.get('print_ready')}
             checkoutSessionId={searchParams.get('session_id')}
             onPendingFlowComplete={handlePendingFlowComplete}
+            onPreviewReady={handleFirstPreviewReady}
+            onPreviewError={posterId ? routeFailed : undefined}
             onPublishSuccess={(id) => setPublishModal({ posterId: id })}
           />
         ) : (

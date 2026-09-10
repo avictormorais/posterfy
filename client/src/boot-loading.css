@@ -1,0 +1,135 @@
+/* Available before React: animate only composited transforms and opacity. */
+html.boot-pending { overflow: hidden; }
+.posterfy-loading {
+    --boot-background: #f0efeb;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    place-items: center;
+    background: var(--backgroundColor, var(--boot-background));
+    opacity: 1;
+    transition: opacity var(--boot-exit-duration, 1000ms) cubic-bezier(.4,0,.2,1);
+    isolation: isolate;
+}
+#boot-loading { background: var(--boot-background); }
+/* The boot screen precedes ThemeProvider, so use the saved theme immediately. */
+html[data-boot-theme="light"] #boot-loading,
+html:not([data-boot-theme]) #boot-loading { --textColor: #2c2929; }
+html[data-boot-theme]:not([data-boot-theme="light"]) #boot-loading { --textColor: #ffffff; }
+html[data-boot-theme="dark"] #boot-loading { --boot-background: #0f0f0f; }
+html[data-boot-theme="rose"] #boot-loading { --boot-background: #171525; }
+html[data-boot-theme="fy"] #boot-loading { --boot-background: #0d0c0f; }
+html[data-boot-theme="carmesin"] #boot-loading { --boot-background: #2a1825; }
+html[data-boot-theme="brown"] #boot-loading { --boot-background: #18110b; }
+.posterfy-loading.is-leaving { opacity: 0; pointer-events: none; }
+.posterfy-loading-art {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 32px;
+    transform: translate3d(0,0,0);
+    transition: transform var(--boot-exit-duration, 1000ms) cubic-bezier(.4,0,.2,1);
+}
+.is-leaving .posterfy-loading-art { transform: translate3d(0,-16px,0) scale(1.06); }
+.posterfy-loading-heart {
+    position: relative;
+    width: clamp(100px, 19vw, 148px);
+    aspect-ratio: 511 / 464;
+}
+.posterfy-loading-heart::before,
+.posterfy-loading-heart::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('./components/svgs/loading-heart.svg') center / contain no-repeat;
+    will-change: transform, opacity;
+}
+.posterfy-loading-heart::before {
+    animation: posterfy-echo-left 1250ms cubic-bezier(.16,1,.3,1) both;
+}
+.posterfy-loading-heart::after {
+    animation: posterfy-echo-right 1250ms 90ms cubic-bezier(.16,1,.3,1) both;
+}
+.posterfy-loading-heart img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: posterfy-heart-arrive 1000ms cubic-bezier(.16,1,.3,1) both;
+    will-change: transform, opacity;
+}
+.posterfy-loading-heart-core {
+    position: absolute;
+    inset: 0;
+    animation: posterfy-heart-beat 1800ms 1450ms ease-in-out infinite;
+    will-change: transform;
+}
+.posterfy-loading-name {
+    font: 700 clamp(25px, 5vw, 32px)/1 Montserrat, sans-serif;
+    letter-spacing: -.055em;
+    color: #df6d40;
+    animation: posterfy-name-arrive 900ms 250ms cubic-bezier(.16,1,.3,1) both;
+    will-change: transform, opacity;
+}
+.posterfy-loading-title {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: posterfy-domain-center 650ms 1400ms cubic-bezier(.22,1,.36,1) both;
+    will-change: transform;
+}
+.posterfy-loading-brand { color: #df6d40; }
+.posterfy-loading-domain {
+    color: var(--textColor, #2c2929);
+    animation: posterfy-domain-arrive 650ms 1400ms cubic-bezier(.22,1,.36,1) both;
+    will-change: transform, opacity;
+}
+.posterfy-loading-error {
+    position: absolute;
+    bottom: 50px;
+    padding: 20px;
+    color: #df6d40;
+    font: 14px/1.6 sans-serif;
+    text-align: center;
+}
+.posterfy-loading-error a { color: inherit; }
+@keyframes posterfy-echo-left {
+    0% { opacity: 0; transform: translate3d(-65px,12px,0) rotate(-16deg) scale(.86); }
+    25% { opacity: .16; }
+    80% { opacity: .16; transform: translate3d(0,0,0) rotate(0) scale(1); }
+    100% { opacity: 0; transform: translate3d(0,0,0) rotate(0) scale(1); }
+}
+@keyframes posterfy-echo-right {
+    0% { opacity: 0; transform: translate3d(65px,-12px,0) rotate(16deg) scale(.86); }
+    25% { opacity: .25; }
+    80% { opacity: .25; transform: translate3d(0,0,0) rotate(0) scale(1); }
+    100% { opacity: 0; transform: translate3d(0,0,0) rotate(0) scale(1); }
+}
+@keyframes posterfy-heart-arrive {
+    from { opacity: .2; transform: translate3d(0,20px,0) scale(.78); }
+    to { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+}
+@keyframes posterfy-heart-beat {
+    0%, 45%, 100% { transform: scale(1); }
+    15% { transform: scale(1.045); }
+    30% { transform: scale(.995); }
+}
+@keyframes posterfy-name-arrive {
+    from { opacity: 0; transform: translate3d(0,10px,0); }
+    to { opacity: 1; transform: translate3d(0,0,0); }
+}
+@keyframes posterfy-domain-center {
+    from { transform: translate3d(var(--domain-offset, 0px),0,0); }
+    to { transform: translate3d(0,0,0); }
+}
+@keyframes posterfy-domain-arrive {
+    from { opacity: 0; transform: translate3d(8px,5px,0); }
+    to { opacity: 1; transform: translate3d(0,0,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .posterfy-loading, .posterfy-loading-art { transition: none; }
+    .posterfy-loading-heart img, .posterfy-loading-heart-core,
+    .posterfy-loading-name, .posterfy-loading-title,
+    .posterfy-loading-domain { animation: none; }
+    .posterfy-loading-heart::before, .posterfy-loading-heart::after { display: none; }
+}

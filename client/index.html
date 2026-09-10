@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <link rel="shortcut icon" href="/ico.png" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/boot-loading.css" />
+    <script>
+      document.documentElement.classList.add('boot-pending');
+      try {
+        document.documentElement.dataset.bootTheme = localStorage.getItem('theme') || 'light';
+      } catch { /* The default theme also works when storage is unavailable. */ }
+    </script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -53,6 +60,18 @@
     </script>
   </head>
   <body>
+    <div id="boot-loading" class="posterfy-loading">
+      <div class="posterfy-loading-art" role="status" aria-label="Posterfy">
+        <div class="posterfy-loading-heart" aria-hidden="true">
+          <div class="posterfy-loading-heart-core">
+            <img src="/src/components/svgs/loading-heart.svg" width="511" height="464" alt="" fetchpriority="high" />
+          </div>
+        </div>
+        <div class="posterfy-loading-name"><span class="posterfy-loading-title"><span class="posterfy-loading-brand">Posterfy</span><span class="posterfy-loading-domain">%VITE_DOMAIN%</span></span></div>
+      </div>
+      <p class="posterfy-loading-error" hidden>Unable to load Posterfy. <a href="">Reload</a></p>
+    </div>
+    <noscript><style>#boot-loading { display: none; }</style></noscript>
     <div id="root"></div>
 
     <!-- Google Tag Manager (noscript) -->

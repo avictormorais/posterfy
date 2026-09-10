@@ -1,0 +1,37 @@
+.route-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    background: var(--backgroundColor);
+    opacity: 1;
+    transition: opacity 180ms ease-out;
+}
+.route-transition.is-leaving { opacity: 0; pointer-events: none; }
+.route-transition > img {
+    object-fit: contain;
+    animation: route-heart 1200ms ease-in-out infinite;
+    will-change: transform;
+}
+.route-transition-error { max-width: 340px; padding: 24px; text-align: center; }
+.route-transition-error p { margin-bottom: 20px; line-height: 1.6; }
+.route-transition-error button, .route-transition-error a {
+    display: inline-block;
+    margin: 6px;
+    border: 1px solid var(--borderColor);
+    border-radius: 24px;
+    background: var(--backgroundColor);
+    color: var(--textColor);
+    padding: 10px 18px;
+    cursor: pointer;
+    font: inherit;
+}
+@keyframes route-heart { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
+@media (prefers-reduced-motion: reduce) {
+    .route-transition { transition: none; }
+    .route-transition > img { animation: none; }
+}
