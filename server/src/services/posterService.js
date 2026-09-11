@@ -154,7 +154,7 @@ class PosterService {
     return { ...poster, favorited }
   }
 
-  async findByUser(authorId, requesterId = null, page = 1, limit = DEFAULT_LIMIT, isAdmin = false) {
+  async findByUser(authorId, requesterId = null, page = 1, limit = DEFAULT_LIMIT, isAdmin = false, { q = '', visibility } = {}) {
     const safeLimit = Math.min(limit, MAX_LIMIT)
     const skip = (page - 1) * safeLimit
 
@@ -162,6 +162,13 @@ class PosterService {
     const filter = isOwner || isAdmin
       ? { authorId, isDeleted: false }
       : buildPublicFilter({ authorId })
+
+    if ((isOwner || isAdmin) && ['public', 'private'].includes(visibility)) filter.visibility = visibility
+    const search = typeof q === 'string' ? q.trim().slice(0, 200) : ''
+    if (search) {
+      const regex = { $regex: escapeSearchRegex(search), $options: 'i' }
+      filter.$or = [{ albumName: regex }, { artistsName: regex }]
+    }
 
     const [posters, total] = await Promise.all([
       Poster.find(filter).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(safeLimit).lean(),

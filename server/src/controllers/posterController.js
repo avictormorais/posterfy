@@ -92,7 +92,9 @@ class PosterController {
         req.user.id,
         req.user.id,
         parseInt(page),
-        parseInt(limit)
+        parseInt(limit),
+        false,
+        { q: req.query.q, visibility: req.query.visibility }
       )
       res.json(result)
     } catch (error) {

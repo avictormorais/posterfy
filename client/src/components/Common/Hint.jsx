@@ -29,13 +29,18 @@ const HintContainer = styled.div`
 
 const HintText = styled.div`
   position: fixed;
+  transform: translateY(-50%);
   background-color: var(--textColor);
   color: var(--backgroundColor);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 0.5em;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: normal;
   font-weight: 600;
-  white-space: nowrap;
+  white-space: normal;
+  width: max-content;
+  max-width: min(240px, calc(100vw - 32px));
   z-index: 1000;
   pointer-events: none;
   opacity: 0;
@@ -49,16 +54,15 @@ const HintText = styled.div`
   &::before {
     content: '';
     position: absolute;
-    right: 97%;
+    right: 100%;
     top: 50%;
-    transform: translateY(-50%) scale(1.2);
-    border: 12px solid transparent;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
     border-right-color: var(--textColor);
   }
 
   @media (max-width: 768px) {
-    font-size: 0.8em;
-    padding: 6px 10px;
+    font-size: 12px;
   }
 `
 
@@ -80,8 +84,8 @@ export default function Hint({ text, children, delay = 0 }) {
   const handleMouseEnter = (e) => {
     const rect = e.currentTarget.getBoundingClientRect()
     setPosition({
-      top: rect.top + rect.height / 2 - 17,
-      left: rect.right + 15
+      top: rect.top + rect.height / 2,
+      left: rect.right + 10
     })
     setIsVisible(true)
   }

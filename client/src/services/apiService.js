@@ -151,8 +151,9 @@ class ApiService {
     })
   }
 
-  async getUserPosters({ page = 1, limit = 20 } = {}) {
-    return this.request(`/api/user/posters?page=${page}&limit=${limit}`)
+  async getUserPosters({ page = 1, limit = 20, q = '', visibility = 'all' } = {}) {
+    const params = new URLSearchParams({ page, limit, q, visibility })
+    return this.request(`/api/user/posters?${params}`)
   }
 
   async getUserFavorites({ page = 1, limit = 20 } = {}) {
@@ -195,8 +196,9 @@ class ApiService {
     return this.request(`/api/community/albums/${spotifyAlbumId}?page=${page}&limit=${limit}`)
   }
 
-  async getUserPublicProfile(username, { page = 1, limit = 20 } = {}) {
-    return this.request(`/api/community/users/${username}?page=${page}&limit=${limit}`)
+  async getUserPublicProfile(username, { page = 1, limit = 20, q = '' } = {}) {
+    const params = new URLSearchParams({ page, limit, q })
+    return this.request(`/api/community/users/${encodeURIComponent(username)}?${params}`)
   }
 
   async getUserPublicStats(username) {

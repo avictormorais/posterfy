@@ -45,6 +45,15 @@ export default function Home({ loadingComplete }) {
   const { loading: authLoading } = useAuth();
   const { ready: routeReady, fail: routeFailed, revealed } = useRouteTransition();
   const firstPreviewReady = useRef(false);
+  useEffect(() => {
+    if (!loadingComplete || !revealed || searchParams.get('create') !== '1') return;
+    const target = document.querySelector('[data-section="album-search"]');
+    if (target) {
+      const top = target.getBoundingClientRect().top + window.scrollY - 88;
+      window.scrollTo({ top, behavior: 'instant' });
+      target.querySelector('input')?.focus({ preventScroll: true });
+    }
+  }, [loadingComplete, revealed, searchParams]);
   const [recreatingPosterJSON, setRecreatingPosterJSON] = useState(null);
   const [recreatingPosterData, setRecreatingPosterData] = useState(null);
   const [resumeFlow, setResumeFlow] = useState(null);

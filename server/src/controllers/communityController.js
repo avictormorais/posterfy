@@ -55,7 +55,8 @@ class CommunityController {
         req.user?.id || null,
         parseInt(page),
         parseInt(limit),
-        requesterIsAdmin
+        requesterIsAdmin,
+        { q: req.query.q }
       )
 
       // Include pinned poster data if it exists

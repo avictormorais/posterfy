@@ -1,15 +1,16 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+/* eslint-disable react/prop-types */
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import apiService from "../../services/apiService";
-import { FaGoogle } from "react-icons/fa";
+import { FiPlus, FiEdit2, FiShare2, FiMoreHorizontal, FiSearch } from "react-icons/fi";
+import { SITE_URL } from "../../seo/metadata";
 import { SiSpotify } from "react-icons/si";
 import { useTranslation } from 'react-i18next';
 import { useRouteTransition } from '../../contexts/RouteTransitionContext';
 import PosterWall from "../../components/svgs/PosterWall.jsx";
 import EditProfileModal from "../../components/EditProfileModal";
-import Hint from "../../components/Common/Hint.jsx";
 import TierBadge from "../../components/Common/TierBadge.jsx";
 import AlertModal from "../../components/Common/AlertModal.jsx";
 import { IoEye, IoHeart, IoCloudDownload } from "react-icons/io5";
@@ -18,7 +19,6 @@ import PosterCard from "../../components/Community/PosterCard";
 import {
     trackProfileView,
     trackProfileEdit,
-    trackProfileSpotifyConnect,
     trackProfilePosterPin,
     trackProfilePosterDelete,
     trackProfilePosterVisibility
@@ -32,53 +32,38 @@ const fadeIn = keyframes`
 `;
 
 const Container = styled.div`
-    display: flex;
-    align-items: center;
+    width: min(1240px, calc(100% - 80px));
+    margin: 0 auto;
+    padding: 104px 0 56px;
     min-height: 85dvh;
-    flex-direction: column;
-    padding-bottom: 20px;
+    box-sizing: border-box;
+    button:focus-visible, a:focus-visible, summary:focus-visible {
+        outline: 2px solid var(--AccentColor);
+        outline-offset: 4px;
+    }
+    @media (max-width: 700px) {
+        width: calc(100% - 40px);
+        padding-top: 96px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
 `;
 
 const ProfileSection = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 80%;
-    margin-top: 100px;
-
-    @media (max-width: 600px) {
-        width: 90%;
-        margin-top: 80px;
-    }
-`;
-
-const BioSection = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 80%;
-    padding-inline: 10px;
-
-    @media (max-width: 600px) { width: 90%; }
+    padding-bottom:20px;
+    @media(max-width:700px){
+    padding-bottom:16px;}
 `;
 
 const ProfileTop = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    @media (max-width: 900px) { flex-wrap: wrap; }
-
-    @media (max-width: 600px) {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-`;
-
-const ProfileBottom = styled.div`
-    padding-left: 110px;
-    margin-top: 10px;
-
-    @media (max-width: 900px) { padding-left: 0; margin-top: 12px; }
+    display:flex;
+    align-items:center;
+    gap:22px;
+    @media(max-width:700px){gap:16px;}
 `;
 
 const Avatar = styled.img`
@@ -108,48 +93,21 @@ const AvatarPlaceholder = styled.div`
 `;
 
 const UserInfo = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-left: 20px;
-    flex: 1;
-    min-width: 0;
-
-    @media (max-width: 600px) {
-        margin-left: 0;
-        margin-top: 12px;
-        align-items: center;
-    }
+    min-width:0;
+    flex:1;
 `;
 
 const UserName = styled.h1`
-    color: var(--textColor);
-    font-size: 1.5em;
-    font-weight: 800;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-
-    @media (max-width: 600px) {
-        font-size: 1.25em;
-        justify-content: center;
-    }
-`;
-
-const UserBadge = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 2px;
-`;
-
-const AdminContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 2px;
+    margin:0;
+    font-size:clamp(26px,3vw,36px);
+    line-height:1.12;
+    letter-spacing:-.055em;
+    font-weight:700;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    overflow-wrap:anywhere;
 `;
 
 const Username = styled.p`
@@ -160,38 +118,15 @@ const Username = styled.p`
     margin: 4px 0 0;
 `;
 
-const BadgeIcon = styled.div`
-    background-color: var(--textColor);
-    border-radius: 50%;
-    padding: 3px;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-`;
-
-const GoogleIcon  = styled(FaGoogle)`  width:14px; height:14px; fill:var(--backgroundColor); `;
-const SpotifyIcon = styled(SiSpotify)` width:14px; height:14px; fill:var(--backgroundColor); `;
-
 const BioText = styled.p`
-    font-size: 0.9em;
-    color: var(--textColor);
-    opacity: 0.72;
-    margin: 8px 0 0;
-    line-height: 1.55;
-    max-width: 460px;
-    white-space: pre-wrap;
-    word-break: break-word;
-    font-weight: bold;
-
-    @media (max-width: 600px) {
-        font-size: 0.85em;
-        max-width: 100%;
-        text-align: center;
-    }
+    font-size:15px;
+    color:var(--textSecondary);
+    line-height:1.8;
+    max-width:520px;
+    margin:14px 0 0;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    font-weight:400;
 `;
 
 const ProfileLinks = styled.div`
@@ -201,7 +136,6 @@ const ProfileLinks = styled.div`
     align-items: center;
     margin-top: 12px;
 
-    @media (max-width: 600px) { justify-content: center; }
 `;
 
 const SpotifyLinkBtn = styled.a`
@@ -230,200 +164,159 @@ const SpotifyIconWhite = styled(SiSpotify)`
     fill:#fff; 
 `;
 
-const ConnectSpotifyBtn = styled.button`
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    background: transparent;
-    color: var(--textColor);
-    font-size: 0.78em;
-    font-weight: 700;
-    border: 1.5px dashed rgba(128,128,128,0.35);
-    cursor: pointer;
-    transition: all 0.2s;
-    flex-shrink: 0;
-
-    &:hover {
-        border-color: #1DB954;
-        color: #1DB954;
-        border-style: solid;
-    }
-`;
-
 const ActionBtns = styled.div`
-    display: flex;
-    gap: 10px;
-    margin-left: auto;
-
-    @media (max-width: 900px) { margin-left: 0; margin-top: 16px; }
-
-    @media (max-width: 600px) {
-        width: 100%;
-        justify-content: center;
-        margin-top: 16px;
-    }
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    margin-top:16px;
 `;
 
 const Btn = styled.button`
-    padding: 8px 20px;
-    border-radius: 25px;
-    border: none;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 0.85em;
-    transition: all 0.2s;
-    background: ${({ $variant }) => $variant === 'outline'
-        ? 'transparent'
-        : $variant === 'danger'
-        ? 'var(--AccentColor)'
-        : 'var(--textColor)'};
-    color: ${({ $variant }) => $variant === 'outline'
-        ? 'var(--textColor)'
-        : 'var(--backgroundColor)'};
-    border: 2px solid ${({ $variant }) => $variant === 'outline' ? 'var(--textColor)' : 'transparent'};
-
-    &:hover {
-        background: ${({ $variant }) => $variant === 'outline'
-            ? 'var(--textColor)'
-            : 'var(--AccentColor)'};
-        color: var(--backgroundColor);
-        border-color: transparent;
-    }
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    min-height:42px;
+    padding:10px 18px;
+    border-radius:24px;
+    border:1px solid var(--borderColor);
+    cursor:pointer;
+    font-weight:700;
+    font-size:12px;
+    background:${({ $variant }) => $variant === 'outline' ? 'transparent' : 'var(--AccentColor)'};
+    color:${({ $variant }) => $variant === 'outline' ? 'var(--textColor)' : 'var(--backgroundColor)'};
+    transition:border-color 180ms,transform 180ms;
+    &:hover{border-color:var(--AccentColor);
+    transform:translateY(-1px);}
+    svg, svg * { color: inherit; stroke: currentColor; }
 `;
 
 const TabRow = styled.div`
-    display: flex;
-    gap: 0;
-    margin-top: 28px;
-    width: 80%;
-    border-bottom: 2px solid var(--borderColor, rgba(128,128,128,0.2));
-
-    @media (max-width: 600px) {
-        width: 90%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        &::-webkit-scrollbar { display: none; }
-    }
+    display:flex;
+    gap:24px;
+    width:100%;
+    border-bottom:1px solid var(--borderColor);
+    overflow-x:auto;
+    @media(max-width:700px){gap:12px;}
 `;
 
 const Tab = styled.button`
-    padding: 12px 24px;
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid ${({ $active }) => $active ? 'var(--AccentColor)' : 'transparent'};
-    margin-bottom: -2px;
-    color: ${({ $active }) => $active ? 'var(--AccentColor)' : 'var(--textColor)'};
-    font-weight: 700;
-    font-size: 0.95em;
-    cursor: pointer;
-    transition: all 0.18s;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-
-    &:hover { color: var(--AccentColor); }
-
-    @media (max-width: 600px) {
-        padding: 10px 16px;
-        font-size: 0.85em;
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
+    padding:12px 0;
+    background:transparent;
+    border:0;
+    border-bottom:2px solid ${({ $active }) => $active ? 'var(--AccentColor)' : 'transparent'};
+    color:${({ $active }) => $active ? 'var(--textColor)' : 'var(--textSecondary)'};
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    &:hover{color:var(--AccentColor);}span{font-size:11px;
+    font-weight:400;
+    color:var(--textSecondary);}
 `;
 
 const TabContent = styled.div`
-    width: 80%;
-    margin-top: 16px;
-    animation: ${fadeIn} 0.25s ease;
-
-    @media (max-width: 600px) { width: 90%; }
+    width:100%;
+    margin-top:18px;
+    animation:${fadeIn} 180ms ease;
 `;
 
 const StatsGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
 
     @media (max-width: 1000px) { grid-template-columns: repeat(2, 1fr); }
-    @media (max-width: 500px)  { grid-template-columns: 1fr; }
+    @media (max-width: 360px)  { grid-template-columns: 1fr; }
 `;
 
 const StatCard = styled.div`
     background: var(--glassBackground);
-    border-radius: 14px;
-    padding: 20px 22px;
-    display: flex;
-    flex-direction: row;
+    border: 1px solid var(--borderColor);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 16px;
+    gap: 10px;
+    @media (max-width: 500px) { padding: 14px; gap: 8px; }
 `;
 
 const StatIconWrapper = styled.div`
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
-    background: color-mix(in srgb, var(--AccentColor) 15%, transparent);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--AccentColor) 8%, transparent);
     color: var(--AccentColor);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    svg { width: 16px; height: 16px; color: inherit; }
+    svg * { color: inherit; }
 `;
 
 const StatValue = styled.p`
-    font-size: 1.8em;
-    font-weight: 800;
+    grid-column: 1 / -1;
+    font-size: 30px;
+    line-height: 1.15;
+    letter-spacing: -.04em;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
     margin: 0;
     color: var(--textColor);
 `;
 
 const StatLabel = styled.p`
-    font-size: 0.8em;
+    font-size: 12px;
+    line-height: 1.5;
     margin: 0;
-    opacity: 0.55;
-    color: var(--textColor);
-    font-weight: 600;
+    color: var(--textSecondary);
+    font-weight: 500;
 `;
 
 const TopSection = styled.div`
     margin-top: 12px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
 
     @media (max-width: 900px) { grid-template-columns: 1fr; }
 `;
 
-const SectionTitle = styled.p`
-    font-size: 0.8em;
-    font-weight: 700;
-    opacity: 0.45;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    margin: 28px 0 0 0;
+const SectionTitle = styled.h2`
+    font-size: 13px;
+    font-weight: 600;
+    margin: 24px 0 0;
     color: var(--textColor);
 `;
 
-const TopCard = styled.div`
-    background: var(--glassBackground);
-    border-radius: 14px;
-    padding: 16px;
+const TopCard = styled(Link)`
+    text-decoration: none;
+    color: inherit;
+    background: transparent;
+    border: 1px solid var(--borderColor);
+    border-radius: 12px;
+    padding: 14px;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    min-width: 0;
     gap: 14px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: border-color 180ms ease, background-color 180ms ease;
 
-    &:hover { transform: translateY(-3px); }
+    &:hover { border-color: var(--AccentColor); background: var(--glassBackground); }
 `;
 
 const TopCardCover = styled.div`
-    width: 62px;
-    height: 62px;
-    border-radius: 8px;
+    width: 72px;
+    height: 72px;
+    border-radius: 6px;
     overflow: hidden;
     flex-shrink: 0;
     background: color-mix(in srgb, var(--AccentColor) 20%, transparent);
@@ -444,17 +337,15 @@ const TopCardInfo = styled.div`
 `;
 
 const TopCardLabel = styled.p`
-    font-size: 0.75em;
-    font-weight: 700;
-    opacity: 0.5;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin: 0;
-    color: var(--textColor);
+    font-size: 10px;
+    line-height: 1.4;
+    font-weight: 500;
+    margin: 0 0 4px;
+    color: var(--textSecondary);
 `;
 
 const TopCardAlbum = styled.p`
-    font-size: 1em;
+    font-size: 14px;
     font-weight: 700;
     margin: 0;
     color: var(--textColor);
@@ -474,27 +365,30 @@ const TopCardArtist = styled.p`
 `;
 
 const TopCardStat = styled.p`
-    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
     font-weight: 700;
-    margin: 0;
+    margin: 5px 0 0;
     color: var(--AccentColor);
+    svg, svg * { color: inherit; }
 `;
 
 const PosterGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-
-    @media (max-width: 1300px) { grid-template-columns: repeat(3, 1fr); }
-    @media (max-width: 900px)  { grid-template-columns: repeat(2, 1fr); }
-    @media (max-width: 500px)  { grid-template-columns: 1fr; gap: 12px; }
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:28px 22px;
+    @media(max-width:1050px){grid-template-columns:repeat(3,minmax(0,1fr));}@media(max-width:700px){grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:20px 12px;}@media(max-width:380px){grid-template-columns:1fr;}
 `;
 
 const ToolRow = styled.div`
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 24px;
+    margin-bottom: 18px;
     flex-wrap: wrap;
 `;
 
@@ -521,160 +415,35 @@ const FilterBtn = styled.button`
 `;
 
 const SearchInput = styled.input`
-    flex: 1;
-    min-width: 0;
-    padding: 10px 14px;
-    border-radius: 20px;
-    border: 1.5px solid rgba(128,128,128,0.25);
-    background: transparent;
-    color: var(--textColor);
-    font-size: 0.85em;
-    outline: none;
-    font-weight: bolder;
-
-    &::placeholder { opacity: 1; }
-    &:focus { border-color: var(--AccentColor); }
-`;
-
-const FeaturedContainer = styled.div`
-    display: flex;
-    width: 80%;
-
-    @media (max-width: 600px) { width: 90%; }
-`;
-
-
-const FeaturedWrap = styled.div`
-    width: fit-content;
-    max-width: 80%;
-    margin-top: 28px;
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s;
-    padding: 20px 80px 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    background: linear-gradient(
-        to right,
-        var(--glassBackground) 0%,
-        var(--glassBackground) calc(100% - 80px),
-        transparent 100%
-    );
-    margin-right: auto;
-
-    /* color accent: left border strip */
-    &::before {
-        content: '';
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 4px;
-        background: ${({ $bg }) => $bg || 'var(--AccentColor)'};
-    }
-
-    &:hover { transform: translateY(-2px); }
-
-    @media (max-width: 600px) { padding: 16px 64px 16px 18px; gap: 14px; max-width: 95%; }
-`;
-
-const FeaturedCoverWrap = styled.div`
-    position: relative;
-    flex-shrink: 0;
-
-    &::before {
-        content: '';
-        position: absolute;
-        inset: -18px;
-        border-radius: 50%;
-        background: radial-gradient(circle, ${({ $bg }) => $bg ? `${$bg}88` : 'transparent'} 0%, transparent 60%);
-        pointer-events: none;
-        z-index: 0;
-    }
-`;
-
-const FeaturedCover = styled.img`
-    width: 72px;
-    height: 72px;
-    border-radius: 8px;
-    object-fit: cover;
-    display: block;
-    position: relative;
-    z-index: 1;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-
-    @media (max-width: 600px) { width: 58px; height: 58px; }
-`;
-
-const FeaturedCoverFallback = styled.div`
-    width: 72px;
-    height: 72px;
-    border-radius: 8px;
-    background: ${({ $bg }) => $bg || 'rgba(128,128,128,0.2)'};
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    @media (max-width: 600px) { width: 58px; height: 58px; }
-`;
-
-const FeaturedInfo = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-`;
-
-const FeaturedLabel = styled.span`
-    font-size: 0.63em;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--AccentColor);
-    margin-bottom: 3px;
-`;
-
-const FeaturedAlbum = styled.p`
-    font-size: 1.1em;
-    font-weight: 800;
-    margin: 0;
-    color: var(--textColor);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    @media (max-width: 600px) { font-size: 0.95em; }
-`;
-
-const FeaturedArtist = styled.p`
-    font-size: 0.83em;
-    font-weight: 600;
-    margin: 0;
-    opacity: 0.45;
-    color: var(--textColor);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width:100%;
+    min-width:0;
+    border:0;
+    background:transparent;
+    color:var(--textColor);
+    font-size:13px;
+    font-weight:400;
+    padding:12px 0;
+    outline:none;
+    &::placeholder{color:var(--textSecondary);}
 `;
 
 const EmptyState = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 20px;
-    opacity: 0.45;
-    gap: 12px;
-    text-align: center;
+    padding:24px;
+    text-align:center;
+    display:grid;
+    justify-items:center;
+    gap:18px;
 `;
 
 const EmptyContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
+    padding:40px 16px;
+    border:1px dashed var(--borderColor);
+    border-radius:16px;
+    display:grid;
+    justify-items:center;
+    margin:16px 0;
+    >svg{width:96px;
+    max-height:110px;}
 `;
 
 const EmptyText = styled.p`
@@ -705,18 +474,13 @@ const ErrorText = styled.p`
 `;
 
 const PartialBanner = styled.div`
-    width: 80%;
-    padding: 12px 16px;
-    border-radius: 8px;
-    background: var(--glassBackground);
-    border: 1px solid var(--borderColor);
-    color: var(--textColor);
-    font-size: 0.85em;
-    text-align: center;
-    opacity: 0.7;
-    margin-bottom: 10px;
-
-    @media (max-width: 600px) { width: 90%; font-size: 0.8em; }
+    width:100%;
+    box-sizing:border-box;
+    padding:16px;
+    border:1px solid var(--borderColor);
+    border-radius:12px;
+    font-size:13px;
+    margin-bottom:24px;
 `;
 
 const LoadMoreBtn = styled.button`
@@ -738,6 +502,34 @@ const LoadMoreBtn = styled.button`
     &:disabled { background-color: #666; cursor: not-allowed; }
 `;
 
+const Summary = styled.div`
+    display: flex; flex-wrap: wrap; gap: 18px; margin-top: 14px;
+    &:empty { display: none; }
+    span { font-size: 12px; color: var(--textSecondary); }
+    strong { font-size: 18px; color: var(--textColor); margin-right: 6px; }
+`;
+const SearchBox = styled.label`
+    display: flex; align-items: center; gap: 10px; padding: 0 16px;
+    min-width: 180px; flex: 1; max-width: 380px;
+    margin-left: ${({ $alignLeft }) => $alignLeft ? '0' : 'auto'};
+    border: 1px solid var(--borderColor); border-radius: 24px;
+    &:focus-within { border-color: var(--AccentColor); }
+    @media (max-width: 700px) { max-width: none; width: 100%; margin: 0; }
+`;
+const MoreMenu = styled.details`
+    position: relative;
+    summary { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--borderColor); border-radius: 50%; list-style: none; cursor: pointer; }
+    summary::-webkit-details-marker { display: none; }
+    button { position: absolute; top: 50px; right: 0; z-index: 5; white-space: nowrap; padding: 14px 22px; border: 1px solid var(--borderColor); border-radius: 12px; background: var(--backgroundColor); box-shadow: 0 8px 24px var(--shadowColor); cursor: pointer; }
+`;
+const Skeleton = styled.div`
+    aspect-ratio: 2480 / 3508; border-radius: 15px; background: var(--glassBackground);
+    border: 1px solid var(--borderColor);
+`;
+function GallerySkeleton() {
+    return <PosterGrid aria-busy="true">{[0, 1, 2, 3].map(i => <Skeleton key={i} />)}</PosterGrid>;
+}
+
 const fmt = (n = 0) => {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.0', '') + 'M';
     if (n >= 1_000)     return (n / 1_000).toFixed(1).replace('.0', '') + 'k';
@@ -746,7 +538,6 @@ const fmt = (n = 0) => {
 
 function StatsTab({ stats, isOwner }) {
     const { t } = useTranslation();
-    const navigate = useNavigate();
 
     if (!stats) return null;
 
@@ -754,7 +545,7 @@ function StatsTab({ stats, isOwner }) {
         return (
             <EmptyContainer>
                 <Empty width={"20%"}/>
-                <EmptyState><EmptyText>{isOwner ? t('DASH_StatsEmpty') : t('DASH_StatsEmptyPublic')}</EmptyText></EmptyState>
+                <EmptyState><EmptyText>{t(isOwner ? 'DASH_NoPosters' : 'DASH_NoPublicPosters')}</EmptyText></EmptyState>
             </EmptyContainer>
         );
     }
@@ -779,11 +570,9 @@ function StatsTab({ stats, isOwner }) {
             <StatsGrid>
                 {summaryCards.map(c => (
                     <StatCard key={c.label}>
-                        <StatIconWrapper>{c.icon}</StatIconWrapper>
-                        <div>
-                            <StatValue>{fmt(c.value)}</StatValue>
-                            <StatLabel>{c.label}</StatLabel>
-                        </div>
+                        <StatLabel>{c.label}</StatLabel>
+                        <StatIconWrapper aria-hidden="true">{c.icon}</StatIconWrapper>
+                        <StatValue title={String(c.value ?? 0)}>{fmt(c.value)}</StatValue>
                     </StatCard>
                 ))}
             </StatsGrid>
@@ -793,7 +582,7 @@ function StatsTab({ stats, isOwner }) {
                     <SectionTitle>{t('DASH_TopHighlights')}</SectionTitle>
                     <TopSection>
                         {validTopCards.map(c => (
-                            <TopCard key={c.label} onClick={() => navigate(`/p/${c.poster._id}`)}>
+                            <TopCard key={c.label} to={`/p/${c.poster._id}`}>
                                 <TopCardCover>
                                     {c.poster.posterJson?.albumCover
                                         ? <img src={c.poster.posterJson.albumCover} alt={`${c.poster.albumName} album artwork`} loading="lazy" decoding="async" />
@@ -804,7 +593,7 @@ function StatsTab({ stats, isOwner }) {
                                     <TopCardLabel>{c.label}</TopCardLabel>
                                     <TopCardAlbum>{c.poster.albumName}</TopCardAlbum>
                                     <TopCardArtist>{c.poster.artistsName}</TopCardArtist>
-                                    <TopCardStat style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <TopCardStat>
                                         {c.icon} {c.stat}
                                     </TopCardStat>
                                 </TopCardInfo>
@@ -865,6 +654,27 @@ export default function Profile() {
     // Filter & search
     const [visibilityFilter, setVisibilityFilter] = useState('all');
     const [favSearch, setFavSearch]               = useState('');
+    const [posterSearch, setPosterSearch] = useState('');
+    const queryKey = `${posterSearch.trim()}|${visibilityFilter}`;
+    const latestQuery = useRef(queryKey);
+    latestQuery.current = queryKey;
+    const myRequest = useRef(0);
+    const searchMounted = useRef(false);
+    const [copied, setCopied] = useState(false);
+    const [shareFallback, setShareFallback] = useState(false);
+    const [tabErrors, setTabErrors] = useState({});
+    const shareTimer = useRef(null);
+    useEffect(() => () => clearTimeout(shareTimer.current), []);
+    const profileUrl = `${SITE_URL}/u/${encodeURIComponent(routeUsername || '')}`;
+    const handleShare = async () => {
+        try {
+            await navigator.clipboard.writeText(profileUrl);
+            setCopied(true);
+            setShareFallback(false);
+            clearTimeout(shareTimer.current);
+            shareTimer.current = setTimeout(() => setCopied(false), 2500);
+        } catch { setShareFallback(true); }
+    };
 
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -947,14 +757,13 @@ export default function Profile() {
         // For public view, featured poster is already set from the initial fetch
         if (!isOwner) return;
         if (!isAuthenticated || !pinnedPosterId) return;
-        apiService.getUserPosters({ page: 1, limit: 20 })
+        let cancelled = false;
+        apiService.getPoster(pinnedPosterId)
             .then(res => {
-                const picks = (res.posters || []).filter(p => p.posterJson?.albumCover);
-                const pinned = picks.find(p => p._id === pinnedPosterId);
-                if (pinned) setFeaturedPoster(pinned);
+                if (!cancelled && res.poster) setFeaturedPoster(res.poster);
             })
             .catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        return () => { cancelled = true; };
     }, [isAuthenticated, pinnedPosterId, isOwner]);
 
     // Lazy-load each tab on first visit
@@ -971,56 +780,85 @@ export default function Profile() {
     }, [activeTab, isOwner]);
 
     const fetchMyPosters = useCallback(async (page, append) => {
+        const request = ++myRequest.current;
+        const isCurrent = () => request === myRequest.current && latestQuery.current === queryKey;
         setMyLoading(true);
+        setTabErrors(prev => ({ ...prev, myposters: false }));
         try {
-            const res = await apiService.getUserPosters({ page, limit: 12 });
+            const res = await apiService.getUserPosters({ page, limit: 12, q: posterSearch.trim(), visibility: visibilityFilter });
+            if (!isCurrent()) return;
             setMyPosters(prev => append ? [...prev, ...res.posters] : res.posters);
             setMyPage(page);
             setMyHasMore(res.hasMore ?? false);
             setMyFetched(true);
-        } catch { routeFailed(); } finally { setMyLoading(false); }
-    }, [routeFailed]);
+        } catch { if (isCurrent()) { setTabErrors(prev => ({ ...prev, myposters: true })); routeFailed(); } }
+        finally { if (isCurrent()) setMyLoading(false); }
+    }, [posterSearch, visibilityFilter, queryKey, routeFailed]);
 
     const fetchPublicPosters = useCallback(async (page, append) => {
         if (!routeUsername) return;
+        const request = ++myRequest.current;
+        const isCurrent = () => request === myRequest.current && latestQuery.current === queryKey;
         setMyLoading(true);
+        setTabErrors(prev => ({ ...prev, myposters: false }));
         try {
-            const res = await apiService.getUserPublicProfile(routeUsername, { page, limit: 12 });
+            const res = await apiService.getUserPublicProfile(routeUsername, { page, limit: 12, q: posterSearch.trim() });
+            if (!isCurrent()) return;
             setMyPosters(prev => append ? [...prev, ...(res.posters || [])] : (res.posters || []));
             setMyPage(page);
             setMyHasMore(res.hasMore ?? false);
             setMyFetched(true);
-        } catch { /* noop */ } finally { setMyLoading(false); }
-    }, [routeUsername]);
+        } catch { if (isCurrent()) setTabErrors(prev => ({ ...prev, myposters: true })); }
+        finally { if (isCurrent()) setMyLoading(false); }
+    }, [routeUsername, posterSearch, queryKey]);
+
+    useEffect(() => {
+        if (!searchMounted.current) {
+            searchMounted.current = true;
+            return;
+        }
+        ++myRequest.current;
+        setMyLoading(true);
+        setMyHasMore(false);
+        setMyPage(0);
+        setMyPosters([]);
+        const timer = setTimeout(() => {
+            (isOwner ? fetchMyPosters : fetchPublicPosters)(1, false);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [queryKey, isOwner, fetchMyPosters, fetchPublicPosters]);
 
     const fetchFavorites = useCallback(async (page, append) => {
         setFavLoading(true);
+        setTabErrors(prev => ({ ...prev, favorites: false }));
         try {
             const res = await apiService.getUserFavorites({ page, limit: 12 });
             setFavorites(prev => append ? [...prev, ...res.posters] : res.posters);
             setFavPage(page);
             setFavHasMore(res.hasMore ?? false);
             setFavFetched(true);
-        } catch { /* noop */ } finally { setFavLoading(false); }
+        } catch { setTabErrors(prev => ({ ...prev, favorites: true })); } finally { setFavLoading(false); }
     }, []);
 
     const fetchStats = useCallback(async () => {
         setStatsLoading(true);
+        setTabErrors(prev => ({ ...prev, stats: false }));
         try {
             const res = await apiService.getUserStats();
             setStats(res.stats);
             setStatsFetched(true);
-        } catch { /* noop */ } finally { setStatsLoading(false); }
+        } catch { setTabErrors(prev => ({ ...prev, stats: true })); } finally { setStatsLoading(false); }
     }, []);
 
     const fetchPublicStats = useCallback(async () => {
         if (!routeUsername) return;
         setStatsLoading(true);
+        setTabErrors(prev => ({ ...prev, stats: false }));
         try {
             const res = await apiService.getUserPublicStats(routeUsername);
             setStats(res.stats);
             setStatsFetched(true);
-        } catch { /* noop */ } finally { setStatsLoading(false); }
+        } catch { setTabErrors(prev => ({ ...prev, stats: true })); } finally { setStatsLoading(false); }
     }, [routeUsername]);
 
     const handlePin = useCallback(async (posterId) => {
@@ -1037,8 +875,9 @@ export default function Profile() {
             await apiService.setPinnedPoster(newId);
         } catch {
             setPinnedPosterId(pinnedPosterId);
+            setFeaturedPoster(featuredPoster);
         }
-    }, [pinnedPosterId, myPosters]);
+    }, [pinnedPosterId, myPosters, featuredPoster, routeUsername]);
 
     const handleVisibilityChange = async (posterId, visibility) => {
         try {
@@ -1059,6 +898,12 @@ export default function Profile() {
             await apiService.deletePoster(deleteTarget._id);
             trackProfilePosterDelete(routeUsername, deleteTarget._id, deleteTarget.albumName);
             setMyPosters(prev => prev.filter(p => p._id !== deleteTarget._id));
+            if (deleteTarget._id === pinnedPosterId) {
+                setPinnedPosterId(null);
+                setFeaturedPoster(null);
+            }
+            setUserProfile(prev => Number.isFinite(prev?.posterCount)
+                ? { ...prev, posterCount: Math.max(0, prev.posterCount - 1) } : prev);
             if (stats) setStats(s => ({ ...s, totalPosters: Math.max(0, s.totalPosters - 1) }));
         } catch { /* noop */ } finally { handleDeleteCancel(); }
     };
@@ -1117,9 +962,20 @@ export default function Profile() {
     const displayName = userProfile?.name || user?.name || '';
 
     // Computed
-    const filteredMyPosters = isOwner && visibilityFilter !== 'all'
-        ? myPosters.filter(p => p.visibility === visibilityFilter)
+    // The pinned poster can be outside the loaded page. Prefer the list's
+    // freshest data and include it only once, before applying search/filters.
+    const pinnedPoster = myPosters.find(p => p._id === pinnedPosterId)
+        || (featuredPoster?._id === pinnedPosterId ? featuredPoster : null);
+    const orderedMyPosters = pinnedPoster
+        ? [pinnedPoster, ...myPosters.filter(p => p._id !== pinnedPosterId)]
         : myPosters;
+    const visibleMyPosters = isOwner && visibilityFilter !== 'all'
+        ? orderedMyPosters.filter(p => p.visibility === visibilityFilter)
+        : orderedMyPosters;
+
+    const filteredMyPosters = visibleMyPosters.filter(p =>
+        `${p.albumName || ''} ${p.artistsName || ''}`.toLowerCase().includes(posterSearch.trim().toLowerCase())
+    );
 
     const filteredFavorites = favSearch.trim()
         ? favorites.filter(p => {
@@ -1134,141 +990,113 @@ export default function Profile() {
     return (
         <Container>
             <ProfileSection>
-                <ProfileTop>
-                    {userProfile?.avatar
-                        ? <Avatar src={userProfile.avatar} alt={`${displayName}'s profile avatar`} decoding="async" />
-                        : <AvatarPlaceholder>{displayName.charAt(0).toUpperCase()}</AvatarPlaceholder>
-                    }
-                    <UserInfo>
-                        <UserName>
-                            {displayName}
-                            {/* {userProfile?.hasGoogle && (
-                                <Hint text={t('ConnectedToGoogle')} delay={200}>
-                                    <BadgeIcon><GoogleIcon /></BadgeIcon>
-                                </Hint>
-                            )}
-                            {userProfile?.hasSpotify && (
-                                <Hint text={t('ConnectedToSpotify')} delay={200}>
-                                    <BadgeIcon><SpotifyIcon /></BadgeIcon>
-                                </Hint>
-                            )} */}
-                            <>
-                                {userProfile?.badge && (
-                                    <TierBadge
-                                        badge={userProfile.badge}
-                                        badgeProgress={userProfile.badgeProgress}
-                                        isOwner={isOwner}
-                                        size={25}
-                                    />
-                                )}
-                                {(userProfile?.isAdmin || (isOwner && user?.permissions?.includes('admin'))) && (
-                                    <TierBadge badge="admin" size={25} />
-                                )}
-                            </>
-                        </UserName>
-                        <Username>@{userProfile?.username || user?.username}</Username>
-                    </UserInfo>
-                    {isOwner && (
-                        <ActionBtns>
-                            <Btn $variant="outline" onClick={() => { trackProfileEdit(routeUsername); setIsEditModalOpen(true); }}>{t('EditProfile')}</Btn>
-                            <Btn onClick={handleLogout}>{t('Logout')}</Btn>
-                        </ActionBtns>
+                <div>
+                    <ProfileTop>
+                        {userProfile?.avatar
+                            ? <Avatar src={userProfile.avatar} alt={displayName} decoding="async" />
+                            : <AvatarPlaceholder>{displayName.charAt(0).toUpperCase()}</AvatarPlaceholder>}
+                        <UserInfo>
+                            <UserName>
+                                {displayName}
+                                {userProfile?.badge && <TierBadge badge={userProfile.badge} badgeProgress={userProfile.badgeProgress} isOwner={isOwner} size={25} />}
+                                {(userProfile?.isAdmin || (isOwner && user?.permissions?.includes('admin'))) && <TierBadge badge="admin" size={25} />}
+                            </UserName>
+                            <Username>@{userProfile?.username || user?.username}</Username>
+                        </UserInfo>
+                    </ProfileTop>
+                    {userProfile?.bio && <BioText>{userProfile.bio}</BioText>}
+                    {userProfile?.hasSpotify && userProfile?.spotifyId && (isOwner ? userProfile?.showSpotifyProfile : true) && (
+                        <ProfileLinks><SpotifyLinkBtn href={`https://open.spotify.com/user/${userProfile.spotifyId}`} target="_blank" rel="noopener noreferrer">
+                            <SpotifyIconWhite />{t('DASH_OpenSpotify')}
+                        </SpotifyLinkBtn></ProfileLinks>
                     )}
-                </ProfileTop>
+                    <Summary>
+                        {Number.isFinite(userProfile?.posterCount) && <span><strong>{fmt(userProfile.posterCount)}</strong>{t('DASH_Posters')}</span>}
+                        {Number.isFinite(userProfile?.totalDownloads) && <span><strong>{fmt(userProfile.totalDownloads)}</strong>{t('DASH_TotalDownloads')}</span>}
+                        {Number.isFinite(userProfile?.totalFavorites) && <span><strong>{fmt(userProfile.totalFavorites)}</strong>{t('DASH_TotalFavorites')}</span>}
+                    </Summary>
+                    <ActionBtns>
+                        {isOwner && <>
+                            <Btn onClick={() => navigate('/?create=1')}><FiPlus />{t('PROFILE_Create')}</Btn>
+                            <Btn $variant="outline" onClick={() => { trackProfileEdit(routeUsername); setIsEditModalOpen(true); }}><FiEdit2 />{t('EditProfile')}</Btn>
+                        </>}
+                        <Btn $variant="outline" onClick={handleShare}><FiShare2 />{copied ? t('CARD_CTX_Copied') : t('PROFILE_Share')}</Btn>
+                        {isOwner && <MoreMenu>
+                            <summary aria-label={t('PROFILE_More')}><FiMoreHorizontal /></summary>
+                            <button onClick={handleLogout}>{t('Logout')}</button>
+                        </MoreMenu>}
+                    </ActionBtns>
+                    {shareFallback && <SearchBox style={{ margin: '16px 0 0', maxWidth: '100%' }}>
+                        <SearchInput aria-label={t('PROFILE_Share')} value={profileUrl} readOnly onFocus={e => e.target.select()} />
+                    </SearchBox>}
+                </div>
             </ProfileSection>
-
-            <BioSection>
-                {userProfile?.bio && <BioText>{userProfile.bio}</BioText>}
-                {userProfile !== null && userProfile?.hasSpotify && (isOwner ? userProfile?.showSpotifyProfile : true) && (
-                    <ProfileLinks>
-                        <SpotifyLinkBtn
-                            href={`https://open.spotify.com/user/${userProfile.spotifyId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <SpotifyIconWhite size={13} />
-                            {t('DASH_OpenSpotify')}
-                        </SpotifyLinkBtn>
-                    </ProfileLinks>
-                )}
-            </BioSection>
-
-            {/* Featured Poster */}
-            {featuredPoster && (() => {
-                const pj = featuredPoster.posterJson || {};
-                const cover = pj.albumCover;
-                const accentColor = pj.backgroundColor;
-                return (
-                    <FeaturedContainer>
-                        <FeaturedWrap
-                            $bg={accentColor}
-                            onClick={() => navigate(`/p/${featuredPoster._id}`)}
-                        >
-                            <FeaturedCoverWrap $bg={accentColor}>
-                                {cover
-                                    ? <FeaturedCover src={cover} alt={`${featuredPoster.albumName} poster by ${featuredPoster.artistsName}`} loading="lazy" decoding="async" />
-                                    : <FeaturedCoverFallback $bg={accentColor} />
-                                }
-                            </FeaturedCoverWrap>
-                            <FeaturedInfo>
-                                <FeaturedLabel>{t('DASH_FeaturedPoster')}</FeaturedLabel>
-                                <FeaturedAlbum>{featuredPoster.albumName}</FeaturedAlbum>
-                                <FeaturedArtist>{featuredPoster.artistsName}</FeaturedArtist>
-                            </FeaturedInfo>
-                        </FeaturedWrap>
-                    </FeaturedContainer>
-                );
-            })()}
 
             {/* Partial-load banner for owner when backend is down */}
             {profileError && userProfile && (
                 <PartialBanner>{t('PROFILE_PartialError')}</PartialBanner>
             )}
 
-            <TabRow>
-                <Tab $active={activeTab === 'myposters'} onClick={() => setActiveTab('myposters')}>
+            <TabRow aria-label={t('PROFILE_Collection')}>
+                <Tab aria-pressed={activeTab === 'myposters'} $active={activeTab === 'myposters'} onClick={() => setActiveTab('myposters')}>
                     {isOwner ? t('DASH_MyPosters') : t('DASH_Posters')}
                 </Tab>
                 {isOwner && (
-                    <Tab $active={activeTab === 'favorites'} onClick={() => setActiveTab('favorites')}>
+                    <Tab aria-pressed={activeTab === 'favorites'} $active={activeTab === 'favorites'} onClick={() => setActiveTab('favorites')}>
                         <IoHeart size={18} />
                         {t('DASH_Favorites')}
                     </Tab>
                 )}
-                <Tab $active={activeTab === 'stats'} onClick={() => setActiveTab('stats')}>
+                <Tab aria-pressed={activeTab === 'stats'} $active={activeTab === 'stats'} onClick={() => setActiveTab('stats')}>
                     <MdBarChart size={20} />
                     {t('DASH_Stats')}
                 </Tab>
             </TabRow>
 
             <TabContent key={activeTab}>
+                {tabErrors[activeTab] && <PartialBanner role="alert">
+                    <p>{t('PROFILE_FetchError')}</p>
+                    <Btn $variant="outline" onClick={() => {
+                        if (activeTab === 'stats') (isOwner ? fetchStats : fetchPublicStats)();
+                        else if (activeTab === 'favorites') fetchFavorites(favFetched ? favPage + 1 : 1, favFetched);
+                        else (isOwner ? fetchMyPosters : fetchPublicPosters)(myFetched ? myPage + 1 : 1, myFetched);
+                    }}>{t('ROUTE_Retry')}</Btn>
+                </PartialBanner>}
                 {/* My Posters */}
                 {activeTab === 'myposters' && (
                     myLoading && !myFetched ? (
-                        <EmptyState><EmptyText>…</EmptyText></EmptyState>
+                        <GallerySkeleton />
                     ) : (
                         <>
-                            {isOwner && (
-                                <ToolRow>
+                            <ToolRow>
+                                {isOwner && (
                                     <FilterBtnGroup>
-                                        <FilterBtn $active={visibilityFilter === 'all'} onClick={() => setVisibilityFilter('all')}>{t('DASH_All')}</FilterBtn>
-                                        <FilterBtn $active={visibilityFilter === 'public'} onClick={() => setVisibilityFilter('public')}>{t('DASH_Public')}</FilterBtn>
-                                        <FilterBtn $active={visibilityFilter === 'private'} onClick={() => setVisibilityFilter('private')}>{t('DASH_Private')}</FilterBtn>
+                                        <FilterBtn aria-pressed={visibilityFilter === 'all'} $active={visibilityFilter === 'all'} onClick={() => setVisibilityFilter('all')}>{t('DASH_All')}</FilterBtn>
+                                        <FilterBtn aria-pressed={visibilityFilter === 'public'} $active={visibilityFilter === 'public'} onClick={() => setVisibilityFilter('public')}>{t('DASH_Public')}</FilterBtn>
+                                        <FilterBtn aria-pressed={visibilityFilter === 'private'} $active={visibilityFilter === 'private'} onClick={() => setVisibilityFilter('private')}>{t('DASH_Private')}</FilterBtn>
                                     </FilterBtnGroup>
-                                </ToolRow>
-                            )}
-                            {filteredMyPosters.length === 0 ? (
+                                )}
+                                <SearchBox $alignLeft={!isOwner}><FiSearch aria-hidden="true" />
+                                    <SearchInput maxLength={200} value={posterSearch} onChange={e => setPosterSearch(e.target.value)} aria-label={t('PROFILE_SearchAll')} placeholder={t('PROFILE_SearchAll')} />
+                                </SearchBox>
+                            </ToolRow>
+                            {myLoading && myPage === 0 ? <GallerySkeleton /> : filteredMyPosters.length === 0 ? (!tabErrors.myposters && (
                                 <EmptyContainer>
                                     <Empty width={"20%"}/>
-                                    <EmptyState><EmptyText>{isOwner ? t('DASH_NoPosters') : t('DASH_NoPublicPosters')}</EmptyText></EmptyState>
+                                    <EmptyState>
+                                        <EmptyText>{t(posterSearch.trim() || visibilityFilter !== 'all' ? 'NoResults' : isOwner ? 'DASH_NoPosters' : 'DASH_NoPublicPosters')}</EmptyText>
+                                        {posterSearch.trim() || visibilityFilter !== 'all'
+                                            ? <Btn $variant="outline" onClick={() => { setPosterSearch(''); setVisibilityFilter('all'); }}>{t('PROFILE_Clear')}</Btn>
+                                            : isOwner && <Btn onClick={() => navigate('/?create=1')}><FiPlus />{t('PROFILE_Create')}</Btn>}
+                                    </EmptyState>
                                 </EmptyContainer>
-                            ) : (
+                            )) : (
                                 <PosterGrid>
-                                    {filteredMyPosters.map((p, index) => (
+                                    {filteredMyPosters.map(p => (
                                         <PosterCard
                                             key={p._id}
                                             poster={p}
-                                            index={index % 9}
+                                            index={0}
                                             variant={isOwner ? 'myposters' : 'community'}
                                             isOwner={isOwner}
                                             onDelete={isOwner ? handleDeleteRequest : undefined}
@@ -1294,28 +1122,34 @@ export default function Profile() {
                 {/* Favorites */}
                 {activeTab === 'favorites' && (
                     favLoading && !favFetched ? (
-                        <EmptyState><EmptyText>…</EmptyText></EmptyState>
+                        <GallerySkeleton />
                     ) : (
                         <>
                             <ToolRow>
+                                <SearchBox><FiSearch aria-hidden="true" />
                                 <SearchInput
                                     value={favSearch}
                                     onChange={e => setFavSearch(e.target.value)}
-                                    placeholder={t('COMMUNITY_SearchPlaceholder') || 'Buscar...'}
+                                    aria-label={t('PROFILE_SearchLoaded')}
+                                    placeholder={t('PROFILE_SearchLoaded')}
                                 />
+                                </SearchBox>
                             </ToolRow>
-                            {filteredFavorites.length === 0 ? (
+                            {filteredFavorites.length === 0 ? (!tabErrors.favorites && (
                                 <EmptyContainer>
                                     <Empty width={"20%"}/>
-                                    <EmptyState><EmptyText>{t('DASH_NoFavorites')}</EmptyText></EmptyState>
+                                    <EmptyState>
+                                        <EmptyText>{t(favSearch.trim() ? 'NoResults' : 'DASH_NoFavorites')}</EmptyText>
+                                        {favSearch.trim() && <Btn $variant="outline" onClick={() => setFavSearch('')}>{t('PROFILE_Clear')}</Btn>}
+                                    </EmptyState>
                                 </EmptyContainer>
-                            ) : (
+                            )) : (
                                 <PosterGrid>
-                                    {filteredFavorites.map((p, index) => (
+                                    {filteredFavorites.map(p => (
                                         <PosterCard
                                             key={p._id}
                                             poster={p}
-                                            index={index % 9}
+                                            index={0}
                                             variant="favorites"
                                             isOwner={isOwner}
                                             onUnfavorite={handleUnfavorite}
@@ -1323,7 +1157,7 @@ export default function Profile() {
                                     ))}
                                 </PosterGrid>
                             )}
-                            {favHasMore && !favSearch && (
+                            {favHasMore && (
                                 <LoadMoreBtn
                                     onClick={() => fetchFavorites(favPage + 1, true)}
                                     disabled={favLoading}
@@ -1338,7 +1172,7 @@ export default function Profile() {
                 {/* Stats */}
                 {activeTab === 'stats' && (
                     statsLoading ? (
-                        <EmptyState><EmptyText>…</EmptyText></EmptyState>
+                        <StatsGrid aria-busy="true">{[0, 1, 2, 3].map(i => <Skeleton key={i} style={{ aspectRatio: 'auto', height: 100 }} />)}</StatsGrid>
                     ) : (
                         <StatsTab stats={stats} isOwner={isOwner} />
                     )
