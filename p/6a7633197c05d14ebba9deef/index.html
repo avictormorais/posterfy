@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="shortcut icon" href="/ico.png" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      document.documentElement.classList.add('boot-pending');
+      try {
+        document.documentElement.dataset.bootTheme = localStorage.getItem('theme') || 'light';
+      } catch { /* The default theme also works when storage is unavailable. */ }
+    </script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -12,10 +18,10 @@
     <title>LOVERCORE Poster — Artemas | Posterfy</title>
     <meta name="description" content="A custom LOVERCORE poster by Artemas, created by Ravza Demir on Posterfy." />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://posterfy.pics/p/6a7633197c05d14ebba9deef" />
+    <link rel="canonical" href="https://posterfy.pics/p/6a7633197c05d14ebba9deef/" />
     <meta property="og:title" content="LOVERCORE Poster — Artemas | Posterfy" />
     <meta property="og:description" content="A custom LOVERCORE poster by Artemas, created by Ravza Demir on Posterfy." />
-    <meta property="og:url" content="https://posterfy.pics/p/6a7633197c05d14ebba9deef" />
+    <meta property="og:url" content="https://posterfy.pics/p/6a7633197c05d14ebba9deef/" />
     <meta property="og:image" content="https://i.scdn.co/image/ab67616d000082c1be0438db12bed395132a28bc" />
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Posterfy" />
@@ -23,7 +29,7 @@
     <meta name="twitter:title" content="LOVERCORE Poster — Artemas | Posterfy" />
     <meta name="twitter:description" content="A custom LOVERCORE poster by Artemas, created by Ravza Demir on Posterfy." />
     <meta name="twitter:image" content="https://i.scdn.co/image/ab67616d000082c1be0438db12bed395132a28bc" />
-    <script type="application/ld+json" data-posterfy-seo>{"@context":"https://schema.org","@type":"CreativeWork","name":"LOVERCORE Poster","description":"A custom LOVERCORE poster by Artemas, created by Ravza Demir on Posterfy.","url":"https://posterfy.pics/p/6a7633197c05d14ebba9deef","image":"https://i.scdn.co/image/ab67616d000082c1be0438db12bed395132a28bc","creator":{"@type":"Person","name":"Ravza Demir"}}</script>
+    <script type="application/ld+json" data-posterfy-seo>{"@context":"https://schema.org","@type":"CreativeWork","name":"LOVERCORE Poster","description":"A custom LOVERCORE poster by Artemas, created by Ravza Demir on Posterfy.","url":"https://posterfy.pics/p/6a7633197c05d14ebba9deef/","image":"https://i.scdn.co/image/ab67616d000082c1be0438db12bed395132a28bc","creator":{"@type":"Person","name":"Ravza Demir"}}</script>
     <!-- posterfy-seo:end -->
 
     <!-- Google Tag Manager -->
@@ -65,13 +71,23 @@
         }
       }(window.location))
     </script>
-    <script type="module" crossorigin src="/assets/index.DWX9Nvvi.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/vendor.BGNHhJSV.js">
-    <link rel="modulepreload" crossorigin href="/assets/ui.C5ldsGQa.js">
-    <link rel="modulepreload" crossorigin href="/assets/i18n.DCVDtlyB.js">
-    <link rel="stylesheet" crossorigin href="/assets/index.C1RpeJze.css">
+    <script type="module" crossorigin src="/assets/index.DCa40lVK.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor.BbPvB7xy.js">
+    <link rel="stylesheet" crossorigin href="/assets/index.CJPHFDPE.css">
   <link rel="manifest" href="/manifest.webmanifest"></head>
   <body>
+    <div id="boot-loading" class="posterfy-loading">
+      <div class="posterfy-loading-art" role="status" aria-label="Posterfy">
+        <div class="posterfy-loading-heart" aria-hidden="true">
+          <div class="posterfy-loading-heart-core">
+            <img src="data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20511%20464'%3e%3cpath%20fill='%23df6d40'%20d='M462.968%20260.8v49.374h-54.337v52.666h-46.1v51.019h-52.69v49.374H201.163v-49.374h-52.69V362.84h-46.1v-52.665H48.032V260.8H.281V50.141h52.69V.767h159.718v51.02h85.622V.767h159.717v49.374h52.691V260.8zM255.5%20119.435a110.235%20110.235%200%201%200%2042.251%20212.077%20110.23%20110.23%200%200%200%2068.038-101.841%20110.265%20110.265%200%200%200-68.091-101.853%20110.3%20110.3%200%200%200-42.198-8.383m0%20192.525a79.181%2079.181%200%200%201-77.62-94.655%2079.183%2079.183%200%201%201%20150.807%2045.78A79.21%2079.21%200%200%201%20255.5%20311.96m0-136.631a57.44%2057.44%200%200%200-53.056%2035.483%2057.44%2057.44%200%200%200%2012.471%2062.597%2057.447%2057.447%200%200%200%2093.681-62.621%2057.47%2057.47%200%200%200-53.096-35.459m.823%2078.889a22.217%2022.217%200%200%201-15.696-37.932A22.22%2022.22%200%200%201%20278.552%20232a22.22%2022.22%200%200%201-13.724%2020.529%2022.2%2022.2%200%200%201-8.505%201.689'/%3e%3c/svg%3e" width="511" height="464" alt="" fetchpriority="high" />
+          </div>
+        </div>
+        <div class="posterfy-loading-name"><span class="posterfy-loading-title"><span class="posterfy-loading-brand">Posterfy</span><span class="posterfy-loading-domain">.pics</span></span></div>
+      </div>
+      <p class="posterfy-loading-error" hidden>Unable to load Posterfy. <a href="">Reload</a></p>
+    </div>
+    <noscript><style>#boot-loading { display: none; }</style></noscript>
     <div id="root"></div>
 
     <!-- Google Tag Manager (noscript) -->
