@@ -326,7 +326,7 @@ export default function PosterInfo({ poster, onDeleted, onVisibilityChanged, onS
                 <TopRow>
                     <AuthorArea
                         onClick={() =>
-                            author?.username && navigate(`/u/${author.username}`)
+                            author?.username && navigate(`/u/${author.username}/`)
                         }
                     >
                         <AvatarWrap>

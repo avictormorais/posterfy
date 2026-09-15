@@ -6,6 +6,7 @@ import { FaGoogle } from "react-icons/fa";
 import Navbar from "../../components/Navbar/Navbar";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../contexts/AuthContext";
+import { canonicalPathname } from "../../seo/metadata";
 import {
     clearPendingOAuthFlow,
     getPendingFlowReturnUrl,
@@ -183,8 +184,8 @@ export default function Login(){
         if (!loading) {
             if (user) {
                 const resumePath = pendingFlow
-                    ? `${pendingFlow.returnTo}?resume=${encodeURIComponent(pendingFlow.flowId)}`
-                    : `/u/${user.username}`;
+                    ? `${canonicalPathname(pendingFlow.returnTo)}?resume=${encodeURIComponent(pendingFlow.flowId)}`
+                    : `/u/${user.username}/`;
                 if (pendingFlow) clearPendingOAuthFlow(pendingFlow.flowId);
                 navigate(resumePath);
                 return;
@@ -192,7 +193,7 @@ export default function Login(){
 
             const loginSuccess = searchParams.get('login');
             if (loginSuccess === 'success' && user) {
-                navigate(`/u/${user.username}`);
+                navigate(`/u/${user.username}/`);
             }
         }
     }, [user, loading, navigate, searchParams, pendingFlow]);
@@ -240,8 +241,8 @@ export default function Login(){
                                 <ButtonText>{t('LOGIN_GoogleSignIn')}</ButtonText>
                             </LoginButton>
                             <LegalNotice>
-                                {t('LOGIN_LegalPrefix')} <Link to="/terms">{t('FooterTerms')}</Link>{' '}
-                                {t('LOGIN_LegalAnd')} <Link to="/privacy">{t('FooterPrivacy')}</Link>.
+                                {t('LOGIN_LegalPrefix')} <Link to="/terms/">{t('FooterTerms')}</Link>{' '}
+                                {t('LOGIN_LegalAnd')} <Link to="/privacy/">{t('FooterPrivacy')}</Link>.
                             </LegalNotice>
                         </ButtonContainer>
                     </Column>

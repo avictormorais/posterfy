@@ -251,7 +251,7 @@ function Navbar({ hideLogo = false, hideAccount = false }) {
 
   const handleClickAccount = () => {
     if(isAuthenticated && user){
-      navigate(`/u/${user.username}`)
+      navigate(`/u/${user.username}/`)
     } else{
       navigate('/login')
     }

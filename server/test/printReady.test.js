@@ -30,7 +30,8 @@ const album = {
 test('accepts only Spotify album IDs and local return paths', () => {
   assert.equal(isSpotifyAlbumId(album.providerAlbumId), true)
   assert.equal(isSpotifyAlbumId('not an album id'), false)
-  assert.equal(sanitizeReturnPath('/p/507f1f77bcf86cd799439011'), '/p/507f1f77bcf86cd799439011')
+  assert.equal(sanitizeReturnPath('/p/507f1f77bcf86cd799439011'), '/p/507f1f77bcf86cd799439011/')
+  assert.equal(sanitizeReturnPath('/p/507f1f77bcf86cd799439011/'), '/p/507f1f77bcf86cd799439011/')
   assert.equal(sanitizeReturnPath('https://attacker.example'), '/')
   assert.equal(sanitizeReturnPath('//attacker.example'), '/')
 })

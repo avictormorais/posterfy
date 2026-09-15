@@ -20,6 +20,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { readPendingFlow } from '../../utils/pendingFlow';
 import { useRouteSeoData } from '../../components/SEO/SEOComponent';
 import { useRouteTransition } from '../../contexts/RouteTransitionContext';
+import { normalizePathname } from '../../seo/metadata';
 
 const FadeInSection = styled.div`
   opacity: ${props => props.$isVisible ? 1 : 0};
@@ -70,7 +71,7 @@ export default function Home({ loadingComplete }) {
     if (!flowId) return;
 
     const flow = readPendingFlow();
-    if (flow?.flowId === flowId && flow.returnTo === location.pathname) {
+    if (flow?.flowId === flowId && normalizePathname(flow.returnTo) === normalizePathname(location.pathname)) {
       setResumeFlow(flow);
     }
   }, [location.pathname, searchParams]);

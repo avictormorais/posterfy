@@ -161,16 +161,16 @@ function Footer() {
             <div>
               <Link to="/#poster-generator">{t('startCreating')}</Link>
               <Link to="/#community">{t('Community')}</Link>
-              <Link to="/support">{t('FooterSupport')}</Link>
+              <Link to="/support/">{t('FooterSupport')}</Link>
             </div>
           </LinkGroup>
 
           <LinkGroup aria-labelledby="footer-legal-heading">
             <h2 id="footer-legal-heading">{t('FooterPolicies')}</h2>
             <div>
-              <Link to="/terms">{t('FooterTerms')}</Link>
-              <Link to="/privacy">{t('FooterPrivacy')}</Link>
-              <Link to="/refund">{t('FooterRefund')}</Link>
+              <Link to="/terms/">{t('FooterTerms')}</Link>
+              <Link to="/privacy/">{t('FooterPrivacy')}</Link>
+              <Link to="/refund/">{t('FooterRefund')}</Link>
             </div>
           </LinkGroup>
         </Grid>

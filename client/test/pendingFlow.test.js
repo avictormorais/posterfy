@@ -82,6 +82,17 @@ test('keeps the same flow while checkout data is attached', () => {
   assert.equal(readPendingFlow(), null)
 })
 
+test('both legacy and canonical poster paths resume at the final directory URL', () => {
+  for (const path of ['/p/507f1f77bcf86cd799439011', '/p/507f1f77bcf86cd799439011/']) {
+    const flow = savePendingFlow({ reason: 'login', returnTo: path, editor,
+      action: { type: 'print_ready_export', format: 'png', scale: 1 } })
+    const url = new URL(getPendingFlowReturnUrl(flow))
+    assert.equal(url.pathname, '/p/507f1f77bcf86cd799439011/')
+    assert.equal(url.searchParams.get('resume'), flow.flowId)
+    assert.deepEqual(readPendingFlow(), flow)
+  }
+})
+
 test('recovers the intended poster when OAuth falls back to the login route', () => {
   const flow = savePendingFlow({
     reason: 'login',

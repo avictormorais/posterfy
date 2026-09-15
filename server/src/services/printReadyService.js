@@ -113,7 +113,7 @@ export const buildExportAccessDecision = ({ offer, tier, userId = null, unlock =
 
 export const sanitizeReturnPath = (value) => {
   if (value === '/') return '/'
-  if (typeof value === 'string' && /^\/p\/[a-f\d]{24}$/i.test(value)) return value
+  if (typeof value === 'string' && /^\/p\/[a-f\d]{24}\/?$/i.test(value)) return `${value.replace(/\/$/, '')}/`
   return '/'
 }
 

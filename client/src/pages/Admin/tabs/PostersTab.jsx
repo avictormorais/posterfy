@@ -376,7 +376,7 @@ export default function PostersTab() {
               </MetaGrid>
             </PosterPreviewLayout>
             <ModalActions>
-              <ModalButton onClick={() => window.open(`/p/${previewModal._id}`, '_blank')}>
+              <ModalButton onClick={() => window.open(`/p/${previewModal._id}/`, '_blank')}>
                 {t('ADMIN_OpenPoster')} ↗
               </ModalButton>
               <ModalButton $primary onClick={closePreview}>{t('ADMIN_Close')}</ModalButton>

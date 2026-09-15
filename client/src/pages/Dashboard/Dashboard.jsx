@@ -612,7 +612,7 @@ function StatsTab({ stats }) {
 
             <TopSection>
                 {topCards.map(c => c.poster ? (
-                    <TopCard key={c.label} onClick={() => navigate(`/p/${c.poster._id}`)}>
+                    <TopCard key={c.label} onClick={() => navigate(`/p/${c.poster._id}/`)}>
                         <TopCardLabel>{c.label}</TopCardLabel>
                         <TopCardAlbum>{c.poster.albumName}</TopCardAlbum>
                         <TopCardArtist>{c.poster.artistsName}</TopCardArtist>
@@ -929,7 +929,7 @@ export default function Dashboard() {
                     <FeaturedContainer>
                         <FeaturedWrap
                             $bg={accentColor}
-                            onClick={() => navigate(`/p/${featuredPoster._id}`)}
+                            onClick={() => navigate(`/p/${featuredPoster._id}/`)}
                         >
                             <FeaturedCoverWrap $bg={accentColor}>
                                 {cover

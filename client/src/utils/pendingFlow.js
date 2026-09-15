@@ -1,3 +1,5 @@
+import { canonicalPathname } from '../seo/metadata.js'
+
 const STORAGE_KEY = 'posterfy_pending_flow'
 const OAUTH_RESUME_KEY = 'posterfy_oauth_resume'
 const VERSION = 1
@@ -15,7 +17,7 @@ const createFlowId = () => {
 
 const isSafeReturnPath = (value) => {
   if (value === '/') return true
-  return typeof value === 'string' && /^\/p\/[a-f\d]{24}$/i.test(value)
+  return typeof value === 'string' && /^\/p\/[a-f\d]{24}\/?$/i.test(value)
 }
 
 const isValidFlow = (flow) => {
@@ -141,7 +143,7 @@ export const clearPendingOAuthFlow = (flowId) => {
 
 export const getPendingFlowReturnUrl = (flow) => {
   if (!flow || !isValidFlow(flow)) return null
-  const url = new URL(flow.returnTo, window.location.origin)
+  const url = new URL(canonicalPathname(flow.returnTo), window.location.origin)
   url.searchParams.set('resume', flow.flowId)
   return url.toString()
 }

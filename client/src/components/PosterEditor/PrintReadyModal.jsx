@@ -479,9 +479,9 @@ export default function PrintReadyModal({ albumName, offer, loading, error, loca
 
         <LegalFooter>
           <Legal>
-            {t('PRINT_READY_LegalPrefix')} <Link to="/terms">{t('FooterTerms')}</Link>{' '}
-            {t('PRINT_READY_LegalAcknowledge')} <Link to="/refund">{t('FooterRefund')}</Link>{' '}
-            {t('PRINT_READY_LegalAnd')} <Link to="/privacy">{t('FooterPrivacy')}</Link>.
+            {t('PRINT_READY_LegalPrefix')} <Link to="/terms/">{t('FooterTerms')}</Link>{' '}
+            {t('PRINT_READY_LegalAcknowledge')} <Link to="/refund/">{t('FooterRefund')}</Link>{' '}
+            {t('PRINT_READY_LegalAnd')} <Link to="/privacy/">{t('FooterPrivacy')}</Link>.
           </Legal>
           {offer?.policies && (
             <PolicyVersions>

@@ -36,7 +36,16 @@ export const normalizePathname = (pathname = '/') => {
   return path
 }
 
-const canonicalFor = (pathname) => `${SITE_URL}${pathname === '/' ? '/' : pathname}`
+// GitHub Pages serves these snapshots as directory/index.html and redirects
+// their slashless forms to the directory URL. Keep route matching separate.
+export const canonicalPathname = (pathname = '/') => {
+  const path = normalizePathname(pathname)
+  return /^\/(?:p\/[^/]+|u\/[^/]+|terms|privacy|refund|support)$/.test(path)
+    ? `${path}/`
+    : path
+}
+
+export const canonicalFor = (pathname = '/') => `${SITE_URL}${canonicalPathname(pathname)}`
 
 const baseMetadata = ({ pathname, title, description, image = DEFAULT_IMAGE, robots = 'index, follow', type = 'website', jsonLd }) => {
   const path = normalizePathname(pathname)

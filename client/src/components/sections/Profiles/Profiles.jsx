@@ -361,7 +361,7 @@ function ProfileCard({ user, index, showRank }) {
     }, [user.avatar]);
 
     return (
-        <ProfileCardWrap $i={index} $color={dominantColor} onClick={() => { trackProfileCardClick(user.username, user.rank); navigate(`/u/${user.username}`); }}>
+        <ProfileCardWrap $i={index} $color={dominantColor} onClick={() => { trackProfileCardClick(user.username, user.rank); navigate(`/u/${user.username}/`); }}>
             <AvatarRing $ringColor={dominantColor}>
                 <AvatarInner>
                     {user.avatar

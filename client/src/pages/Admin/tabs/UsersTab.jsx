@@ -184,7 +184,7 @@ export default function UsersTab() {
                     <Td>
                       <span
                         style={{ cursor: 'pointer', fontWeight: 600 }}
-                        onClick={() => window.open(`/u/${u.username}`, '_blank')}
+                        onClick={() => window.open(`/u/${u.username}/`, '_blank')}
                         title={t('ADMIN_ViewProfile')}
                       >
                         {u.username} ↗

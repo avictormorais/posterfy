@@ -5,7 +5,7 @@ import styled, { keyframes } from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import apiService from "../../services/apiService";
 import { FiPlus, FiEdit2, FiShare2, FiMoreHorizontal, FiSearch } from "react-icons/fi";
-import { SITE_URL } from "../../seo/metadata";
+import { canonicalFor } from "../../seo/metadata";
 import { SiSpotify } from "react-icons/si";
 import { useTranslation } from 'react-i18next';
 import { useRouteTransition } from '../../contexts/RouteTransitionContext';
@@ -582,7 +582,7 @@ function StatsTab({ stats, isOwner }) {
                     <SectionTitle>{t('DASH_TopHighlights')}</SectionTitle>
                     <TopSection>
                         {validTopCards.map(c => (
-                            <TopCard key={c.label} to={`/p/${c.poster._id}`}>
+                            <TopCard key={c.label} to={`/p/${c.poster._id}/`}>
                                 <TopCardCover>
                                     {c.poster.posterJson?.albumCover
                                         ? <img src={c.poster.posterJson.albumCover} alt={`${c.poster.albumName} album artwork`} loading="lazy" decoding="async" />
@@ -665,7 +665,7 @@ export default function Profile() {
     const [tabErrors, setTabErrors] = useState({});
     const shareTimer = useRef(null);
     useEffect(() => () => clearTimeout(shareTimer.current), []);
-    const profileUrl = `${SITE_URL}/u/${encodeURIComponent(routeUsername || '')}`;
+    const profileUrl = canonicalFor(`/u/${encodeURIComponent(routeUsername || '')}/`);
     const handleShare = async () => {
         try {
             await navigator.clipboard.writeText(profileUrl);
@@ -929,7 +929,7 @@ export default function Profile() {
         }
 
         if (routeUsername && nextUsername && routeUsername.toLowerCase() !== nextUsername.toLowerCase()) {
-            navigate(`/u/${encodeURIComponent(nextUsername)}`, { replace: true });
+            navigate(`/u/${encodeURIComponent(nextUsername)}/`, { replace: true });
             return;
         }
 

@@ -1975,7 +1975,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const preserveFlow = (reason, action) => {
         const flow = savePendingFlow({
             reason,
-            returnTo: posterId ? `/p/${posterId}` : '/',
+            returnTo: posterId ? `/p/${posterId}/` : '/',
             editor: getEditorSnapshot(),
             action,
         });

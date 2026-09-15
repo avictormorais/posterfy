@@ -1,10 +1,10 @@
-import { SITE_URL, normalizePathname } from '../seo/metadata'
+import { SITE_URL, normalizePathname, canonicalPathname, canonicalFor } from '../seo/metadata.js'
 
 export const normalizeUrl = (value) => {
   if (!value) return ''
   try {
     const url = new URL(value, SITE_URL)
-    const pathname = normalizePathname(url.pathname)
+    const pathname = url.origin === SITE_URL ? canonicalPathname(url.pathname) : normalizePathname(url.pathname)
     return `${url.protocol}//${url.hostname.toLowerCase()}${url.port ? `:${url.port}` : ''}${pathname}`
   } catch {
     return normalizePathname(value)
@@ -12,8 +12,7 @@ export const normalizeUrl = (value) => {
 }
 
 export const getCanonicalUrl = (pathname = window.location.pathname) => {
-  const normalized = normalizePathname(pathname)
-  return `${SITE_URL}${normalized === '/' ? '/' : normalized}`
+  return canonicalFor(pathname)
 }
 
 export const shouldRedirect = (currentUrl) => {

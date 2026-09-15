@@ -429,7 +429,7 @@ const PosterGallery = ({ posters = [], onPosterClick = null }) => {
   const handleViewPoster = () => {
     if (selectedPoster?._id) {
       closeModal()
-      navigate(`/p/${selectedPoster._id}`)
+      navigate(`/p/${selectedPoster._id}/`)
     }
   }
 

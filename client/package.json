@@ -22,6 +22,7 @@
     "build:seo": "node scripts/generateSeoSnapshots.js",
     "test": "node --test",
     "test:redirects": "node scripts/testRedirects.js",
+    "test:canonical": "node scripts/validateCanonicalUrls.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "node scripts/buildForDeploy.js",

@@ -486,7 +486,7 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
         setThumbnailUrl(url);
     }, []);
 
-    const handleCardClick = () => navigate(`/p/${poster._id}`);
+    const handleCardClick = () => navigate(`/p/${poster._id}/`);
 
     const handleFavorite = async (e) => {
         e.stopPropagation();
@@ -507,7 +507,7 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
         e.stopPropagation();
         apiService.registerEdit(poster._id).catch(() => {});
         trackCommunityPosterOpenInEditor(poster._id, poster.albumName, poster.artistsName);
-        navigate(`/p/${poster._id}`);
+        navigate(`/p/${poster._id}/`);
     };
 
     useEffect(() => {
@@ -641,14 +641,14 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
             </ThumbnailWrapper>
 
             <Info>
-                <AlbumName to={`/p/${poster._id}`} onClick={(event) => event.stopPropagation()} $color={txtColor}>{poster.albumName}</AlbumName>
+                <AlbumName to={`/p/${poster._id}/`} onClick={(event) => event.stopPropagation()} $color={txtColor}>{poster.albumName}</AlbumName>
                 <ArtistName $color={txtColor}>{poster.artistsName}</ArtistName>
 
                 {/* Community: author info */}
                 {variant === 'community' && author?.username && (
                     <>
                         <Divider $color={txtColor} />
-                        <AuthorLink to={`/u/${author.username}`} onClick={(event) => event.stopPropagation()}>
+                        <AuthorLink to={`/u/${author.username}/`} onClick={(event) => event.stopPropagation()}>
                             <AvatarWrap $color={txtColor}>
                                 {author?.avatar
                                     ? <AvatarImg src={author.avatar} alt={`${author.name || author.username}'s avatar`} loading="lazy" decoding="async" />
@@ -688,7 +688,7 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                         <Divider $color={txtColor} />
                         <AuthorRow
                             style={{ cursor: author?.username ? 'pointer' : 'default' }}
-                            onClick={(e) => { if (author?.username) { e.stopPropagation(); navigate(`/u/${author.username}`); } }}
+                            onClick={(e) => { if (author?.username) { e.stopPropagation(); navigate(`/u/${author.username}/`); } }}
                         >
                             <AvatarWrap>
                                 {author?.avatar
@@ -760,22 +760,22 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                             {favorited ? t('CARD_CTX_Unlike') : t('CARD_CTX_Like')}
                         </CtxItem>
                     )}
-                    <CtxItem onClick={() => { setCtxMenu(null); navigate(`/p/${poster._id}`); }}>
+                    <CtxItem onClick={() => { setCtxMenu(null); navigate(`/p/${poster._id}/`); }}>
                         <IoEye />
                         {t('CARD_CTX_Open')}
                     </CtxItem>
-                    <CtxItem onClick={() => { setCtxMenu(null); window.open(`/p/${poster._id}`, '_blank'); }}>
+                    <CtxItem onClick={() => { setCtxMenu(null); window.open(`/p/${poster._id}/`, '_blank'); }}>
                         <IoOpenOutline />
                         {t('CARD_CTX_OpenNewTab')}
                     </CtxItem>
                     {author?.username && (
-                        <CtxItem onClick={() => { setCtxMenu(null); navigate(`/u/${author.username}`); }}>
+                        <CtxItem onClick={() => { setCtxMenu(null); navigate(`/u/${author.username}/`); }}>
                             <IoPersonOutline />
                             {t('CARD_CTX_UserProfile')}
                         </CtxItem>
                     )}
                     {author?.username && (
-                        <CtxItem onClick={() => { setCtxMenu(null); window.open(`/u/${author.username}`, '_blank'); }}>
+                        <CtxItem onClick={() => { setCtxMenu(null); window.open(`/u/${author.username}/`, '_blank'); }}>
                             <IoOpenOutline />
                             {t('CARD_CTX_UserProfileNewTab')}
                         </CtxItem>
