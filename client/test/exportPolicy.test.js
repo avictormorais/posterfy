@@ -9,15 +9,16 @@ import {
   hasCleanPrintReadyAccess
 } from '../src/utils/exportPolicy.js'
 
-test('allows only the public Free and Print-Ready export matrix', () => {
+test('keeps JPG Medium free and treats every other supported selection as Print-Ready', () => {
   assert.deepEqual(getExportPolicy('jpg', 0.6), { tier: 'free', includeWatermark: true })
   assert.deepEqual(getExportPolicy('png', 1), { tier: 'print_ready', includeWatermark: false })
   assert.deepEqual(getExportPolicy('png', 1.5), { tier: 'print_ready', includeWatermark: false })
   assert.deepEqual(getExportPolicy('pdf', 1), { tier: 'print_ready', includeWatermark: false })
   assert.deepEqual(getExportPolicy('pdf', 1.5), { tier: 'print_ready', includeWatermark: false })
-
-  assert.equal(getExportPolicy('jpg', 1), null)
-  assert.equal(getExportPolicy('png', 0.6), null)
+  assert.deepEqual(getExportPolicy('jpg', 1), { tier: 'print_ready', includeWatermark: false })
+  assert.deepEqual(getExportPolicy('jpg', 1.5), { tier: 'print_ready', includeWatermark: false })
+  assert.deepEqual(getExportPolicy('png', 0.6), { tier: 'print_ready', includeWatermark: false })
+  assert.deepEqual(getExportPolicy('pdf', 0.6), { tier: 'print_ready', includeWatermark: false })
   assert.equal(getExportPolicy('pdf', 0.3), null)
 })
 

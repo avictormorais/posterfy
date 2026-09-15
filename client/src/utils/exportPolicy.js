@@ -1,5 +1,7 @@
 const PRINT_READY_FORMATS = new Set(['png', 'pdf'])
 const PRINT_READY_SCALES = new Set([1, 1.5])
+const EXPORT_FORMATS = new Set(['jpg', ...PRINT_READY_FORMATS])
+const EXPORT_SCALES = new Set([0.6, ...PRINT_READY_SCALES])
 const CLEAN_ACCESS_REASONS = new Set(['unlocked', 'account_grant'])
 
 export const getExportPolicy = (format, scale) => {
@@ -7,7 +9,7 @@ export const getExportPolicy = (format, scale) => {
     return { tier: 'free', includeWatermark: true }
   }
 
-  if (PRINT_READY_FORMATS.has(format) && PRINT_READY_SCALES.has(scale)) {
+  if (EXPORT_FORMATS.has(format) && EXPORT_SCALES.has(scale)) {
     return { tier: 'print_ready', includeWatermark: false }
   }
 

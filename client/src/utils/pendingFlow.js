@@ -1,4 +1,5 @@
 import { canonicalPathname } from '../seo/metadata.js'
+import { getExportPolicy } from './exportPolicy.js'
 
 const STORAGE_KEY = 'posterfy_pending_flow'
 const OAUTH_RESUME_KEY = 'posterfy_oauth_resume'
@@ -32,7 +33,7 @@ const isValidFlow = (flow) => {
     return flow.action.visibility === 'public' || flow.action.visibility === 'private'
   }
 
-  return ['png', 'pdf'].includes(flow.action.format) && [1, 1.5].includes(flow.action.scale)
+  return getExportPolicy(flow.action.format, flow.action.scale)?.tier === 'print_ready'
 }
 
 export const readPendingFlow = () => {

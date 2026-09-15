@@ -42,8 +42,11 @@ test('classifies only supported free and Print-Ready export combinations', () =>
   assert.equal(getExportTier('png', 1.5), 'print_ready')
   assert.equal(getExportTier('pdf', 1), 'print_ready')
   assert.equal(getExportTier('pdf', 1.5), 'print_ready')
-  assert.equal(getExportTier('jpg', 1), null)
-  assert.equal(getExportTier('png', 0.6), null)
+  assert.equal(getExportTier('jpg', 1), 'print_ready')
+  assert.equal(getExportTier('jpg', 1.5), 'print_ready')
+  assert.equal(getExportTier('png', 0.6), 'print_ready')
+  assert.equal(getExportTier('pdf', 0.6), 'print_ready')
+  assert.equal(getExportTier('webp', 1), null)
 })
 
 test('authorizes exports with the correct paywall and watermark policy', () => {

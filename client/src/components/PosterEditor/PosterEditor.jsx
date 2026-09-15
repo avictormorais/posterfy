@@ -45,6 +45,7 @@ import PosterInfo from "./PosterInfo";
 import PrintReadyModal from "./PrintReadyModal";
 import { clearPendingFlow, rememberPendingOAuthFlow, savePendingFlow, updatePendingFlow } from "../../utils/pendingFlow";
 import { getExportPolicy, getPreviewWatermarkPolicy, hasCleanPrintReadyAccess } from "../../utils/exportPolicy";
+import { formatCurrency } from "../../utils/formatCurrency";
 import {
     trackPrintReadyAttempt,
     trackPrintReadyBeginCheckout,
@@ -53,8 +54,12 @@ import {
     trackPrintReadyEntitlementConfirmed,
     trackPrintReadyLoginComplete,
     trackPrintReadyLoginRequired,
+    trackPrintReadyModalClose,
+    trackPrintReadyModalView,
+    trackPrintReadyOptionSelected,
     trackPrintReadyOfferView,
     trackPrintReadyPurchase,
+    trackPrintReadyUnlockClick,
     trackPrintReadyView,
 } from "../../services/analytics";
 
@@ -331,6 +336,7 @@ const PreviewContainer = styled.div`
     margin-left: 15px;
     margin-top: 10px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
@@ -1006,6 +1012,7 @@ const FormatTabButton = styled.button`
     text-align: center;
     transition: color 0.2s ease, background-color 0.2s ease;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 6px;
@@ -1123,17 +1130,33 @@ const SizeDescription = styled.span`
     color: var(--textSecondary);
 `;
 
+const FormatName = styled.span`
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+`;
+
+const AccessLabel = styled.span`
+    color: ${props => props.$premium ? 'var(--AccentColor)' : 'var(--textSecondary)'};
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.06em;
+`;
+
+const SizeMeta = styled.span`
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px 10px;
+`;
+
 const RecommendedBadge = styled.span`
-    margin-left: auto;
-    padding-inline: 12px;
     color: var(--AccentColor);
-    font-size: 0.76em;
+    font-size: 0.72em;
     font-weight: 600;
     white-space: nowrap;
 
-    @media (max-width: 720px) {
-        display: none;
-    }
 `;
 
 const SelectionIndicator = styled.span`
@@ -1150,24 +1173,6 @@ const SelectionIndicator = styled.span`
         width: 16px;
         height: 16px;
         color: #fff;
-    }
-`;
-
-const PrintReadyIndicator = styled.span`
-    width: 26px;
-    height: 26px;
-    border: 1px solid color-mix(in srgb, var(--AccentColor) 24%, var(--borderColor));
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--AccentColor) 7%, transparent);
-    color: var(--AccentColor);
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-
-    svg {
-        width: 14px;
-        height: 14px;
-        color: currentColor;
     }
 `;
 
@@ -1192,6 +1197,42 @@ const ExportSummary = styled.p`
     color: var(--textSecondary);
     font-size: 0.86em;
     line-height: 1.5;
+`;
+
+const PrintReadyOffer = styled.div`
+    min-width: 0;
+    flex: 1;
+    display: grid;
+    gap: 5px;
+`;
+
+const PrintReadyEyebrow = styled.span`
+    color: var(--AccentColor);
+    font-size: 0.68rem;
+    font-weight: 750;
+    letter-spacing: 0.07em;
+`;
+
+const PrintReadyBenefits = styled.p`
+    margin: 0;
+    color: var(--textColor);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.45;
+`;
+
+const PrintReadyReexports = styled.p`
+    margin: 0;
+    color: var(--textSecondary);
+    font-size: 0.75rem;
+    line-height: 1.4;
+`;
+
+const PrintReadyPrice = styled.p`
+    margin: 4px 0 0;
+    color: var(--textColor);
+    font-size: 0.82rem;
+    font-weight: 700;
 `;
 
 const ExportDownloadButton = styled.button`
@@ -1374,7 +1415,6 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         offer: printReadyOffer,
         status: printReadyStatus,
         error: printReadyAvailabilityError,
-        refresh: refreshPrintReadyAvailability,
         syncOffer: syncPrintReadyOffer,
     } = usePrintReady();
     const previewRef = useRef(null);
@@ -1608,7 +1648,19 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     const [checkoutNotice, setCheckoutNotice] = useState('');
     const resumeStartedRef = useRef(false);
     const printReadyViewTrackedRef = useRef(false);
+    const printReadyOfferTrackedRef = useRef(false);
     const activeFlowIdRef = useRef(null);
+    const selectedExportPolicy = getExportPolicy(exportFormat, exportScale);
+    const selectedIsPrintReady = selectedExportPolicy?.tier === 'print_ready';
+    const isCheckingPrintReadyAccess = selectedIsPrintReady && isAuthenticated && !unlockChecked;
+    const selectedNeedsUnlock = isPrintReadyEnabled && selectedIsPrintReady
+        && !isCheckingPrintReadyAccess && !isPrintReadyUnlocked;
+    const selectedSize = exportScale === 1.5 ? 'extreme' : exportScale === 1 ? 'normal' : 'medium';
+    const printReadyPrice = formatCurrency({
+        unitAmount: printReadyOffer?.unitAmount || 199,
+        currency: printReadyOffer?.currency || 'usd',
+        language: i18n.resolvedLanguage || i18n.language,
+    });
 
     useEffect(() => {
         if (resumeFlow) {
@@ -1646,6 +1698,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
 
         setUnlockChecked(false);
+        setIsPrintReadyUnlocked(false);
         apiService.getPrintUnlock(albumID)
             .then((result) => {
                 if (cancelled) return;
@@ -1659,11 +1712,30 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     }, [albumID, isAuthenticated, isPrintReadyEnabled]);
 
     useEffect(() => {
-        if (activeTab === 'export' && !printReadyViewTrackedRef.current) {
+        if (activeTab !== 'export') {
+            printReadyViewTrackedRef.current = false;
+            return;
+        }
+        if (!printReadyViewTrackedRef.current) {
             printReadyViewTrackedRef.current = true;
             trackPrintReadyView(albumID, source || (posterId ? 'community' : 'editor'));
         }
     }, [activeTab, albumID, posterId, source]);
+
+    useEffect(() => {
+        if (activeTab !== 'export') {
+            printReadyOfferTrackedRef.current = false;
+            return;
+        }
+        if (selectedNeedsUnlock && !printReadyOfferTrackedRef.current) {
+            printReadyOfferTrackedRef.current = true;
+            trackPrintReadyOfferView(albumID);
+        }
+    }, [activeTab, albumID, selectedNeedsUnlock]);
+
+    useEffect(() => {
+        if (showPrintReadyModal) trackPrintReadyModalView(albumID);
+    }, [albumID, showPrintReadyModal]);
 
     useEffect(() => {
         if (isPrintReadyEnabled) return;
@@ -1862,12 +1934,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     };
 
     const trackCompletedDownload = (format) => {
-        const premium = format === 'png' || format === 'pdf';
+        const premium = getExportPolicy(format, exportScale)?.tier === 'print_ready';
         trackPosterDownload(albumName, premium ? `poster_${format}` : 'poster_jpg', artistsName, {
             album_id: albumID,
             export_tier: premium ? 'print_ready' : 'free',
             format,
-            resolution: premium ? (exportScale === 1.5 ? 'extreme' : 'normal') : 'medium',
+            resolution: exportScale === 1.5 ? 'extreme' : exportScale === 1 ? 'normal' : 'medium',
         });
         if (posterId) {
             apiService.registerDownload(posterId).catch(() => {});
@@ -2014,55 +2086,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
     };
 
-    const ensurePremiumAccess = async (action) => {
-        let paywallEnabled = isPrintReadyEnabled;
-        if (printReadyStatus !== 'ready') {
-            try {
-                const latestOffer = await refreshPrintReadyAvailability();
-                paywallEnabled = latestOffer.enabled;
-            } catch (error) {
-                setExportError(error.message || printReadyAvailabilityError?.message || t('PRINT_READY_Unavailable'));
-                return false;
-            }
-        }
-        if (!paywallEnabled) return true;
-
-        trackPrintReadyAttempt(
-            albumID,
-            action.format,
-            action.scale === 1.5 ? 'extreme' : 'normal',
-            source || (posterId ? 'community' : 'editor')
-        );
-
-        if (!isAuthenticated) {
-            openLoginForAction(action);
-            return false;
-        }
-
-        let unlocked = isPrintReadyUnlocked;
-        if (!unlockChecked) {
-            try {
-                const result = await apiService.getPrintUnlock(albumID);
-                unlocked = result.unlocked;
-                setIsPrintReadyUnlocked(result.unlocked);
-                setUnlockChecked(true);
-            } catch (error) {
-                setExportError(error.message || t('PRINT_READY_StatusFailed'));
-                return false;
-            }
-        }
-
-        if (unlocked) {
-            return true;
-        }
-
-        setCheckoutError('');
-        setShowPrintReadyModal(true);
-        trackPrintReadyOfferView(albumID);
-        return false;
-    };
-
     const requestExport = async (format = exportFormat, scale = exportScale) => {
+        setExportFormat(format);
+        setExportScale(scale);
         const policy = getExportPolicy(format, scale);
         if (!policy) {
             setExportError(t('PRINT_READY_InvalidCombination'));
@@ -2106,8 +2132,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             setUnlockChecked(true);
             if (access.reason === 'purchase_required') {
                 setCheckoutError('');
-                setShowPrintReadyModal(true);
-                trackPrintReadyOfferView(albumID);
+                setActiveTab('export');
                 return;
             }
 
@@ -2119,11 +2144,28 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         }
     };
 
-    const handlePremiumSelection = async (format, scale) => {
+    const handleExportSelection = (format, scale) => {
         setExportFormat(format);
         setExportScale(scale);
-        if (!isPrintReadyEnabled) return;
-        await ensurePremiumAccess({ type: 'print_ready_export', format, scale });
+        if (getExportPolicy(format, scale)?.tier === 'print_ready') {
+            trackPrintReadyOptionSelected(
+                albumID,
+                format,
+                scale === 1.5 ? 'extreme' : scale === 1 ? 'normal' : 'medium'
+            );
+        }
+    };
+
+    const handlePrintReadyUnlockClick = () => {
+        trackPrintReadyUnlockClick(albumID, exportFormat, selectedSize);
+        setCheckoutError('');
+        setShowPrintReadyModal(true);
+    };
+
+    const handlePrintReadyModalClose = (method) => {
+        if (checkoutLoading) return;
+        trackPrintReadyModalClose(albumID, method);
+        setShowPrintReadyModal(false);
     };
 
     const handleDownloadClick = () => {
@@ -2200,13 +2242,19 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
     };
 
     const handleStartCheckout = async () => {
-        setCheckoutLoading(true);
-        setCheckoutError('');
         const action = {
             type: 'print_ready_export',
-            format: ['png', 'pdf'].includes(exportFormat) ? exportFormat : 'png',
-            scale: [1, 1.5].includes(exportScale) ? exportScale : 1,
+            format: exportFormat,
+            scale: exportScale,
         };
+
+        if (!isAuthenticated) {
+            openLoginForAction({ ...action, checkoutAfterLogin: true });
+            return;
+        }
+
+        setCheckoutLoading(true);
+        setCheckoutError('');
 
         try {
             const flow = preserveFlow('checkout', action);
@@ -2266,7 +2314,8 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         if (checkoutResult !== 'success') {
             resumeStartedRef.current = true;
             trackPrintReadyLoginComplete(albumID);
-            requestExport(resumeFlow.action.format, resumeFlow.action.scale);
+            if (resumeFlow.action.checkoutAfterLogin) handleStartCheckout();
+            else requestExport(resumeFlow.action.format, resumeFlow.action.scale);
             return;
         }
 
@@ -2788,7 +2837,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         || (printReadyStatus === 'error' ? (printReadyAvailabilityError?.message || t('PRINT_READY_Unavailable')) : '')
                         || (printReadyOffer?.enabled === false ? t('PRINT_READY_Unavailable') : '')}
                     locale={i18n.resolvedLanguage || i18n.language}
-                    onClose={() => !checkoutLoading && setShowPrintReadyModal(false)}
+                    onClose={handlePrintReadyModalClose}
                     onConfirm={handleStartCheckout}
                     t={t}
                 />
@@ -3195,8 +3244,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <ExportLabel>{t('EXPORT_Format')}</ExportLabel>
                                         <FormatTabs role="radiogroup" aria-label={t('EXPORT_Format')}>
                                             {EXPORT_FORMATS.map((format) => {
-                                                const showsPrintReady = isPrintReadyEnabled && format.requiresPremium && !isPrintReadyUnlocked;
-                                                const selectedScale = [1, 1.5].includes(exportScale) ? exportScale : 1;
+                                                const showsPrintReady = format.requiresPremium;
 
                                                 return (
                                                     <FormatTabButton
@@ -3204,22 +3252,18 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                                         type="button"
                                                         role="radio"
                                                         aria-checked={exportFormat === format.value}
-                                                        aria-label={showsPrintReady
-                                                            ? t('EXPORT_ExplorePrintReady', { option: t(format.labelKey) })
-                                                            : t('EXPORT_SelectFormat', { format: t(format.labelKey) })}
-                                                        title={showsPrintReady ? t('EXPORT_ExplorePrintReady', { option: t(format.labelKey) }) : undefined}
+                                                        aria-label={`${t('EXPORT_SelectFormat', { format: t(format.labelKey) })}. ${t(showsPrintReady ? 'EXPORT_PrintReadyLabel' : 'EXPORT_FreeLabel')}`}
                                                         $premium={showsPrintReady}
                                                         $selected={exportFormat === format.value}
-                                                        onClick={() => {
-                                                            if (format.requiresPremium) handlePremiumSelection(format.value, selectedScale);
-                                                            else {
-                                                                setExportFormat('jpg');
-                                                                setExportScale(0.6);
-                                                            }
-                                                        }}
+                                                        onClick={() => handleExportSelection(format.value, exportScale)}
                                                     >
-                                                        {t(format.labelKey)}
-                                                        {showsPrintReady && <PremiumIcon aria-hidden="true" />}
+                                                        <FormatName>
+                                                            {t(format.labelKey)}
+                                                            {showsPrintReady && <PremiumIcon aria-hidden="true" />}
+                                                        </FormatName>
+                                                        <AccessLabel $premium={showsPrintReady}>
+                                                            {t(showsPrintReady ? 'EXPORT_PrintReadyLabel' : 'EXPORT_FreeLabel')}
+                                                        </AccessLabel>
                                                     </FormatTabButton>
                                                 );
                                             })}
@@ -3230,7 +3274,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                         <ExportLabel>{t('EXPORT_Size')}</ExportLabel>
                                         <SizeOptions role="radiogroup" aria-label={t('EXPORT_Size')}>
                                             {EXPORT_SIZES.map((size) => {
-                                                const showsPrintReady = isPrintReadyEnabled && size.requiresPremium && !isPrintReadyUnlocked;
+                                                const showsPrintReady = getExportPolicy(exportFormat, size.scale)?.tier === 'print_ready';
                                                 const isSelected = exportScale === size.scale;
 
                                                 return (
@@ -3239,40 +3283,25 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                                         type="button"
                                                         role="radio"
                                                         aria-checked={isSelected}
-                                                        aria-label={showsPrintReady
-                                                            ? t('EXPORT_ExplorePrintReady', { option: t(size.nameKey) })
-                                                            : t('EXPORT_SelectSize', { size: t(size.nameKey) })}
-                                                        title={showsPrintReady ? t('EXPORT_ExplorePrintReady', { option: t(size.nameKey) }) : undefined}
+                                                        aria-label={`${t('EXPORT_SelectSize', { size: t(size.nameKey) })}. ${t(showsPrintReady ? 'EXPORT_PrintReadyLabel' : 'EXPORT_FreeLabel')}`}
                                                         $premium={showsPrintReady}
                                                         $selected={isSelected}
-                                                        onClick={() => {
-                                                            if (size.requiresPremium) handlePremiumSelection(
-                                                                ['png', 'pdf'].includes(exportFormat) ? exportFormat : 'png',
-                                                                size.scale
-                                                            );
-                                                            else {
-                                                                setExportFormat('jpg');
-                                                                setExportScale(0.6);
-                                                            }
-                                                        }}
+                                                        onClick={() => handleExportSelection(exportFormat, size.scale)}
                                                     >
                                                         <SizeIcon $premium={showsPrintReady} $selected={isSelected} aria-hidden="true" />
                                                         <SizeOptionContent>
                                                             <SizeName>{t(size.nameKey)}</SizeName>
                                                             <SizeDescription>{t(size.descriptionKey)}</SizeDescription>
+                                                            <SizeMeta>
+                                                                {size.recommended && <RecommendedBadge>{t('EXPORT_Recommended')}</RecommendedBadge>}
+                                                                <AccessLabel $premium={showsPrintReady}>
+                                                                    {t(showsPrintReady ? 'EXPORT_PrintReadyLabel' : 'EXPORT_FreeLabel')}
+                                                                </AccessLabel>
+                                                            </SizeMeta>
                                                         </SizeOptionContent>
-                                                        {size.recommended && (
-                                                            <RecommendedBadge>{t('EXPORT_Recommended')}</RecommendedBadge>
-                                                        )}
-                                                        {showsPrintReady ? (
-                                                            <PrintReadyIndicator aria-hidden="true">
-                                                                <PremiumIcon />
-                                                            </PrintReadyIndicator>
-                                                        ) : (
-                                                            <SelectionIndicator $selected={isSelected} aria-hidden="true">
-                                                                {isSelected && <IoCheckmark />}
-                                                            </SelectionIndicator>
-                                                        )}
+                                                        <SelectionIndicator $selected={isSelected} aria-hidden="true">
+                                                            {isSelected && <IoCheckmark />}
+                                                        </SelectionIndicator>
                                                     </SizeOption>
                                                 );
                                             })}
@@ -3284,18 +3313,29 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                                     )}
 
                                     <ExportFooter>
-                                        <ExportSummary>
-                                            {t('EXPORT_Summary', {
+                                        {selectedNeedsUnlock ? (
+                                            <PrintReadyOffer>
+                                                <PrintReadyEyebrow>{t('EXPORT_PrintReadyLabel')}</PrintReadyEyebrow>
+                                                <PrintReadyBenefits>{t('EXPORT_PrintReadyBenefits')}</PrintReadyBenefits>
+                                                <PrintReadyReexports>{t('EXPORT_PrintReadyReexports')}</PrintReadyReexports>
+                                                <PrintReadyPrice>{t('EXPORT_PrintReadyPrice', { price: printReadyPrice })}</PrintReadyPrice>
+                                            </PrintReadyOffer>
+                                        ) : (
+                                            <ExportSummary>{t('EXPORT_Summary', {
                                                 format: t(EXPORT_FORMATS.find((format) => format.value === exportFormat)?.labelKey),
                                                 details: t(EXPORT_SIZES.find((size) => size.scale === exportScale)?.summaryKey),
-                                            })}
-                                        </ExportSummary>
+                                            })}</ExportSummary>
+                                        )}
                                         <ExportDownloadButton
                                             type="button"
-                                            onClick={() => requestExport(exportFormat, exportScale)}
-                                            disabled={generateExport || checkoutLoading}
+                                            onClick={selectedNeedsUnlock ? handlePrintReadyUnlockClick : () => requestExport(exportFormat, exportScale)}
+                                            disabled={generateExport || checkoutLoading || isCheckingPrintReadyAccess}
                                         >
-                                            {t('EXPORT_DownloadButton')}
+                                            {isCheckingPrintReadyAccess
+                                                ? t('Loading')
+                                                : selectedNeedsUnlock
+                                                ? t('EXPORT_UnlockPrintReady', { price: printReadyPrice })
+                                                : t('EXPORT_DownloadButton')}
                                         </ExportDownloadButton>
                                     </ExportFooter>
                                 </ExportContainer>

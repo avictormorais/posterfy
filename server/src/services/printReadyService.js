@@ -17,6 +17,8 @@ const ALBUM_ID_PATTERN = /^[A-Za-z0-9]{22}$/
 const FLOW_ID_PATTERN = /^[A-Za-z0-9-]{8,100}$/
 const PRINT_READY_FORMATS = new Set(['png', 'pdf'])
 const PRINT_READY_SCALES = new Set([1, 1.5])
+const EXPORT_FORMATS = new Set(['jpg', ...PRINT_READY_FORMATS])
+const EXPORT_SCALES = new Set([0.6, ...PRINT_READY_SCALES])
 
 let stripeClient
 let cachedOffer
@@ -44,7 +46,7 @@ export const isSpotifyAlbumId = (value) => typeof value === 'string' && ALBUM_ID
 export const getExportTier = (format, scale) => {
   const normalizedScale = Number(scale)
   if (format === 'jpg' && normalizedScale === 0.6) return 'free'
-  if (PRINT_READY_FORMATS.has(format) && PRINT_READY_SCALES.has(normalizedScale)) return 'print_ready'
+  if (EXPORT_FORMATS.has(format) && EXPORT_SCALES.has(normalizedScale)) return 'print_ready'
   return null
 }
 

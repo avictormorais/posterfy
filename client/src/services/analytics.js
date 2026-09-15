@@ -56,6 +56,8 @@ export const trackPosterDownload = (albumName, format = 'image', artistName = ''
   }
 };
 
+export const PRINT_READY_FLOW_VERSION = 'v2';
+
 const trackPrintReady = (eventName, details = {}) => {
   if (typeof window.gtag !== 'undefined') {
     window.gtag('event', eventName, {
@@ -66,7 +68,20 @@ const trackPrintReady = (eventName, details = {}) => {
 };
 
 export const trackPrintReadyView = (albumId, source = 'editor') => {
-  trackPrintReady('print_ready_view', { album_id: albumId, source });
+  trackPrintReady('export_options_view', {
+    album_id: albumId,
+    source,
+    print_ready_flow_version: PRINT_READY_FLOW_VERSION,
+  });
+};
+
+export const trackPrintReadyOptionSelected = (albumId, format, size) => {
+  trackPrintReady('print_ready_option_selected', {
+    album_id: albumId,
+    format,
+    size,
+    print_ready_flow_version: PRINT_READY_FLOW_VERSION,
+  });
 };
 
 export const trackPrintReadyAttempt = (albumId, format, resolution, source = 'editor') => {
@@ -82,10 +97,43 @@ export const trackPrintReadyLoginComplete = (albumId) => {
 };
 
 export const trackPrintReadyOfferView = (albumId) => {
-  trackPrintReady('print_ready_offer_view', { album_id: albumId });
+  trackPrintReady('print_ready_offer_view', {
+    album_id: albumId,
+    print_ready_flow_version: PRINT_READY_FLOW_VERSION,
+  });
+};
+
+export const trackPrintReadyUnlockClick = (albumId, format, size) => {
+  trackPrintReady('print_ready_unlock_click', {
+    album_id: albumId,
+    format,
+    size,
+    print_ready_flow_version: PRINT_READY_FLOW_VERSION,
+  });
+};
+
+export const trackPrintReadyModalView = (albumId) => {
+  trackPrintReady('print_ready_modal_view', {
+    album_id: albumId,
+    print_ready_flow_version: PRINT_READY_FLOW_VERSION,
+  });
+};
+
+export const trackPrintReadyModalClose = (albumId, method) => {
+  trackPrintReady('print_ready_modal_close', {
+    album_id: albumId,
+    method,
+    print_ready_flow_version: PRINT_READY_FLOW_VERSION,
+  });
 };
 
 export const trackPrintReadyBeginCheckout = (albumId, value, currency) => {
+  trackPrintReady('checkout_started', {
+    album_id: albumId,
+    value,
+    currency,
+    print_ready_flow_version: PRINT_READY_FLOW_VERSION,
+  });
   trackPrintReady('begin_checkout', { album_id: albumId, value, currency });
 };
 
@@ -105,7 +153,8 @@ export const trackPrintReadyPurchase = ({ paymentId, albumId, value, currency, p
       currency: currency?.toUpperCase(),
       album_id: albumId,
       purchase_number: purchaseNumber,
-      repeat_buyer: purchaseNumber > 1
+      repeat_buyer: purchaseNumber > 1,
+      print_ready_flow_version: PRINT_READY_FLOW_VERSION,
     });
   }
 };

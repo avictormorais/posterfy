@@ -82,6 +82,29 @@ test('keeps the same flow while checkout data is attached', () => {
   assert.equal(readPendingFlow(), null)
 })
 
+test('preserves every supported Print-Ready selection before login or checkout', () => {
+  const selections = [
+    ['png', 0.6],
+    ['pdf', 0.6],
+    ['jpg', 1],
+    ['jpg', 1.5],
+    ['png', 1],
+    ['pdf', 1.5]
+  ]
+
+  for (const [format, scale] of selections) {
+    const flow = savePendingFlow({
+      reason: 'checkout',
+      returnTo: '/',
+      editor,
+      action: { type: 'print_ready_export', format, scale }
+    })
+    assert.equal(flow.action.format, format)
+    assert.equal(flow.action.scale, scale)
+    assert.deepEqual(readPendingFlow(), flow)
+  }
+})
+
 test('both legacy and canonical poster paths resume at the final directory URL', () => {
   for (const path of ['/p/507f1f77bcf86cd799439011', '/p/507f1f77bcf86cd799439011/']) {
     const flow = savePendingFlow({ reason: 'login', returnTo: path, editor,
@@ -129,5 +152,12 @@ test('rejects expired, corrupt, unsafe, and unsupported flows', () => {
     returnTo: 'https://attacker.example',
     editor,
     action: { type: 'print_ready_export', format: 'jpg', scale: 2 }
+  }))
+
+  assert.throws(() => savePendingFlow({
+    reason: 'checkout',
+    returnTo: '/',
+    editor,
+    action: { type: 'print_ready_export', format: 'jpg', scale: 0.6 }
   }))
 })
