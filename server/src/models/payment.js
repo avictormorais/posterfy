@@ -55,6 +55,7 @@ const PaymentSchema = new mongoose.Schema({
   checkoutOpen: { type: Boolean, default: true },
   checkoutExpiresAt: { type: Date, default: null },
   fulfilledAt: { type: Date, default: null },
+  receiptEmailRequestedAt: { type: Date, default: null },
   lastStripeEventId: { type: String, default: '' },
   accountDeletedAt: { type: Date, default: null }
 }, { timestamps: true })

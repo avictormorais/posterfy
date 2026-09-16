@@ -7,6 +7,7 @@ import PrintUnlock from '../models/printUnlock.js'
 import PrintReadyAccountGrant from '../models/printReadyAccountGrant.js'
 import BadgeService from '../services/badgeService.js'
 import PrintReadyService from '../services/printReadyService.js'
+import * as SupportService from '../services/supportService.js'
 import { cacheGet, cacheSet } from '../utils/cache.js'
 import mongoose from 'mongoose'
 import { readFileSync } from 'fs'
@@ -103,6 +104,88 @@ const recalculateFavoriteMetrics = async (posterIds) => {
 }
 
 class AdminController {
+  async listSupportEmails(req, res) {
+    try {
+      res.json({ emails: await SupportService.listSupportEmails() })
+    } catch (error) {
+      console.error('Could not list support emails', { error: error.message })
+      res.status(error.status || 502).json({ error: 'Could not load support emails' })
+    }
+  }
+
+  async getSupportEmail(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      res.json({ email: await SupportService.getSupportEmail(req.params.emailId) })
+    } catch (error) {
+      console.error('Could not load support email', { emailId: req.params.emailId, error: error.message })
+      res.status(error.status || 502).json({ error: 'Could not load support email' })
+    }
+  }
+
+  async getSupportThread(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      res.json(await SupportService.getSupportThread(req.params.emailId, req.query.source))
+    } catch (error) {
+      console.error('Could not load support thread', { emailId: req.params.emailId, error: error.message })
+      res.status(error.status || 502).json({ error: 'Could not load support thread' })
+    }
+  }
+
+  async replyToSupportEmail(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      const result = await SupportService.replyToSupportEmail(req.params.emailId, req.body.message.trim())
+      res.json({ message: 'Reply sent', id: result.id })
+    } catch (error) {
+      console.error('Could not send support reply', { emailId: req.params.emailId, error: error.message })
+      res.status(error.status || 502).json({ error: 'Could not send support reply' })
+    }
+  }
+
+  async listSentEmails(req, res) {
+    try {
+      res.json({ emails: await SupportService.listSentEmails() })
+    } catch (error) {
+      console.error('Could not list sent emails', { error: error.message })
+      res.status(error.status || 502).json({ error: 'Could not load sent emails' })
+    }
+  }
+
+  async getSentEmail(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    try {
+      res.json({ email: await SupportService.getSentEmail(req.params.emailId) })
+    } catch (error) {
+      console.error('Could not load sent email', { emailId: req.params.emailId, error: error.message })
+      res.status(error.status || 502).json({ error: 'Could not load sent email' })
+    }
+  }
+
+  async sendSupportEmail(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
+    const { sender, to, subject, mode, message } = req.body
+    try {
+      const result = await SupportService.sendSupportEmail({
+        sender,
+        to: to.trim(),
+        subject: subject.trim(),
+        mode,
+        message: message.trim()
+      })
+      res.json({ message: 'Email sent', id: result.id })
+    } catch (error) {
+      console.error('Could not send email', { error: error.message })
+      res.status(error.status || 502).json({ error: 'Could not send email' })
+    }
+  }
+
   async commerceOverview(req, res) {
     try {
       const requestedPeriod = String(req.query.period || '30').toLowerCase()

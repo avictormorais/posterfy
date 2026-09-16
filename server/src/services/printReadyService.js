@@ -10,6 +10,7 @@ import PrintReadyAccountGrant from '../models/printReadyAccountGrant.js'
 import PosterService from './posterService.js'
 import User from '../models/user.js'
 import { normalizeAlbumMetadata } from '../utils/albumMetadata.js'
+import emailService from './emailService.js'
 
 const PRICE_CENTS = 199
 const OFFER_CACHE_MS = 5 * 60 * 1000
@@ -306,6 +307,41 @@ const verifyPaidSession = async (sessionId) => {
   return { payment, session }
 }
 
+export const requestPurchaseReceiptOnce = async (payment) => {
+  try {
+    const [user, unlock] = await Promise.all([
+      User.findById(payment.userId),
+      PrintUnlock.findOne({
+        userId: payment.userId,
+        'album.provider': 'spotify',
+        'album.providerAlbumId': payment.album.providerAlbumId,
+        active: true
+      })
+    ])
+    if (!user || !unlock || !payment.album.albumName || !user.email) return
+
+    const claim = await Payment.updateOne(
+      {
+        _id: payment._id,
+        paymentStatus: 'paid',
+        fulfilledAt: { $ne: null },
+        receiptEmailRequestedAt: null
+      },
+      { $set: { receiptEmailRequestedAt: new Date() } }
+    )
+    if (!claim.modifiedCount) return
+
+    await emailService.sendPurchaseReceiptEmail({
+      user,
+      albumTitle: payment.album.albumName,
+      amount: payment.amountTotal,
+      currency: payment.currency
+    })
+  } catch (error) {
+    console.error('Purchase receipt email failed', { paymentId: String(payment._id), error: error.message })
+  }
+}
+
 const fulfillSession = async (sessionId, eventId) => {
   const { payment, session } = await verifyPaidSession(sessionId)
   if (session.payment_status !== 'paid') return payment
@@ -351,6 +387,7 @@ const fulfillSession = async (sessionId, eventId) => {
       }
     }
   )
+  if (userExists) await requestPurchaseReceiptOnce(payment)
   return payment
 }
 

@@ -1,4 +1,14 @@
 import User from '../models/user.js'
+import emailService from './emailService.js'
+
+const requestWelcomeEmail = async (user) => {
+  if (!user.email || user.email.endsWith('@spotify.temp')) return
+  try {
+    await emailService.sendWelcomeEmail(user)
+  } catch (error) {
+    console.error('Welcome email failed', { userId: String(user._id), error: error.message })
+  }
+}
 
 class UserService {
   async generateUsername(name) {
@@ -52,6 +62,7 @@ class UserService {
     })
 
     await user.save()
+    await requestWelcomeEmail(user)
     return user
   }
 
@@ -84,6 +95,7 @@ class UserService {
     })
 
     await user.save()
+    await requestWelcomeEmail(user)
     return user
   }
 

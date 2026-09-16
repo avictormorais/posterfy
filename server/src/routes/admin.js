@@ -68,6 +68,26 @@ router.get('/health', AdminController.health)
  */
 router.get('/logs', AdminController.listLogs)
 
+router.get('/support', AdminController.listSupportEmails)
+router.get('/support/sent', AdminController.listSentEmails)
+router.get('/support/thread/:emailId', [
+  param('emailId').isUUID().withMessage('Invalid email ID'),
+  query('source').optional().isIn(['received', 'sent']).withMessage('Invalid source')
+], AdminController.getSupportThread)
+router.get('/support/sent/:emailId', [param('emailId').isUUID().withMessage('Invalid email ID')], AdminController.getSentEmail)
+router.post('/support/send', [
+  body('sender').isIn(['support', 'welcome', 'receipts']).withMessage('Invalid sender'),
+  body('to').isEmail().isLength({ max: 254 }).withMessage('Invalid recipient email'),
+  body('subject').isString().trim().isLength({ min: 1, max: 200 }).withMessage('Subject is required'),
+  body('mode').isIn(['text', 'html']).withMessage('Invalid message format'),
+  body('message').isString().trim().isLength({ min: 1, max: 20000 }).withMessage('Message is required')
+], AdminController.sendSupportEmail)
+router.get('/support/:emailId', [param('emailId').isUUID().withMessage('Invalid email ID')], AdminController.getSupportEmail)
+router.post('/support/:emailId/reply', [
+  param('emailId').isUUID().withMessage('Invalid email ID'),
+  body('message').isString().trim().isLength({ min: 1, max: 10000 }).withMessage('Reply must be 1–10000 characters')
+], AdminController.replyToSupportEmail)
+
 router.get('/commerce/overview', AdminController.commerceOverview)
 router.get('/payments', AdminController.listPayments)
 router.get('/unlocks', AdminController.listPrintUnlocks)

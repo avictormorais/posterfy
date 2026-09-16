@@ -8,6 +8,18 @@ const admin = {
 
   getOverview: () => apiService.request('/api/admin/overview'),
   getHealth: () => apiService.request('/api/admin/health'),
+  getSupportEmails: () => apiService.request('/api/admin/support'),
+  getSupportEmail: (id) => apiService.request(`/api/admin/support/${encodeURIComponent(id)}`),
+  getSupportThread: (id, source = 'received') => apiService.request(`/api/admin/support/thread/${encodeURIComponent(id)}?source=${source}`),
+  getSentEmails: () => apiService.request('/api/admin/support/sent'),
+  getSentEmail: (id) => apiService.request(`/api/admin/support/sent/${encodeURIComponent(id)}`),
+  sendSupportEmail: (data) => apiService.request('/api/admin/support/send', {
+    method: 'POST', body: JSON.stringify(data)
+  }),
+  replyToSupportEmail: (id, message) => apiService.request(`/api/admin/support/${encodeURIComponent(id)}/reply`, {
+    method: 'POST',
+    body: JSON.stringify({ message })
+  }),
 
   getUsers: (params = {}) => {
     return apiService.request(admin.buildAdminPath('/api/admin/users', params))
