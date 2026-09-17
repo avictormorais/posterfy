@@ -1,4 +1,4 @@
-const SUPPORT_EMAIL = 'victormm.dev@gmail.com'
+const SUPPORT_EMAIL = 'support@posterfy.pics'
 
 const section = (id, title, paragraphs, bullets = []) => ({ id, title, paragraphs, bullets })
 

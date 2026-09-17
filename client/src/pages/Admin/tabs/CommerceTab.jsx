@@ -302,7 +302,7 @@ export default function CommerceTab() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [grantOpen, setGrantOpen] = useState(false)
-  const [grant, setGrant] = useState({ userId: '', albumId: '', reason: '' })
+  const [grant, setGrant] = useState({ user: '', albumId: '', reason: '' })
   const [revoke, setRevoke] = useState(null)
   const [accountAccessOpen, setAccountAccessOpen] = useState(false)
   const [accountAccess, setAccountAccess] = useState({ user: '', reason: '' })
@@ -373,7 +373,7 @@ export default function CommerceTab() {
     try {
       await adminService.grantPrintUnlock(grant)
       setGrantOpen(false)
-      setGrant({ userId: '', albumId: '', reason: '' })
+      setGrant({ user: '', albumId: '', reason: '' })
       if (view === 'unlocks') {
         await fetchItems(1)
       } else {
@@ -774,7 +774,7 @@ export default function CommerceTab() {
         <ModalOverlay onMouseDown={event => event.target === event.currentTarget && setGrantOpen(false)}>
           <ModalBox role="dialog" aria-modal="true" aria-labelledby="grant-unlock-title">
             <h3 id="grant-unlock-title">{t('ADMIN_GrantUnlock')}</h3>
-            <ModalInput placeholder={t('ADMIN_UserId')} value={grant.userId} onChange={event => setGrant({ ...grant, userId: event.target.value })} />
+            <ModalInput placeholder={t('ADMIN_UserLookup')} value={grant.user} onChange={event => setGrant({ ...grant, user: event.target.value })} />
             <ModalInput placeholder={t('ADMIN_AlbumId')} value={grant.albumId} onChange={event => setGrant({ ...grant, albumId: event.target.value })} />
             <ModalTextarea placeholder={t('ADMIN_Reason')} value={grant.reason} onChange={event => setGrant({ ...grant, reason: event.target.value })} />
             <ModalActions>

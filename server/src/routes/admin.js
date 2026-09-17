@@ -93,8 +93,8 @@ router.get('/payments', AdminController.listPayments)
 router.get('/unlocks', AdminController.listPrintUnlocks)
 router.get('/print-ready-account-access', AdminController.listPrintReadyAccountGrants)
 router.post('/print-ready-account-access', [
-  body('user').optional().isString().trim().isLength({ min: 2, max: 254 }).withMessage('User email, username, or ID is required'),
-  body('userId').optional().isString().trim().isLength({ min: 2, max: 254 }).withMessage('User email, username, or ID is required'),
+  body('user').optional().isString().trim().isLength({ min: 1, max: 254 }).withMessage('User email, username, or ID is required'),
+  body('userId').optional().isString().trim().isLength({ min: 1, max: 254 }).withMessage('User email, username, or ID is required'),
   body('reason').isString().trim().isLength({ min: 3, max: 500 }).withMessage('Reason is required')
 ], AdminController.grantPrintReadyAccountAccess)
 router.patch('/print-ready-account-access/:id/revoke', [
@@ -106,7 +106,8 @@ router.patch('/print-ready-account-access/:id/restore', [
   body('reason').isString().trim().isLength({ min: 3, max: 500 }).withMessage('Reason is required')
 ], AdminController.restorePrintReadyAccountAccess)
 router.post('/unlocks', [
-  body('userId').isMongoId().withMessage('Invalid user ID'),
+  body('user').optional().isString().trim().isLength({ min: 1, max: 254 }).withMessage('User email, username, or ID is required'),
+  body('userId').optional().isString().trim().isLength({ min: 1, max: 254 }).withMessage('User email, username, or ID is required'),
   body('albumId').matches(/^[A-Za-z0-9]{22}$/).withMessage('Invalid album ID'),
   body('reason').isString().trim().isLength({ min: 3, max: 500 }).withMessage('Reason is required')
 ], AdminController.grantPrintUnlock)

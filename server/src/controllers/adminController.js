@@ -39,16 +39,18 @@ const commerceUserIds = async (search) => {
   return users.map(user => user._id)
 }
 
-const findCommerceUser = async (identifier) => {
+export const findCommerceUser = async (identifier) => {
   const value = String(identifier || '').trim()
   if (!value) return null
+  const normalized = value.startsWith('@') ? value.slice(1) : value
+  if (!normalized) return null
 
-  const filter = mongoose.Types.ObjectId.isValid(value)
-    ? { _id: value }
+  const filter = mongoose.Types.ObjectId.isValid(normalized)
+    ? { _id: normalized }
     : {
         $or: [
-          { email: value.toLowerCase() },
-          { username: value.toLowerCase() }
+          { email: normalized.toLowerCase() },
+          { username: normalized.toLowerCase() }
         ]
       }
 
@@ -561,9 +563,10 @@ class AdminController {
     const errors = validationResult(req)
     if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
     try {
-      const { userId, albumId, reason } = req.body
-      const targetUser = await User.findOne({ _id: userId, status: 'active' }).select('_id')
+      const { albumId, reason } = req.body
+      const targetUser = await findCommerceUser(req.body.user || req.body.userId)
       if (!targetUser) return res.status(404).json({ error: 'User not found' })
+      const userId = targetUser._id
 
       const album = await PrintReadyService.resolveAlbum({ albumId, userId: req.user.id, isAdmin: true })
       const unlock = await PrintUnlock.findOneAndUpdate(
