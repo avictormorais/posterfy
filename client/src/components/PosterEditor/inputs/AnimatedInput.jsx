@@ -7,6 +7,10 @@ const Container = styled.div`
     transform: translateY(${props => props.visible ? '0' : '20px'});
     transition: opacity 0.5s ease, transform 0.5s ease;
     transition-delay: ${props => props.animationDelay || 0}ms;
+
+    @media (max-width: 900px) {
+        min-width: 0;
+    }
 `;
 
 function AnimatedInput({ children, animationDelay = 0, ...props }) {

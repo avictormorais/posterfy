@@ -7,6 +7,11 @@ const Container = styled.div`
     flex-direction: column;
     margin: 10px;
     cursor: pointer;
+
+    @media (max-width: 900px) {
+        min-width: 0;
+        margin: 8px 0;
+    }
 `;
 
 const Title = styled.p`
@@ -26,6 +31,12 @@ const InputBox = styled.div`
     overflow: hidden;
     display: flex;
     align-items: center;
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+        box-sizing: border-box;
+        align-items: center;
+    }
 `;
 
 const Input = styled.input`
@@ -58,6 +69,11 @@ const Text = styled.p`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    @media (max-width: 768px) {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
 `;
 
 function ClickInput({ title, text, onChange, accept = "image/png, image/jpg, image/jpeg", icon: Icon }) {

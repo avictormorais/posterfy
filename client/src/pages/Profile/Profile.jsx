@@ -116,6 +116,10 @@ const Username = styled.p`
     font-weight: 600;
     opacity: 0.6;
     margin: 4px 0 0;
+
+    @media (max-width: 700px) {
+        overflow-wrap: anywhere;
+    }
 `;
 
 const BioText = styled.p`
@@ -190,6 +194,10 @@ const Btn = styled.button`
     &:hover{border-color:var(--AccentColor);
     transform:translateY(-1px);}
     svg, svg * { color: inherit; stroke: currentColor; }
+
+    @media (max-width: 700px) {
+        min-height: 44px;
+    }
 `;
 
 const TabRow = styled.div`
@@ -198,7 +206,7 @@ const TabRow = styled.div`
     width:100%;
     border-bottom:1px solid var(--borderColor);
     overflow-x:auto;
-    @media(max-width:700px){gap:12px;}
+    @media(max-width:700px){gap: 0 16px; flex-wrap: wrap; overflow: visible;}
 `;
 
 const Tab = styled.button`
@@ -217,6 +225,10 @@ const Tab = styled.button`
     &:hover{color:var(--AccentColor);}span{font-size:11px;
     font-weight:400;
     color:var(--textSecondary);}
+
+    @media (max-width: 700px) {
+        min-height: 44px;
+    }
 `;
 
 const TabContent = styled.div`
@@ -395,6 +407,10 @@ const ToolRow = styled.div`
 const FilterBtnGroup = styled.div`
     display: flex;
     gap: 6px;
+
+    @media (max-width: 700px) {
+        flex-wrap: wrap;
+    }
 `;
 
 const FilterBtn = styled.button`
@@ -412,6 +428,10 @@ const FilterBtn = styled.button`
         border-color: var(--AccentColor);
         color: ${({ $active }) => $active ? 'var(--backgroundColor)' : 'var(--AccentColor)'};
     }
+
+    @media (max-width: 700px) {
+        min-height: 44px;
+    }
 `;
 
 const SearchInput = styled.input`
@@ -425,6 +445,10 @@ const SearchInput = styled.input`
     padding:12px 0;
     outline:none;
     &::placeholder{color:var(--textSecondary);}
+
+    @media (max-width: 700px) {
+        font-size: 16px;
+    }
 `;
 
 const EmptyState = styled.div`
@@ -500,6 +524,10 @@ const LoadMoreBtn = styled.button`
 
     &:hover:not(:disabled) { background-color: var(--AccentColor); }
     &:disabled { background-color: #666; cursor: not-allowed; }
+
+    @media (max-width: 700px) {
+        min-height: 44px;
+    }
 `;
 
 const Summary = styled.div`
@@ -515,12 +543,22 @@ const SearchBox = styled.label`
     border: 1px solid var(--borderColor); border-radius: 24px;
     &:focus-within { border-color: var(--AccentColor); }
     @media (max-width: 700px) { max-width: none; width: 100%; margin: 0; }
+
+    @media (max-width: 700px) {
+        box-sizing: border-box;
+        min-width: 0;
+    }
 `;
 const MoreMenu = styled.details`
     position: relative;
     summary { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--borderColor); border-radius: 50%; list-style: none; cursor: pointer; }
     summary::-webkit-details-marker { display: none; }
     button { position: absolute; top: 50px; right: 0; z-index: 5; white-space: nowrap; padding: 14px 22px; border: 1px solid var(--borderColor); border-radius: 12px; background: var(--backgroundColor); box-shadow: 0 8px 24px var(--shadowColor); cursor: pointer; }
+
+    @media (max-width: 700px) {
+        summary { width: 44px; height: 44px; }
+        button { right: auto; left: 0; max-width: calc(100vw - 40px); white-space: normal; }
+    }
 `;
 const Skeleton = styled.div`
     aspect-ratio: 2480 / 3508; border-radius: 15px; background: var(--glassBackground);

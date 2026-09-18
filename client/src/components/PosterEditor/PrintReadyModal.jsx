@@ -26,7 +26,7 @@ const Dialog = styled.div`
   background: var(--backgroundColor); color: var(--textColor);
   box-shadow: 0 24px 70px rgba(0, 0, 0, .32);
   animation: ${dialogIn} 190ms cubic-bezier(.2, .75, .3, 1);
-  @media (max-width: 560px) { max-height: calc(100dvh - 20px); padding: 24px 20px; border-radius: 16px; }
+  @media (max-width: 560px) { max-height: calc(100dvh - 32px); padding: 24px 20px; border-radius: 16px; }
   @media (prefers-reduced-motion: reduce) { animation: none; }
 `
 const Header = styled.header`display: flex; align-items: flex-start; gap: 16px;`
@@ -44,6 +44,12 @@ const CloseButton = styled.button`
   &:hover:not(:disabled) { border-color: var(--textSecondary); }
   &:focus-visible { outline: 2px solid var(--AccentColor); outline-offset: 2px; }
   &:disabled { cursor: not-allowed; opacity: .45; }
+
+    @media (max-width: 768px) {
+        flex-basis: 44px;
+        width: 44px;
+        height: 44px;
+    }
 `
 const Benefits = styled.ul`
   display: grid; gap: 11px; margin: 28px 0; padding: 0; list-style: none;

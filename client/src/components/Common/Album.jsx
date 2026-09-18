@@ -60,6 +60,16 @@ const Container = styled.div`
         width: 94%;
     }
 
+
+    @media (max-width: 650px) {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        display: grid;
+        grid-template-columns: 100px minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        &:hover { transform: none; }
+    }
 `
 
 const Cover = styled.img`
@@ -75,6 +85,13 @@ const Cover = styled.img`
         width: 100px;
         height: 100px;
         min-height: unset;
+    }
+
+    @media (max-width: 650px) {
+        flex-shrink: 0;
+        object-fit: cover;
+        grid-row: 1 / 3;
+        align-self: center;
     }
 `
 
@@ -99,6 +116,19 @@ const Title = styled.h3`
         max-width: unset;
         font-size: 0.9em;
     }
+
+    @media (max-width: 650px) {
+        width: auto;
+        max-width: 100%;
+        margin: 0;
+        padding-right: 0;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
 `
 
 const Artist = styled.p`
@@ -119,6 +149,14 @@ const Artist = styled.p`
         max-width: unset;
         font-size: 0.9em;
     }
+
+    @media (max-width: 650px) {
+        width: auto;
+        max-width: 100%;
+        margin: 4px 0 0;
+        padding-right: 0;
+        opacity: 0.65;
+    }
 `
 
 const AlbumInfos = styled.div`
@@ -133,6 +171,17 @@ const AlbumInfos = styled.div`
         margin-left: 10px;
         justify-content: center;
     }
+
+    @media (max-width: 650px) {
+        min-width: 0;
+        flex: 1;
+        width: auto;
+        margin-left: 0;
+        grid-column: 2;
+        height: auto;
+        padding: 10px 10px 0;
+        justify-content: flex-end;
+    }
 `;
 
 const HorizontalDiv = styled.div`
@@ -142,6 +191,17 @@ const HorizontalDiv = styled.div`
     margin-block: 5px;
     margin-left: 8px;
     margin-bottom: 8px;
+
+    @media (max-width: 650px) {
+        width: auto;
+        flex-wrap: wrap;
+        grid-column: 2;
+        align-items: center;
+        align-self: start;
+        gap: 6px;
+        min-width: 0;
+        margin: 6px 10px 10px;
+    }
 `;
 
 const SubText = styled.p`
@@ -160,6 +220,12 @@ const SubText = styled.p`
         max-width: unset;
         font-size: 0.9em;
     }
+
+    @media (max-width: 650px) {
+        font-size: 0.75rem;
+        margin-top: 0;
+        white-space: normal;
+    }
 `;
 
 const Dot = styled.p`
@@ -171,6 +237,11 @@ const Dot = styled.p`
     font-size: 0.3em;
     margin-top: 8px;
     opacity: 0.5;
+
+    @media (max-width: 650px) {
+        margin: 0;
+        width: auto;
+    }
 `;
 
 function Album({ title, artist, cover, tracksNum, year, id, onClick, animationDelay = 0 }) {

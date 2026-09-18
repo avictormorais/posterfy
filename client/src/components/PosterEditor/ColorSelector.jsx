@@ -8,6 +8,10 @@ import { useRef } from "react";
 import { trackColorSelection } from "../../services/analytics";
 
 const Container = styled.div`
+    position: absolute;
+    top: ${props => props.$position?.top}px;
+    left: ${props => props.$position?.left}px;
+    z-index: 2147483647;
     background-color: var(--backgroundColor);
     padding: 10px;
     border-radius: 10px;
@@ -15,6 +19,20 @@ const Container = styled.div`
     flex-direction: column;
     overflow: hidden;
     border: 3px solid var(--borderColor);
+
+    @media (max-width: 768px) {
+        position: fixed;
+        top: max(16px, env(safe-area-inset-top));
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(340px, calc(100% - 32px));
+        max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        box-sizing: border-box;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 16px;
+        > * { flex-shrink: 0; }
+    }
 `
 
 const ColorPicker = styled(HexColorPicker)`
@@ -54,6 +72,12 @@ const ColorPicker = styled(HexColorPicker)`
             transform: translateY(0);
         }
     }
+
+    @media (max-width: 768px) {
+        width: 100%;
+        .react-colorful__hue { height: 24px; }
+        .react-colorful__pointer { width: 24px; height: 24px; }
+    }
 `
 
 const HorizontalDiv = styled.div`
@@ -76,6 +100,11 @@ const HorizontalDiv = styled.div`
     &:nth-of-type(2) { animation-delay: 0.1s; }
     &:nth-of-type(3) { animation-delay: 0.2s; }
     &:nth-of-type(4) { animation-delay: 0.3s; }
+
+    @media (max-width: 768px) {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
 `
 
 const PredefinedColor = styled.div`
@@ -115,6 +144,11 @@ const PredefinedColor = styled.div`
     &:nth-child(6) { animation-delay: 0.35s; }
     &:nth-child(7) { animation-delay: 0.4s; }
     &:nth-child(8) { animation-delay: 0.45s; }
+
+    @media (max-width: 768px) {
+        width: 32px;
+        height: 32px;
+    }
 `
 
 const HexText = styled.p`
@@ -143,6 +177,14 @@ const Input = styled.input`
     &::placeholder {
         color: var(--textSecondary);
     }
+
+    @media (max-width: 768px) {
+        width: 0;
+        min-width: 0;
+        flex: 1;
+        min-height: 44px;
+        box-sizing: border-box;
+    }
 `
 
 const Dropper = styled(FaEyeDropper)`
@@ -164,6 +206,14 @@ const Dropper = styled(FaEyeDropper)`
     &:active {
         transform: scale(0.95) rotate(5deg);
     }
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: 44px;
+        height: 44px;
+        padding: 12px;
+        flex-shrink: 0;
+    }
 `
 
 const Palette = styled(FaPalette)`
@@ -184,6 +234,14 @@ const Palette = styled(FaPalette)`
     
     &:active {
         transform: scale(0.95) rotate(-5deg);
+    }
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: 44px;
+        height: 44px;
+        padding: 12px;
+        flex-shrink: 0;
     }
 `
 
@@ -207,6 +265,14 @@ const Cancel = styled(RiCloseLargeLine)`
     &:active {
         transform: scale(0.95) rotate(90deg);
     }
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: 44px;
+        height: 44px;
+        padding: 12px;
+        flex-shrink: 0;
+    }
 `
 
 const Check = styled(FaCheck)`
@@ -227,6 +293,14 @@ const Check = styled(FaCheck)`
     
     &:active {
         transform: scale(0.95);
+    }
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: 44px;
+        height: 44px;
+        padding: 12px;
+        flex-shrink: 0;
     }
 `
 
@@ -312,7 +386,7 @@ function ColorSelector({ DefaultColor, image, predefinedColors, position, onDone
     }
 
     return (
-        <Container style={{ position: 'absolute', top: position.top, left: position.left, zIndex: 2147483647 }}>
+        <Container $position={position} data-lenis-prevent>
             <canvas ref={canvasRef} style={{ display: 'none' }} />
             {toggleDropper ? (
                 <Image

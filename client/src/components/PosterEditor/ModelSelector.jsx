@@ -55,6 +55,10 @@ const BackButton = styled.button`
     outline-offset: 4px;
     border-radius: 6px;
   }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+    }
 `;
 
 const Header = styled.header`
@@ -129,6 +133,13 @@ const ModelCard = styled.button`
     min-height: 0;
     padding: 22px;
   }
+
+    @media (max-width: 768px) {
+        align-items: center;
+        text-align: center;
+        padding: 24px 22px;
+        &:hover { transform: none; }
+    }
 `;
 
 const PreviewWrap = styled.div`
@@ -148,7 +159,15 @@ const PreviewWrap = styled.div`
 
   @media (max-width: 700px) {
     width: 132px;
-    margin-inline: 0;
+    margin-inline: auto;
+  }
+
+    @media (max-width: 1050px) {
+        max-width: 100%;
+    }
+
+  @media (max-width: 768px) {
+    background-color: transparent;
   }
 `;
 

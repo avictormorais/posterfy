@@ -219,6 +219,14 @@ const Modal = styled.div`
       backdrop-filter: blur(12px);
     }
   }
+
+    @media (max-width: 768px) {
+        width: 100%;
+        height: 100dvh;
+        box-sizing: border-box;
+        padding: 16px;
+        overflow-y: auto;
+    }
 `
 
 const ModalContent = styled.div`
@@ -254,6 +262,15 @@ const ModalContent = styled.div`
       max-width: 60%;
     }
   }
+
+    @media (max-width: 768px) {
+        width: 100%;
+        max-width: 100%;
+        max-height: none;
+        flex-direction: column;
+        gap: 12px;
+        img { max-width: 100%; max-height: calc(100dvh - 120px); }
+    }
 `
 
 const ModalControls = styled.div`
@@ -270,6 +287,15 @@ const ModalControls = styled.div`
     right: 15px;
     gap: 10px;
   }
+
+    @media (max-width: 768px) {
+        position: static;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        width: 100%;
+        order: -1;
+    }
 `
 
 const CloseButton = styled.button`
@@ -303,6 +329,12 @@ const CloseButton = styled.button`
     height: 40px;
     font-size: 1.2em;
   }
+
+    @media (max-width: 768px) {
+        position: static;
+        width: 44px;
+        height: 44px;
+    }
 `
 
 const RecreateButton = styled.button`
@@ -351,6 +383,11 @@ const RecreateButton = styled.button`
       font-size: 1em;
     }
   }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+        margin: 0;
+    }
 `
 
 const AlbumCollection = ({ onRecreate }) => {

@@ -5,6 +5,11 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
+
+    @media (max-width: 900px) {
+        min-width: 0;
+        margin: 8px 0;
+    }
 `;
 
 const Title = styled.p`
@@ -21,6 +26,15 @@ const Input = styled.input`
     padding: 5px;
     border-radius: 7px;
     outline: none;
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+        min-height: 44px;
+        padding: 10px;
+        font-size: 16px;
+    }
 `;
 
 function NormalInput({ title, value, onChange }) {

@@ -38,6 +38,12 @@ const Controls = styled.div`
 
 
     @media (max-width: 768px) { padding-inline: 5%; }
+
+    @media (max-width: 768px) {
+        width: 90%;
+        padding-inline: 0;
+        margin-top: 24px;
+    }
 `;
 
 const FilterRow = styled.div`
@@ -63,6 +69,11 @@ const FilterTab = styled.button`
     &:hover {
         border-color: var(--AccentColor);
         color: ${({ $active }) => ($active ? 'var(--backgroundColor)' : 'var(--AccentColor)')};
+    }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+        padding: 8px 14px;
     }
 `;
 
@@ -103,6 +114,10 @@ const SearchInput = styled.input`
     width: 100%;
     color: var(--textColor);
     min-width: 0;
+
+    @media (max-width: 768px) {
+        font-size: 16px;
+    }
 `;
 
 const ClearBtn = styled.button`
@@ -120,6 +135,13 @@ const ClearBtn = styled.button`
     transition: opacity 0.5s;
 
     &:hover { opacity: 1; }
+
+    @media (max-width: 768px) {
+        width: 44px;
+        height: 44px;
+        justify-content: center;
+        margin-inline: 0;
+    }
 `;
 
 const Grid = styled.div`
@@ -179,6 +201,11 @@ const ErrorText = styled.p`
     color: var(--textColor);
     text-align: center;
     max-width: 340px;
+
+    @media (max-width: 768px) {
+        padding-inline: 20px;
+        overflow-wrap: anywhere;
+    }
 `;
 
 const SearchLabel = styled.p`
@@ -208,6 +235,10 @@ const LoadMoreBtn = styled.button`
     }
 
     &:disabled { background-color: #666; cursor: not-allowed; }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+    }
 `;
 
 const FILTERS = [

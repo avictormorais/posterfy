@@ -37,6 +37,13 @@ export const SearchInput = styled.input`
     width: 100%;
     font-size: 0.82em;
   }
+
+    @media (max-width: 640px) {
+        box-sizing: border-box;
+        min-width: 0;
+        min-height: 44px;
+        font-size: 16px;
+    }
 `
 
 export const FilterRow = styled.div`
@@ -62,6 +69,10 @@ export const FilterButton = styled.button`
     padding: 5px 10px;
     font-size: 0.72em;
   }
+
+    @media (max-width: 640px) {
+        min-height: 44px;
+    }
 `
 
 export const Table = styled.table`
@@ -112,6 +123,10 @@ export const ActionButton = styled.button`
 
   &:hover { opacity: 0.7; }
   &:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    @media (max-width: 640px) {
+        min-height: 44px;
+    }
 `
 
 export const Badge = styled.span`
@@ -157,6 +172,10 @@ export const CardGrid = styled.div`
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 10px;
   }
+
+    @media (max-width: 480px) {
+        grid-template-columns: minmax(0, 1fr);
+    }
 `
 
 export const CardLabel = styled.p`
@@ -185,6 +204,10 @@ export const LoadMoreButton = styled.button`
   cursor: pointer;
 
   &:hover { background: var(--glassBackground); }
+
+    @media (max-width: 640px) {
+        min-height: 44px;
+    }
 `
 
 export const EmptyState = styled.p`
@@ -205,6 +228,10 @@ export const TableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   border-radius: 10px;
   border: 1px solid var(--borderColor);
+
+    @media (max-width: 900px) {
+        max-width: 100%;
+    }
 `
 
 export const ModalOverlay = styled.div`
@@ -224,6 +251,16 @@ export const ModalBox = styled.div`
   padding: 24px;
   width: 400px;
   max-width: 90vw;
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: min(520px, calc(100vw - 32px));
+        max-width: calc(100vw - 32px);
+        max-height: calc(100dvh - 32px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 20px;
+    }
 `
 
 export const ModalTitle = styled.h3`
@@ -245,6 +282,11 @@ export const ModalInput = styled.input`
   box-sizing: border-box;
 
   &:focus { border-color: var(--AccentColor); }
+
+    @media (max-width: 768px) {
+        font-size: 16px;
+        min-height: 44px;
+    }
 `
 
 export const ModalTextarea = styled.textarea`
@@ -263,6 +305,11 @@ export const ModalTextarea = styled.textarea`
   font-family: inherit;
 
   &:focus { border-color: var(--AccentColor); }
+
+    @media (max-width: 768px) {
+        font-size: 16px;
+        min-height: 44px;
+    }
 `
 
 export const ModalSelect = styled.select`
@@ -279,6 +326,11 @@ export const ModalSelect = styled.select`
   cursor: pointer;
 
   &:focus { border-color: var(--AccentColor); }
+
+    @media (max-width: 768px) {
+        font-size: 16px;
+        min-height: 44px;
+    }
 `
 
 export const ModalActions = styled.div`
@@ -286,6 +338,11 @@ export const ModalActions = styled.div`
   gap: 8px;
   justify-content: flex-end;
   margin-top: 8px;
+
+    @media (max-width: 768px) {
+        flex-wrap: wrap;
+        > button { flex: 1 1 120px; }
+    }
 `
 
 export const ModalButton = styled.button`
@@ -299,6 +356,10 @@ export const ModalButton = styled.button`
   cursor: pointer;
 
   &:hover { opacity: 0.8; }
+
+    @media (max-width: 640px) {
+        min-height: 44px;
+    }
 `
 export const BulkBar = styled.div`
   display: flex;
@@ -330,4 +391,8 @@ export const BulkSelect = styled.select`
   outline: none;
   cursor: pointer;
   &:focus { border-color: var(--AccentColor); }
+
+    @media (max-width: 640px) {
+        min-height: 44px;
+    }
 `

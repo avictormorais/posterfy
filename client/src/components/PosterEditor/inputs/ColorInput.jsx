@@ -6,6 +6,11 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
+
+    @media (max-width: 900px) {
+        min-width: 0;
+        margin: 8px 0;
+    }
 `;
 
 const Title = styled.p`
@@ -25,6 +30,12 @@ const ValueDiv = styled.div`
     display: flex;
     flex-direction: row;
     cursor: pointer;
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+        box-sizing: border-box;
+        align-items: center;
+    }
 `;
 
 const ColorPreview = styled.div`

@@ -30,6 +30,11 @@ const SearchIcon = styled(FaSearch)`
     font-size: 1.35em;
     opacity: .25;
     margin-inline: 15px;
+
+    @media (max-width: 768px) {
+        flex-shrink: 0;
+        margin-inline: 12px;
+    }
 `
 const SendIcon = styled(IoSend)`
     font-size: 1.35em;
@@ -40,6 +45,15 @@ const SendIcon = styled(IoSend)`
 
     &:hover, &:focus{
         opacity: 1 !important;
+    }
+
+    @media (max-width: 768px) {
+        flex-shrink: 0;
+        box-sizing: border-box;
+        width: 44px;
+        height: 44px;
+        padding: 11px;
+        margin-inline: 0;
     }
 `
 const Spanbar = styled.span`
@@ -59,6 +73,12 @@ const Input = styled.input`
     outline: none;
     opacity: 0.77;
     width: 100%;
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        font-size: 16px;
+        margin-left: 10px;
+    }
 `
 
 function Searchbar({ onSearch, value = '' }) {

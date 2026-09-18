@@ -24,6 +24,11 @@ const Container = styled.div`
         flex-direction: column;
         width: 89%;
     }
+
+    @media (max-width: 650px) {
+        overflow-x: visible;
+        align-items: stretch;
+    }
 `;
 
 const LoadMoreButton = styled.button`
@@ -53,6 +58,10 @@ const LoadMoreButton = styled.button`
     @media (max-width: 650px) {
         width: 89%;
     }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+    }
 `;
 
 const EmptyContainer = styled.div`
@@ -70,6 +79,11 @@ const EmptyText = styled.p`
     color: var(--textColor);
     margin: 0;
     margin-top: 20px;
+
+    @media (max-width: 768px) {
+        text-align: center;
+        padding-inline: 20px;
+    }
 `;
 
 const PaginationContainer = styled.div`
@@ -83,6 +97,10 @@ const PaginationContainer = styled.div`
     transform: translateY(${props => props.$visible ? '0' : '10px'});
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
                 transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+
+    @media (max-width: 768px) {
+        width: 90%;
+    }
 `;
 
 function Grid({ query, onclick }) {

@@ -5,6 +5,11 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
+
+    @media (max-width: 900px) {
+        min-width: 0;
+        margin: 8px 0;
+    }
 `
 
 const InputTitle = styled.input`
@@ -16,6 +21,12 @@ const InputTitle = styled.input`
     margin-left: 5px;
     margin-bottom: 5px;
     opacity: 0.5;
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        min-height: 44px;
+        font-size: 16px;
+    }
 `
 
 const Input = styled.input`
@@ -25,6 +36,15 @@ const Input = styled.input`
     padding: 5px;
     border-radius: 7px;
     outline: none;
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+        min-height: 44px;
+        padding: 10px;
+        font-size: 16px;
+    }
 `
 
 function DoubleInput({ title, value, onChangeTitle, onChangeDate }){

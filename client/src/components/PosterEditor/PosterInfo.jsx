@@ -45,6 +45,11 @@ const AuthorArea = styled.div`
     cursor: pointer;
     transition: opacity 0.15s;
     &:hover { opacity: 0.75; }
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        max-width: 100%;
+    }
 `;
 
 const AvatarWrap = styled.div`
@@ -72,6 +77,11 @@ const AuthorMeta = styled.div`
     display: flex;
     flex-direction: column;
     gap: 2px;
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        max-width: 100%;
+    }
 `;
 
 const AuthorName = styled.span`
@@ -81,12 +91,21 @@ const AuthorName = styled.span`
     display: flex;
     align-items: center;
     gap: 6px;
+
+    @media (max-width: 768px) {
+        flex-wrap: wrap;
+        overflow-wrap: anywhere;
+    }
 `;
 
 const AuthorSub = styled.span`
     font-size: 0.78em;
     color: var(--textColor);
     opacity: 0.45;
+
+    @media (max-width: 768px) {
+        overflow-wrap: anywhere;
+    }
 `;
 
 const RightArea = styled.div`
@@ -131,6 +150,10 @@ const LikeButton = styled.button`
     &:disabled {
         opacity: 0.45;
         cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
     }
 `;
 
@@ -224,6 +247,10 @@ const CommomButton = styled.button`
         display: inline-flex;
         align-items: center;
         justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
     }
 `;
 

@@ -62,6 +62,14 @@ const Container = styled.div`
   text-align: center;
   background-color: ${props => props.playing ? '#d12741' : 'var(--backgroundColor)'};
   color: ${props => props.playing ? '#edcd6b' : 'var(--TextColor)'};
+
+    @media (max-width: 768px) {
+        height: auto;
+        min-height: 100dvh;
+        box-sizing: border-box;
+        padding: 32px 20px 120px;
+        > svg { max-width: 100%; height: auto; }
+    }
 `;
 
 const ErrorMessage = styled.h1`
@@ -92,6 +100,11 @@ const BackButton = styled.button`
   &:hover {
     background-color: var(--AccentColor);
   }
+
+    @media (max-width: 768px) {
+        width: min(300px, 100%);
+        min-height: 44px;
+    }
 `;
 
 const Kanye = styled.img`
@@ -113,6 +126,12 @@ const Kanye = styled.img`
       transform: rotate(-25deg) translate(0, 0);
     }
   }
+
+    @media (max-width: 768px) {
+        width: 120px;
+        right: -24px;
+        bottom: -30px;
+    }
 `;
 
 const ContainerSteps = styled.div`

@@ -164,6 +164,11 @@ body {
   width: 100%;
 }
 
+/* Let a 320px viewport also accommodate a non-overlay scrollbar. */
+@media (max-width: 768px) {
+  body { min-width: 0; }
+}
+
 /* Native scrollbars: standard styling, with a fallback for older WebKit/Blink. */
 html { scrollbar-gutter: stable; }
 * {

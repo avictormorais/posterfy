@@ -5,6 +5,11 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
+
+    @media (max-width: 900px) {
+        min-width: 0;
+        margin: 8px 0;
+    }
 `;
 
 const Title = styled.p`
@@ -24,6 +29,12 @@ const InputBox = styled.div`
     overflow: hidden;
     display: flex;
     align-items: center;
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+        box-sizing: border-box;
+        align-items: center;
+    }
 `;
 
 const Input = styled.input`
@@ -57,6 +68,12 @@ const Input = styled.input`
     &:hover {
         border-color: var(--AccentColor);
         opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
     }
 `;
 

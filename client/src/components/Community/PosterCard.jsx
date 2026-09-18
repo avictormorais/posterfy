@@ -50,6 +50,10 @@ const Card = styled.div`
         transform: translateY(-2px);
         box-shadow: 0 0px 15px ${({ $bg }) => $bg ? $bg + '99' : 'rgba(0,0,0,0.2)'};
     }
+
+    @media (max-width: 768px) {
+        min-width: 0;
+    }
 `;
 
 const ThumbnailWrapper = styled.div`
@@ -131,6 +135,10 @@ const Overlay = styled.div`
     ${Card}:hover & {
         opacity: 1;
     }
+
+    @media (max-width: 768px) {
+        opacity: 1;
+    }
 `;
 
 const FavoriteBtn = styled.button`
@@ -162,6 +170,12 @@ const FavoriteBtn = styled.button`
     }
 
     &:active { transform: scale(0.95); }
+
+    @media (max-width: 768px) {
+        opacity: 1;
+        width: 44px;
+        height: 44px;
+    }
 `;
 
 const PinBtn = styled.button`
@@ -190,6 +204,12 @@ const PinBtn = styled.button`
 
     &:hover { transform: scale(1.15); }
     &:active { transform: scale(0.95); }
+
+    @media (max-width: 768px) {
+        opacity: 1;
+        width: 44px;
+        height: 44px;
+    }
 `;
 
 const OverlayBtn = styled.button`
@@ -210,6 +230,10 @@ const OverlayBtn = styled.button`
     &:hover {
         background: rgba(255, 255, 255, 0.26);
     }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+    }
 `;
 
 const Info = styled.div`
@@ -229,6 +253,15 @@ const AlbumName = styled(Link)`
     text-overflow: ellipsis;
     color: ${({ $color }) => $color || 'var(--textColor)'};
     text-decoration: none;
+
+    @media (max-width: 768px) {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
 `;
 
 const ArtistName = styled.p`
@@ -239,6 +272,15 @@ const ArtistName = styled.p`
     overflow: hidden;
     text-overflow: ellipsis;
     color: ${({ $color }) => $color || 'var(--textColor)'};
+
+    @media (max-width: 768px) {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
 `;
 
 const Divider = styled.hr`
@@ -312,6 +354,10 @@ const StatsRow = styled.div`
     display: flex;
     gap: 12px;
     margin-top: 5px;
+
+    @media (max-width: 768px) {
+        flex-wrap: wrap;
+    }
 `;
 
 const Stat = styled.span`
@@ -353,6 +399,10 @@ const CardActionBtn = styled.button`
     &:hover {
         transform: scale(1.025);
         background-color: ${({ $accentColor }) => $accentColor || '#fff'};;
+    }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
     }
 `;
 
@@ -414,6 +464,10 @@ const CtxItem = styled.button`
     }
 
     svg { font-size: 1.1em; flex-shrink: 0; opacity: 0.7; }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+    }
 `;
 
 const CtxDivider = styled.div`

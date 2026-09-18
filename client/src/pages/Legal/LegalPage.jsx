@@ -9,6 +9,11 @@ const Page = styled.main`
   width: min(920px, calc(100% - 40px));
   margin: 120px auto 64px;
   color: var(--textColor);
+
+    @media (max-width: 768px) {
+        margin-top: 100px;
+        overflow-wrap: anywhere;
+    }
 `
 
 const Header = styled.header`
@@ -49,6 +54,10 @@ const Meta = styled.dl`
   div { display: flex; gap: 7px; }
   dt { color: var(--textSecondary); }
   dd { margin: 0; font-weight: 700; }
+
+    @media (max-width: 768px) {
+        div { flex-wrap: wrap; }
+    }
 `
 
 const Contents = styled.nav`
@@ -79,6 +88,10 @@ const Contents = styled.nav`
   @media (max-width: 620px) {
     ol { grid-template-columns: 1fr; }
   }
+
+    @media (max-width: 768px) {
+        a { display: inline-block; padding-block: 8px; }
+    }
 `
 
 const Section = styled.section`

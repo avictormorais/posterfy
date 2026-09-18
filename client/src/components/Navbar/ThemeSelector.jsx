@@ -33,6 +33,10 @@ const ThemeButton = styled.button`
   &:active {
     transform: scale(0.95);
   }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+    }
 `
 
 const ThemeWrapper = styled.div`
@@ -94,6 +98,11 @@ const DropdownMenu = styled.div`
       transform: translateY(-10px) scale(0.95);
     }
   }
+
+    @media (max-width: 768px) {
+        max-height: calc(100dvh - 110px);
+        overflow-y: auto;
+    }
 `
 
 const DropdownContent = styled.div`
@@ -143,6 +152,10 @@ const ThemeOption = styled.button`
   &:nth-child(4) { animation-delay: 0.2s; }
   &:nth-child(5) { animation-delay: 0.25s; }
   &:nth-child(6) { animation-delay: 0.3s; }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+    }
 `
 
 const ThemePreview = styled.div`

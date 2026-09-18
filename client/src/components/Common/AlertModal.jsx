@@ -60,6 +60,11 @@ const Background = styled.div`
     backdrop-filter: blur(10px);
     z-index: 1000;
     animation: ${props => props.isClosing ? blurFadeOut : blurFadeIn} 0.3s ease-in-out forwards;
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+    }
 `;
 
 const Container = styled.div`
@@ -91,6 +96,18 @@ const Container = styled.div`
     @media (max-width: 450px) {
         width: 80%;
     }
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: min(520px, 100%);
+        min-width: 0;
+        max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 16px;
+        justify-content: flex-start;
+        > * { flex-shrink: 0; }
+    }
 `;
 
 const TitleContainer = styled.div`
@@ -100,6 +117,14 @@ const TitleContainer = styled.div`
     align-items: start;
     flex-direction: row;
     width: 96%;
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0;
+        min-width: 0;
+        align-items: center;
+    }
 `;
 
 const Title = styled.h2`
@@ -108,6 +133,12 @@ const Title = styled.h2`
     font-weight: bolder;
     margin-right: auto;
     margin-top: 1px;
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        font-size: 1.1rem;
+        overflow-wrap: anywhere;
+    }
 `;
 
 const CloseIcon = styled(IoClose)`
@@ -136,6 +167,12 @@ const Button = styled.div`
             fill: var(--backgroundColor);
         }
     }
+
+    @media (max-width: 768px) {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+    }
 `;
 
 const Paragraph = styled.p`
@@ -145,6 +182,12 @@ const Paragraph = styled.p`
     font-weight: bolder;
     opacity: 0.7;
     text-align: justify;
+
+    @media (max-width: 768px) {
+        text-align: left;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
 `;
 
 const Image = styled.img`
@@ -197,6 +240,12 @@ const ButtonsContainer = styled.div`
     width: 98%;
     margin-top: 20px;
     gap: 10px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        flex-wrap: wrap;
+        > button { min-height: 44px; flex: 1 1 120px; }
+    }
 `;
 
 const PostImageText = styled(Paragraph)`

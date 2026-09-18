@@ -12,12 +12,20 @@ const QuestionDiv = styled.div`
     cursor: pointer;
     opacity: 0.5;
     margin-top: 15px;
+
+    @media (max-width: 768px) {
+        min-height: 48px;
+    }
 `
 
 const Arrow = styled(IoIosArrowForward)`
     font-size: 2em;
     transition: transform 0.3s ease;
     transform: ${({ showA }) => (showA ? 'rotate(90deg)' : 'rotate(0deg)')};
+
+    @media (max-width: 768px) {
+        flex-shrink: 0;
+    }
 `
 
 const Q = styled.h2`
@@ -35,6 +43,10 @@ const AnswerDiv = styled.div`
     max-height: ${({ showA }) => (showA ? '400px' : '0')};
     overflow: hidden;
     transition: max-height 1s ease;
+
+    @media (max-width: 768px) {
+        max-height: ${({ showA }) => showA ? 'none' : '0'};
+    }
 `
 
 const A = styled.p`
@@ -43,6 +55,10 @@ const A = styled.p`
     opacity: 0.5;
     margin-block: 10px;
     margin-inline: 10px;
+
+    @media (max-width: 768px) {
+        line-height: 1.6;
+    }
 `
 
 function Question({ q, a }){

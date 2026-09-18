@@ -21,6 +21,14 @@ const Container = styled.div`
     align-items: center;
     height: 100dvh;
     flex-direction: column;
+
+    @media (max-width: 750px) {
+        height: auto;
+        min-height: 100dvh;
+        box-sizing: border-box;
+        justify-content: center;
+        padding: 112px 24px max(32px, env(safe-area-inset-bottom));
+    }
 `;
 
 const Content = styled.div`
@@ -30,6 +38,13 @@ const Content = styled.div`
     justify-content: center;
     gap: 30px;
     padding-top: 20px;
+
+    @media (max-width: 750px) {
+        width: 100%;
+        max-width: 450px;
+        padding-top: 0;
+        gap: 24px;
+    }
 `;
 
 const TextWelcome = styled.h1`
@@ -41,6 +56,12 @@ const TextWelcome = styled.h1`
     text-align: left;
     margin-bottom: 10px;
     max-width: 450px;
+
+    @media (max-width: 750px) {
+        font-size: clamp(1.65rem, 6vw, 2rem);
+        line-height: 1.2;
+        text-align: center;
+    }
 `;
 
 const Paragraph = styled.p`
@@ -51,6 +72,11 @@ const Paragraph = styled.p`
     max-width: 450px;
     width: 100%;
     text-align: left;
+
+    @media (max-width: 750px) {
+        line-height: 1.6;
+        text-align: center;
+    }
 `;
 
 const ButtonContainer = styled.div`
@@ -61,6 +87,11 @@ const ButtonContainer = styled.div`
     margin-top: 20px;
     justify-content: center;
     align-items: center;
+
+    @media (max-width: 750px) {
+        margin-top: 28px;
+        gap: 18px;
+    }
 `;
 
 const LoginButton = styled.button`
@@ -89,12 +120,23 @@ const LoginButton = styled.button`
         min-width: 0px;
         width: 90%;
     }
+
+    @media (max-width: 750px) {
+        width: 100%;
+        min-width: 0;
+        min-height: 48px;
+        box-sizing: border-box;
+    }
 `;
 
 const ButtonText = styled.p`
     font-size: 1em;
     font-weight: bolder;
     min-width: 200px;
+
+    @media (max-width: 750px) {
+        min-width: 0;
+    }
 `;
 
 const LegalNotice = styled.p`
@@ -114,12 +156,21 @@ const LegalNotice = styled.p`
 const GoogleIcon = styled(FaGoogle)`
     width: 20px;
     height: 20px;
+
+    @media (max-width: 750px) {
+        flex-shrink: 0;
+    }
 `;
 
 const Row = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+
+    @media (max-width: 750px) {
+        width: 100%;
+        min-width: 0;
+    }
 `;
 
 const Column = styled.div`
@@ -127,6 +178,11 @@ const Column = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    @media (max-width: 750px) {
+        width: 100%;
+        min-width: 0;
+    }
 `;
 
 const IconContainer = styled.div`
@@ -160,6 +216,9 @@ const MobileIconContainer = styled.div`
 
     @media (max-width: 750px) {
         display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
+        svg { width: 72px; height: auto; }
     }
 `;
 

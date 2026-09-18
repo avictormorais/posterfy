@@ -75,6 +75,10 @@ const BrandName = styled.span`
   @media (max-width: 400px) {
     display: none;
   }
+
+    @media (max-width: 480px) {
+        display: none;
+    }
 `
 
 const DomainText = styled.span`
@@ -110,6 +114,11 @@ const SelectorContainer = styled.div`
   gap: 12px;
   margin-left: auto;
   padding-left: 20px;
+
+    @media (max-width: 768px) {
+        gap: 8px;
+        padding-left: 12px;
+    }
 `;
 
 const ProfileButton = styled.button`
@@ -137,6 +146,12 @@ const ProfileButton = styled.button`
   &:active {
     transform: scale(0.95);
   }
+
+    @media (max-width: 768px) {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+    }
 `
 
 const ProfileWrapper = styled.div`
@@ -186,6 +201,12 @@ const AdminButton = styled.button`
   &:active {
     transform: scale(0.95);
   }
+
+    @media (max-width: 768px) {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+    }
 `;
 
 const AdminWrapper = styled.div`

@@ -17,6 +17,10 @@ const Questions = styled.div`
     margin-inline: auto;
     display: flex;
     flex-direction: column;
+
+    @media (max-width: 768px) {
+        width: 90%;
+    }
 `;
 
 function Faq() {

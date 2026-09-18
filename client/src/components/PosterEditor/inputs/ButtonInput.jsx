@@ -6,6 +6,11 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
+
+    @media (max-width: 900px) {
+        min-width: 0;
+        margin: 8px 0;
+    }
 `;
 
 const Title = styled.p`
@@ -30,6 +35,12 @@ const ValueDiv = styled.div`
     
     &:hover {
         opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+        box-sizing: border-box;
+        align-items: center;
     }
 `;
 

@@ -96,6 +96,11 @@ const LinkGroup = styled.nav`
     color: var(--AccentColor);
     opacity: 1;
   }
+
+    @media (max-width: 768px) {
+        gap: 4px;
+        a { display: flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
+    }
 `
 
 const Bottom = styled.div`

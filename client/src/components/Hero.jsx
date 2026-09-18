@@ -24,6 +24,11 @@ const HeroSection = styled.section`
     padding: 100px 20px 60px;
     box-sizing: border-box;
     background-color: var(--backgroundColor);
+
+    @media (max-width: 768px) {
+        min-height: auto;
+        padding: 96px 20px 40px;
+    }
 `
 
 const ContentWrapper = styled.div`
@@ -47,6 +52,12 @@ const ContentWrapper = styled.div`
         gap: 40px;
         padding: 0 20px;
     }
+
+    @media (max-width: 768px) {
+        padding: 0;
+        gap: 24px;
+        grid-template-columns: minmax(0, 1fr);
+    }
 `
 
 const LeftSection = styled.div`
@@ -59,6 +70,10 @@ const LeftSection = styled.div`
         align-items: center;
         text-align: center;
     }
+
+    @media (max-width: 768px) {
+        gap: 24px;
+    }
 `
 
 const TitleBlock = styled.div`
@@ -69,6 +84,10 @@ const TitleBlock = styled.div`
     transform: translateY(${props => props.visible ? '0' : '40px'});
     transition: opacity 0.8s ease, transform 0.8s ease;
     transition-delay: 100ms;
+
+    @media (max-width: 768px) {
+        gap: 14px;
+    }
 `
 
 const Title = styled.h1`
@@ -102,6 +121,11 @@ const Description = styled.p`
     margin: 0;
     font-weight: 400;
     letter-spacing: 0.3px;
+
+    @media (max-width: 768px) {
+        font-size: 1rem;
+        line-height: 1.65;
+    }
 `
 
 const CTAWrapper = styled.div`
@@ -171,6 +195,12 @@ const PrimaryButton = styled.button`
     @media (max-width: 480px) {
         padding: 11px 28px;
         font-size: 0.95em;
+    }
+
+    @media (max-width: 768px) {
+        min-height: 48px;
+        justify-content: center;
+        max-width: 100%;
     }
 `
 
@@ -245,6 +275,10 @@ const ScrollIndicator = styled(MdOutlineKeyboardDoubleArrowDown)`
     @keyframes bounce {
         0%, 100% { transform: translateX(-50%) translateY(0); }
         50% { transform: translateX(-50%) translateY(-12px); }
+    }
+
+    @media (max-width: 768px) {
+        display: none;
     }
 `
 

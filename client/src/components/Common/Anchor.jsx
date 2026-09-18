@@ -15,6 +15,12 @@ const Anch1 = styled.h2`
     font-weight: bolder;
     color: var(--AccentColor);
     margin-inline: auto;
+
+    @media (max-width: 768px) {
+        width: 90%;
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        overflow-wrap: anywhere;
+    }
 `;
 
 const Anch2 = styled.h3`
@@ -25,6 +31,11 @@ const Anch2 = styled.h3`
     width: 80%;
     margin-inline: auto;
     margin-block: 10px;
+
+    @media (max-width: 768px) {
+        width: 90%;
+        font-size: 1.1rem;
+    }
 `;
 
 function Anchor({ text, type }) {

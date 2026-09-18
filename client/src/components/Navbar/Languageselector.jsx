@@ -36,6 +36,10 @@ const FlagButton = styled.button`
   &:active {
     transform: scale(0.95);
   }
+
+    @media (max-width: 768px) {
+        height: 44px;
+    }
 `
 
 const FlagWrapper = styled.div`
@@ -100,6 +104,13 @@ const DropdownMenu = styled.div`
       transform: translateY(-10px) scale(0.95);
     }
   }
+
+    @media (max-width: 768px) {
+        max-height: calc(100dvh - 110px);
+        overflow-y: auto;
+        max-width: calc(100vw - 32px);
+        box-sizing: border-box;
+    }
 `
 
 const DropdownContent = styled.div`
@@ -147,6 +158,10 @@ const LanguageOption = styled.button`
   &:nth-child(2) { animation-delay: 0.1s; }
   &:nth-child(3) { animation-delay: 0.15s; }
   &:nth-child(4) { animation-delay: 0.2s; }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+    }
 `
 
 const LanguageName = styled.span`

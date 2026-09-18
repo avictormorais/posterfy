@@ -47,6 +47,12 @@ const Controls = styled.div`
     margin-inline: auto;
 
     @media (max-width: 768px) { width: 90%; padding-inline: 0; }
+
+    @media (max-width: 768px) {
+        width: 90%;
+        padding-inline: 0;
+        margin-top: 24px;
+    }
 `;
 
 const SearchBar = styled.div`
@@ -90,6 +96,10 @@ const SearchInput = styled.input`
     min-width: 0;
 
     @media (max-width: 600px) { font-size: 1em; margin-left: 10px; }
+
+    @media (max-width: 768px) {
+        font-size: 16px;
+    }
 `;
 
 const ClearBtn = styled.button`
@@ -107,6 +117,13 @@ const ClearBtn = styled.button`
     transition: opacity 0.5s;
 
     &:hover { opacity: 1; }
+
+    @media (max-width: 768px) {
+        width: 44px;
+        height: 44px;
+        justify-content: center;
+        margin-inline: 0;
+    }
 `;
 
 const Grid = styled.div`
@@ -165,6 +182,11 @@ const ErrorText = styled.p`
     color: var(--textColor);
     text-align: center;
     max-width: 340px;
+
+    @media (max-width: 768px) {
+        padding-inline: 20px;
+        overflow-wrap: anywhere;
+    }
 `;
 
 const LoadMoreBtn = styled.button`
@@ -184,6 +206,10 @@ const LoadMoreBtn = styled.button`
 
     &:hover:not(:disabled) { background-color: var(--AccentColor); }
     &:disabled { background-color: #666; cursor: not-allowed; }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+    }
 `;
 
 const ProfileCardWrap = styled.div`
@@ -303,6 +329,15 @@ const CardName = styled.p`
     letter-spacing: -0.01em;
 
     @media (max-width: 600px) { font-size: 0.82em; }
+
+    @media (max-width: 600px) {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
 `;
 
 const CardUsername = styled.p`
@@ -314,6 +349,10 @@ const CardUsername = styled.p`
     letter-spacing: 0.01em;
 
     @media (max-width: 600px) { font-size: 0.72em; }
+
+    @media (max-width: 600px) {
+        overflow-wrap: anywhere;
+    }
 `;
 
 const RANK_COLORS = {

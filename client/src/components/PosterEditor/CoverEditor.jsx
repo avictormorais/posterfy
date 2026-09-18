@@ -6,6 +6,10 @@ import { RiCloseLargeLine } from "react-icons/ri";
 import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
+    position: absolute;
+    top: ${props => props.$position?.top}px;
+    left: ${props => props.$position?.left}px;
+    z-index: 2147483647;
     background-color: var(--backgroundColor);
     padding: 10px;
     border-radius: 10px;
@@ -14,6 +18,20 @@ const Container = styled.div`
     overflow: hidden;
     border: 3px solid var(--borderColor);
     gap: 15px;
+
+    @media (max-width: 768px) {
+        position: fixed;
+        top: max(16px, env(safe-area-inset-top));
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(340px, calc(100% - 32px));
+        max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        box-sizing: border-box;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 16px;
+        > * { flex-shrink: 0; }
+    }
 `
 
 const Canvas = styled.canvas`
@@ -107,6 +125,13 @@ const ValueInput = styled.input`
         -webkit-appearance: none;
         margin: 0;
     }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+        box-sizing: border-box;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
 `
 
 const Slider = styled.input`
@@ -158,6 +183,13 @@ const Slider = styled.input`
             transform: scale(1.1);
         }
     }
+
+    @media (max-width: 768px) {
+        height: 24px;
+        box-sizing: border-box;
+        &::-webkit-slider-thumb { width: 24px; height: 24px; }
+        &::-moz-range-thumb { width: 24px; height: 24px; }
+    }
 `
 
 const ButtonsContainer = styled.div`
@@ -200,6 +232,14 @@ const Cancel = styled(RiCloseLargeLine)`
     &:active {
         transform: scale(0.95) rotate(90deg);
     }
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: 44px;
+        height: 44px;
+        padding: 12px;
+        flex-shrink: 0;
+    }
 `
 
 const Check = styled(FaCheck)`
@@ -220,6 +260,14 @@ const Check = styled(FaCheck)`
     
     &:active {
         transform: scale(0.95);
+    }
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: 44px;
+        height: 44px;
+        padding: 12px;
+        flex-shrink: 0;
     }
 `
 
@@ -357,7 +405,7 @@ function CoverEditor({ position, albumCoverUrl, initialZoom = 0, initialHorizont
     };
 
     return (
-        <Container style={{ position: 'absolute', top: position.top, left: position.left, zIndex: 2147483647 }}>
+        <Container $position={position} data-lenis-prevent>
             <Canvas ref={canvasRef} width={200} height={200} />
             
             <SliderContainer>

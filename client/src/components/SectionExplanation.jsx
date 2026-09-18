@@ -11,6 +11,11 @@ const Container = styled.div`
     @media (max-width: 365px) {
         display: none;
     }
+
+    @media (max-width: 768px) {
+        display: flex;
+        width: 90%;
+    }
 `
 
 const Title = styled.h3`
@@ -18,6 +23,12 @@ const Title = styled.h3`
     font-size: 3em;
     font-weight: bolder;
     white-space: pre-line;
+
+    @media (max-width: 768px) {
+        font-size: clamp(1.6rem, 6vw, 2.2rem);
+        line-height: 1.2;
+        margin-bottom: 16px;
+    }
 `
 
 const Paragraph = styled.p`

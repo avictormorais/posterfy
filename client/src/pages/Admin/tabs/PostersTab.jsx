@@ -28,6 +28,10 @@ const PosterPreviewLayout = styled.div`
   gap: 20px;
   margin-bottom: 16px;
   align-items: flex-start;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
 `
 
 const PosterCanvasWrap = styled.div`
@@ -69,6 +73,12 @@ const MetaGrid = styled.div`
   font-size: 0.82em;
   flex: 1;
   align-content: start;
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        width: 100%;
+        grid-template-columns: auto minmax(0, 1fr);
+    }
 `
 
 const MetaLabel = styled.span`

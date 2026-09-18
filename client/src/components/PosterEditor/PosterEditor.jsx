@@ -245,6 +245,10 @@ function localizeDate(str, lang) {
 const Container = styled.div`
     width: 80%;
     margin-inline: auto;
+
+    @media (max-width: 900px) {
+        width: 90%;
+    }
 `
 
 const DivBack = styled.div`
@@ -254,6 +258,11 @@ const DivBack = styled.div`
     width: min-content;
     margin-top: 25px;
     cursor: pointer;
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+        width: fit-content;
+    }
 `
 
 
@@ -327,6 +336,14 @@ const PosterPreview = styled.img`
         height: 448px;
         margin: 0;
     }
+
+    @media (max-width: 900px) {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        margin: 0;
+        object-fit: contain;
+    }
 `
 
 const PreviewContainer = styled.div`
@@ -350,6 +367,13 @@ const PreviewContainer = styled.div`
         margin: 0;
         margin-bottom: 30px;
         margin-top: 20px;
+    }
+
+    @media (max-width: 900px) {
+        width: min(388px, 100%);
+        height: auto;
+        aspect-ratio: 2480 / 3508;
+        margin: 12px 0 24px;
     }
 `
 
@@ -405,6 +429,10 @@ const EditorColumn = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+
+    @media (max-width: 900px) {
+        min-width: 0;
+    }
 `
 
 const TabsContainer = styled.div`
@@ -414,6 +442,19 @@ const TabsContainer = styled.div`
     width: 90%;
     margin-inline: auto;
     position: relative;
+
+    @media (max-width: 900px) {
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: auto;
+        padding-bottom: 3px;
+        overscroll-behavior-x: contain;
+    }
+
+    @media (max-width: 768px) {
+        flex-wrap: wrap;
+        overflow: visible;
+    }
 `
 
 const TabSlider = styled.div`
@@ -427,6 +468,10 @@ const TabSlider = styled.div`
     left: ${props => props.left || 0}px;
     width: ${props => props.width || 0}px;
     border-radius: 5px;
+
+    @media (max-width: 768px) {
+        display: none;
+    }
 `
 
 const Tab = styled.div`
@@ -458,6 +503,20 @@ const Tab = styled.div`
         opacity: 0.5;
         pointer-events: none;
     }
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        min-height: 48px;
+        padding: 12px;
+        align-items: center;
+        font-size: 0.875rem;
+        flex: 1 1 auto;
+        justify-content: center;
+        &::after {
+            background: ${({ $active }) => $active ? 'var(--AccentColor)' : 'var(--borderColor)'};
+            opacity: 1;
+        }
+    }
 `
 
 const EditorSettings = styled.div`
@@ -473,6 +532,13 @@ const EditorSettings = styled.div`
 
     @media (max-width: 530px) {
         padding: 0;
+    }
+
+    @media (max-width: 900px) {
+        box-sizing: border-box;
+        padding: 0;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+        gap: 8px;
     }
 `
 
@@ -495,6 +561,12 @@ const TracklistContainer = styled.div`
     @media (max-width: 600px) {
         padding: 0px;
     }
+
+    @media (max-width: 900px) {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0;
+    }
 `
 
 const TracklistButtonsContainer = styled.div`
@@ -508,6 +580,12 @@ const TracklistButtonsContainer = styled.div`
         justify-content: space-between;
         gap: 0;
         width: 106%;
+    }
+
+    @media (max-width: 900px) {
+        width: 100%;
+        gap: 8px;
+        justify-content: flex-start;
     }
 `
 
@@ -527,6 +605,11 @@ const TracklistButton = styled.button`
     
     &:active {
         transform: scale(0.95);
+    }
+
+    @media (max-width: 768px) {
+        min-height: 44px;
+        padding: 8px 14px;
     }
 `
 
@@ -555,6 +638,12 @@ const TracklistTextarea = styled.textarea`
 
     @media (max-width: 530px) {
         padding: 10px;
+    }
+
+    @media (max-width: 900px) {
+        box-sizing: border-box;
+        font-size: 16px;
+        min-height: 240px;
     }
 `
 
@@ -588,6 +677,11 @@ const TracklistListContainer = styled.div`
         gap: 6px;
         max-height: 400px;
     }
+
+    @media (max-width: 900px) {
+        box-sizing: border-box;
+        padding-right: 0;
+    }
 `
 
 const TracklistItem = styled.div`
@@ -615,6 +709,11 @@ const TracklistItem = styled.div`
         gap: 8px;
         padding: 8px 10px;
     }
+
+    @media (max-width: 768px) {
+        gap: 6px;
+        padding: 4px;
+    }
 `
 
 const TrackItemIndex = styled.div`
@@ -640,6 +739,11 @@ const TrackItemIndex = styled.div`
         font-size: 0.95em;
         min-width: 30px;
     }
+
+    @media (max-width: 768px) {
+        min-width: 24px;
+        width: 24px;
+    }
 `
 
 const TrackItemName = styled.input`
@@ -664,6 +768,14 @@ const TrackItemName = styled.input`
 
     @media (max-width: 530px) {
         font-size: 0.85em;
+    }
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        width: 0;
+        min-height: 44px;
+        box-sizing: border-box;
+        font-size: 16px;
     }
 `
 
@@ -694,6 +806,15 @@ const TrackItemDuration = styled.input`
         font-size: 0.75em;
         min-width: 38px;
     }
+
+    @media (max-width: 768px) {
+        width: 56px;
+        min-width: 0;
+        flex: 0 0 56px;
+        min-height: 44px;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
 `
 
 const TracklistItemAdd = styled.div`
@@ -720,6 +841,11 @@ const TracklistItemAdd = styled.div`
         gap: 8px;
         padding: 8px 10px;
     }
+
+    @media (max-width: 768px) {
+        gap: 6px;
+        padding: 4px;
+    }
 `
 
 const TracklistItemAddBtn = styled.button`
@@ -745,6 +871,12 @@ const TracklistItemAddBtn = styled.button`
     @media (max-width: 530px) {
         width: 24px;
         height: 24px;
+    }
+
+    @media (max-width: 768px) {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
     }
 `
 
@@ -781,6 +913,12 @@ const TrackItemDeleteBtn = styled.button`
     @media (max-width: 530px) {
         width: 24px;
         height: 24px;
+    }
+
+    @media (max-width: 768px) {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
     }
 `
 
@@ -855,6 +993,11 @@ const DivButtons = styled.div`
     @media (max-width: 500px) {
         flex-direction: column;
     }
+
+    @media (max-width: 900px) {
+        margin-left: 0;
+        flex-wrap: wrap;
+    }
 `
 
 const ButtonDiv = styled.div`
@@ -890,6 +1033,14 @@ const ButtonDiv = styled.div`
 
     @media (max-width: 500px) {
         width: 100%;
+    }
+
+    @media (max-width: 900px) {
+        box-sizing: border-box;
+        min-height: 44px;
+        max-width: 100%;
+        white-space: normal;
+        text-align: center;
     }
 `
 
@@ -941,6 +1092,11 @@ const FakePoster = styled.div`
         width: 95%;
         margin-right: 0;
     }
+
+    @media (max-width: 900px) {
+        width: 100%;
+        margin: 0;
+    }
 `
 
 const ShortcutsInfo = styled.p`
@@ -955,6 +1111,10 @@ const ShortcutsInfo = styled.p`
     @media (max-width: 700px) {
         text-align: center;
         margin-left: 0px;
+    }
+
+    @media (max-width: 768px) {
+        display: none;
     }
 `
 
@@ -976,6 +1136,12 @@ const ExportContainer = styled.div`
 
     @media (max-width: 530px) {
         padding: 20px;
+    }
+
+    @media (max-width: 900px) {
+        width: 100%;
+        padding: 16px 0;
+        gap: 20px;
     }
 `;
 
@@ -1044,6 +1210,11 @@ const FormatTabButton = styled.button`
         outline: 2px solid var(--AccentColor);
         outline-offset: 3px;
         border-radius: 4px;
+    }
+
+    @media (max-width: 768px) {
+        padding-inline: 6px;
+        min-height: 60px;
     }
 `;
 
@@ -1384,6 +1555,14 @@ const EmptyStateContainer = styled.div`
     width: 100%;
     height: 70%;
     padding: 1rem;
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        height: auto;
+        padding: 16px 0;
+        text-align: center;
+        > svg { max-width: 100%; height: auto; }
+    }
 `;
 
 const TextLogin = styled.p`

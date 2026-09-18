@@ -65,6 +65,11 @@ const Background = styled.div`
     backdrop-filter: blur(10px);
     z-index: 1000;
     animation: ${props => props.isClosing ? blurFadeOut : blurFadeIn} 0.3s ease-in-out forwards;
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+    }
 `;
 
 const Container = styled.div`
@@ -83,6 +88,18 @@ const Container = styled.div`
     @media (max-width: 800px) {
         width: 80%;
     }
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: min(520px, 100%);
+        min-width: 0;
+        max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 16px;
+        justify-content: flex-start;
+        > * { flex-shrink: 0; }
+    }
 `;
 
 const TitleContainer = styled.div`
@@ -92,6 +109,14 @@ const TitleContainer = styled.div`
     align-items: start;
     flex-direction: row;
     width: 96%;
+
+    @media (max-width: 768px) {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0;
+        min-width: 0;
+        align-items: center;
+    }
 `;
 
 const Title = styled.h2`
@@ -99,6 +124,12 @@ const Title = styled.h2`
     margin-left: 10px;
     font-weight: bolder;
     margin-right: auto;
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        font-size: 1.1rem;
+        overflow-wrap: anywhere;
+    }
 `;
 
 const CloseIcon = styled(IoClose)`
@@ -122,6 +153,12 @@ const Button = styled.div`
 
     &:hover {
         background-color: var(--AccentColor);
+    }
+
+    @media (max-width: 768px) {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
     }
 `;
 
@@ -179,6 +216,12 @@ const Input = styled.input`
         color: var(--textColor);
         opacity: 0.5;
     }
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
 `;
 
 const Textarea = styled.textarea`
@@ -202,6 +245,12 @@ const Textarea = styled.textarea`
     &::placeholder {
         color: var(--textColor);
         opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+        min-width: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
 `;
 
@@ -227,6 +276,12 @@ const ButtonsContainer = styled.div`
     width: 98%;
     margin-top: 20px;
     gap: 10px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        flex-wrap: wrap;
+        > button { min-height: 44px; flex: 1 1 120px; }
+    }
 `;
 
 const OutlinedButton = styled.button`
@@ -327,6 +382,10 @@ const ToggleSwitch = styled.button`
     &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+        &::before { content: ""; position: absolute; inset: -10px 0; }
     }
 `;
 

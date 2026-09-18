@@ -38,6 +38,10 @@ const Container = styled.div`
     margin-top: 60px;
     min-height: calc(100dvh - 60px);
   }
+
+    @media (max-width: 640px) {
+        margin-top: 72px;
+    }
 `
 
 const Sidebar = styled.nav`
@@ -67,6 +71,10 @@ const Sidebar = styled.nav`
     border-bottom: 1px solid var(--borderColor);
     overflow-x: auto;
   }
+
+    @media (max-width: 640px) {
+        top: 72px;
+    }
 `
 
 const SidebarHeader = styled.div`
@@ -199,6 +207,11 @@ const TabButton = styled.button`
       border-bottom: 2px solid var(--AccentColor);
     `}
   }
+
+    @media (max-width: 640px) {
+        min-width: 48px;
+        min-height: 48px;
+    }
 `
 
 const TabLabel = styled.span`
@@ -249,6 +262,11 @@ const Main = styled.main`
     padding: 16px 12px;
     min-height: auto;
   }
+
+    @media (max-width: 900px) {
+        min-width: 0;
+        box-sizing: border-box;
+    }
 `
 
 export default function Admin() {

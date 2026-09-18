@@ -36,6 +36,10 @@ const Grid = styled.div`
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
+
+    @media (max-width: 480px) {
+        grid-template-columns: minmax(0, 1fr);
+    }
 `
 
 const StatCard = styled.div`
@@ -64,6 +68,10 @@ const StatValue = styled.span`
   font-size: 1.7em;
   font-weight: 800;
   line-height: 1.2;
+
+    @media (max-width: 900px) {
+        overflow-wrap: anywhere;
+    }
 `
 
 const HighlightRow = styled.div`
