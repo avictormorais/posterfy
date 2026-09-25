@@ -55,6 +55,15 @@ class PrintReadyController {
     }
   }
 
+  async purchases(req, res) {
+    try {
+      res.set('Cache-Control', 'no-store')
+      res.json(await PrintReadyService.getPurchases(req.user.id))
+    } catch (error) {
+      sendError(res, error)
+    }
+  }
+
   async checkout(req, res) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })

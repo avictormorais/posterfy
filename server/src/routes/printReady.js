@@ -14,6 +14,7 @@ router.post('/export-access', optionalAuthenticateToken, [
   body('scale').custom((value) => [0.6, 1, 1.5].includes(Number(value))).withMessage('Invalid export scale')
 ], PrintReadyController.exportAccess)
 router.get('/albums/:albumId', authenticateToken, [albumIdRule], PrintReadyController.albumStatus)
+router.get('/purchases', authenticateToken, PrintReadyController.purchases)
 router.post('/checkout', authenticateToken, checkoutLimiter, [
   body('albumId').matches(/^[A-Za-z0-9]{22}$/).withMessage('Invalid album ID'),
   body('posterId').optional({ nullable: true }).isMongoId().withMessage('Invalid poster ID'),

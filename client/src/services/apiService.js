@@ -92,6 +92,10 @@ class ApiService {
     return this.request(`/api/print-ready/albums/${encodeURIComponent(albumId)}`)
   }
 
+  async getPrintReadyPurchases() {
+    return this.request('/api/print-ready/purchases', { cache: 'no-store' })
+  }
+
   async createPrintReadyCheckout(data) {
     return this.request('/api/print-ready/checkout', {
       method: 'POST',

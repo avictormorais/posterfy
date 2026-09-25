@@ -13,7 +13,7 @@ import PosterWall from "../../components/svgs/PosterWall.jsx";
 import EditProfileModal from "../../components/EditProfileModal";
 import TierBadge from "../../components/Common/TierBadge.jsx";
 import AlertModal from "../../components/Common/AlertModal.jsx";
-import { IoEye, IoHeart, IoCloudDownload } from "react-icons/io5";
+import { IoEye, IoHeart, IoCloudDownload, IoCartOutline } from "react-icons/io5";
 import { MdBarChart } from "react-icons/md";
 import PosterCard from "../../components/Community/PosterCard";
 import {
@@ -235,6 +235,63 @@ const TabContent = styled.div`
     width:100%;
     margin-top:18px;
     animation:${fadeIn} 180ms ease;
+`;
+
+const PurchasesGrid = styled.div`
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:12px;
+    @media(max-width:900px){grid-template-columns:repeat(2,minmax(0,1fr));}
+    @media(max-width:500px){grid-template-columns:1fr;}
+`;
+
+const PurchaseCard = styled.a`
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    min-width:0;
+    padding:18px;
+    border:1px solid var(--borderColor);
+    border-radius:12px;
+    background:var(--glassBackground);
+    color:inherit;
+    text-decoration:none;
+    transition:border-color 180ms ease,transform 180ms ease;
+    &:hover{border-color:var(--AccentColor);transform:translateY(-1px);}
+`;
+
+const PurchaseAlbum = styled.h2`
+    margin:0;
+    font-size:16px;
+    line-height:1.3;
+    overflow-wrap:anywhere;
+`;
+
+const PurchaseArtist = styled.p`
+    margin:0;
+    color:var(--textSecondary);
+    font-size:13px;
+    line-height:1.45;
+    overflow-wrap:anywhere;
+`;
+
+const PurchaseMeta = styled.p`
+    margin:5px 0 0;
+    color:var(--textSecondary);
+    font-size:12px;
+    line-height:1.4;
+`;
+
+const PurchaseStatus = styled.span`
+    align-self:flex-start;
+    padding:4px 8px;
+    margin-left: -5px;
+    border-radius:999px;
+    background: var(--AccentColor);
+    color:var(--backgroundColor);
+    font-size:11px;
+    font-weight:700;
+    margin-bottom: 5px;
 `;
 
 const StatsGrid = styled.div`
@@ -676,6 +733,11 @@ export default function Profile() {
     const [favLoading, setFavLoading]       = useState(false);
     const [favFetched, setFavFetched]       = useState(false);
 
+    // Print-Ready purchases
+    const [purchases, setPurchases]         = useState([]);
+    const [purchasesLoading, setPurchasesLoading] = useState(false);
+    const [purchasesFetched, setPurchasesFetched] = useState(false);
+
     // Stats
     const [stats, setStats]                 = useState(null);
     const [statsLoading, setStatsLoading]   = useState(false);
@@ -809,6 +871,7 @@ export default function Profile() {
         if (isOwner) {
             if (activeTab === 'myposters' && !myFetched) fetchMyPosters(1, false);
             if (activeTab === 'favorites' && !favFetched) fetchFavorites(1, false);
+            if (activeTab === 'purchases' && !purchasesFetched) fetchPurchases();
             if (activeTab === 'stats'     && !statsFetched) fetchStats();
         } else {
             // Public: posters already fetched from initial load, only stats needs lazy load
@@ -876,6 +939,20 @@ export default function Profile() {
             setFavHasMore(res.hasMore ?? false);
             setFavFetched(true);
         } catch { setTabErrors(prev => ({ ...prev, favorites: true })); } finally { setFavLoading(false); }
+    }, []);
+
+    const fetchPurchases = useCallback(async () => {
+        setPurchasesLoading(true);
+        setTabErrors(prev => ({ ...prev, purchases: false }));
+        try {
+            const res = await apiService.getPrintReadyPurchases();
+            setPurchases(res.purchases || []);
+            setPurchasesFetched(true);
+        } catch {
+            setTabErrors(prev => ({ ...prev, purchases: true }));
+        } finally {
+            setPurchasesLoading(false);
+        }
     }, []);
 
     const fetchStats = useCallback(async () => {
@@ -1085,6 +1162,12 @@ export default function Profile() {
                         {t('DASH_Favorites')}
                     </Tab>
                 )}
+                {isOwner && (
+                    <Tab aria-pressed={activeTab === 'purchases'} $active={activeTab === 'purchases'} onClick={() => setActiveTab('purchases')}>
+                        <IoCartOutline size={19} />
+                        {t('DASH_Purchases')}
+                    </Tab>
+                )}
                 <Tab aria-pressed={activeTab === 'stats'} $active={activeTab === 'stats'} onClick={() => setActiveTab('stats')}>
                     <MdBarChart size={20} />
                     {t('DASH_Stats')}
@@ -1097,6 +1180,7 @@ export default function Profile() {
                     <Btn $variant="outline" onClick={() => {
                         if (activeTab === 'stats') (isOwner ? fetchStats : fetchPublicStats)();
                         else if (activeTab === 'favorites') fetchFavorites(favFetched ? favPage + 1 : 1, favFetched);
+                        else if (activeTab === 'purchases') fetchPurchases();
                         else (isOwner ? fetchMyPosters : fetchPublicPosters)(myFetched ? myPage + 1 : 1, myFetched);
                     }}>{t('ROUTE_Retry')}</Btn>
                 </PartialBanner>}
@@ -1204,6 +1288,35 @@ export default function Profile() {
                                 </LoadMoreBtn>
                             )}
                         </>
+                    )
+                )}
+
+                {activeTab === 'purchases' && (
+                    purchasesLoading && !purchasesFetched ? (
+                        <GallerySkeleton />
+                    ) : purchases.length === 0 ? (!tabErrors.purchases && (
+                        <EmptyContainer>
+                            <Empty width={"20%"}/>
+                            <EmptyState><EmptyText>{t('DASH_NoPurchases')}</EmptyText></EmptyState>
+                        </EmptyContainer>
+                    )) : (
+                        <PurchasesGrid>
+                            {purchases.map(purchase => {
+                                const album = purchase.album || {};
+                                const artists = (album.artistNames || []).join(', ');
+                                const purchasedAt = purchase.purchasedAt
+                                    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(purchase.purchasedAt))
+                                    : '';
+                                return (
+                                    <PurchaseCard key={purchase.id} href={`https://open.spotify.com/album/${encodeURIComponent(album.providerAlbumId)}`} target="_blank" rel="noopener noreferrer">
+                                        <PurchaseStatus>{t(purchase.unlocked ? 'DASH_PurchaseActive' : 'DASH_PurchaseUnavailable')}</PurchaseStatus>
+                                        <PurchaseAlbum>{album.albumName || t('Loading')}</PurchaseAlbum>
+                                        {artists && <PurchaseArtist>{artists}</PurchaseArtist>}
+                                        {purchasedAt && <PurchaseMeta>{t('DASH_PurchasedOn', { date: purchasedAt })}</PurchaseMeta>}
+                                    </PurchaseCard>
+                                );
+                            })}
+                        </PurchasesGrid>
                     )
                 )}
 

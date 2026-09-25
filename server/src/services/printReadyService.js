@@ -469,6 +469,35 @@ class PrintReadyService {
     }
   }
 
+  async getPurchases(userId) {
+    const payments = await Payment.find({
+      userId,
+      fulfilledAt: { $ne: null },
+      paymentStatus: { $in: ['paid', 'partially_refunded', 'refunded'] }
+    })
+      .select('album paymentStatus fulfilledAt')
+      .sort({ fulfilledAt: -1 })
+      .lean()
+
+    const albumIds = payments.map(({ album }) => album.providerAlbumId)
+    const unlocks = albumIds.length
+      ? await PrintUnlock.find({ userId, 'album.providerAlbumId': { $in: albumIds } })
+        .select('album.providerAlbumId active')
+        .lean()
+      : []
+    const activeUnlocks = new Map(unlocks.map(({ album, active }) => [album.providerAlbumId, active]))
+
+    return {
+      purchases: payments.map(({ _id, album, paymentStatus, fulfilledAt }) => ({
+        id: _id,
+        album,
+        purchasedAt: fulfilledAt,
+        paymentStatus,
+        unlocked: activeUnlocks.get(album.providerAlbumId) === true
+      }))
+    }
+  }
+
   async authorizeExport({ userId, albumId, format, scale }) {
     if (!isSpotifyAlbumId(albumId)) throw serviceError('Invalid album ID', 400, 'INVALID_ALBUM_ID')
 
