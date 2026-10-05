@@ -161,9 +161,17 @@ export const sendSupportEmail = async ({ sender, to, subject, mode, message }, c
   return { id: sent.id }
 }
 
-export const replyToSupportEmail = async (emailId, message, client = getResend()) => {
-  const original = await getSupportEmail(emailId, client)
-  const to = senderAddress(original.from)
+export const replyToSupportEmail = async (emailId, message, sourceOrClient = 'received', providedClient) => {
+  const legacyClient = sourceOrClient && typeof sourceOrClient === 'object'
+  const source = legacyClient ? 'received' : sourceOrClient
+  const client = legacyClient ? sourceOrClient : (providedClient || getResend())
+  const direction = source === 'sent' ? 'sent' : 'received'
+  const original = direction === 'sent'
+    ? await getSentEmail(emailId, client)
+    : await getSupportEmail(emailId, client)
+  const to = direction === 'sent'
+    ? senderAddress(original.to?.[0])
+    : senderAddress(original.from)
   const messageId = originalMessageId(original.message_id)
   const subject = String(original.subject || '').replace(/[\r\n]+/g, ' ').trim() || '(no subject)'
   const sent = unwrap(await client.emails.send({

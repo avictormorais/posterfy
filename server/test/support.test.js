@@ -111,7 +111,7 @@ test('reply targets the original sender and preserves Gmail thread headers', asy
       send: async message => { sent = message; return { data: { id: 'sent-1' }, error: null } }
     }
   }
-  const result = await replyToSupportEmail(inbound.id, 'Thanks, Ana.', client)
+  const result = await replyToSupportEmail(inbound.id, 'Thanks, Ana.', 'received', client)
   assert.deepEqual(result, { id: 'sent-1' })
   assert.deepEqual(sent, {
     from: 'Posterfy Support <support@posterfy.pics>',
@@ -123,6 +123,33 @@ test('reply targets the original sender and preserves Gmail thread headers', asy
   })
   assert.equal(sent.to, 'ana@example.com')
   // The API only takes an email ID and message. It never accepts a client-supplied `to`.
+})
+
+test('replying to a sent email targets its recipient and preserves the sent message headers', async () => {
+  const sentEmail = {
+    ...inbound,
+    from: 'Posterfy Support <support@posterfy.pics>',
+    to: ['ana@example.com'],
+    subject: 'Re: Help with an order',
+    message_id: '<reply@example.com>'
+  }
+  let sent
+  const client = {
+    emails: {
+      get: async () => ({ data: sentEmail, error: null }),
+      send: async message => { sent = message; return { data: { id: 'sent-2' }, error: null } }
+    }
+  }
+  const result = await replyToSupportEmail(sentEmail.id, 'Here is a complement.', 'sent', client)
+  assert.deepEqual(result, { id: 'sent-2' })
+  assert.deepEqual(sent, {
+    from: 'Posterfy Support <support@posterfy.pics>',
+    to: 'ana@example.com',
+    subject: 'Re: Help with an order',
+    text: 'Here is a complement.',
+    replyTo: 'support@posterfy.pics',
+    headers: { 'In-Reply-To': '<reply@example.com>', References: '<reply@example.com>' }
+  })
 })
 
 test('reply preserves an existing Re: prefix and does not send if the original lookup fails', async () => {

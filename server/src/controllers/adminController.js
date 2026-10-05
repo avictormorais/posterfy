@@ -141,7 +141,11 @@ class AdminController {
     const errors = validationResult(req)
     if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg })
     try {
-      const result = await SupportService.replyToSupportEmail(req.params.emailId, req.body.message.trim())
+      const result = await SupportService.replyToSupportEmail(
+        req.params.emailId,
+        req.body.message.trim(),
+        req.body.source
+      )
       res.json({ message: 'Reply sent', id: result.id })
     } catch (error) {
       console.error('Could not send support reply', { emailId: req.params.emailId, error: error.message })

@@ -277,9 +277,11 @@ export default function SupportTab() {
     if (!selected || !reply.trim() || sending) return
     setSending(true); setSendResult(null)
     try {
-      const target = [...(thread?.messages || [])].reverse().find(email => email.direction === 'received') || selected
+      const target = section === 'sent'
+        ? selected
+        : [...(thread?.messages || [])].reverse().find(email => email.direction === 'received') || selected
       const message = reply.trim()
-      const result = await adminService.replyToSupportEmail(target.id, message)
+      const result = await adminService.replyToSupportEmail(target.id, message, section === 'sent' ? 'sent' : 'received')
       setThread(current => current && ({ ...current, messages: [...current.messages, {
         id: result.id, direction: 'sent', from: 'Posterfy Support <support@posterfy.pics>',
         to: [current.contact], subject: selected.subject, text: message, html: null,
@@ -364,7 +366,7 @@ export default function SupportTab() {
             <ThreadMeta><strong>{email.from}</strong><span>{date(email.created_at)}</span></ThreadMeta>
             <MessageBody email={email} />
           </ThreadCard>)}
-          {section === 'inbox' && <Form $reply onSubmit={sendReply}>
+          {(section === 'inbox' || section === 'sent') && <Form $reply onSubmit={sendReply}>
             <label htmlFor="support-reply">{t('ADMIN_SupportWriteReply')}</label>
             <textarea id="support-reply" autoComplete="off" maxLength={10000} value={reply} onChange={event => { setReply(event.target.value); setSendResult(null) }} placeholder={t('ADMIN_SupportWriteReply')} />
             <button type="submit" disabled={sending || !reply.trim()}>{sending ? t('ADMIN_SupportSending') : t('ADMIN_SupportSendReply')}</button>

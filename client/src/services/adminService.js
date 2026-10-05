@@ -16,9 +16,9 @@ const admin = {
   sendSupportEmail: (data) => apiService.request('/api/admin/support/send', {
     method: 'POST', body: JSON.stringify(data)
   }),
-  replyToSupportEmail: (id, message) => apiService.request(`/api/admin/support/${encodeURIComponent(id)}/reply`, {
+  replyToSupportEmail: (id, message, source = 'received') => apiService.request(`/api/admin/support/${encodeURIComponent(id)}/reply`, {
     method: 'POST',
-    body: JSON.stringify({ message })
+    body: JSON.stringify({ message, source })
   }),
 
   getUsers: (params = {}) => {

@@ -85,6 +85,7 @@ router.post('/support/send', [
 router.get('/support/:emailId', [param('emailId').isUUID().withMessage('Invalid email ID')], AdminController.getSupportEmail)
 router.post('/support/:emailId/reply', [
   param('emailId').isUUID().withMessage('Invalid email ID'),
+  body('source').optional().isIn(['received', 'sent']).withMessage('Invalid email source'),
   body('message').isString().trim().isLength({ min: 1, max: 10000 }).withMessage('Reply must be 1–10000 characters')
 ], AdminController.replyToSupportEmail)
 
