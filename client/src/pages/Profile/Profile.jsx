@@ -245,7 +245,7 @@ const PurchasesGrid = styled.div`
     @media(max-width:500px){grid-template-columns:1fr;}
 `;
 
-const PurchaseCard = styled.a`
+const PurchaseCard = styled.button`
     display:flex;
     flex-direction:column;
     gap:7px;
@@ -255,7 +255,9 @@ const PurchaseCard = styled.a`
     border-radius:12px;
     background:var(--glassBackground);
     color:inherit;
-    text-decoration:none;
+    text-align:left;
+    font:inherit;
+    cursor:pointer;
     transition:border-color 180ms ease,transform 180ms ease;
     &:hover{border-color:var(--AccentColor);transform:translateY(-1px);}
 `;
@@ -1307,8 +1309,12 @@ export default function Profile() {
                                 const purchasedAt = purchase.purchasedAt
                                     ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(purchase.purchasedAt))
                                     : '';
+                                const openAlbum = () => {
+                                    if (!album.providerAlbumId) return;
+                                    navigate(`/?openAlbum=${encodeURIComponent(album.providerAlbumId)}`);
+                                };
                                 return (
-                                    <PurchaseCard key={purchase.id} href={`https://open.spotify.com/album/${encodeURIComponent(album.providerAlbumId)}`} target="_blank" rel="noopener noreferrer">
+                                    <PurchaseCard key={purchase.id} type="button" onClick={openAlbum} disabled={!album.providerAlbumId}>
                                         <PurchaseStatus>{t(purchase.unlocked ? 'DASH_PurchaseActive' : 'DASH_PurchaseUnavailable')}</PurchaseStatus>
                                         <PurchaseAlbum>{album.albumName || t('Loading')}</PurchaseAlbum>
                                         {artists && <PurchaseArtist>{artists}</PurchaseArtist>}

@@ -22,6 +22,13 @@ import { useRouteSeoData } from '../../components/SEO/SEOComponent';
 import { useRouteTransition } from '../../contexts/RouteTransitionContext';
 import { normalizePathname } from '../../seo/metadata';
 
+const DEFAULT_MODEL_PARAMS = {
+  coverZoom: 0,
+  marginBackground: 0,
+  showTracklist: true,
+  useFade: true,
+};
+
 const FadeInSection = styled.div`
   opacity: ${props => props.$isVisible ? 1 : 0};
   transform: translateY(${props => props.$isVisible ? '0' : '30px'});
@@ -43,9 +50,14 @@ export default function Home({ loadingComplete }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const openAlbumId = searchParams.get('openAlbum');
+  const isValidOpenAlbum = /^[A-Za-z0-9]{22}$/.test(openAlbumId || '');
   const { loading: authLoading } = useAuth();
   const { ready: routeReady, fail: routeFailed, revealed } = useRouteTransition();
   const firstPreviewReady = useRef(false);
+  useEffect(() => {
+    firstPreviewReady.current = false;
+  }, [posterId, openAlbumId]);
   useEffect(() => {
     if (!loadingComplete || !revealed || searchParams.get('create') !== '1') return;
     const target = document.querySelector('[data-section="album-search"]');
@@ -80,6 +92,11 @@ export default function Home({ loadingComplete }) {
     if (authLoading) return;
 
     if (!posterId) {
+      if (isValidOpenAlbum) {
+        setRecreatingPosterJSON({ albumID: openAlbumId });
+        setRecreatingPosterData(null);
+        return;
+      }
       if (resumeFlow) {
         setRecreatingPosterJSON({
           ...resumeFlow.editor.posterJson,
@@ -119,16 +136,17 @@ export default function Home({ loadingComplete }) {
     };
     load();
     return () => { cancelled = true; };
-  }, [posterId, authLoading, resumeFlow, routeFailed]);
+  }, [posterId, authLoading, resumeFlow, routeFailed, openAlbumId, isValidOpenAlbum]);
 
   const handleFirstPreviewReady = () => {
-    if (!posterId || firstPreviewReady.current) return;
+    if ((!posterId && !isValidOpenAlbum) || firstPreviewReady.current) return;
     firstPreviewReady.current = true;
     if (posterEditorRef.current) {
       const y = posterEditorRef.current.getBoundingClientRect().top + window.scrollY - 80;
       window.scrollTo({ top: y, behavior: 'instant' });
     }
-    routeReady();
+    if (isValidOpenAlbum) requestAnimationFrame(routeReady);
+    else routeReady();
   };
 
   const [anchorRef, anchorVisible] = useScrollAnimation();
@@ -203,17 +221,18 @@ export default function Home({ loadingComplete }) {
             key={posterId || recreatingPosterJSON.albumID}
             ref={posterEditorRef}
             albumID={recreatingPosterJSON.albumID} 
-            initialPosterJson={recreatingPosterJSON} 
+            initialPosterJson={isValidOpenAlbum ? undefined : recreatingPosterJSON}
+            modelParams={isValidOpenAlbum ? DEFAULT_MODEL_PARAMS : undefined}
             handleClickBack={handleClickBack}
             posterId={posterId || null}
             posterFullData={recreatingPosterData}
-            source={resumeFlow?.editor.source}
+            source={isValidOpenAlbum ? 'purchase' : resumeFlow?.editor.source}
             resumeFlow={resumeFlow}
             checkoutResult={searchParams.get('print_ready')}
             checkoutSessionId={searchParams.get('session_id')}
             onPendingFlowComplete={handlePendingFlowComplete}
             onPreviewReady={handleFirstPreviewReady}
-            onPreviewError={posterId ? routeFailed : undefined}
+            onPreviewError={posterId || isValidOpenAlbum ? routeFailed : undefined}
             onPublishSuccess={(id) => setPublishModal({ posterId: id })}
           />
         ) : (

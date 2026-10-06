@@ -9,10 +9,10 @@ import './route-transition.css';
 const Context = createContext({ ready: () => {}, fail: () => {}, revealed: true });
 export const useRouteTransition = () => useContext(Context);
 
-function Transition({ pathname, children }) {
+function Transition({ initialReady, children }) {
     const { t } = useTranslation();
     const started = useRef(performance.now());
-    const [ready, setReady] = useState(!/^\/(p|u)\//.test(pathname));
+    const [ready, setReady] = useState(initialReady);
     const [leaving, setLeaving] = useState(false);
     const [revealed, setRevealed] = useState(false);
     const [error, setError] = useState(false);
@@ -71,8 +71,14 @@ function Transition({ pathname, children }) {
 }
 
 export function RouteTransitionProvider({ children }) {
-    const { pathname } = useLocation();
+    const { pathname, search } = useLocation();
+    const openAlbumId = new URLSearchParams(search).get('openAlbum');
+    const waitsForAlbumEditor = pathname === '/' && /^[A-Za-z0-9]{22}$/.test(openAlbumId || '');
+    const initialReady = !/^\/(p|u)\//.test(pathname) && !waitsForAlbumEditor;
     // A new scope also unmounts the previous screen: late requests cannot
     // release the next navigation or display a previously selected poster.
-    return <Transition key={pathname} pathname={pathname}>{children}</Transition>;
+    return <Transition
+        key={`${pathname}${waitsForAlbumEditor ? search : ''}`}
+        initialReady={initialReady}
+    >{children}</Transition>;
 }
