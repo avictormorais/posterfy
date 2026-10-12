@@ -1,6 +1,32 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+export const supportedLanguages = ['en', 'pt', 'es', 'zh'];
+
+const getSavedLanguage = () => {
+    try {
+        const savedLanguage = localStorage.getItem('language')?.toLowerCase();
+        return supportedLanguages.includes(savedLanguage) ? savedLanguage : null;
+    } catch {
+        return null;
+    }
+};
+
+const detectBrowserLanguage = () => {
+    const browserLanguages = typeof navigator !== 'undefined' && navigator.languages?.length
+        ? navigator.languages
+        : [typeof navigator !== 'undefined' ? navigator.language : null];
+
+    for (const browserLanguage of browserLanguages) {
+        const languageCode = browserLanguage?.split('-')[0].toLowerCase();
+        if (supportedLanguages.includes(languageCode)) {
+            return languageCode;
+        }
+    }
+
+    return 'en';
+};
+
 i18n
 .use(initReactI18next)
 .init({
@@ -1879,20 +1905,8 @@ i18n
             },
         },
     },
-    lng: (() => {
-        const savedLanguage = localStorage.getItem('language');
-        if (savedLanguage) {
-            return savedLanguage;
-        }
-        
-        const browserLanguage = navigator.language || navigator.languages[0];
-        const languageCode = browserLanguage.split('-')[0].toLowerCase();
-        
-        const supportedLanguages = ['en', 'pt', 'es', 'zh'];
-        const detectedLanguage = supportedLanguages.includes(languageCode) ? languageCode : 'en';
-        
-        return detectedLanguage;
-    })(),
+    lng: getSavedLanguage() || detectBrowserLanguage(),
+    supportedLngs: supportedLanguages,
     fallbackLng: "en",
     interpolation: {
         escapeValue: false,

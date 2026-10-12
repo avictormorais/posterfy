@@ -189,11 +189,6 @@ function LanguageSelector() {
   const { i18n } = useTranslation()
 
   useEffect(() => {
-    const savedLanguage = localStorage.getItem("language")
-    if (savedLanguage) {
-      i18n.changeLanguage(savedLanguage)
-    }
-
     const handleClickOutside = (e) => {
       if (!e.target.closest(".language-selector")) {
         closeDropdown()
@@ -202,7 +197,7 @@ function LanguageSelector() {
 
     document.addEventListener("click", handleClickOutside)
     return () => document.removeEventListener("click", handleClickOutside)
-  }, [i18n])
+  }, [])
 
   const closeDropdown = () => {
     setIsClosing(true)
