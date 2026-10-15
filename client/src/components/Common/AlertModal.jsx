@@ -293,7 +293,7 @@ const ErrorMessage = styled.p`
     font-weight: 500;
 `;
 
-export default function AlertModal({ title, paragraph, imageURL, postImageText, disclaimerText, canClose, confirmText, onConfirm, cancelText, onCancel, isClosing, customButton, errorMessage }){
+export default function AlertModal({ title, paragraph, imageURL, postImageText, disclaimerText, canClose, confirmText, onConfirm, cancelText, onCancel, isClosing, customButton, secondaryButton, errorMessage }){
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -352,6 +352,11 @@ export default function AlertModal({ title, paragraph, imageURL, postImageText, 
                         <FilledButton onClick={() => window.open(customButton.url, '_blank')}>
                             {customButton.text}
                         </FilledButton>
+                    )}
+                    {secondaryButton && (
+                        <OutlinedButton onClick={secondaryButton.onClick}>
+                            {secondaryButton.text}
+                        </OutlinedButton>
                     )}
                     {cancelText && confirmText ? (
                         <>

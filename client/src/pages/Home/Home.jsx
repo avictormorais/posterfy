@@ -71,6 +71,7 @@ export default function Home({ loadingComplete }) {
   const [recreatingPosterData, setRecreatingPosterData] = useState(null);
   const [resumeFlow, setResumeFlow] = useState(null);
   const [publishModal, setPublishModal] = useState(null);
+  const [linkCopied, setLinkCopied] = useState(false);
   const posterEditorRef = useRef(null);
   const posterSeoData = useMemo(
     () => posterId && recreatingPosterData ? { poster: recreatingPosterData } : null,
@@ -185,6 +186,18 @@ export default function Home({ loadingComplete }) {
     navigate(location.pathname, { replace: true });
   };
 
+  const handleCopyPublishedLink = async () => {
+    if (!publishModal?.posterId) return;
+
+    const posterUrl = `${window.location.origin}/p/${publishModal.posterId}/`;
+    try {
+      await navigator.clipboard.writeText(posterUrl);
+      setLinkCopied(true);
+    } catch (error) {
+      console.error('Failed to copy published poster link:', error);
+    }
+  };
+
   return (
     <>
       {publishModal && (
@@ -192,13 +205,19 @@ export default function Home({ loadingComplete }) {
           title={t('COMMUNITY_PublishSuccess')}
           paragraph={t('COMMUNITY_PublishedModalBody')}
           confirmText={t('GotIt')}
+          secondaryButton={{
+            text: linkCopied ? t('COMMUNITY_LinkCopied') : t('COMMUNITY_CopyLink'),
+            onClick: handleCopyPublishedLink,
+          }}
           onConfirm={() => {
             setPublishModal(null);
+            setLinkCopied(false);
             navigate('/');
           }}
           canClose={true}
           onCancel={() => {
             setPublishModal(null);
+            setLinkCopied(false);
             navigate('/');
           }}
           isClosing={false}
