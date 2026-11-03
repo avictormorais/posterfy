@@ -585,7 +585,8 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
         e.preventDefault();
         e.stopPropagation();
         const menuW = 240;
-        const menuH = isAdmin ? 340 : 220;
+        const hasSpotifyAlbumId = typeof poster.spotifyAlbumId === 'string' && poster.spotifyAlbumId.trim();
+        const menuH = (isAdmin ? 340 : 220) + (hasSpotifyAlbumId ? 40 : 0);
         const x = e.clientX + menuW > window.innerWidth  ? e.clientX - menuW : e.clientX;
         const y = e.clientY + menuH > window.innerHeight ? e.clientY - menuH : e.clientY;
         setCtxMenu({ x, y });
@@ -624,6 +625,7 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
     const author   = poster.authorId;
     const pj       = poster.posterJson || {};
     const badgeInfo = author ? getBadgeInfo(author.badge) : null;
+    const spotifyAlbumId = typeof poster.spotifyAlbumId === 'string' ? poster.spotifyAlbumId.trim() : '';
 
     // Build posterData for CanvasPoster — always show watermark in community previews
     const posterData = {
@@ -832,6 +834,12 @@ function PosterCard({ poster, variant = 'community', onDelete, onVisibilityChang
                         <CtxItem onClick={() => { setCtxMenu(null); window.open(`/u/${author.username}/`, '_blank'); }}>
                             <IoOpenOutline />
                             {t('CARD_CTX_UserProfileNewTab')}
+                        </CtxItem>
+                    )}
+                    {spotifyAlbumId && (
+                        <CtxItem onClick={() => copyToClipboard(spotifyAlbumId, 'album')}>
+                            <IoCopyOutline />
+                            {ctxCopied === 'album' ? t('CARD_CTX_Copied') : t('CARD_CTX_CopyAlbumId')}
                         </CtxItem>
                     )}
 

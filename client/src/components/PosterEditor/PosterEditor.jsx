@@ -2293,11 +2293,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                     setIsPrintReadyUnlocked(true);
                     setUnlockChecked(true);
                 }
+                const hasCleanExportAccess = policy.tier === 'print_ready' || isPrintReadyUnlocked;
                 startExport(
                     format,
                     scale,
-                    access.watermarks?.top === true,
-                    access.watermarks?.pattern === true
+                    hasCleanExportAccess ? false : access.watermarks?.top === true,
+                    hasCleanExportAccess ? false : access.watermarks?.pattern === true
                 );
                 return;
             }

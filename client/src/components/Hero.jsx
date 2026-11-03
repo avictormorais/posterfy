@@ -9,7 +9,7 @@ import DivAlbum from "./DivAlbum"
 import { useState, useEffect } from "react"
 import frameModel from "./3d/frame.glb"
 import backImage from "./3d/back_transparent.png"
-import posterImage from "./3d/Posterfy - CHROMAKOPIA +.png"
+import posterImage from "./3d/Posterfy - Madvillainy.jpg"
 import Anchor from "./Common/Anchor"
 import SectionExplanation from "./SectionExplanation"
 
@@ -365,7 +365,7 @@ function Hero({ showAnimation = false, onRecreate }) {
                 enableMouseParallax
                 autoRotateSpeed={0.22}
                 showFrame={true}
-                frameColor={"#f8e2c7"}
+                frameColor={"#7c6e59"}
               />
             </IconContainer>
           </RightSection>
