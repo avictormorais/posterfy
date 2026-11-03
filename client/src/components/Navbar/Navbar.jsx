@@ -24,9 +24,9 @@ const NavbarContainer = styled.header`
   left: 0;
   width: 100%;
   z-index: 50;
-  transition: transform 280ms cubic-bezier(.2,.7,.3,1), box-shadow 280ms ease;
-  background-color: var(--backgroundColor);
-  padding: 14px 0;
+  transition: transform 280ms cubic-bezier(.2,.7,.3,1), background-color 280ms ease, padding 280ms ease, box-shadow 280ms ease;
+  background-color: ${({ $scrolled }) => ($scrolled ? "var(--backgroundColor)" : "transparent")};
+  padding: ${({ $scrolled }) => ($scrolled ? "14px 0" : "22px 0")};
   box-shadow: ${({ $scrolled }) => $scrolled ? '0 8px 24px -16px var(--shadowColor)' : 'none'};
   transform: ${({ $visible }) => ($visible ? "translateY(0)" : "translateY(-110%)")};
   &:focus-within { transform: translateY(0); }
@@ -99,7 +99,7 @@ const Divider = styled.div`
   width: 100%;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--borderColor) 15%, var(--borderColor) 85%, transparent);
-  opacity: ${({ $scrolled }) => ($scrolled ? "1" : ".6")};
+  opacity: ${({ $scrolled }) => ($scrolled ? "1" : "0")};
   transition: opacity 0.3s ease;
 `
 
