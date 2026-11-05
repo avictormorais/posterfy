@@ -2802,9 +2802,9 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setDragOverIndex(null);
     };
 
-    async function getItunesUncompressedAlbumCover(searchQuery, country = "us") {
+    async function getItunesUncompressedAlbumCover(searchQuery, albumName, artistName) {
         try {
-            let apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&country=${country}&entity=album&limit=1`;
+            const apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(searchQuery)}&entity=album&limit=25`;
             let response = await fetch(apiUrl);
             if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
     
@@ -2815,14 +2815,36 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 return false;
             }
     
-            let result = data.results[0];
-            let hires = result.artworkUrl100.replace("100x100bb", "100000x100000-999");
-            let parts = hires.split("/image/thumb/");
+            const normalize = (value) => String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, ' ')
+                .trim();
+            const normalizedAlbumName = normalize(albumName);
+            const normalizedArtistName = normalize(artistName);
+            const result = [...data.results].sort((a, b) => {
+                const score = (item) => {
+                    const itemAlbumName = normalize(item.collectionName);
+                    const itemArtistName = normalize(item.artistName);
+                    let value = 0;
+
+                    if (itemAlbumName === normalizedAlbumName) value += 100;
+                    else if (itemAlbumName.includes(normalizedAlbumName) || normalizedAlbumName.includes(itemAlbumName)) value += 40;
+                    if (itemArtistName === normalizedArtistName) value += 80;
+                    else if (itemArtistName.includes(normalizedArtistName) || normalizedArtistName.includes(itemArtistName)) value += 30;
+
+                    return value;
+                };
+
+                return score(b) - score(a);
+            })[0];
+            let uncompressedCover = result.artworkUrl100.replace("100x100bb", "10000x1000bb");
             
-            let uncompressedCover = parts.length === 2 
-                ? `https://a5.mzstatic.com/us/r1000/0/${parts[1].split("/").slice(0, -1).join("/")}`
-                : '';
+            console.log("Uncompressed album cover URL:", uncompressedCover);
+            
             return uncompressedCover;
+
 
         } catch (error) {
             console.error("Error fetching album cover:", error.message);
@@ -2887,7 +2909,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                 
                 rawReleaseDateRef.current = albumData.release_date;
                 setReleaseDate(localizeDate(albumData.release_date, i18n.language));
-                const uncompressedCover = await getItunesUncompressedAlbumCover(albumData.name + " " + formattedArtistsName);
+                const uncompressedCover = await getItunesUncompressedAlbumCover(
+                    `${albumData.name} ${formattedArtistsName}`,
+                    albumData.name,
+                    formattedArtistsName
+                );
                 setUncompressedAlbumCover(uncompressedCover ? uncompressedCover : highQualityCoverUrl);
                 
                 const runtime = albumData.tracks.items.reduce((totalDuration, track) => totalDuration + track.duration_ms, 0);
