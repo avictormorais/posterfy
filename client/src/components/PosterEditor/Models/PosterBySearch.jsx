@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import PosterEditor from "../PosterEditor";
 import ModelSelector from "../ModelSelector";
 import Searchbar from "../../Searchbar";
@@ -11,7 +11,12 @@ const PosterBySearch = ({ onBack, onPublishSuccess }) => {
     const [showModelSelector, setShowModelSelector] = useState(false);
     const [selectedModel, setSelectedModel] = useState(null);
     const [modelParams, setModelParams] = useState(null);
+    const [draftPosterJson, setDraftPosterJson] = useState(null);
     const modelSelectorRef = useRef(null);
+    const initialPosterJson = useMemo(
+        () => draftPosterJson ? { ...draftPosterJson, ...(modelParams || {}) } : undefined,
+        [draftPosterJson, modelParams]
+    );
 
     useEffect(() => {
         if (showModelSelector && albumId && modelSelectorRef.current) {
@@ -29,6 +34,7 @@ const PosterBySearch = ({ onBack, onPublishSuccess }) => {
         setShowModelSelector(true);
         setSelectedModel(null);
         setModelParams(null);
+        setDraftPosterJson(null);
     }
 
     function handleModelSelectorBack() {
@@ -36,10 +42,12 @@ const PosterBySearch = ({ onBack, onPublishSuccess }) => {
         setShowModelSelector(false);
         setSelectedModel(null);
         setModelParams(null);
+        setDraftPosterJson(null);
         if (onBack) onBack();
     }
 
-    function handleEditorBack() {
+    function handleEditorBack(posterJson) {
+        setDraftPosterJson(posterJson || null);
         setShowModelSelector(true);
         setSelectedModel(null);
         setModelParams(null);
@@ -57,6 +65,7 @@ const PosterBySearch = ({ onBack, onPublishSuccess }) => {
                 handleClickBack={handleEditorBack} 
                 model={selectedModel} 
                 modelParams={modelParams}
+                initialPosterJson={initialPosterJson}
                 source="search_creation"
                 onPublishSuccess={onPublishSuccess}
             />

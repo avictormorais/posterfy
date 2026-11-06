@@ -1651,7 +1651,12 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
         setTracksSize(json.tracksSize ?? '50');
         setMarginTop(json.marginTop ?? '');
         setmarginSide(json.marginSide ?? 160);
-        setMarginCover(json.marginCover ?? 0);
+        const presetCoverZoom = modelParams?.coverZoom;
+        setMarginCover(
+            presetCoverZoom !== undefined
+                ? -presetCoverZoom * 10
+                : (json.marginCover ?? 0)
+        );
         setmarginBackground(json.marginBackground ?? 0);
         setbackgroundColor(json.backgroundColor ?? '#5900ff');
         setTextColor(json.textColor ?? '#ff9100');
@@ -2951,8 +2956,11 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             }
         };
     
-        if(initialPosterJson){
-            applyPosterJson(initialPosterJson);
+        if (initialPosterJson) {
+            applyPosterJson({
+                ...initialPosterJson,
+                ...(modelParams || {}),
+            });
             setInfosLoaded(true);
         } else{
             setIsLoadedFromJson(false);
@@ -2960,7 +2968,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
             setNewTrackDuration('');
             fetchAlbumData();
         }
-    }, [albumID]);
+    }, [albumID, initialPosterJson, modelParams]);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -3095,7 +3103,7 @@ const PosterEditor = forwardRef(({ albumID, handleClickBack, model, modelParams,
                         return null;
                     }}
                 </Palette>
-                    <DivBack onClick={handleClickBack}>
+                    <DivBack onClick={() => handleClickBack(posterData)}>
                         <ArrowBack/>
                         <TextBack>
                             {t('GoBack')}
