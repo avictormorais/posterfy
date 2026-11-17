@@ -17,7 +17,7 @@ const Container = styled.footer`
 `
 
 const Content = styled.div`
-  width: min(1200px, calc(100% - 48px));
+  width: min(1240px, calc(100% - 48px));
   margin: 0 auto;
   padding: 64px 0 30px;
 `
