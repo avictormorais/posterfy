@@ -1,7 +1,23 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, Html, OrbitControls, useGLTF, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
+
+class EnvironmentErrorBoundary extends Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error) {
+    console.error('Failed to load 3D environment; using scene lights only.', error);
+  }
+
+  render() {
+    return this.state.hasError ? null : this.props.children;
+  }
+}
 
 function resolveFrameColor(frameColor) {
   if (typeof frameColor !== 'string' || frameColor.trim().length === 0) {
@@ -557,7 +573,11 @@ export default function Poster3D({
           shadow-bias={-0.0001}
         />
         <directionalLight position={[-3.4, 1.6, -2.8]} intensity={0.38} color="#8da9c4" />
-        <Environment preset="city" intensity={0.58} />
+        <EnvironmentErrorBoundary>
+          <Suspense fallback={null}>
+            <Environment preset="city" intensity={0.58} />
+          </Suspense>
+        </EnvironmentErrorBoundary>
 
         {modelUrl ? (
           <Suspense fallback={<LoadingIndicator />}>
